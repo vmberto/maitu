@@ -1,5 +1,6 @@
 {
   "name": "Next.JS Progressive Web App",
+  "description": "Maitu - my to do app",
   "short_name": "Next PWA",
   "theme_color": "#ffffff",
   "background_color": "#004740",

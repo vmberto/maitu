@@ -1,4 +1,4 @@
-import {Fragment} from 'react'
+import {Fragment, MouseEventHandler} from 'react'
 import {Menu, Transition} from '@headlessui/react'
 import {EllipsisVerticalIcon} from "@heroicons/react/24/solid";
 
@@ -7,10 +7,12 @@ function classNames(...classes: string[]) {
 }
 
 export default function Dropdown() {
+    const handleClick: MouseEventHandler<HTMLButtonElement> = (e) => e.stopPropagation();
+
     return (
         <Menu as="div" className="relative inline-block text-left">
             <div>
-                <Menu.Button onClick={e => e.stopPropagation()} className="inline-flex w-full justify-center
+                <Menu.Button onClick={handleClick} className="inline-flex w-full justify-center
                 p-1 text-sm font-medium text-gray-700 hover:bg-gray-50
                 focus:outline-none focus:ring-2 focus:ring-indigo-500
                 focus:ring-offset-2 focus:ring-offset-gray-100">
