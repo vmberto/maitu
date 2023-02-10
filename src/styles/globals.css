@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    background-color: #EFF3FA;
+}
+
+
+@layer base {
+    :root {
+        --color-primary: '#3664FF';
+        /* ... */
+    }
+}

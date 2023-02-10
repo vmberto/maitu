@@ -1,0 +1,100 @@
+[debug] [2023-02-10T14:21:24.708Z] ----------------------------------------------------------------------
+[debug] [2023-02-10T14:21:24.712Z] Command:       /Users/umberto/.nvm/versions/node/v14.18.3/bin/node /Users/umberto/.nvm/versions/node/v14.18.3/bin/firebase init
+[debug] [2023-02-10T14:21:24.712Z] CLI Version:   11.22.0
+[debug] [2023-02-10T14:21:24.712Z] Platform:      darwin
+[debug] [2023-02-10T14:21:24.712Z] Node Version:  v14.18.3
+[debug] [2023-02-10T14:21:24.714Z] Time:          Fri Feb 10 2023 11:21:24 GMT-0300 (Brasilia Standard Time)
+[debug] [2023-02-10T14:21:24.714Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2023-02-10T14:21:24.722Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2023-02-10T14:21:24.722Z] > authorizing via signed-in user (umbertobarrosf@gmail.com)
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  /Users/umberto/Documents/prsl/my-todo-app
+
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] but for now we'll just set up a default project.
+[info] 
+[debug] [2023-02-10T14:26:57.212Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects pageSize=100
+[debug] [2023-02-10T14:27:01.331Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects 200
+[debug] [2023-02-10T14:27:01.332Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects [omitted]
+[info] i  Using project my-todo-app-b05e9 (my-todo-app) 
+[info] 
+=== Database Setup
+[info] i  database: ensuring required API firebasedatabase.googleapis.com is enabled... 
+[debug] [2023-02-10T14:27:05.136Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/my-todo-app-b05e9/services/firebasedatabase.googleapis.com [none]
+[debug] [2023-02-10T14:27:05.136Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/my-todo-app-b05e9/services/firebasedatabase.googleapis.com x-goog-quota-user=projects/my-todo-app-b05e9
+[debug] [2023-02-10T14:27:06.577Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/my-todo-app-b05e9/services/firebasedatabase.googleapis.com 200
+[debug] [2023-02-10T14:27:06.578Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/my-todo-app-b05e9/services/firebasedatabase.googleapis.com [omitted]
+[warn] ⚠  database: missing required API firebasedatabase.googleapis.com. Enabling now... 
+[debug] [2023-02-10T14:27:06.578Z] >>> [apiv2][query] POST https://serviceusage.googleapis.com/v1/projects/my-todo-app-b05e9/services/firebasedatabase.googleapis.com:enable [none]
+[debug] [2023-02-10T14:27:06.579Z] >>> [apiv2][(partial)header] POST https://serviceusage.googleapis.com/v1/projects/my-todo-app-b05e9/services/firebasedatabase.googleapis.com:enable x-goog-quota-user=projects/my-todo-app-b05e9
+[debug] [2023-02-10T14:27:08.320Z] <<< [apiv2][status] POST https://serviceusage.googleapis.com/v1/projects/my-todo-app-b05e9/services/firebasedatabase.googleapis.com:enable 200
+[debug] [2023-02-10T14:27:08.320Z] <<< [apiv2][body] POST https://serviceusage.googleapis.com/v1/projects/my-todo-app-b05e9/services/firebasedatabase.googleapis.com:enable [omitted]
+[debug] [2023-02-10T14:27:18.323Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/my-todo-app-b05e9/services/firebasedatabase.googleapis.com [none]
+[debug] [2023-02-10T14:27:18.323Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/my-todo-app-b05e9/services/firebasedatabase.googleapis.com x-goog-quota-user=projects/my-todo-app-b05e9
+[debug] [2023-02-10T14:27:19.563Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/my-todo-app-b05e9/services/firebasedatabase.googleapis.com 200
+[debug] [2023-02-10T14:27:19.564Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/my-todo-app-b05e9/services/firebasedatabase.googleapis.com [omitted]
+[info] ✔  database: required API firebasedatabase.googleapis.com is enabled 
+[info] 
+[debug] [2023-02-10T14:27:19.567Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/my-todo-app-b05e9 [none]
+[debug] [2023-02-10T14:27:20.133Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/my-todo-app-b05e9 200
+[debug] [2023-02-10T14:27:20.133Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/my-todo-app-b05e9 {"projectId":"my-todo-app-b05e9","projectNumber":"332472536024","displayName":"my-todo-app","name":"projects/my-todo-app-b05e9","resources":{"hostingSite":"my-todo-app-b05e9"},"state":"ACTIVE","etag":"1_ad9f8477-1629-4e24-8f70-4754a10e6117"}
+[debug] [2023-02-10T14:27:47.280Z] >>> [apiv2][query] POST https://firebasedatabase.googleapis.com/v1beta/projects/my-todo-app-b05e9/locations/us-central1/instances databaseId=my-todo-app-b05e9-default-rtdb&validateOnly=true
+[debug] [2023-02-10T14:27:47.280Z] >>> [apiv2][body] POST https://firebasedatabase.googleapis.com/v1beta/projects/my-todo-app-b05e9/locations/us-central1/instances {"type":"default_database"}
+[debug] [2023-02-10T14:27:48.411Z] <<< [apiv2][status] POST https://firebasedatabase.googleapis.com/v1beta/projects/my-todo-app-b05e9/locations/us-central1/instances 200
+[debug] [2023-02-10T14:27:48.411Z] <<< [apiv2][body] POST https://firebasedatabase.googleapis.com/v1beta/projects/my-todo-app-b05e9/locations/us-central1/instances {"name":"projects/332472536024/locations/us-central1/instances/my-todo-app-b05e9-default-rtdb","project":"projects/332472536024","databaseUrl":"https://my-todo-app-b05e9-default-rtdb.firebaseio.com","type":"DEFAULT_DATABASE","state":"ACTIVE"}
+[debug] [2023-02-10T14:27:48.413Z] >>> [apiv2][query] POST https://firebasedatabase.googleapis.com/v1beta/projects/my-todo-app-b05e9/locations/us-central1/instances databaseId=my-todo-app-b05e9-default-rtdb
+[debug] [2023-02-10T14:27:48.413Z] >>> [apiv2][body] POST https://firebasedatabase.googleapis.com/v1beta/projects/my-todo-app-b05e9/locations/us-central1/instances {"type":"default_database"}
+[debug] [2023-02-10T14:27:49.797Z] <<< [apiv2][status] POST https://firebasedatabase.googleapis.com/v1beta/projects/my-todo-app-b05e9/locations/us-central1/instances 200
+[debug] [2023-02-10T14:27:49.797Z] <<< [apiv2][body] POST https://firebasedatabase.googleapis.com/v1beta/projects/my-todo-app-b05e9/locations/us-central1/instances {"name":"projects/332472536024/locations/us-central1/instances/my-todo-app-b05e9-default-rtdb","project":"projects/332472536024","databaseUrl":"https://my-todo-app-b05e9-default-rtdb.firebaseio.com","type":"DEFAULT_DATABASE","state":"ACTIVE"}
+[info] 
+[info] Firebase Realtime Database Security Rules allow you to define how your data should be
+[info] structured and when your data can be read from and written to.
+[info] 
+[debug] [2023-02-10T14:27:54.775Z] >>> [apiv2][query] GET https://my-todo-app-b05e9-default-rtdb.firebaseio.com/.settings/rules.json [none]
+[debug] [2023-02-10T14:27:55.989Z] <<< [apiv2][status] GET https://my-todo-app-b05e9-default-rtdb.firebaseio.com/.settings/rules.json 200
+[debug] [2023-02-10T14:27:55.990Z] <<< [apiv2][body] GET https://my-todo-app-b05e9-default-rtdb.firebaseio.com/.settings/rules.json [stream]
+[info] ✔  Database Rules for my-todo-app-b05e9-default-rtdb have been written to database.rules.json. 
+[info] Future modifications to database.rules.json will update Realtime Database Security Rules when you run
+[info] firebase deploy.
+[info] 
+=== Hosting Setup
+[info] 
+[info] Your public directory is the folder (relative to your project directory) that
+[info] will contain Hosting assets to be uploaded with firebase deploy. If you
+[info] have a build process for your assets, use your build's output directory.
+[info] 
+[debug] [2023-02-10T14:28:11.951Z] >>> [apiv2][query] GET https://www.gstatic.com/firebasejs/releases.json [none]
+[debug] [2023-02-10T14:28:15.354Z] <<< [apiv2][status] GET https://www.gstatic.com/firebasejs/releases.json 200
+[debug] [2023-02-10T14:28:15.355Z] <<< [apiv2][body] GET https://www.gstatic.com/firebasejs/releases.json {"current":{"version":"9.17.1","browserURL":"https://www.gstatic.com/firebasejs/9.17.1/firebase.js","packageURL":"https://www.gstatic.com/firebasejs/9.17.1/firebase.tgz"},"live":{"version":"9.17","browserURL":"https://www.gstatic.com/firebasejs/live/9.17/firebase.js","packageURL":"https://www.gstatic.com/firebasejs/live/9.17/firebase.tgz"},"components":{"analytics":"https://www.gstatic.com/firebasejs/9.17.1/firebase-analytics.js","app":"https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js","app-check":"https://www.gstatic.com/firebasejs/9.17.1/firebase-app-check.js","auth":"https://www.gstatic.com/firebasejs/9.17.1/firebase-auth.js","auth/cordova":"https://www.gstatic.com/firebasejs/9.17.1/firebase-auth/cordova.js","auth/react-native":"https://www.gstatic.com/firebasejs/9.17.1/firebase-auth/react-native.js","functions":"https://www.gstatic.com/firebasejs/9.17.1/firebase-functions.js","firestore":"https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js","firestore/lite":"https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore/lite.js","installations":"https://www.gstatic.com/firebasejs/9.17.1/firebase-installations.js","storage":"https://www.gstatic.com/firebasejs/9.17.1/firebase-storage.js","performance":"https://www.gstatic.com/firebasejs/9.17.1/firebase-performance.js","remote-config":"https://www.gstatic.com/firebasejs/9.17.1/firebase-remote-config.js","messaging":"https://www.gstatic.com/firebasejs/9.17.1/firebase-messaging.js","messaging/sw":"https://www.gstatic.com/firebasejs/9.17.1/firebase-messaging/sw.js","database":"https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js","firestore.memory":"https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.memory.js"}}
+[info] ✔  Wrote public/index.html 
+[info] 
+[info] i  Detected a .git folder at /Users/umberto/Documents/prsl/my-todo-app 
+[info] i  Authorizing with GitHub to upload your service account to a GitHub repository's secrets store. 
+[info] 
+[info] Visit this URL on this device to log in:
+[info] https://github.com/login/oauth/authorize?client_id=89cf50f02ac6aaed3484&state=471798321&redirect_uri=http%3A%2F%2Flocalhost%3A9005&scope=read%3Auser%20repo%20public_repo
+[info] 
+[info] Waiting for authentication...
+[debug] [2023-02-10T14:30:04.291Z] >>> [apiv2][query] POST https://github.com/login/oauth/access_token [none]
+[debug] [2023-02-10T14:30:04.292Z] >>> [apiv2][body] POST https://github.com/login/oauth/access_token [stream]
+[debug] [2023-02-10T14:30:04.915Z] <<< [apiv2][status] POST https://github.com/login/oauth/access_token 200
+[debug] [2023-02-10T14:30:04.915Z] <<< [apiv2][body] POST https://github.com/login/oauth/access_token {"access_token":"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","token_type":"bearer","scope":"read:user,repo"}
+[debug] [2023-02-10T14:30:04.923Z] >>> [apiv2][query] GET https://api.github.com/user [none]
+[debug] [2023-02-10T14:30:05.620Z] <<< [apiv2][status] GET https://api.github.com/user 200
+[debug] [2023-02-10T14:30:05.620Z] <<< [apiv2][body] GET https://api.github.com/user {"login":"UmbertoB","id":33039895,"node_id":"MDQ6VXNlcjMzMDM5ODk1","avatar_url":"https://avatars.githubusercontent.com/u/33039895?v=4","gravatar_id":"","url":"https://api.github.com/users/UmbertoB","html_url":"https://github.com/UmbertoB","followers_url":"https://api.github.com/users/UmbertoB/followers","following_url":"https://api.github.com/users/UmbertoB/following{/other_user}","gists_url":"https://api.github.com/users/UmbertoB/gists{/gist_id}","starred_url":"https://api.github.com/users/UmbertoB/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/UmbertoB/subscriptions","organizations_url":"https://api.github.com/users/UmbertoB/orgs","repos_url":"https://api.github.com/users/UmbertoB/repos","events_url":"https://api.github.com/users/UmbertoB/events{/privacy}","received_events_url":"https://api.github.com/users/UmbertoB/received_events","type":"User","site_admin":false,"name":null,"company":"@ThoughtWorks","blog":"","location":"Recife","email":"umbertobarrosf@gmail.com","hireable":null,"bio":null,"twitter_username":null,"public_repos":24,"public_gists":1,"followers":19,"following":19,"created_at":"2017-10-23T19:52:44Z","updated_at":"2023-01-31T16:27:24Z","private_gists":1,"total_private_repos":8,"owned_private_repos":8,"disk_usage":61982,"collaborators":2,"two_factor_authentication":false,"plan":{"name":"free","space":976562499,"collaborators":0,"private_repos":10000}}
+[info] 
+[info] ✔  Success! Logged into GitHub as UmbertoB 
+[info] 
