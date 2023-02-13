@@ -29,7 +29,9 @@ export async function getStaticPaths() {
 }
 
 export const getStaticProps: any = async (context: any) => {
-  const res = await fetch(`${process.env.APP_URI}/api/todos?listId=${context.params.id}`);
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_APP_URI}/api/todos?listId=${context.params.id}`
+  );
   const { result } = await res.json();
   const { _id: listId, title: listTitle, todos: existingTodos } = result;
   return {
