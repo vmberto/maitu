@@ -4,10 +4,9 @@ import { getTodos, deleteTodo, updateTodo, createTodo } from '@/lib/mongo/todos'
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'GET') {
     try {
-      const { existingTodos, error } = await getTodos(req.query.listId);
+      const { result, error } = await getTodos(req.query.listId as string);
       if (error) throw error;
-
-      return res.status(200).json({ existingTodos });
+      return res.status(200).json({ result });
     } catch (error: any) {
       return res.status(400).json({ error: error.message });
     }

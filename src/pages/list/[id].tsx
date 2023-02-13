@@ -3,11 +3,18 @@ import { Todo, TodoList } from '@/types/TodoList';
 
 interface TodosProps {
   existingTodos: Todo[];
+  listTitle: string;
   listId: string;
 }
 
 export default function Todos(props: TodosProps) {
-  return <TodosWrapper existingTodos={props.existingTodos} listId={props.listId} />;
+  return (
+    <TodosWrapper
+      existingTodos={props.existingTodos}
+      listTitle={props.listTitle}
+      listId={props.listId}
+    />
+  );
 }
 
 export async function getStaticPaths() {
@@ -23,8 +30,9 @@ export async function getStaticPaths() {
 
 export const getStaticProps: any = async (context: any) => {
   const res = await fetch(`http://localhost:3000/api/todos?listId=${context.params.id}`);
-  const { existingTodos } = await res.json();
+  const { result } = await res.json();
+  const { _id: listId, title: listTitle, todos: existingTodos } = result;
   return {
-    props: { existingTodos, listId: context.params.id }
+    props: { existingTodos, listTitle, listId }
   };
 };

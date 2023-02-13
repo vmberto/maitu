@@ -1,8 +1,9 @@
 import clientPromise from '@/lib/mongo';
 import { Collection, Db } from 'mongodb';
-import { Todo } from '@/types/TodoList';
+import { Todo, TodoList } from '@/types/TodoList';
 
 let todos: Collection<Todo>;
+let todoLists: Collection<TodoList>;
 let db: Db;
 
 async function init() {
@@ -10,6 +11,7 @@ async function init() {
   try {
     const client = await clientPromise;
     db = await client.db('maitu');
+    todoLists = await db.collection('todo-lists');
     todos = await db.collection('todos');
   } catch (error) {
     throw error;
@@ -20,11 +22,23 @@ async function init() {
   await init();
 })();
 
-export async function getTodos(listId: any) {
+export async function getTodos(listId: string) {
   try {
     if (!todos) await init();
-    const result = await todos.aggregate([{ $match: { listId } }]).toArray();
-    return { existingTodos: result };
+    const result = await todoLists
+      .aggregate([
+        {
+          $lookup: {
+            from: 'todos',
+            localField: '_id',
+            foreignField: 'listId',
+            as: 'todos'
+          }
+        },
+        { $match: { _id: listId } }
+      ])
+      .tryNext();
+    return { result };
   } catch (error) {
     return { error };
   }

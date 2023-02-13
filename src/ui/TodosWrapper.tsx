@@ -8,9 +8,10 @@ import { Todo } from '@/types/TodoList';
 interface TodoListWrapperProps {
   existingTodos: Todo[];
   listId: string;
+  listTitle: string;
 }
 
-const TodosWrapper: FC<TodoListWrapperProps> = ({ existingTodos, listId }) => {
+const TodosWrapper: FC<TodoListWrapperProps> = ({ listTitle, existingTodos, listId }) => {
   const router = useRouter();
   const [currentTodo, setCurrentTodo] = useState({} as Todo);
   const [clickScreenFocusHandler, setClickScreenFocusHandler] = useState(false);
@@ -74,13 +75,13 @@ const TodosWrapper: FC<TodoListWrapperProps> = ({ existingTodos, listId }) => {
         <div className="max-w-xl my-0 mx-auto p-5">
           <div className="flex items-center">
             <ArrowLeftIcon
-              className="cursor-pointer h-8 w-8 mr-5"
+              className="relative z-10 cursor-pointer h-8 w-8 mr-5"
               onClick={async (e) => {
                 e.stopPropagation();
                 await router.push('..');
               }}
             />
-            <h1 className="text-4xl">Lista 1</h1>
+            <h1 className="text-4xl">{listTitle}</h1>
           </div>
 
           <div id="Todos" className="mt-10">
