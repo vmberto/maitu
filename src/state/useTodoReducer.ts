@@ -1,4 +1,5 @@
 import mongoObjectId from '@/lib/generateUniqueId';
+import { Todo } from '@/types/TodoList';
 
 export default function reducer(state: any, action: any) {
   switch (action.type) {
@@ -13,16 +14,38 @@ export default function reducer(state: any, action: any) {
         todos: todosCopy
       };
     }
-    case 'addTodo': {
-      const { todos } = state;
-      const todosCopy = [...todos];
-      const newId = mongoObjectId();
-      todosCopy.push({ _id: newId, title: '', listId: state.listId });
+    case 'onChangeNewTodo': {
+      const { e } = action;
+      const newTodoCopy = { ...state.newTodo };
+      const { value } = e.target;
+      newTodoCopy.title = value;
       return {
         ...state,
-        lastAction: 'add/update',
+        newTodo: newTodoCopy
+      };
+    }
+    case 'addTodo': {
+      const { todos } = state;
+      const { listId } = action;
+      const newTodoCopy = { _id: mongoObjectId(), listId, title: state.newTodo.title };
+      const todosCopy = [...todos];
+      todosCopy.push(newTodoCopy);
+      console.log(todosCopy);
+      fetch(`http://localhost:3000/api/todos`, {
+        method: 'POST',
+        body: JSON.stringify(newTodoCopy)
+      }).then(() => console.log(1));
+      return {
+        ...state,
         todosNumber: todosCopy.length,
-        todos: todosCopy
+        todos: todosCopy,
+        newTodo: { _id: '', title: '', listId: '' } as Todo
+      };
+    }
+    case 'isAddingTodo': {
+      return {
+        ...state,
+        isAddingTodo: action.value
       };
     }
     case 'removeTodo': {
@@ -31,7 +54,6 @@ export default function reducer(state: any, action: any) {
       const todosCopy = [...todos].filter((_, i) => i !== index);
       return {
         ...state,
-        lastAction: 'remove',
         todosNumber: todosCopy.length,
         todos: todosCopy
       };

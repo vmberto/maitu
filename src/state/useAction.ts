@@ -4,15 +4,18 @@ import { Todo } from '@/types/TodoList';
 
 interface InitialState {
   todosNumber: number;
-  lastAction: 'add/update' | 'remove';
   todos: Todo[];
   listId: string;
+  newTodo: Todo;
+  isAddingTodo: boolean;
 }
 
 const initialState = (todos: Todo[], listId: string) => ({
   listId,
   todos,
-  todosNumber: todos.length
+  todosNumber: todos.length,
+  newTodo: {} as Todo,
+  isAddingTodo: false
 });
 
 export const useActions = (todos: Todo[], listId: string) => {
@@ -20,7 +23,11 @@ export const useActions = (todos: Todo[], listId: string) => {
 
   const actions = {
     handleChange: (index: number) => (e: any) => dispatch({ type: 'onChangeTodo', index, e }),
-    handleAddTodo: () => dispatch({ type: 'addTodo' }),
+    handleChangeNewTodo: (e: any) => dispatch({ type: 'onChangeNewTodo', e }),
+    handleAddTodo: () => {
+      dispatch({ type: 'addTodo', listId });
+    },
+    handleIsAddingTodo: (value: boolean) => dispatch({ type: 'isAddingTodo', value }),
     handleRemoveTodo: (index: number) => () => dispatch({ type: 'removeTodo', index })
   };
 

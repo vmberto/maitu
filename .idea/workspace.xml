@@ -5,34 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.prettierrc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/lib/generateUniqueId.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/lib/mongo/index.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/lib/mongo/todo-lists.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/lib/mongo/todos.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/pages/_document.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/pages/add-list.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/pages/api/todo-lists/index.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/pages/api/todos/index.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/pages/list/[id].tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/types/Http.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/types/TodoList.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ui/TodosWrapper.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/next.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/next.config.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/_app.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/_app.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/hello.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/list/index.tsx" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/state/useAction.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/state/useAction.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/state/useTodoReducer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/state/useTodoReducer.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/styles/globals.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/styles/globals.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/ListDemo.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/ListDemo.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/ListTodos.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/firebase.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/tsconfig.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/TodosWrapper.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/TodosWrapper.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

@@ -16,14 +16,9 @@ const TodosWrapper: FC<TodoListWrapperProps> = ({ existingTodos, listId }) => {
   const [clickScreenFocusHandler, setClickScreenFocusHandler] = useState(false);
   const { actions, state } = useActions(existingTodos, listId);
 
-  useEffect(() => {
-    if (state.lastAction !== 'remove') {
-      document.getElementById(state.todos[state.todos.length - 1]._id)?.focus();
-    }
-  }, [state.todosNumber]);
-
   const handleClickScreen = () => {
-    actions.handleAddTodo();
+    actions.handleIsAddingTodo(true);
+    document.getElementById('new-todo')?.focus();
     setClickScreenFocusHandler(true);
   };
 
@@ -35,7 +30,7 @@ const TodosWrapper: FC<TodoListWrapperProps> = ({ existingTodos, listId }) => {
     if (e.key === 'Enter') {
       setClickScreenFocusHandler(true);
       e.preventDefault();
-      actions.handleAddTodo();
+      document.getElementById('new-todo')?.focus();
     }
   };
 
@@ -44,7 +39,8 @@ const TodosWrapper: FC<TodoListWrapperProps> = ({ existingTodos, listId }) => {
     setCurrentTodo(currentTodo);
   };
 
-  const handleInputBlur = (t: Todo, index: number) => async () => {
+  const updateTodo = (t: Todo, index: number) => async () => {
+    setClickScreenFocusHandler(false);
     if (t.title.length <= 0) {
       actions.handleRemoveTodo(index)();
       await fetch(`http://localhost:3000/api/todos`, {
@@ -61,6 +57,21 @@ const TodosWrapper: FC<TodoListWrapperProps> = ({ existingTodos, listId }) => {
     }
   };
 
+  const addTodo = () => {
+    setClickScreenFocusHandler(false);
+    if (state.newTodo?.title?.length > 0) {
+      actions.handleAddTodo();
+      document.getElementById('new-todo')?.focus();
+    }
+  };
+
+  const handleKeyPressAdd: KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addTodo();
+    }
+  };
+
   return (
     <>
       {clickScreenFocusHandler && (
@@ -71,9 +82,9 @@ const TodosWrapper: FC<TodoListWrapperProps> = ({ existingTodos, listId }) => {
           <div className="flex items-center">
             <ArrowLeftIcon
               className="cursor-pointer h-8 w-8 mr-5"
-              onClick={(e) => {
+              onClick={async (e) => {
                 e.stopPropagation();
-                router.push('..');
+                await router.push('..');
               }}
             />
             <h1 className="text-4xl">Lista 1</h1>
@@ -87,11 +98,19 @@ const TodosWrapper: FC<TodoListWrapperProps> = ({ existingTodos, listId }) => {
                 value={t.title}
                 onClick={(e) => e.stopPropagation()}
                 onKeyDown={handleKeyPress}
-                onBlur={handleInputBlur(t, index)}
+                onBlur={updateTodo(t, index)}
                 onFocus={handleInputFocus(t)}
                 onChange={actions.handleChange(index)}
               />
             ))}
+            <Input
+              id="new-todo"
+              value={state.newTodo.title}
+              onChange={actions.handleChangeNewTodo}
+              onFocus={handleInputFocus(state.newTodo)}
+              onBlur={addTodo}
+              onKeyDown={handleKeyPressAdd}
+            />
           </div>
         </div>
       </div>
