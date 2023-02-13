@@ -18,7 +18,7 @@ export default function Todos(props: TodosProps) {
 }
 
 export async function getStaticPaths() {
-  const res = await fetch(`${process.env.APP_URI}/api/todo-lists`);
+  const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URI}/api/todo-lists`);
   const { todoLists }: { todoLists: TodoList[] } = await res.json();
 
   const paths = todoLists.map((todo) => ({

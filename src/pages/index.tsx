@@ -4,7 +4,7 @@ import { TodoList } from '@/types/TodoList';
 import { FC } from 'react';
 
 export async function getStaticProps() {
-  const res = await fetch(`${process.env.APP_URI}/api/todo-lists`);
+  const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URI}/api/todo-lists`);
   const { todoLists } = await res.json();
   return {
     props: { todoLists }
