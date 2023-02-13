@@ -2,10 +2,10 @@ import { ListDemo } from '@/ui/ListDemo';
 import { useRouter } from 'next/router';
 import { TodoList } from '@/types/TodoList';
 import { FC } from 'react';
+import { getTodoLists } from '@/lib/mongo/todo-lists';
 
 export async function getStaticProps() {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URI}/api/todo-lists`);
-  const { todoLists } = await res.json();
+  const { todoLists } = await getTodoLists();
   return {
     props: { todoLists }
   };
