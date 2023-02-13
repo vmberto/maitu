@@ -1,5 +1,7 @@
 import TodosWrapper from '@/ui/TodosWrapper';
 import { Todo, TodoList } from '@/types/TodoList';
+import { getTodoLists } from '@/lib/mongo/todo-lists';
+import { getTodos } from '@/lib/mongo/todos';
 
 interface TodosProps {
   existingTodos: Todo[];
@@ -18,21 +20,19 @@ export default function Todos(props: TodosProps) {
 }
 
 export async function getStaticPaths() {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URI}/api/todo-lists`);
-  const { todoLists }: { todoLists: TodoList[] } = await res.json();
+  const { todoLists } = await getTodoLists();
 
-  const paths = todoLists.map((todo) => ({
-    params: { id: todo._id }
-  }));
+  if (todoLists) {
+    const paths = todoLists.map((todo) => ({
+      params: { id: todo._id }
+    }));
 
-  return { paths, fallback: false };
+    return { paths, fallback: false };
+  }
 }
 
 export const getStaticProps: any = async (context: any) => {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_APP_URI}/api/todos?listId=${context.params.id}`
-  );
-  const { result } = await res.json();
+  const { result } = await getTodos(context.params.id);
   const { _id: listId, title: listTitle, todos: existingTodos } = result;
   return {
     props: { existingTodos, listTitle, listId }

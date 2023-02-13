@@ -25,7 +25,7 @@ async function init() {
 export async function getTodos(listId: string) {
   try {
     if (!todos) await init();
-    const result = await todoLists
+    const result: any = await todoLists
       .aggregate([
         {
           $lookup: {

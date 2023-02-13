@@ -6,7 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/mongo/todo-lists.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/mongo/todo-lists.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/mongo/todos.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/mongo/todos.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/list/[id].tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/list/[id].tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
