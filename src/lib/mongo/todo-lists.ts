@@ -29,7 +29,7 @@ export async function getTodoLists() {
     }
     return { todoLists: result };
   } catch (error) {
-    return { error };
+    return { todoLists: [], error };
   }
 }
 

@@ -22,13 +22,11 @@ export default function Todos(props: TodosProps) {
 export async function getStaticPaths() {
   const { todoLists } = await getTodoLists();
 
-  if (todoLists) {
-    const paths = todoLists.map((todo) => ({
-      params: { id: todo._id }
-    }));
+  const paths = todoLists.map((todo) => ({
+    params: { id: todo._id }
+  }));
 
-    return { paths, fallback: false };
-  }
+  return { paths, fallback: false };
 }
 
 export const getStaticProps: any = async (context: any) => {
