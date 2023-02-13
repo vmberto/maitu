@@ -1,5 +1,4 @@
-import { useEffect, useRef, FC } from 'react';
-import React, { DetailedHTMLProps, TextareaHTMLAttributes } from 'react';
+import React, { DetailedHTMLProps, useEffect, useRef, FC, TextareaHTMLAttributes } from 'react';
 
 type ElProps<T, R> = DetailedHTMLProps<T, R>;
 

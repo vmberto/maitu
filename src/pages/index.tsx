@@ -1,6 +1,6 @@
-import { ListDemo } from '../ui/ListDemo';
+import { ListDemo } from '@/ui/ListDemo';
 import { useRouter } from 'next/router';
-import { TodoList } from '../types/TodoList';
+import { TodoList } from '@/types/TodoList';
 import { FC } from 'react';
 
 export async function getStaticProps() {

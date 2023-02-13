@@ -2,7 +2,7 @@ import { ArrowLeftIcon } from '@heroicons/react/24/solid';
 import { useRouter } from 'next/router';
 import Input from '@/components/Input';
 import { useActions } from '@/state/useAction';
-import { FC, KeyboardEventHandler, useEffect, useState } from 'react';
+import { FC, KeyboardEventHandler, useState } from 'react';
 import { Todo } from '@/types/TodoList';
 
 interface TodoListWrapperProps {

@@ -1,5 +1,5 @@
 import { useReducer } from 'react';
-import reducer from './useTodoReducer';
+import reducer from '@/state/useTodoReducer';
 import { Todo } from '@/types/TodoList';
 import mongoObjectId from '@/lib/generateUniqueId';
 
