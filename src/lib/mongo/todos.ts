@@ -30,14 +30,11 @@ export async function getTodos(listId: any) {
   }
 }
 
-export async function createOrUpdateTodo(todo: Todo) {
+export async function createTodo(todo: Todo) {
   try {
     if (!todos) await init();
 
-    const query = { _id: todo._id };
-    const update = { $set: todo };
-    const options = { upsert: true };
-    const result = await todos.updateOne(query, update, options);
+    const result = await todos.insertOne(todo);
 
     return { todo: result };
   } catch (error) {
@@ -45,11 +42,23 @@ export async function createOrUpdateTodo(todo: Todo) {
   }
 }
 
-export async function deleteTodo(todo: Todo) {
+export async function updateTodo(todo: Todo) {
   try {
     if (!todos) await init();
 
-    const result = await todos.deleteOne({ _id: todo._id });
+    const result = await todos.updateOne({ _id: todo._id }, { $set: todo });
+
+    return { todo: result };
+  } catch (error) {
+    return { error };
+  }
+}
+
+export async function deleteTodo({ _id }: { _id: string }) {
+  try {
+    if (!todos) await init();
+
+    const result = await todos.deleteOne({ _id });
 
     return { todo: result };
   } catch (error) {

@@ -17,7 +17,6 @@ const TodosWrapper: FC<TodoListWrapperProps> = ({ existingTodos, listId }) => {
   const { actions, state } = useActions(existingTodos, listId);
 
   const handleClickScreen = () => {
-    actions.handleIsAddingTodo(true);
     document.getElementById('new-todo')?.focus();
     setClickScreenFocusHandler(true);
   };
@@ -35,6 +34,7 @@ const TodosWrapper: FC<TodoListWrapperProps> = ({ existingTodos, listId }) => {
   };
 
   const handleInputFocus = (t: Todo) => async () => {
+    setClickScreenFocusHandler(true);
     const currentTodo = { ...t };
     setCurrentTodo(currentTodo);
   };
@@ -42,17 +42,10 @@ const TodosWrapper: FC<TodoListWrapperProps> = ({ existingTodos, listId }) => {
   const updateTodo = (t: Todo, index: number) => async () => {
     setClickScreenFocusHandler(false);
     if (t.title.length <= 0) {
-      actions.handleRemoveTodo(index)();
-      await fetch(`http://localhost:3000/api/todos`, {
-        method: 'DELETE',
-        body: JSON.stringify(t)
-      });
+      await actions.handleRemoveTodo(t._id, index);
     } else {
       if (t.title !== currentTodo.title) {
-        await fetch(`http://localhost:3000/api/todos`, {
-          method: 'POST',
-          body: JSON.stringify(t)
-        });
+        await actions.handleUpdateTodo(t);
       }
     }
   };

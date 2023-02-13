@@ -26,26 +26,13 @@ export default function reducer(state: any, action: any) {
     }
     case 'addTodo': {
       const { todos } = state;
-      const { listId } = action;
-      const newTodoCopy = { _id: mongoObjectId(), listId, title: state.newTodo.title };
       const todosCopy = [...todos];
-      todosCopy.push(newTodoCopy);
-      console.log(todosCopy);
-      fetch(`http://localhost:3000/api/todos`, {
-        method: 'POST',
-        body: JSON.stringify(newTodoCopy)
-      }).then(() => console.log(1));
+      todosCopy.push(action.newTodoComplete);
       return {
         ...state,
         todosNumber: todosCopy.length,
         todos: todosCopy,
         newTodo: { _id: '', title: '', listId: '' } as Todo
-      };
-    }
-    case 'isAddingTodo': {
-      return {
-        ...state,
-        isAddingTodo: action.value
       };
     }
     case 'removeTodo': {
