@@ -18,7 +18,7 @@ export default function Todos(props: TodosProps) {
 }
 
 export async function getStaticPaths() {
-  const res = await fetch(`http://localhost:3000/api/todo-lists`);
+  const res = await fetch(`${process.env.APP_URI}/api/todo-lists`);
   const { todoLists }: { todoLists: TodoList[] } = await res.json();
 
   const paths = todoLists.map((todo) => ({
@@ -29,7 +29,7 @@ export async function getStaticPaths() {
 }
 
 export const getStaticProps: any = async (context: any) => {
-  const res = await fetch(`http://localhost:3000/api/todos?listId=${context.params.id}`);
+  const res = await fetch(`${process.env.APP_URI}/api/todos?listId=${context.params.id}`);
   const { result } = await res.json();
   const { _id: listId, title: listTitle, todos: existingTodos } = result;
   return {
