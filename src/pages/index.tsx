@@ -1,11 +1,11 @@
 import { ListDemo } from '@/ui/ListDemo';
 import { useRouter } from 'next/router';
 import { TodoList } from '@/types/TodoList';
-import { FC, Suspense } from 'react';
+import { FC } from 'react';
+import { getTodoLists } from '@/lib/mongo/todo-lists';
 
 export async function getStaticProps() {
-  const res = await fetch(`http://localhost:3000/api/todo-lists`);
-  const { todoLists } = await res.json();
+  const { todoLists } = await getTodoLists();
   return {
     props: { todoLists }
   };
@@ -18,18 +18,16 @@ interface AppProps {
 const Home: FC<AppProps> = ({ todoLists }) => {
   const router = useRouter();
   return (
-    <Suspense fallback={<div>Loading</div>}>
-      <div className="max-w-3xl my-0 mx-auto p-5">
-        {todoLists &&
-          todoLists.map((list) => (
-            <ListDemo
-              key={list._id}
-              title={list.title}
-              onClick={() => router.push(`/list/${list._id}`)}
-            />
-          ))}
-      </div>
-    </Suspense>
+    <div className="max-w-3xl my-0 mx-auto p-5">
+      {todoLists &&
+        todoLists.map((list) => (
+          <ListDemo
+            key={list._id}
+            title={list.title}
+            onClick={() => router.push(`/list/${list._id}`)}
+          />
+        ))}
+    </div>
   );
 };
 
