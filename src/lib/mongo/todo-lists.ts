@@ -24,12 +24,10 @@ export async function getTodoLists() {
   try {
     if (!todoLists) await init();
     const result = await todoLists.find().limit(20).toArray();
-    if (!result) {
-      return { todoLists: [] };
-    }
+
     return { todoLists: result };
   } catch (error) {
-    return { todoLists: [], error };
+    return { error };
   }
 }
 
