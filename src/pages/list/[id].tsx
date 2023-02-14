@@ -2,6 +2,7 @@ import TodosWrapper from '@/ui/TodosWrapper';
 import { getTodoLists } from '@/lib/mongo/todo-lists';
 import { getTodos } from '@/lib/mongo/todos';
 import { Todo } from '@/types/TodoList';
+import { Suspense } from 'react';
 
 interface TodosProps {
   existingTodos: Todo[];

@@ -1,7 +1,7 @@
 import { ListDemo } from '@/ui/ListDemo';
 import { useRouter } from 'next/router';
 import { TodoList } from '@/types/TodoList';
-import { FC } from 'react';
+import { FC, Suspense } from 'react';
 
 export async function getStaticProps() {
   const res = await fetch(`http://localhost:3000/api/todo-lists`);
@@ -18,7 +18,7 @@ interface AppProps {
 const Home: FC<AppProps> = ({ todoLists }) => {
   const router = useRouter();
   return (
-    <div>
+    <Suspense fallback={<div>Loading</div>}>
       <div className="max-w-3xl my-0 mx-auto p-5">
         {todoLists &&
           todoLists.map((list) => (
@@ -29,7 +29,7 @@ const Home: FC<AppProps> = ({ todoLists }) => {
             />
           ))}
       </div>
-    </div>
+    </Suspense>
   );
 };
 
