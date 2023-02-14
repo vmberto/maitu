@@ -6,7 +6,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       const { todoLists, error } = await getTodoLists();
       if (error) throw error;
-
       return res.status(200).json({ todoLists });
     } catch (error: any) {
       return res.status(400).json({ error: error.message });

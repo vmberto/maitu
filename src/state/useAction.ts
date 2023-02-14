@@ -3,19 +3,20 @@ import reducer from '@/state/useTodoReducer';
 import { Todo } from '@/types/TodoList';
 import mongoObjectId from '@/lib/generateUniqueId';
 
-interface InitialState {
+export interface TodosState {
   todosNumber: number;
   todos: Todo[];
   listId: string;
   newTodo: Todo;
 }
 
-const initialState = (todos: Todo[], listId: string) => ({
-  listId,
-  todos,
-  todosNumber: todos.length,
-  newTodo: {} as Todo
-});
+const initialState = (todos: Todo[], listId: string) =>
+  ({
+    listId,
+    todos,
+    todosNumber: todos.length,
+    newTodo: {} as Todo
+  } as TodosState);
 
 export const useActions = (todos: Todo[], listId: string) => {
   const [state, dispatch] = useReducer(reducer, initialState(todos, listId));
@@ -46,7 +47,5 @@ export const useActions = (todos: Todo[], listId: string) => {
     }
   };
 
-  const re: { state: InitialState; actions: any } = { state, actions };
-
-  return re;
+  return { state, actions };
 };

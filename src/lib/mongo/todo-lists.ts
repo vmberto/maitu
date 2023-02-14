@@ -23,7 +23,7 @@ async function init() {
 export async function getTodoLists() {
   try {
     if (!todoLists) await init();
-    const result = await todoLists.find().limit(20).toArray();
+    const result = (await todoLists.find().limit(20).toArray()) || [];
 
     return { todoLists: result };
   } catch (error) {

@@ -1,6 +1,8 @@
 import { Todo } from '@/types/TodoList';
+import { TodosState } from '@/state/useAction';
+import { ReducerAction } from 'react';
 
-export default function reducer(state: any, action: any) {
+export default function reducer(state: TodosState, action: any) {
   switch (action.type) {
     case 'onChangeTodo': {
       const { todos } = state;
