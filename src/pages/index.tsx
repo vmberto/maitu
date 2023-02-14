@@ -6,9 +6,20 @@ import { getTodoLists } from '@/lib/mongo/todo-lists';
 
 export async function getStaticProps() {
   const { todoLists } = await getTodoLists();
-  return {
-    props: { todoLists }
-  };
+  if (todoLists) {
+    return {
+      props: {
+        todoLists: todoLists.map((item) => {
+          return {
+            ...item,
+            _id: item._id.toString()
+          };
+        })
+      }
+    };
+  } else {
+    return { props: {} };
+  }
 }
 
 interface AppProps {
