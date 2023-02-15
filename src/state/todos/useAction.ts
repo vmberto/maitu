@@ -3,6 +3,7 @@ import reducer from '@/state/todos/useTodoReducer';
 import { Todo } from '@/types/main';
 import mongoObjectId from '@/lib/generateUniqueId';
 import { GenericEvent } from '@/types/events';
+import axios from 'axios';
 
 export interface TodosState {
   todosNumber: number;
@@ -28,24 +29,15 @@ export const useActions = (todos: Todo[], listId: string) => {
     handleChangeNewTodo: (e: GenericEvent) => dispatch({ type: 'onChangeNewTodo', e }),
     handleAddTodo: async () => {
       const newTodoComplete = { _id: mongoObjectId(), listId, title: state.newTodo.title };
-      await fetch(`${process.env.NEXT_PUBLIC_APP_URI}/api/todos`, {
-        method: 'POST',
-        body: JSON.stringify(newTodoComplete)
-      });
       dispatch({ type: 'addTodo', newTodoComplete });
+      await axios.post(`${process.env.NEXT_PUBLIC_APP_URI}/api/todos`, newTodoComplete);
     },
     handleRemoveTodo: async (_id: string, index: number) => {
-      await fetch(`${process.env.NEXT_PUBLIC_APP_URI}/api/todos`, {
-        method: 'DELETE',
-        body: JSON.stringify({ _id })
-      });
       dispatch({ type: 'removeTodo', index });
+      await axios.delete(`${process.env.NEXT_PUBLIC_APP_URI}/api/todos?listId=${_id}`);
     },
     handleUpdateTodo: async (t: Todo) => {
-      await fetch(`${process.env.NEXT_PUBLIC_APP_URI}/api/todos`, {
-        method: 'PUT',
-        body: JSON.stringify(t)
-      });
+      await axios.put(`${process.env.NEXT_PUBLIC_APP_URI}/api/todos`, t);
     }
   };
 

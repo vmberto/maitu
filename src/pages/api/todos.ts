@@ -14,7 +14,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   if (req.method === 'POST') {
     try {
-      const { todo, error } = await createTodo(JSON.parse(req.body));
+      const { todo, error } = await createTodo(req.body);
       if (error) throw error;
 
       return res.status(200).json({ todo });
@@ -25,7 +25,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   if (req.method === 'PUT') {
     try {
-      const { todo, error } = await updateTodo(JSON.parse(req.body));
+      const { todo, error } = await updateTodo(req.body);
       if (error) throw error;
 
       return res.status(200).json({ todo });
@@ -36,7 +36,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   if (req.method === 'DELETE') {
     try {
-      const { todo, error } = await deleteTodo(JSON.parse(req.body));
+      const { todo, error } = await deleteTodo(req.query.listId as string);
       if (error) throw error;
 
       return res.status(200).json({ todo });
