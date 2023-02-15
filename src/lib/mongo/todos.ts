@@ -1,9 +1,9 @@
 import clientPromise from '@/lib/mongo';
 import { Collection, Db } from 'mongodb';
-import { Todo, TodoList } from '@/types/TodoList';
+import { Todo, Main } from '@/types/main';
 
 let todos: Collection<Todo>;
-let todoLists: Collection<TodoList>;
+let todoLists: Collection<Main>;
 let db: Db;
 
 async function init() {
@@ -24,8 +24,8 @@ async function init() {
 
 export async function getTodos(listId: string) {
   try {
-    if (!todos) await init();
-    const result: any = await todoLists
+    if (!todoLists) await init();
+    const result = await todoLists
       .aggregate([
         {
           $lookup: {

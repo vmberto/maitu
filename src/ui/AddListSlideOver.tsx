@@ -1,6 +1,6 @@
 import { FC, useState } from 'react';
 import { GenericEvent, InputChangeEventHandler } from '@/types/events';
-import { TodoList } from '@/types/TodoList';
+import { Main } from '@/types/main';
 import mongoObjectId from '@/lib/generateUniqueId';
 
 const styles = {
@@ -20,7 +20,7 @@ const AddListModal: FC<AddListSlideOver> = ({ setOpen }) => {
     setListTitle(value);
   };
   const handleSubmit = async () => {
-    const newList: TodoList = { _id: mongoObjectId(), title: listTitle, dateAdded: new Date() };
+    const newList: Main = { _id: mongoObjectId(), title: listTitle, dateAdded: new Date() };
     await fetch(`${process.env.NEXT_PUBLIC_APP_URI}/api/todo-lists`, {
       method: 'POST',
       body: JSON.stringify(newList)

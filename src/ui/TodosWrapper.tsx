@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import TodoInput from '@/components/TodoInput';
 import { useActions } from '@/state/useAction';
 import { FC, KeyboardEventHandler, useState } from 'react';
-import { Todo } from '@/types/TodoList';
+import { Todo } from '@/types/main';
 
 interface TodoListWrapperProps {
   existingTodos: Todo[];
@@ -51,27 +51,28 @@ const TodosWrapper: FC<TodoListWrapperProps> = ({ listTitle, existingTodos, list
     }
   };
 
-  const addTodo = () => {
+  const addTodo = async () => {
     setClickScreenFocusHandler(false);
     if (state.newTodo?.title?.length > 0) {
-      actions.handleAddTodo();
+      await actions.handleAddTodo();
       document.getElementById('new-todo')?.focus();
     }
   };
 
-  const handleKeyPressAdd: KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
+  const handleKeyPressAdd: KeyboardEventHandler<HTMLTextAreaElement> = async (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      addTodo();
+      await addTodo();
+      console.log(1);
     }
   };
 
   return (
-    <>
+    <div className="relative">
       {clickScreenFocusHandler && (
-        <div className="absolute w-full h-full" onClick={removeFocus}></div>
+        <div className="absolute w-full h-screen" onClick={removeFocus}></div>
       )}
-      <div className="h-screen" onClick={handleClickScreen}>
+      <div className="min-h-screen" onClick={handleClickScreen}>
         <div className="max-w-xl my-0 mx-auto p-5">
           <div className="flex items-center">
             <ArrowLeftIcon
@@ -84,7 +85,7 @@ const TodosWrapper: FC<TodoListWrapperProps> = ({ listTitle, existingTodos, list
             <h1 className="text-4xl">{listTitle}</h1>
           </div>
 
-          <div id="Todos" className="mt-10">
+          <div id="Todos" className="mt-10 mb-60">
             {state.todos.map((t, index) => (
               <TodoInput
                 key={t._id}
@@ -108,7 +109,7 @@ const TodosWrapper: FC<TodoListWrapperProps> = ({ listTitle, existingTodos, list
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

@@ -1,7 +1,8 @@
 import { useReducer } from 'react';
 import reducer from '@/state/useTodoReducer';
-import { Todo } from '@/types/TodoList';
+import { Todo } from '@/types/main';
 import mongoObjectId from '@/lib/generateUniqueId';
+import { GenericEvent } from '@/types/events';
 
 export interface TodosState {
   todosNumber: number;
@@ -22,8 +23,9 @@ export const useActions = (todos: Todo[], listId: string) => {
   const [state, dispatch] = useReducer(reducer, initialState(todos, listId));
 
   const actions = {
-    handleChange: (index: number) => (e: any) => dispatch({ type: 'onChangeTodo', index, e }),
-    handleChangeNewTodo: (e: any) => dispatch({ type: 'onChangeNewTodo', e }),
+    handleChange: (index: number) => (e: GenericEvent) =>
+      dispatch({ type: 'onChangeTodo', index, e }),
+    handleChangeNewTodo: (e: GenericEvent) => dispatch({ type: 'onChangeNewTodo', e }),
     handleAddTodo: async () => {
       const newTodoComplete = { _id: mongoObjectId(), listId, title: state.newTodo.title };
       await fetch(`${process.env.NEXT_PUBLIC_APP_URI}/api/todos`, {

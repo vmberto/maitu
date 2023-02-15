@@ -1,4 +1,4 @@
-import { Todo } from '@/types/TodoList';
+import { Todo } from '@/types/main';
 import { TodosState } from '@/state/useAction';
 import { ReducerAction } from 'react';
 

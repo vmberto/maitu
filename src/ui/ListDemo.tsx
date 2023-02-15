@@ -11,7 +11,7 @@ export const ListDemo = ({ onClick, title }: ListDemoProps) => {
       className="my-2.5
         transition-all cursor-pointer
          border-l-detail border-primary
-         bg-white p-6 rounded-md font-semibold items-center
+         bg-white p-4 rounded-md font-semibold items-center
          flex align-middle hover:border-l-detail-hover shadow-sm">
       <h1>{title}</h1>
       <div className="ml-auto">

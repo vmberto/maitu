@@ -1,13 +1,13 @@
 import { ListDemo } from '@/ui/ListDemo';
 import { useRouter } from 'next/router';
-import { TodoList } from '@/types/TodoList';
+import { Main } from '@/types/main';
 import { useState } from 'react';
 import { getTodoLists } from '@/lib/mongo/todo-lists';
 import SlideOver from '@/components/SlideOver';
 import AddListSlideOver from '@/ui/AddListSlideOver';
 
 interface AppProps {
-  todoLists: TodoList[];
+  todoLists: Main[];
 }
 
 export default function Home({ todoLists }: AppProps) {

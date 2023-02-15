@@ -1,8 +1,6 @@
 import TodosWrapper from '@/ui/TodosWrapper';
-import { getTodoLists } from '@/lib/mongo/todo-lists';
 import { getTodos } from '@/lib/mongo/todos';
-import { Todo } from '@/types/TodoList';
-import { Suspense } from 'react';
+import { Todo } from '@/types/main';
 
 interface TodosProps {
   existingTodos: Todo[];
@@ -22,8 +20,14 @@ export default function Todos(props: TodosProps) {
 
 export async function getServerSideProps(context: any) {
   const { result } = await getTodos(context.params.id);
-  const { _id: listId, title: listTitle, todos: existingTodos } = result;
-  return {
-    props: { existingTodos, listTitle, listId }
-  };
+  if (result) {
+    const { _id: listId, title: listTitle, todos: existingTodos } = result;
+    return {
+      props: { existingTodos, listTitle, listId }
+    };
+  } else {
+    return {
+      props: { existingTodos: [], listTitle: '', listId: '' }
+    };
+  }
 }
