@@ -36,7 +36,6 @@ export const ListDemo = ({ _id, title }: ListDemoProps) => {
                 onClick={handleClick}
                 className="inline-flex w-full justify-center
                 p-1 text-sm font-medium text-gray-700 hover:bg-gray-200
-                focus:outline-none focus:ring-2 focus:ring-indigo-500
                 focus:ring-offset-2 focus:ring-offset-gray-200 rounded-full">
                 <Bars3BottomRightIcon className="h-6 w-6" />
               </Menu.Button>
