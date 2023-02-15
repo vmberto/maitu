@@ -1,6 +1,6 @@
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
 import { useRouter } from 'next/router';
-import Input from '@/components/Input';
+import TodoInput from '@/components/TodoInput';
 import { useActions } from '@/state/useAction';
 import { FC, KeyboardEventHandler, useState } from 'react';
 import { Todo } from '@/types/TodoList';
@@ -86,7 +86,7 @@ const TodosWrapper: FC<TodoListWrapperProps> = ({ listTitle, existingTodos, list
 
           <div id="Todos" className="mt-10">
             {state.todos.map((t, index) => (
-              <Input
+              <TodoInput
                 key={t._id}
                 id={t._id}
                 value={t.title}
@@ -97,7 +97,7 @@ const TodosWrapper: FC<TodoListWrapperProps> = ({ listTitle, existingTodos, list
                 onChange={actions.handleChange(index)}
               />
             ))}
-            <Input
+            <TodoInput
               id="new-todo"
               value={state.newTodo.title}
               onChange={actions.handleChangeNewTodo}

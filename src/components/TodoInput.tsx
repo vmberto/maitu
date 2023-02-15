@@ -5,7 +5,7 @@ type ElProps<T, R> = DetailedHTMLProps<T, R>;
 export interface TextareaProps
   extends ElProps<TextareaHTMLAttributes<HTMLTextAreaElement>, HTMLTextAreaElement> {}
 
-const Input: FC<TextareaProps> = (props) => {
+const TodoInput: FC<TextareaProps> = (props) => {
   const textareaRef = useRef({} as HTMLTextAreaElement);
 
   useEffect(() => {
@@ -24,7 +24,6 @@ const Input: FC<TextareaProps> = (props) => {
                     bg-transparent
                     overflow-hidden
                     resize-none
-                    border-gray-300
                     text-lg
                     px-2 py-4
                     outline-0
@@ -34,4 +33,4 @@ const Input: FC<TextareaProps> = (props) => {
   );
 };
 
-export default Input;
+export default TodoInput;

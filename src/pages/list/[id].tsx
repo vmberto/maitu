@@ -20,18 +20,7 @@ export default function Todos(props: TodosProps) {
   );
 }
 
-export async function getStaticPaths() {
-  const { todoLists } = await getTodoLists();
-  if (todoLists) {
-    const paths = todoLists.map((todo) => ({
-      params: { id: todo._id }
-    }));
-    return { paths, fallback: false };
-  }
-  return { paths: [], fallback: false };
-}
-
-export async function getStaticProps(context: any) {
+export async function getServerSideProps(context: any) {
   const { result } = await getTodos(context.params.id);
   const { _id: listId, title: listTitle, todos: existingTodos } = result;
   return {
