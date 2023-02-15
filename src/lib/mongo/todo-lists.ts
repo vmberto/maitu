@@ -1,8 +1,8 @@
 import clientPromise from '@/lib/mongo';
 import { Collection, Db } from 'mongodb';
-import { Main } from '@/types/main';
+import { TodoList } from '@/types/main';
 
-let todoLists: Collection<Main>;
+let todoLists: Collection<TodoList>;
 let db: Db;
 
 async function init() {
@@ -31,10 +31,21 @@ export async function getTodoLists() {
   }
 }
 
-export async function createTodoList(todoList: Main) {
+export async function createTodoList(newTodoList: TodoList) {
   try {
     if (!todoLists) await init();
-    const result = await todoLists.insertOne(todoList);
+    const result = await todoLists.insertOne(newTodoList);
+
+    return { todoList: result };
+  } catch (error) {
+    return { error };
+  }
+}
+
+export async function deleteTodoList(_id: string) {
+  try {
+    if (!todoLists) await init();
+    const result = await todoLists.deleteOne({ _id });
 
     return { todoList: result };
   } catch (error) {

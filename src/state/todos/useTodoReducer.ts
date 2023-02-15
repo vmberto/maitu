@@ -1,5 +1,5 @@
 import { Todo } from '@/types/main';
-import { TodosState } from '@/state/useAction';
+import { TodosState } from '@/state/todos/useAction';
 import { ReducerAction } from 'react';
 
 export default function reducer(state: TodosState, action: any) {

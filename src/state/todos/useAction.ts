@@ -1,5 +1,5 @@
 import { useReducer } from 'react';
-import reducer from '@/state/useTodoReducer';
+import reducer from '@/state/todos/useTodoReducer';
 import { Todo } from '@/types/main';
 import mongoObjectId from '@/lib/generateUniqueId';
 import { GenericEvent } from '@/types/events';

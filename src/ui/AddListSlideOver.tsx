@@ -1,7 +1,8 @@
-import { FC, useState } from 'react';
+import { FC, useContext, useState } from 'react';
 import { GenericEvent, InputChangeEventHandler } from '@/types/events';
-import { Main } from '@/types/main';
+import { TodoList } from '@/types/main';
 import mongoObjectId from '@/lib/generateUniqueId';
+import { TodoListsContext } from '@/state/todo-lists/TodoListsProvider';
 
 const styles = {
   inputField:
@@ -14,17 +15,15 @@ interface AddListSlideOver {
 
 const AddListModal: FC<AddListSlideOver> = ({ setOpen }) => {
   const [listTitle, setListTitle] = useState('');
+  const { handleAddTodoList } = useContext(TodoListsContext);
 
   const handleInputChange = (e: GenericEvent) => {
     const { value } = e.target;
     setListTitle(value);
   };
   const handleSubmit = async () => {
-    const newList: Main = { _id: mongoObjectId(), title: listTitle, dateAdded: new Date() };
-    await fetch(`${process.env.NEXT_PUBLIC_APP_URI}/api/todo-lists`, {
-      method: 'POST',
-      body: JSON.stringify(newList)
-    });
+    const newList: TodoList = { _id: mongoObjectId(), title: listTitle, dateAdded: new Date() };
+    handleAddTodoList(newList);
     setOpen(false);
   };
 

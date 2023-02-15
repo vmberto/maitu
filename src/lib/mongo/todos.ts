@@ -1,9 +1,9 @@
 import clientPromise from '@/lib/mongo';
 import { Collection, Db } from 'mongodb';
-import { Todo, Main } from '@/types/main';
+import { Todo, TodoList } from '@/types/main';
 
 let todos: Collection<Todo>;
-let todoLists: Collection<Main>;
+let todoLists: Collection<TodoList>;
 let db: Db;
 
 async function init() {
@@ -68,7 +68,7 @@ export async function updateTodo(todo: Todo) {
   }
 }
 
-export async function deleteTodo({ _id }: { _id: string }) {
+export async function deleteTodo(_id: string) {
   try {
     if (!todos) await init();
 

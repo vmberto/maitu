@@ -2,9 +2,7 @@ const defaultTheme = require('tailwindcss/defaultTheme');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: [
-    "./src/**/*.{ts,tsx}",
-  ],
+  content: ['./src/**/*.{ts,tsx}'],
   theme: {
     colors: ({ colors }) => ({
       primary: '#3664FF',
@@ -34,18 +32,18 @@ module.exports = {
       purple: colors.purple,
       fuchsia: colors.fuchsia,
       pink: colors.pink,
-      rose: colors.rose,
+      rose: colors.rose
     }),
     borderWidth: {
       ...defaultTheme.borderWidth,
-      'detail': '24px',
-      'detail-hover': '48px',
+      detail: '18px',
+      'detail-hover': '36px'
     },
     extend: {
       fontFamily: {
-        sans: ['Inter var', ...defaultTheme.fontFamily.sans],
-      },
-    },
+        sans: ['Inter var', ...defaultTheme.fontFamily.sans]
+      }
+    }
   },
-  plugins: [],
-}
+  plugins: []
+};
