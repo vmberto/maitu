@@ -7,7 +7,7 @@ export class MySubClassedDexie extends Dexie {
   constructor() {
     super('maitu');
     this.version(1).stores({
-      todoLists: '++_id, title, dateAdded' // Primary key and indexed props
+      todoLists: '++_id, title, dateAdded'
     });
   }
 }
