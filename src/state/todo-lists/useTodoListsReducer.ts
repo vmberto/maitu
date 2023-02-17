@@ -2,6 +2,12 @@ import { TodoListsState } from '@/state/todo-lists/TodoListsProvider';
 
 export default function reducer(state: TodoListsState, action: any) {
   switch (action.type) {
+    case 'setTodoLists': {
+      return {
+        ...state,
+        todoLists: action.todoLists
+      };
+    }
     case 'onAddTodoList': {
       const { todoLists } = state;
       const { newTodoList } = action;

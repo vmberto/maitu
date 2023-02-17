@@ -1,4 +1,4 @@
-import { FC, useContext, useState } from 'react';
+import { FC, useContext, useEffect, useState } from 'react';
 import { ListDemo } from '@/components/ListDemo';
 import { TodoListsContext } from '@/state/todo-lists/TodoListsProvider';
 import { Menu } from '@headlessui/react';
@@ -6,6 +6,8 @@ import { TodoList } from '@/types/main';
 import { GenericEvent } from '@/types/events';
 import AddListSlideOver from '@/ui/AddListSlideOver';
 import SlideOver from '@/components/SlideOver';
+import { useLiveQuery } from 'dexie-react-hooks';
+import { db } from '@/lib/local-data';
 
 const TodoListsWrapper: FC = () => {
   const [open, setOpen] = useState(false);

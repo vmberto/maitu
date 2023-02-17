@@ -1,5 +1,5 @@
 import { TodoList } from '@/types/main';
-import { createContext, FC, useReducer } from 'react';
+import { createContext, FC, useEffect, useReducer } from 'react';
 import reducer from '@/state/todo-lists/useTodoListsReducer';
 import axios from 'axios';
 
@@ -24,6 +24,8 @@ interface TodoListsProviderProps {
 }
 const TodoListsProvider: FC<TodoListsProviderProps> = ({ todoLists, children }) => {
   const [state, dispatch] = useReducer(reducer, initialState(todoLists));
+
+  useEffect(() => dispatch({ type: 'setTodoLists', todoLists }), [todoLists]);
 
   const value: TodoListsState & TodoListsActions = {
     todoLists: state.todoLists,

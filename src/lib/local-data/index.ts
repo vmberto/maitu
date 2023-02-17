@@ -1,0 +1,15 @@
+import Dexie, { Table } from 'dexie';
+import { TodoList } from '@/types/main';
+
+export class MySubClassedDexie extends Dexie {
+  todoLists!: Table<TodoList>;
+
+  constructor() {
+    super('maitu');
+    this.version(1).stores({
+      todoLists: '++_id, title, dateAdded' // Primary key and indexed props
+    });
+  }
+}
+
+export const db = new MySubClassedDexie();

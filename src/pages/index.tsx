@@ -1,18 +1,28 @@
 import { TodoList } from '@/types/main';
-import { useState } from 'react';
 import { getTodoLists } from '@/lib/mongo/todo-lists';
-import SlideOver from '@/components/SlideOver';
-import AddListSlideOver from '@/ui/AddListSlideOver';
-import TodoListsProvider from '@/state/todo-lists/TodoListsProvider';
+import TodoListsProvider, { TodoListsState } from '@/state/todo-lists/TodoListsProvider';
 import TodoListsWrapper from '@/ui/TodoListsWrapper';
+import { useEffect, useState } from 'react';
+import { db } from '@/lib/local-data';
 
 interface AppProps {
   todoLists: TodoList[];
 }
 
 export default function Home({ todoLists }: AppProps) {
+  const [todoListsLocal, setTodoListsLocal] = useState([] as TodoList[]);
+  useEffect(() => {
+    const fetchData = async () => {
+      await db.todoLists.bulkPut(todoLists);
+      const tl = await db.todoLists.toArray();
+      setTodoListsLocal(tl);
+    };
+
+    fetchData().catch(console.error);
+  }, []);
+
   return (
-    <TodoListsProvider todoLists={todoLists}>
+    <TodoListsProvider todoLists={todoListsLocal}>
       <TodoListsWrapper />
     </TodoListsProvider>
   );
