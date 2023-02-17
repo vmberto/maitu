@@ -2,6 +2,7 @@ import { TodoList } from '@/types/main';
 import { createContext, FC, useEffect, useReducer } from 'react';
 import reducer from '@/state/todo-lists/useTodoListsReducer';
 import axios from 'axios';
+import { db } from '@/lib/local-data';
 
 export interface TodoListsState {
   todoLists: TodoList[];
@@ -31,6 +32,7 @@ const TodoListsProvider: FC<TodoListsProviderProps> = ({ todoLists, children }) 
     todoLists: state.todoLists,
     handleAddTodoList: async (newTodoList) => {
       dispatch({ type: 'onAddTodoList', newTodoList });
+      await db.todoLists.add(newTodoList);
       await axios.post(`${process.env.NEXT_PUBLIC_APP_URI}/api/todo-lists`, newTodoList);
     },
     handleDeleteTodoList: async (todoList) => {
