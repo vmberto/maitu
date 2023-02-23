@@ -1,13 +1,15 @@
 import Dexie, { Table } from 'dexie';
-import { TodoList } from '@/types/main';
+import { Todo, TodoList } from '@/types/main';
 
 export class MySubClassedDexie extends Dexie {
   todoLists!: Table<TodoList>;
+  todos!: Table<Todo>;
 
   constructor() {
     super('maitu');
     this.version(1).stores({
-      todoLists: '++_id, title, dateAdded'
+      todoLists: '++_id, title, dateAdded',
+      todos: '++_id, title, listId'
     });
   }
 }

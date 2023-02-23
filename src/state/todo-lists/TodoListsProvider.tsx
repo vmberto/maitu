@@ -34,13 +34,6 @@ const TodoListsProvider: FC<TodoListsProviderProps> = ({ todoLists, children }) 
       dispatch({ type: 'onAddTodoList', newTodoList });
       await db.todoLists.add(newTodoList);
       await axios.post(`${process.env.NEXT_PUBLIC_APP_URI}/api/todo-lists`, newTodoList);
-      const data = new Response(JSON.stringify(newTodoList.title));
-      if ('caches' in window) {
-        caches.open('myCache').then((cache) => {
-          cache.put(`${process.env.NEXT_PUBLIC_API_URI}/list/${newTodoList._id}`, data);
-          alert('Data Added into cache!');
-        });
-      }
     },
     handleDeleteTodoList: async (todoList) => {
       dispatch({ type: 'onDeleteTodoList', todoList });

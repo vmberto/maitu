@@ -22,7 +22,11 @@ export const ListDemo = ({ _id, title }: ListDemoProps) => {
 
   return (
     <>
-      <Link href={`/list/${_id}`}>
+      <Link
+        href={{
+          pathname: '/todos',
+          query: { id: _id }
+        }}>
         <div
           className="my-2.5
         transition-all cursor-pointer

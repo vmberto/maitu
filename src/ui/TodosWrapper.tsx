@@ -1,9 +1,9 @@
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
-import { useRouter } from 'next/router';
 import TodoInput from '@/components/TodoInput';
-import { useActions } from '@/state/todos/useAction';
-import { FC, KeyboardEventHandler, useState } from 'react';
+import { FC, KeyboardEventHandler, useContext, useEffect, useState } from 'react';
 import { Todo } from '@/types/main';
+import Link from 'next/link';
+import { TodosContext } from '@/state/todos/TodosProvider';
 
 interface TodoWrapperProps {
   existingTodos: Todo[];
@@ -11,11 +11,19 @@ interface TodoWrapperProps {
   listTitle: string;
 }
 
-const TodosWrapper: FC<TodoWrapperProps> = ({ listTitle, existingTodos, listId }) => {
-  const router = useRouter();
+const TodosWrapper: FC = () => {
   const [currentTodo, setCurrentTodo] = useState({} as Todo);
   const [clickScreenFocusHandler, setClickScreenFocusHandler] = useState(false);
-  const { actions, state } = useActions(existingTodos, listId);
+  const {
+    listTitle,
+    todos,
+    newTodo,
+    handleChange,
+    handleChangeNewTodo,
+    handleUpdateTodo,
+    handleRemoveTodo,
+    handleAddTodo
+  } = useContext(TodosContext);
 
   const handleClickScreen = () => {
     document.getElementById('new-todo')?.focus();
@@ -43,18 +51,18 @@ const TodosWrapper: FC<TodoWrapperProps> = ({ listTitle, existingTodos, listId }
   const updateTodo = (t: Todo, index: number) => async () => {
     setClickScreenFocusHandler(false);
     if (t.title.length <= 0) {
-      await actions.handleRemoveTodo(t._id, index);
+      await handleRemoveTodo(t._id, index);
     } else {
       if (t.title !== currentTodo.title) {
-        await actions.handleUpdateTodo(t);
+        await handleUpdateTodo(t);
       }
     }
   };
 
   const addTodo = async () => {
     setClickScreenFocusHandler(false);
-    if (state.newTodo?.title?.length > 0) {
-      await actions.handleAddTodo();
+    if (newTodo?.title?.length > 0) {
+      await handleAddTodo();
       document.getElementById('new-todo')?.focus();
     }
   };
@@ -75,17 +83,14 @@ const TodosWrapper: FC<TodoWrapperProps> = ({ listTitle, existingTodos, listId }
       <div className="min-h-screen" onClick={handleClickScreen}>
         <div className="max-w-xl my-0 mx-auto p-5">
           <div className="flex items-center">
-            <ArrowLeftIcon
-              className="relative z-10 cursor-pointer h-6 w-6 mr-5 fill-primary"
-              onClick={async (e) => {
-                e.stopPropagation();
-                await router.push('..');
-              }}
-            />
+            <Link href="..">
+              <ArrowLeftIcon className="relative z-10 cursor-pointer h-6 w-6 mr-5 fill-primary" />
+            </Link>
+
             <h1 className="text-2xl font-semibold">{listTitle}</h1>
           </div>
           <div id="Todos" className="mt-5 mb-60">
-            {state.todos.map((t, index) => (
+            {todos.map((t, index) => (
               <TodoInput
                 key={t._id}
                 id={t._id}
@@ -94,14 +99,14 @@ const TodosWrapper: FC<TodoWrapperProps> = ({ listTitle, existingTodos, listId }
                 onKeyDown={handleKeyPress}
                 onBlur={updateTodo(t, index)}
                 onFocus={handleInputFocus(t)}
-                onChange={actions.handleChange(index)}
+                onChange={handleChange(index)}
               />
             ))}
             <TodoInput
               id="new-todo"
-              value={state.newTodo.title}
-              onChange={actions.handleChangeNewTodo}
-              onFocus={handleInputFocus(state.newTodo)}
+              value={newTodo.title}
+              onChange={handleChangeNewTodo}
+              onFocus={handleInputFocus(newTodo)}
               onBlur={addTodo}
               onKeyDown={handleKeyPressAdd}
             />

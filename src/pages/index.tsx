@@ -4,6 +4,7 @@ import TodoListsProvider, { TodoListsState } from '@/state/todo-lists/TodoListsP
 import TodoListsWrapper from '@/ui/TodoListsWrapper';
 import { useEffect, useState } from 'react';
 import { db } from '@/lib/local-data';
+import { getTodos } from '@/lib/mongo/todos';
 
 interface AppProps {
   todoLists: TodoList[];
@@ -14,6 +15,7 @@ export default function Home({ todoLists }: AppProps) {
   useEffect(() => {
     const fetchData = async () => {
       await db.todoLists.bulkPut(todoLists);
+      await db.todos.put({ _id: '3424234234', title: 'fazer', listId: '4670' });
       const tl = await db.todoLists.toArray();
       setTodoListsLocal(tl);
     };

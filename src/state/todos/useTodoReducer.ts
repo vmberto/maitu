@@ -1,9 +1,15 @@
 import { Todo } from '@/types/main';
-import { TodosState } from '@/state/todos/useAction';
-import { ReducerAction } from 'react';
+import { TodosState } from '@/state/todos/TodosProvider';
 
 export default function reducer(state: TodosState, action: any) {
   switch (action.type) {
+    case 'setTodos': {
+      return {
+        ...state,
+        todos: action.todos,
+        listTitle: action.title
+      };
+    }
     case 'onChangeTodo': {
       const { todos } = state;
       const { index, e } = action;
@@ -28,10 +34,9 @@ export default function reducer(state: TodosState, action: any) {
     case 'addTodo': {
       const { todos } = state;
       const todosCopy = [...todos];
-      todosCopy.push(action.newTodoComplete);
+      todosCopy.push(action.addedTodo);
       return {
         ...state,
-        todosNumber: todosCopy.length,
         todos: todosCopy,
         newTodo: { _id: '', title: '', listId: '' } as Todo
       };
@@ -42,7 +47,6 @@ export default function reducer(state: TodosState, action: any) {
       const todosCopy = [...todos].filter((_, i) => i !== index);
       return {
         ...state,
-        todosNumber: todosCopy.length,
         todos: todosCopy
       };
     }
