@@ -1,15 +1,9 @@
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
 import TodoInput from '@/components/TodoInput';
-import { FC, KeyboardEventHandler, useContext, useEffect, useState } from 'react';
+import { FC, KeyboardEventHandler, useContext, useState } from 'react';
 import { Todo } from '@/types/main';
 import Link from 'next/link';
 import { TodosContext } from '@/state/todos/TodosProvider';
-
-interface TodoWrapperProps {
-  existingTodos: Todo[];
-  listId: string;
-  listTitle: string;
-}
 
 const TodosWrapper: FC = () => {
   const [currentTodo, setCurrentTodo] = useState({} as Todo);
