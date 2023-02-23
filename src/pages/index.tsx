@@ -28,7 +28,7 @@ export default function Home({ todoLists }: AppProps) {
   );
 }
 
-export async function getServerSideProps() {
+export async function getStaticProps() {
   const { todoLists } = await getTodoLists();
   if (todoLists) {
     return {
