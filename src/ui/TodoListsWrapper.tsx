@@ -22,7 +22,7 @@ const TodoListsWrapper: FC = () => {
           Add List +
         </button>
       </header>
-      <div className="max-w-2xl my-0 mx-auto p-5">
+      <div className="max-w-2xl mt-0 mb-60 mx-auto p-5">
         {todoLists.map((list) => (
           <ListDemo key={list._id} {...list} />
         ))}

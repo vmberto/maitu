@@ -5,8 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/pages/_offline.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/state/todo-lists/TodoListsProvider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/state/todo-lists/TodoListsProvider.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/list/[id].tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/list/[id].tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/TodoListsWrapper.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/TodoListsWrapper.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,7 +33,7 @@
     "WebServerToolWindowFactoryState": "false",
     "javascript.nodejs.core.library.configured.version": "14.16.1",
     "javascript.nodejs.core.library.typings.version": "14.18.36",
-    "last_opened_file_path": "/Users/umberto/Documents/prsl/my-todo-app/src/state",
+    "last_opened_file_path": "/Users/umberto/Documents/prsl/my-todo-app/src/pages",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.standard": "true",
     "node.js.detected.package.tslint": "true",
@@ -47,6 +49,7 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/pages" />
       <recent name="$PROJECT_DIR$/src/state" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
