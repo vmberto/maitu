@@ -5,7 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/public/touch-icon.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/DeleteList.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/favicon.ico" beforeDir="false" afterPath="$PROJECT_DIR$/public/favicon.ico" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/ListDemo.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ListDemo.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/_document.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/_document.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/todos.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/todos.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/state/todo-lists/TodoListsProvider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/state/todo-lists/TodoListsProvider.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/state/todo-lists/useTodoListsReducer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/state/todo-lists/useTodoListsReducer.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/state/todos/TodosProvider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/state/todos/TodosProvider.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,11 +59,11 @@
       <recent name="$PROJECT_DIR$/src/state" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/public" />
       <recent name="$PROJECT_DIR$/src/components" />
       <recent name="$PROJECT_DIR$/src/state/todos" />
       <recent name="$PROJECT_DIR$/src/pages/todos" />
       <recent name="$PROJECT_DIR$/src/pages/api" />
-      <recent name="$PROJECT_DIR$/src/pages" />
     </key>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
@@ -69,7 +78,7 @@
       <workItem from="1675888310080" duration="4829000" />
       <workItem from="1675958770679" duration="21706000" />
       <workItem from="1676403643501" duration="36056000" />
-      <workItem from="1677186256203" duration="8361000" />
+      <workItem from="1677186256203" duration="12278000" />
     </task>
     <servers />
   </component>

@@ -10,7 +10,7 @@ export interface TodoListsState {
 
 interface TodoListsActions {
   handleAddTodoList: (nt: TodoList) => void;
-  handleDeleteTodoList: (t: TodoList) => void;
+  handleDeleteTodoList: (listId: string) => void;
 }
 
 const initialState = (todoLists: TodoList[]) =>
@@ -34,9 +34,9 @@ const TodoListsProvider: FC<TodoListsProviderProps> = ({ todoLists, children }) 
       dispatch({ type: 'onAddTodoList', newTodoList });
       await db.todoLists.add(newTodoList);
     },
-    handleDeleteTodoList: async (todoList) => {
-      dispatch({ type: 'onDeleteTodoList', todoList });
-      await db.todoLists.delete(todoList._id);
+    handleDeleteTodoList: async (listId) => {
+      dispatch({ type: 'onDeleteTodoList', listId });
+      await db.todoLists.delete(listId);
     }
   };
 

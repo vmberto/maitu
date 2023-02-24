@@ -38,8 +38,10 @@ const TodosProvider: FC<TodosProviderProps> = ({ children }) => {
 
   useEffect(() => {
     (async () => {
-      const todos = (await db.todos.where({ listId }).toArray()) || [];
-      dispatch({ type: 'setTodos', listTitle, todos });
+      if (listId) {
+        const todos = (await db.todos.where({ listId }).toArray()) || [];
+        dispatch({ type: 'setTodos', listTitle, todos });
+      }
     })();
   }, [listId, listTitle]);
 

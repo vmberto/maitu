@@ -5,7 +5,7 @@ const TodosProvider = dynamic(() => import('@/state/todos/TodosProvider'), { ssr
 export default function Todos() {
   return (
     <TodosProvider>
-      <TodosWrapper />;
+      <TodosWrapper />
     </TodosProvider>
   );
 }

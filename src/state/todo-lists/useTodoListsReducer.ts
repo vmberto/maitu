@@ -18,10 +18,10 @@ export default function reducer(state: TodoListsState, action: any) {
         todoLists: todoListsCopy
       };
     }
-    case 'removeTodo': {
+    case 'onDeleteTodoList': {
       const { todoLists } = state;
-      const { todoList } = action;
-      const todoListsCopy = [...todoLists].filter((_, i) => i !== todoList._id);
+      const { listId } = action;
+      const todoListsCopy = [...todoLists].filter((tl) => tl._id !== listId);
       return {
         ...state,
         todoLists: todoListsCopy

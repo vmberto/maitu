@@ -1,11 +1,10 @@
-import Dropdown from '@/components/Dropdown';
 import Link from 'next/link';
 import { ReactNode, useState } from 'react';
 import SlideOver from '@/components/SlideOver';
-import AddListSlideOver from '@/ui/AddListSlideOver';
 import { Menu } from '@headlessui/react';
 import { Bars3BottomRightIcon } from '@heroicons/react/24/solid';
 import { GenericEvent } from '@/types/events';
+import { DeleteList } from '@/components/DeleteList';
 
 interface ListDemoProps {
   _id: string;
@@ -48,7 +47,7 @@ export const ListDemo = ({ _id, title }: ListDemoProps) => {
         </div>
       </Link>
       <SlideOver title={title} open={open} setOpen={setOpen}>
-        <></>
+        <DeleteList listTitle={title} _id={_id} />
       </SlideOver>
     </>
   );
