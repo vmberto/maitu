@@ -1,26 +1,25 @@
 import { TodoList } from '@/types/main';
-import { getTodoLists } from '@/lib/mongo/todo-lists';
-import TodoListsProvider, { TodoListsState } from '@/state/todo-lists/TodoListsProvider';
+import { getTodoLists, syncTodoList } from '@/lib/mongo/todo-lists';
+import TodoListsProvider from '@/state/todo-lists/TodoListsProvider';
 import TodoListsWrapper from '@/ui/TodoListsWrapper';
 import { useEffect, useState } from 'react';
 import { db } from '@/lib/local-data';
-import { getTodos } from '@/lib/mongo/todos';
+import axios from 'axios';
 
 interface AppProps {
-  todoLists: TodoList[];
+  todoListsRemote: TodoList[];
 }
 
-export default function Home({ todoLists }: AppProps) {
+export default function Home({ todoListsRemote }: AppProps) {
   const [todoListsLocal, setTodoListsLocal] = useState([] as TodoList[]);
   useEffect(() => {
-    const fetchData = async () => {
-      await db.todoLists.bulkPut(todoLists);
-      await db.todos.put({ _id: '3424234234', title: 'fazer', listId: '4670' });
-      const tl = await db.todoLists.toArray();
-      setTodoListsLocal(tl);
+    const syncData = async () => {
+      await db.todoLists.bulkPut(todoListsRemote);
+      const localLists = await db.todoLists.toArray();
+      setTodoListsLocal(localLists);
     };
 
-    fetchData().catch(console.error);
+    syncData().catch(console.error);
   }, []);
 
   return (
@@ -35,7 +34,7 @@ export async function getStaticProps() {
   if (todoLists) {
     return {
       props: {
-        todoLists: todoLists.map((item) => {
+        todoListsRemote: todoLists.map((item) => {
           return {
             ...item,
             _id: item._id.toString()

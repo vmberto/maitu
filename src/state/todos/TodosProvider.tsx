@@ -32,34 +32,32 @@ interface TodosProviderProps {}
 const TodosProvider: FC<TodosProviderProps> = ({ children }) => {
   const router = useRouter();
   const {
-    query: { id }
+    query: { listId, listTitle }
   } = router;
-  const [state, dispatch] = useReducer(reducer, initialState(id));
+  const [state, dispatch] = useReducer(reducer, initialState(listId));
 
   useEffect(() => {
     (async () => {
-      const todos = (await db.todos.where({ listId: id }).toArray()) || [];
-      const { title } = (await db.todoLists.where({ _id: id }).first()) || {};
-      dispatch({ type: 'setTodos', title, todos });
+      const todos = (await db.todos.where({ listId }).toArray()) || [];
+      dispatch({ type: 'setTodos', listTitle, todos });
     })();
-  }, []);
+  }, [listId, listTitle]);
 
   const value: TodosState & TodosActions = {
     ...state,
     handleChange: (index) => (e) => dispatch({ type: 'onChangeTodo', index, e }),
     handleChangeNewTodo: (e) => dispatch({ type: 'onChangeNewTodo', e }),
     handleAddTodo: async () => {
-      const addedTodo = { _id: mongoObjectId(), listId: id, title: state.newTodo.title } as Todo;
+      const addedTodo = { _id: mongoObjectId(), listId, title: state.newTodo.title } as Todo;
       dispatch({ type: 'addTodo', addedTodo });
       await db.todos.add(addedTodo);
-      await axios.post(`${process.env.NEXT_PUBLIC_APP_URI}/api/todos`, addedTodo);
     },
     handleRemoveTodo: async (_id, index) => {
       dispatch({ type: 'removeTodo', index });
-      await axios.delete(`${process.env.NEXT_PUBLIC_APP_URI}/api/todos?listId=${_id}`);
+      await db.todos.delete(_id);
     },
     handleUpdateTodo: async (t) => {
-      await axios.put(`${process.env.NEXT_PUBLIC_APP_URI}/api/todos`, t);
+      await db.todos.put(t, t._id);
     }
   };
 

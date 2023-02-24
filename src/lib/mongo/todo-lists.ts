@@ -31,6 +31,17 @@ export async function getTodoLists() {
   }
 }
 
+export async function syncTodoList(todoListsLocal: TodoList[]) {
+  try {
+    if (!todoLists) await init();
+    const result = await todoLists.updateMany({}, todoListsLocal, { upsert: true });
+
+    return { todoLists: result };
+  } catch (error) {
+    return { error };
+  }
+}
+
 export async function createTodoList(newTodoList: TodoList) {
   try {
     if (!todoLists) await init();

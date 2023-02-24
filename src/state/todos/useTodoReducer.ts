@@ -7,7 +7,7 @@ export default function reducer(state: TodosState, action: any) {
       return {
         ...state,
         todos: action.todos,
-        listTitle: action.title
+        listTitle: action.listTitle
       };
     }
     case 'onChangeTodo': {

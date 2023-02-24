@@ -33,13 +33,10 @@ const TodoListsProvider: FC<TodoListsProviderProps> = ({ todoLists, children }) 
     handleAddTodoList: async (newTodoList) => {
       dispatch({ type: 'onAddTodoList', newTodoList });
       await db.todoLists.add(newTodoList);
-      await axios.post(`${process.env.NEXT_PUBLIC_APP_URI}/api/todo-lists`, newTodoList);
     },
     handleDeleteTodoList: async (todoList) => {
       dispatch({ type: 'onDeleteTodoList', todoList });
-      await axios.delete(
-        `${process.env.NEXT_PUBLIC_APP_URI}/api/todo-lists?listId=${todoList._id}`
-      );
+      await db.todoLists.delete(todoList._id);
     }
   };
 
