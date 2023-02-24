@@ -6,14 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/ListDemo.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ListDemo.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/mongo/todo-lists.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/mongo/todo-lists.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/next.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/next.config.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/index.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/todos.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/todos.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/state/todo-lists/TodoListsProvider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/state/todo-lists/TodoListsProvider.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/state/todos/TodosProvider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/state/todos/TodosProvider.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/state/todos/useTodoReducer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/state/todos/useTodoReducer.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -77,7 +72,7 @@
       <workItem from="1675888310080" duration="4829000" />
       <workItem from="1675958770679" duration="21706000" />
       <workItem from="1676403643501" duration="36056000" />
-      <workItem from="1677186256203" duration="7238000" />
+      <workItem from="1677186256203" duration="8060000" />
     </task>
     <servers />
   </component>
