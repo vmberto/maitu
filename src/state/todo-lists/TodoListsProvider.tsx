@@ -1,7 +1,6 @@
 import { TodoList } from '@/types/main';
 import { createContext, FC, useEffect, useReducer } from 'react';
 import reducer from '@/state/todo-lists/useTodoListsReducer';
-import axios from 'axios';
 import { db } from '@/lib/local-data';
 
 export interface TodoListsState {
@@ -13,20 +12,22 @@ interface TodoListsActions {
   handleDeleteTodoList: (listId: string) => void;
 }
 
-const initialState = (todoLists: TodoList[]) =>
+const initialState = () =>
   ({
-    todoLists
+    todoLists: []
   } as TodoListsState);
 
 export const TodoListsContext = createContext({} as TodoListsState & TodoListsActions);
 
-interface TodoListsProviderProps {
-  todoLists: TodoList[];
-}
-const TodoListsProvider: FC<TodoListsProviderProps> = ({ todoLists, children }) => {
-  const [state, dispatch] = useReducer(reducer, initialState(todoLists));
+const TodoListsProvider: FC = ({ children }) => {
+  const [state, dispatch] = useReducer(reducer, initialState());
 
-  useEffect(() => dispatch({ type: 'setTodoLists', todoLists }), [todoLists]);
+  useEffect(() => {
+    (async () => {
+      const todoLists = (await db.todoLists.toArray()) || [];
+      dispatch({ type: 'setTodoLists', todoLists });
+    })();
+  }, []);
 
   const value: TodoListsState & TodoListsActions = {
     todoLists: state.todoLists,

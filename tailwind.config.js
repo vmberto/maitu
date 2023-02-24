@@ -6,6 +6,7 @@ module.exports = {
   theme: {
     colors: ({ colors }) => ({
       primary: '#3664FF',
+      danger: '#DE623E',
       inherit: colors.inherit,
       current: colors.current,
       transparent: colors.transparent,

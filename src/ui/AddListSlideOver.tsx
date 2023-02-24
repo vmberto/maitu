@@ -4,6 +4,7 @@ import { TodoList } from '@/types/main';
 import mongoObjectId from '@/lib/generateUniqueId';
 import { TodoListsContext } from '@/state/todo-lists/TodoListsProvider';
 import { Input } from '@/components/Input';
+import { ColorPicker } from '@/components/ColorPicker';
 
 const styles = {
   inputField:
@@ -22,7 +23,8 @@ const AddListModal: FC<AddListSlideOver> = ({ setOpen }) => {
     const { value } = e.target;
     setListTitle(value);
   };
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: GenericEvent) => {
+    e.preventDefault();
     if (listTitle.length > 0) {
       const newList: TodoList = { _id: mongoObjectId(), title: listTitle, dateAdded: new Date() };
       handleAddTodoList(newList);
@@ -34,6 +36,7 @@ const AddListModal: FC<AddListSlideOver> = ({ setOpen }) => {
     <form id="addData-form" onSubmit={handleSubmit}>
       <div className="form-group mb-6">
         <Input value={listTitle} onChange={handleInputChange} label={<>Nome da Lista</>} />
+        <ColorPicker />
       </div>
       <button
         type="submit"
