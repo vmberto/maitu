@@ -36,6 +36,9 @@ const TodoListsProvider: FC<TodoListsProviderProps> = ({ todoLists, children }) 
     },
     handleDeleteTodoList: async (listId) => {
       dispatch({ type: 'onDeleteTodoList', listId });
+      const thisListTodos = await db.todos.where({ listId }).toArray();
+      console.log(thisListTodos);
+      await db.todos.bulkDelete(thisListTodos.map((l) => l._id));
       await db.todoLists.delete(listId);
     }
   };

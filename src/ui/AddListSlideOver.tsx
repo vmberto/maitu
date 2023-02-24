@@ -3,6 +3,7 @@ import { GenericEvent, InputChangeEventHandler } from '@/types/events';
 import { TodoList } from '@/types/main';
 import mongoObjectId from '@/lib/generateUniqueId';
 import { TodoListsContext } from '@/state/todo-lists/TodoListsProvider';
+import { Input } from '@/components/Input';
 
 const styles = {
   inputField:
@@ -22,28 +23,20 @@ const AddListModal: FC<AddListSlideOver> = ({ setOpen }) => {
     setListTitle(value);
   };
   const handleSubmit = async () => {
-    const newList: TodoList = { _id: mongoObjectId(), title: listTitle, dateAdded: new Date() };
-    handleAddTodoList(newList);
-    setOpen(false);
+    if (listTitle.length > 0) {
+      const newList: TodoList = { _id: mongoObjectId(), title: listTitle, dateAdded: new Date() };
+      handleAddTodoList(newList);
+      setOpen(false);
+    }
   };
 
   return (
-    <form id="addData-form">
+    <form id="addData-form" onSubmit={handleSubmit}>
       <div className="form-group mb-6">
-        <label htmlFor="firstName" className="form-label inline-block mb-2 text-gray-700">
-          Nome da Lista
-        </label>
-        <input
-          type="text"
-          className={styles.inputField}
-          value={listTitle}
-          onChange={handleInputChange}
-          id="firstName"
-        />
+        <Input value={listTitle} onChange={handleInputChange} label={<>Nome da Lista</>} />
       </div>
       <button
-        type="button"
-        onClick={handleSubmit}
+        type="submit"
         className="
     px-6
     py-2.5
