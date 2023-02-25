@@ -21,6 +21,7 @@ interface TodosActions {
   handleAddTodo: () => void;
   handleRemoveTodo: (_id: string, index: number) => void;
   handleUpdateTodo: (t: Todo) => void;
+  handleCompleteTodo: (t: Todo) => void;
 }
 
 const initialState = (listId: any) =>
@@ -50,16 +51,25 @@ const TodosProvider: FC<TodosProviderProps> = ({ children }) => {
     handleChange: (index) => (e) => dispatch({ type: 'onChangeTodo', index, e }),
     handleChangeNewTodo: (e) => dispatch({ type: 'onChangeNewTodo', e }),
     handleAddTodo: async () => {
-      const addedTodo = { _id: mongoObjectId(), listId, title: state.newTodo.title } as Todo;
+      const addedTodo = {
+        _id: mongoObjectId(),
+        listId,
+        title: state.newTodo.title,
+        complete: false
+      } as Todo;
       dispatch({ type: 'addTodo', addedTodo });
       await db.todos.add(addedTodo);
     },
-    handleRemoveTodo: async (_id, index) => {
-      dispatch({ type: 'removeTodo', index });
+    handleRemoveTodo: async (_id) => {
+      dispatch({ type: 'removeTodo', _id });
       await db.todos.delete(_id);
     },
     handleUpdateTodo: async (t) => {
       await db.todos.put(t, t._id);
+    },
+    handleCompleteTodo: async (t) => {
+      await db.todos.put({ ...t, complete: !t.complete }, t._id);
+      dispatch({ type: 'completeTodo', _id: t._id, complete: t.complete });
     }
   };
 

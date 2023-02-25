@@ -5,16 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/components/ColorPicker.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/state/AppContextProvider.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/DeleteList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/DeleteList.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/_app.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/_app.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/todos.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/todos.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/state/todo-lists/TodoListsProvider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/state/todo-lists/TodoListsProvider.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/AddListSlideOver.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/AddListSlideOver.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tailwind.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/tailwind.config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/TodoInput.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/TodoInput.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/state/todos/TodosProvider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/state/todos/TodosProvider.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/state/todos/useTodoReducer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/state/todos/useTodoReducer.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/types/main.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types/main.d.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/TodosWrapper.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/TodosWrapper.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -78,7 +74,7 @@
       <workItem from="1675888310080" duration="4829000" />
       <workItem from="1675958770679" duration="21706000" />
       <workItem from="1676403643501" duration="36056000" />
-      <workItem from="1677186256203" duration="16680000" />
+      <workItem from="1677186256203" duration="20492000" />
     </task>
     <servers />
   </component>

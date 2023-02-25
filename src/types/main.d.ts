@@ -10,6 +10,8 @@ export interface Todo {
   title: string;
 
   listId: string;
+
+  complete: boolean;
 }
 
 export interface Todo {

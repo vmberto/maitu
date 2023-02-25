@@ -16,7 +16,8 @@ const TodosWrapper: FC = () => {
     handleChangeNewTodo,
     handleUpdateTodo,
     handleRemoveTodo,
-    handleAddTodo
+    handleAddTodo,
+    handleCompleteTodo
   } = useContext(TodosContext);
 
   const handleClickScreen = () => {
@@ -89,6 +90,8 @@ const TodosWrapper: FC = () => {
                 key={t._id}
                 id={t._id}
                 value={t.title}
+                todoData={t}
+                handleCompleteTodo={handleCompleteTodo}
                 onClick={(e) => e.stopPropagation()}
                 onKeyDown={handleKeyPress}
                 onBlur={updateTodo(t, index)}

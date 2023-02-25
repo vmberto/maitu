@@ -43,8 +43,22 @@ export default function reducer(state: TodosState, action: any) {
     }
     case 'removeTodo': {
       const { todos } = state;
-      const { index } = action;
-      const todosCopy = [...todos].filter((_, i) => i !== index);
+      const { _id } = action;
+      const todosCopy = [...todos].filter((t) => t._id !== _id);
+      return {
+        ...state,
+        todos: todosCopy
+      };
+    }
+    case 'completeTodo': {
+      const { todos } = state;
+      const { _id, complete } = action;
+      const todosCopy = [...todos];
+      const completedTodo = todosCopy.find((t) => t._id === _id);
+      if (completedTodo) {
+        completedTodo.complete = !complete;
+      }
+
       return {
         ...state,
         todos: todosCopy
