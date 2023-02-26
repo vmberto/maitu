@@ -31,14 +31,14 @@ export const ListDemo = ({ todoList }: ListDemoProps) => {
         transition-all cursor-pointer
          border-l-detail border-${todoList.color}
          bg-white p-4 rounded-md font-semibold items-center
-         flex align-middle hover:border-l-detail-hover shadow-sm`}>
+         flex align-middle betterhover:border-l-detail-hover shadow-sm`}>
           <h1>{todoList.title}</h1>
           <div className="ml-auto">
             <Menu as="div" className="relative inline-block text-left">
               <Menu.Button
                 onClick={handleClick}
                 className="inline-flex w-full justify-center
-                p-1 text-sm font-medium text-gray-700 hover:bg-gray-200
+                p-1 text-sm font-medium text-gray-700 betterhover:bg-gray-200
                 focus:ring-offset-2 focus:ring-offset-gray-200 rounded-full">
                 <Bars3BottomRightIcon className="h-6 w-6" />
               </Menu.Button>

@@ -47,6 +47,9 @@ module.exports = {
     extend: {
       fontFamily: {
         sans: ['Inter var', ...defaultTheme.fontFamily.sans]
+      },
+      screens: {
+        betterhover: { raw: '(hover: hover)' }
       }
     }
   },
