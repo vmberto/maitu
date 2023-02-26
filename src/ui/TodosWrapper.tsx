@@ -69,6 +69,9 @@ const TodosWrapper: FC = () => {
     }
   };
 
+  const todosToComplete = todos.filter((t) => !t.completeDisabled);
+  const completedTodos = todos.filter((t) => t.completeDisabled);
+
   // @Todo: Fix absolute div height (should be the same size as the screen)
   return (
     <div className="relative">
@@ -79,28 +82,28 @@ const TodosWrapper: FC = () => {
         <div className="max-w-xl my-0 mx-auto p-5">
           <div className="flex items-center">
             <Link href="..">
-              <ArrowLeftIcon className="relative z-10 cursor-pointer h-6 w-6 mr-5 fill-primary" />
+              <ArrowLeftIcon
+                className={`relative z-10 cursor-pointer h-6 w-6 mr-5 fill-${selectedTodoList.color}`}
+              />
             </Link>
 
-            <h1 className="text-2xl font-semibold">{selectedTodoList?.title}</h1>
+            <h1 className="text-2xl font-bold">{selectedTodoList?.title}</h1>
           </div>
           <div id="Todos" className="mt-5 mb-60">
-            {todos
-              .filter((t) => !t.completeDisabled)
-              .map((t, index) => (
-                <TodoInput
-                  key={t._id}
-                  id={t._id}
-                  value={t.title}
-                  todoData={t}
-                  handleCompleteTodo={handleCompleteTodo}
-                  onClick={(e) => e.stopPropagation()}
-                  onKeyDown={handleKeyPress}
-                  onBlur={updateTodo(t)}
-                  onFocus={handleInputFocus(t)}
-                  onChange={handleChange(t)}
-                />
-              ))}
+            {todosToComplete.map((t, index) => (
+              <TodoInput
+                key={t._id}
+                id={t._id}
+                value={t.title}
+                todoData={t}
+                handleCompleteTodo={handleCompleteTodo}
+                onClick={(e) => e.stopPropagation()}
+                onKeyDown={handleKeyPress}
+                onBlur={updateTodo(t)}
+                onFocus={handleInputFocus(t)}
+                onChange={handleChange(t)}
+              />
+            ))}
             <TodoInput
               id="new-todo"
               value={newTodo.title}
@@ -110,13 +113,19 @@ const TodosWrapper: FC = () => {
               onKeyDown={handleKeyPressAdd}
             />
           </div>
-          <div id="Todos" className="mt-5">
-            {[...todos]
-              .filter((t) => t.completeDisabled)
-              .map((t, index) => (
-                <TodoInput key={t._id} id={t._id} todoData={t} value={t.title} disabled />
-              ))}
-          </div>
+          {completedTodos.length > 0 && (
+            <>
+              <div className="flex align-middle text-lg font-semibold mt-5">
+                <h2>Complete Todos</h2>
+                <span className="text-sm font-semibold ml-auto">{completedTodos.length}</span>
+              </div>
+              <div id="Todos">
+                {completedTodos.map((t, index) => (
+                  <TodoInput key={t._id} id={t._id} todoData={t} value={t.title} disabled />
+                ))}
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

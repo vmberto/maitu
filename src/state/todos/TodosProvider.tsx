@@ -73,7 +73,6 @@ const TodosProvider: FC<TodosProviderProps> = ({ children }) => {
       await db.todos.put(t, t._id);
     },
     handleCompleteTodo: async (t) => {
-      // @Todo Limpar o array de timeouts ao passar o tempo ou remover o timeout
       if (!t.complete) {
         timeouts.push({
           _id: t._id,

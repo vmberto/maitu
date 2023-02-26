@@ -5,13 +5,13 @@ import { Menu } from '@headlessui/react';
 import { Bars3BottomRightIcon } from '@heroicons/react/24/solid';
 import { GenericEvent } from '@/types/events';
 import { DeleteList } from '@/components/DeleteList';
+import { TodoList } from '@/types/main';
 
 interface ListDemoProps {
-  _id: string;
-  title: string;
+  todoList: TodoList;
   actions?: ReactNode | undefined;
 }
-export const ListDemo = ({ _id, title }: ListDemoProps) => {
+export const ListDemo = ({ todoList }: ListDemoProps) => {
   const [open, setOpen] = useState(false);
 
   const handleClick = (e: GenericEvent) => {
@@ -24,15 +24,15 @@ export const ListDemo = ({ _id, title }: ListDemoProps) => {
       <Link
         href={{
           pathname: '/todos',
-          query: { listId: _id }
+          query: { listId: todoList._id }
         }}>
         <div
-          className="my-2.5
+          className={`my-2.5
         transition-all cursor-pointer
-         border-l-detail border-primary
+         border-l-detail border-${todoList.color}
          bg-white p-4 rounded-md font-semibold items-center
-         flex align-middle hover:border-l-detail-hover shadow-sm">
-          <h1>{title}</h1>
+         flex align-middle hover:border-l-detail-hover shadow-sm`}>
+          <h1>{todoList.title}</h1>
           <div className="ml-auto">
             <Menu as="div" className="relative inline-block text-left">
               <Menu.Button
@@ -46,8 +46,8 @@ export const ListDemo = ({ _id, title }: ListDemoProps) => {
           </div>
         </div>
       </Link>
-      <SlideOver title={title} open={open} setOpen={setOpen}>
-        <DeleteList listTitle={title} _id={_id} />
+      <SlideOver title={todoList.title} open={open} setOpen={setOpen}>
+        <DeleteList listTitle={todoList.title} _id={todoList.title} />
       </SlideOver>
     </>
   );

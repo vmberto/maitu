@@ -1,6 +1,9 @@
+import { Colors } from '@/components/ColorPicker';
+
 export interface TodoList {
   _id: string;
   title: string;
+  color: Colors;
 
   dateAdded: Date;
 }

@@ -22,7 +22,12 @@ const AddListModal: FC<AddListSlideOver> = ({ setOpen }) => {
   const handleSubmit = async (e: GenericEvent) => {
     e.preventDefault();
     if (listTitle.length > 0) {
-      const newList: TodoList = { _id: mongoObjectId(), title: listTitle, dateAdded: new Date() };
+      const newList: TodoList = {
+        _id: mongoObjectId(),
+        title: listTitle,
+        color,
+        dateAdded: new Date()
+      };
       handleAddTodoList(newList);
       setOpen(false);
     }

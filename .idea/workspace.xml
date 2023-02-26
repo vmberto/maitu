@@ -6,7 +6,13 @@
   <component name="ChangeListManager">
     <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/ListDemo.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ListDemo.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/state/todos/TodosProvider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/state/todos/TodosProvider.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/types/main.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types/main.d.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/AddListSlideOver.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/AddListSlideOver.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/TodoListsWrapper.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/TodoListsWrapper.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/TodosWrapper.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/TodosWrapper.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tailwind.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/tailwind.config.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -76,17 +82,5 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/src/state/todos/TodosProvider.tsx</url>
-          <line>87</line>
-          <properties lambdaOrdinal="-1" />
-          <option name="timeStamp" value="3" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>
