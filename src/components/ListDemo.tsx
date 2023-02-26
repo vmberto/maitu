@@ -47,7 +47,7 @@ export const ListDemo = ({ todoList }: ListDemoProps) => {
         </div>
       </Link>
       <SlideOver title={todoList.title} open={open} setOpen={setOpen}>
-        <DeleteList listTitle={todoList.title} _id={todoList.title} />
+        <DeleteList listTitle={todoList.title} _id={todoList._id} />
       </SlideOver>
     </>
   );
