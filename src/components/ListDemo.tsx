@@ -24,7 +24,7 @@ export const ListDemo = ({ _id, title }: ListDemoProps) => {
       <Link
         href={{
           pathname: '/todos',
-          query: { listId: _id, listTitle: title }
+          query: { listId: _id }
         }}>
         <div
           className="my-2.5

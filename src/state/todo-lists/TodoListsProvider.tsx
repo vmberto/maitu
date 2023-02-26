@@ -8,19 +8,18 @@ export interface TodoListsState {
 }
 
 interface TodoListsActions {
-  handleAddTodoList: (nt: TodoList) => void;
+  handleAddTodoList: (ntl: TodoList) => void;
   handleDeleteTodoList: (listId: string) => void;
 }
 
-const initialState = () =>
-  ({
-    todoLists: []
-  } as TodoListsState);
+const initialState: TodoListsState = {
+  todoLists: [] as TodoList[]
+};
 
 export const TodoListsContext = createContext({} as TodoListsState & TodoListsActions);
 
 const TodoListsProvider: FC = ({ children }) => {
-  const [state, dispatch] = useReducer(reducer, initialState());
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
     (async () => {
@@ -30,7 +29,7 @@ const TodoListsProvider: FC = ({ children }) => {
   }, []);
 
   const value: TodoListsState & TodoListsActions = {
-    todoLists: state.todoLists,
+    ...state,
     handleAddTodoList: async (newTodoList) => {
       dispatch({ type: 'onAddTodoList', newTodoList });
       await db.todoLists.add(newTodoList);
@@ -38,7 +37,6 @@ const TodoListsProvider: FC = ({ children }) => {
     handleDeleteTodoList: async (listId) => {
       dispatch({ type: 'onDeleteTodoList', listId });
       const thisListTodos = await db.todos.where({ listId }).toArray();
-      console.log(thisListTodos);
       await db.todos.bulkDelete(thisListTodos.map((l) => l._id));
       await db.todoLists.delete(listId);
     }

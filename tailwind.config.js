@@ -7,6 +7,10 @@ module.exports = {
     colors: ({ colors }) => ({
       primary: '#3664FF',
       danger: '#DE623E',
+      palette_one: '#FFF308',
+      palette_two: '#25E87B',
+      palette_three: '#E825C7',
+      palette_four: '#FF8E29',
       inherit: colors.inherit,
       current: colors.current,
       transparent: colors.transparent,

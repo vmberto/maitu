@@ -9,9 +9,9 @@ const TodosWrapper: FC = () => {
   const [currentTodo, setCurrentTodo] = useState({} as Todo);
   const [clickScreenFocusHandler, setClickScreenFocusHandler] = useState(false);
   const {
-    listTitle,
     todos,
     newTodo,
+    selectedTodoList,
     handleChange,
     handleChangeNewTodo,
     handleUpdateTodo,
@@ -43,10 +43,10 @@ const TodosWrapper: FC = () => {
     setCurrentTodo(currentTodo);
   };
 
-  const updateTodo = (t: Todo, index: number) => async () => {
+  const updateTodo = (t: Todo) => async () => {
     setClickScreenFocusHandler(false);
     if (t.title.length <= 0) {
-      await handleRemoveTodo(t._id, index);
+      await handleRemoveTodo(t._id);
     } else {
       if (t.title !== currentTodo.title) {
         await handleUpdateTodo(t);
@@ -82,23 +82,25 @@ const TodosWrapper: FC = () => {
               <ArrowLeftIcon className="relative z-10 cursor-pointer h-6 w-6 mr-5 fill-primary" />
             </Link>
 
-            <h1 className="text-2xl font-semibold">{listTitle}</h1>
+            <h1 className="text-2xl font-semibold">{selectedTodoList?.title}</h1>
           </div>
           <div id="Todos" className="mt-5 mb-60">
-            {todos.map((t, index) => (
-              <TodoInput
-                key={t._id}
-                id={t._id}
-                value={t.title}
-                todoData={t}
-                handleCompleteTodo={handleCompleteTodo}
-                onClick={(e) => e.stopPropagation()}
-                onKeyDown={handleKeyPress}
-                onBlur={updateTodo(t, index)}
-                onFocus={handleInputFocus(t)}
-                onChange={handleChange(index)}
-              />
-            ))}
+            {todos
+              .filter((t) => !t.completeDisabled)
+              .map((t, index) => (
+                <TodoInput
+                  key={t._id}
+                  id={t._id}
+                  value={t.title}
+                  todoData={t}
+                  handleCompleteTodo={handleCompleteTodo}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={handleKeyPress}
+                  onBlur={updateTodo(t)}
+                  onFocus={handleInputFocus(t)}
+                  onChange={handleChange(t)}
+                />
+              ))}
             <TodoInput
               id="new-todo"
               value={newTodo.title}
@@ -107,6 +109,13 @@ const TodosWrapper: FC = () => {
               onBlur={addTodo}
               onKeyDown={handleKeyPressAdd}
             />
+          </div>
+          <div id="Todos" className="mt-5">
+            {[...todos]
+              .filter((t) => t.completeDisabled)
+              .map((t, index) => (
+                <TodoInput key={t._id} id={t._id} todoData={t} value={t.title} disabled />
+              ))}
           </div>
         </div>
       </div>

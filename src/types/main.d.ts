@@ -12,11 +12,5 @@ export interface Todo {
   listId: string;
 
   complete: boolean;
-}
-
-export interface Todo {
-  _id: string;
-  title: string;
-
-  listId: string;
+  completeDisabled: boolean;
 }
