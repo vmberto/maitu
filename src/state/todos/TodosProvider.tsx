@@ -78,16 +78,24 @@ const TodosProvider: FC<TodosProviderProps> = ({ children }) => {
         timeouts.push({
           _id: t._id,
           timeout: setTimeout(async () => {
+            console.log(t.complete);
             dispatch({ type: Actions.COMPLETE_DISABLED_TODO, _id: t._id });
             await db.todos.put({ ...t, completeDisabled: true }, t._id);
-          }, 2500)
+          }, 2000)
         });
       } else {
         const timeoutObj = timeouts.find((timeout) => timeout._id === t._id);
-        if (timeoutObj) clearTimeout(timeoutObj.timeout);
+        if (timeoutObj) {
+          clearTimeout(timeoutObj.timeout);
+          timeouts = timeouts.filter((t) => t._id !== timeoutObj._id);
+        }
       }
       await db.todos.put({ ...t, complete: !t.complete }, t._id);
-      dispatch({ type: Actions.COMPLETE_TODO, _id: t._id, complete: t.complete });
+      dispatch({
+        type: Actions.COMPLETE_TODO,
+        _id: t._id,
+        complete: t.complete
+      });
     }
   };
 
