@@ -45,7 +45,7 @@ const TodoInput: FC<TodoInputProps> = ({ todoData, handleCompleteTodo, ...rest }
                     bg-transparent
                     overflow-hidden
                     resize-none
-                    text-lg
+                    text-sm
                     px-2 py-4
                     outline-0
                     focus:outline-none"
