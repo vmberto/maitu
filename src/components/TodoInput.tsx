@@ -20,6 +20,7 @@ const TodoInput: FC<TodoInputProps> = ({ todoData, handleCompleteTodo, ...rest }
   }, [rest.value]);
 
   const handleClickCompleteTodo = (e: GenericEvent) => {
+    console.log(1);
     e.stopPropagation();
     if (todoData && handleCompleteTodo) {
       handleCompleteTodo(todoData);
@@ -28,7 +29,7 @@ const TodoInput: FC<TodoInputProps> = ({ todoData, handleCompleteTodo, ...rest }
 
   return (
     <div className="flex items-center border-t-2">
-      <button
+      <div
         onClick={handleClickCompleteTodo}
         className="cursor-pointer relative
         transition-all border-primary border mr-3
@@ -36,7 +37,7 @@ const TodoInput: FC<TodoInputProps> = ({ todoData, handleCompleteTodo, ...rest }
         {todoData?.complete && (
           <div className="absolute bg-primary h-5 w-5 rounded-full right-1 top-1"></div>
         )}
-      </button>
+      </div>
       <textarea
         ref={textareaRef}
         className="block
@@ -45,7 +46,7 @@ const TodoInput: FC<TodoInputProps> = ({ todoData, handleCompleteTodo, ...rest }
                     bg-transparent
                     overflow-hidden
                     resize-none
-                    text-sm
+                    text-base
                     px-2 py-4
                     outline-0
                     focus:outline-none"

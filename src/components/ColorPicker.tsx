@@ -18,27 +18,30 @@ export const ColorPicker: FC<ColorPickerProps> = ({ color, setColor }) => {
   };
 
   return (
-    <div className="flex gap-5">
-      <div
-        onClick={changeColor(Colors.PALETTE_ONE)}
-        className={`${color === Colors.PALETTE_ONE ? 'shadow-lg' : ''}
-        relative cursor-pointer transition-all border-palette_one border bg-palette_one p-4 rounded-full items-center`}></div>
-      <div
-        onClick={changeColor(Colors.PALETTE_TWO)}
-        className={`${color === Colors.PALETTE_TWO ? 'shadow-lg' : ''}
-        cursor-pointer transition-all border-palette_two border bg-palette_two p-4 rounded-full items-center`}></div>
-      <div
-        onClick={changeColor(Colors.PRIMARY)}
-        className={`${color === Colors.PRIMARY ? 'shadow-lg' : ''}
-        cursor-pointer transition-all border-primary border bg-primary p-4 rounded-full items-center`}></div>
-      <div
-        onClick={changeColor(Colors.PALETTE_THREE)}
-        className={`${color === Colors.PALETTE_THREE ? 'shadow-lg' : ''}
-        cursor-pointer transition-all border-palette_three border bg-palette_three p-4 rounded-full items-center`}></div>
-      <div
-        onClick={changeColor(Colors.PALETTE_FOUR)}
-        className={`${color === Colors.PALETTE_FOUR ? 'shadow-lg' : ''}
-        cursor-pointer transition-all border-palette_four border bg-palette_four p-4 rounded-full items-center`}></div>
+    <div>
+      <label className="block mb-2 font-light text-gray-700">Select List Color</label>
+      <div className="flex gap-5">
+        <div
+          onClick={changeColor(Colors.PALETTE_ONE)}
+          className={`${color === Colors.PALETTE_ONE ? 'border-black' : ''}
+        relative cursor-pointer transition-all border-palette_one border-4 bg-palette_one p-4 rounded-full items-center`}></div>
+        <div
+          onClick={changeColor(Colors.PALETTE_TWO)}
+          className={`${color === Colors.PALETTE_TWO ? 'border-black' : ''}
+        cursor-pointer transition-all border-palette_two border-4 bg-palette_two p-4 rounded-full items-center`}></div>
+        <div
+          onClick={changeColor(Colors.PRIMARY)}
+          className={`${color === Colors.PRIMARY ? 'border-black' : ''}
+        cursor-pointer transition-all border-primary border-4 bg-primary p-4 rounded-full items-center`}></div>
+        <div
+          onClick={changeColor(Colors.PALETTE_THREE)}
+          className={`${color === Colors.PALETTE_THREE ? 'border-black' : ''}
+        cursor-pointer transition-all border-palette_three border-4 bg-palette_three p-4 rounded-full items-center`}></div>
+        <div
+          onClick={changeColor(Colors.PALETTE_FOUR)}
+          className={`${color === Colors.PALETTE_FOUR ? 'border-black' : ''}
+        cursor-pointer transition-all border-palette_four border-4 bg-palette_four p-4 rounded-full items-center`}></div>
+      </div>
     </div>
   );
 };

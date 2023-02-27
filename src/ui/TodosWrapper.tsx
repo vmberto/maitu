@@ -1,6 +1,6 @@
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
 import TodoInput from '@/components/TodoInput';
-import { FC, KeyboardEventHandler, useContext, useState } from 'react';
+import { FC, KeyboardEventHandler, useContext, useMemo, useState } from 'react';
 import { Todo } from '@/types/main';
 import Link from 'next/link';
 import { TodosContext } from '@/state/todos/TodosProvider';
@@ -69,8 +69,8 @@ const TodosWrapper: FC = () => {
     }
   };
 
-  const todosToComplete = todos.filter((t) => !t.completeDisabled);
-  const completedTodos = todos.filter((t) => t.completeDisabled);
+  const todosToComplete = useMemo(() => todos.filter((t) => !t.completeDisabled), [todos]);
+  const completedTodos = useMemo(() => todos.filter((t) => t.completeDisabled), [todos]);
 
   // @Todo: Fix absolute div height (should be the same size as the screen)
   return (
@@ -112,6 +112,9 @@ const TodosWrapper: FC = () => {
               onBlur={addTodo}
               onKeyDown={handleKeyPressAdd}
             />
+            <h1 className="text-sm border-t-2 pt-5 text-center font-light text-gray-500">
+              Click to add new Todo
+            </h1>
           </div>
           {completedTodos.length > 0 && (
             <>
