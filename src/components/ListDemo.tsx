@@ -22,7 +22,6 @@ export const ListDemo = ({ todoList }: ListDemoProps) => {
   return (
     <>
       <Link
-        onContextMenu={(e) => e.preventDefault()}
         href={{
           pathname: '/todos',
           query: { listId: todoList._id }
