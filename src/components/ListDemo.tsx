@@ -28,7 +28,7 @@ export const ListDemo = ({ todoList }: ListDemoProps) => {
         }}>
         <div
           className={`my-2.5
-        transition-all cursor-pointer
+        transition-all cursor-pointer active:opacity-50
          border-l-detail border-${todoList.color}
          bg-white p-4 rounded-md font-semibold items-center
          flex align-middle betterhover:hover:border-l-detail-hover shadow-sm`}>
