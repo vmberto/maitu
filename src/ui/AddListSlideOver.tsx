@@ -12,7 +12,7 @@ interface AddListSlideOver {
 
 const AddListModal: FC<AddListSlideOver> = ({ setOpen }) => {
   const [listTitle, setListTitle] = useState('');
-  const [color, setColor] = useState(Colors.PRIMARY);
+  const [color, setColor] = useState(Colors[0]);
   const { handleAddTodoList } = useContext(TodoListsContext);
 
   const handleInputChange = (e: GenericEvent) => {
