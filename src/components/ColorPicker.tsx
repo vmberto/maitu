@@ -9,12 +9,12 @@ export const Colors = [
 ]
 
 interface ColorPickerProps {
-  color: Colors;
+  color: string;
   setColor: (color: string) => void;
 }
 
 export const ColorPicker: FC<ColorPickerProps> = ({ color, setColor }) => {
-  const changeColor = (newColor: Colors) => () => {
+  const changeColor = (newColor: string) => () => {
     setColor(newColor);
   };
 
