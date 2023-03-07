@@ -8,7 +8,7 @@ export const Colors = [
     'palette_four',
 ];
 
-const Backgrounds = Map<string, string>([
+const Backgrounds = new Map<string, string>([
    [ 'primary', 'bg-primary'],
     ['palette_one', 'bg-palette_one'],
     ['palette_two', 'bg-palette_two'],
@@ -16,7 +16,7 @@ const Backgrounds = Map<string, string>([
    [ 'palette_four', 'bg-palette_four'],
  ]);
 
-const Borders = Map<string, string>([
+const Borders = new Map<string, string>([
     [ 'primary', 'border-primary'],
     ['palette_one', 'border-palette_one'],
     ['palette_two', 'border-palette_two'],
