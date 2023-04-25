@@ -47,14 +47,14 @@ const AddListModal: FC<AddListSlideOver> = ({ setOpen }) => {
     bg-${color}
     text-white
     font-medium
-    text-xs
+    text-xs 
     leading-tight
     uppercase
     rounded
     shadow-md
-    hover:bg-blue-700 hover:shadow-lg
-    focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0
-    active:bg-blue-800 active:shadow-lg
+    hover:bg-${color}-700 hover:shadow-lg
+    focus:bg-${color}-700 focus:shadow-lg focus:outline-none focus:ring-0
+    active:bg-${color}-800 active:shadow-lg
     transition
     duration-150
     ease-in-out`}>

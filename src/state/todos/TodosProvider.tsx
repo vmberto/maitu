@@ -3,10 +3,9 @@ import reducer from '@/state/todos/useTodoReducer';
 import { Todo, TodoList } from '@/types/main';
 import { GenericEvent } from '@/types/events';
 import mongoObjectId from '@/lib/generateUniqueId';
-import { db } from '@/lib/local-data';
 import { useRouter } from 'next/router';
 import { TodosDispatchActions as Actions } from '@/state/todos/actions';
-import { TodoListsContext } from '@/state/todo-lists/TodoListsProvider';
+import * as TodosDb from '@/lib/database/todosDb';
 
 export interface TodosState {
   selectedTodoList: TodoList;
@@ -36,6 +35,7 @@ export const TodosContext = createContext({} as TodosState & TodosActions);
 let timeouts = [] as { _id: string; timeout: NodeJS.Timeout }[];
 
 interface TodosProviderProps {}
+
 const TodosProvider: FC<TodosProviderProps> = ({ children }) => {
   const { listId } = useRouter().query;
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -43,9 +43,12 @@ const TodosProvider: FC<TodosProviderProps> = ({ children }) => {
   useEffect(() => {
     (async () => {
       if (listId) {
-        const todos = (await db.todos.where({ listId }).toArray()) || [];
-        const selectedTodoList = (await db.todoLists.where({ _id: listId }).first()) || {};
-        dispatch({ type: Actions.SET_TODOS, selectedTodoList, todos });
+        const { selectedTodoList, todos } = await TodosDb.get(listId);
+        dispatch({
+          type: Actions.SET_TODOS,
+          selectedTodoList,
+          todos
+        });
       }
     })();
   }, [listId]);
@@ -63,23 +66,22 @@ const TodosProvider: FC<TodosProviderProps> = ({ children }) => {
         completeDisabled: false
       } as Todo;
       dispatch({ type: Actions.ADD_TODO, addedTodo });
-      await db.todos.add(addedTodo);
+      await TodosDb.add(addedTodo);
     },
     handleRemoveTodo: async (_id) => {
       dispatch({ type: Actions.REMOVE_TODO, _id });
-      await db.todos.delete(_id);
+      await TodosDb.remove(_id);
     },
     handleUpdateTodo: async (t) => {
-      await db.todos.put(t, t._id);
+      await TodosDb.update(t._id, t);
     },
     handleCompleteTodo: async (t) => {
       if (!t.complete) {
         timeouts.push({
           _id: t._id,
           timeout: setTimeout(async () => {
-            console.log(t.complete);
             dispatch({ type: Actions.COMPLETE_DISABLED_TODO, _id: t._id });
-            await db.todos.put({ ...t, completeDisabled: true }, t._id);
+            await TodosDb.update(t._id, { ...t, completeDisabled: true });
           }, 2000)
         });
       } else {
@@ -89,7 +91,7 @@ const TodosProvider: FC<TodosProviderProps> = ({ children }) => {
           timeouts = timeouts.filter((t) => t._id !== timeoutObj._id);
         }
       }
-      await db.todos.put({ ...t, complete: !t.complete }, t._id);
+      await TodosDb.update(t._id, { ...t, complete: !t.complete });
       dispatch({
         type: Actions.COMPLETE_TODO,
         _id: t._id,

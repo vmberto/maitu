@@ -1,7 +1,7 @@
-import { TodoList } from '@/types/main';
 import { createContext, FC, useEffect, useReducer } from 'react';
 import reducer from '@/state/todo-lists/useTodoListsReducer';
-import { db } from '@/lib/local-data';
+import * as TodoListDb from '@/lib/database/todoListDb';
+import { TodoList } from '@/types/main';
 
 export interface TodoListsState {
   todoLists: TodoList[];
@@ -23,7 +23,7 @@ const TodoListsProvider: FC = ({ children }) => {
 
   useEffect(() => {
     (async () => {
-      const todoLists = (await db.todoLists.toArray()) || [];
+      const todoLists = await TodoListDb.get();
       dispatch({ type: 'setTodoLists', todoLists });
     })();
   }, []);
@@ -32,13 +32,11 @@ const TodoListsProvider: FC = ({ children }) => {
     ...state,
     handleAddTodoList: async (newTodoList) => {
       dispatch({ type: 'onAddTodoList', newTodoList });
-      await db.todoLists.add(newTodoList);
+      await TodoListDb.add(newTodoList);
     },
     handleDeleteTodoList: async (listId) => {
       dispatch({ type: 'onDeleteTodoList', listId });
-      const thisListTodos = await db.todos.where({ listId }).toArray();
-      await db.todos.bulkDelete(thisListTodos.map((l) => l._id));
-      await db.todoLists.delete(listId);
+      await TodoListDb.remove(listId);
     }
   };
 

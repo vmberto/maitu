@@ -5,10 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/lib/database/todoListDb.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/lib/database/todosDb.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/SlideOver.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/SlideOver.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/TodoListsWrapper.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/TodoListsWrapper.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/local-data/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/database/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/mongo/index.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/mongo/todo-lists.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/mongo/todos.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/api/todo-lists.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/api/todos.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/state/todo-lists/TodoListsProvider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/state/todo-lists/TodoListsProvider.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/state/todos/TodosProvider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/state/todos/TodosProvider.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/AddListSlideOver.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/AddListSlideOver.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,7 +44,7 @@
     "WebServerToolWindowFactoryState": "false",
     "javascript.nodejs.core.library.configured.version": "14.21.3",
     "javascript.nodejs.core.library.typings.version": "",
-    "last_opened_file_path": "/Users/umberto/Documents/prsl/my-todo-app/src/pages",
+    "last_opened_file_path": "/Users/ubarros/Documents/prsl/my-todo-app/src/components",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.standard": "true",
     "node.js.detected.package.tslint": "true",
@@ -52,6 +60,7 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/components" />
       <recent name="$PROJECT_DIR$/src/pages" />
       <recent name="$PROJECT_DIR$/src/state" />
     </key>
@@ -76,7 +85,7 @@
       <workItem from="1675958770679" duration="21706000" />
       <workItem from="1676403643501" duration="36056000" />
       <workItem from="1677186256203" duration="28917000" />
-      <workItem from="1682379856010" duration="3344000" />
+      <workItem from="1682379856010" duration="8282000" />
     </task>
     <servers />
   </component>

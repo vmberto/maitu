@@ -1,7 +1,7 @@
 import Dexie, { Table } from 'dexie';
 import { Todo, TodoList } from '@/types/main';
 
-export class MySubClassedDexie extends Dexie {
+export class Database extends Dexie {
   todoLists!: Table<TodoList>;
   todos!: Table<Todo>;
 
@@ -14,4 +14,4 @@ export class MySubClassedDexie extends Dexie {
   }
 }
 
-export const db = new MySubClassedDexie();
+export const Db = new Database();
