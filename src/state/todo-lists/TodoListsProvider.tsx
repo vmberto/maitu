@@ -3,6 +3,7 @@ import reducer from 'src/state/todo-lists/useTodoListsReducer';
 import * as TodoListDb from 'src/lib/database/todoListDb';
 import { TodoList } from 'src/types/main';
 import { useLiveQuery } from 'dexie-react-hooks';
+import { Db } from 'src/lib/database';
 
 export interface TodoListsState {
   todoLists: TodoList[];
@@ -24,6 +25,8 @@ const TodoListsProvider: FC = ({ children }) => {
 
   useLiveQuery(async () => {
     const todoLists = await TodoListDb.get();
+    console.log(todoLists);
+    Db.cloud.syncState.subscribe((x) => console.log(x));
     dispatch({ type: 'setTodoLists', todoLists });
   }, []);
 
