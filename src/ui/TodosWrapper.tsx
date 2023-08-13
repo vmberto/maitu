@@ -123,7 +123,7 @@ const TodosWrapper: FC = () => {
                 <span className="text-sm font-semibold ml-auto">{completedTodos.length}</span>
               </div>
               <div id="Todos">
-                {completedTodos.map((t, index) => (
+                {completedTodos.map((t) => (
                   <TodoInput key={t.id} id={t.id} todoData={t} value={t.title} disabled />
                 ))}
               </div>

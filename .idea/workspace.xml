@@ -5,33 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.env" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.eslintrc" beforeDir="false" afterPath="$PROJECT_DIR$/.eslintrc" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/next.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/next.config.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/ColorPicker.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ColorPicker.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/DeleteList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/DeleteList.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/Dropdown.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Dropdown.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/ListDemo.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ListDemo.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/TodoInput.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/TodoInput.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Input.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Input.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/SlideOver.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/SlideOver.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/lib/database/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/database/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/database/todoListDb.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/database/todoListDb.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/lib/database/todosDb.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/database/todosDb.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/_app.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/_app.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/todos.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/todos.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/state/AppContextProvider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/state/AppContextProvider.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/state/todo-lists/TodoListsProvider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/state/todo-lists/TodoListsProvider.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/state/todo-lists/useTodoListsReducer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/state/todo-lists/useTodoListsReducer.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/state/todos/TodosProvider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/state/todos/TodosProvider.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/state/todos/useTodoReducer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/state/todos/useTodoReducer.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/types/main.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types/main.d.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/AddListSlideOver.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/AddListSlideOver.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/TodoListsWrapper.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/TodoListsWrapper.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/types/events.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types/events.d.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/types/mongodb.d.ts" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ui/TodosWrapper.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/TodosWrapper.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/tsconfig.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -100,7 +87,7 @@
       <workItem from="1682379856010" duration="8282000" />
       <workItem from="1685847147862" duration="396000" />
       <workItem from="1686599027123" duration="2000" />
-      <workItem from="1691866591483" duration="9957000" />
+      <workItem from="1691866591483" duration="14980000" />
     </task>
     <servers />
   </component>

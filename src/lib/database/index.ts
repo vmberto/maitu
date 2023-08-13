@@ -17,7 +17,7 @@ export class Database extends Dexie {
     this.cloud.configure({
       databaseUrl: 'https://znweybxm5.dexie.cloud',
       tryUseServiceWorker: true,
-      requireAuth: false
+      requireAuth: true
     });
   }
 }

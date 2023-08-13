@@ -1,5 +1,4 @@
 import { FC, InputHTMLAttributes, ReactElement } from 'react';
-import { JSXElement } from '@babel/types';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: ReactElement;

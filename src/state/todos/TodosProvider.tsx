@@ -1,7 +1,7 @@
 import { createContext, FC, useEffect, useReducer } from 'react';
 import reducer from 'src/state/todos/useTodoReducer';
 import { Todo, TodoList } from 'src/types/main';
-import { GenericEvent } from 'src/types/events';
+import { GenericEvent, TextareaChangeEventHandler } from 'src/types/events';
 import generateUniqueId from 'src/lib/generateUniqueId';
 import { useRouter } from 'next/router';
 import { TodosDispatchActions as Actions } from 'src/state/todos/actions';
@@ -55,8 +55,9 @@ const TodosProvider: FC<TodosProviderProps> = ({ children }) => {
 
   const value: TodosState & TodosActions = {
     ...state,
-    handleChange: (t: Todo) => (e) => dispatch({ type: Actions.ON_CHANGE_TODO, id: t.id, e }),
-    handleChangeNewTodo: (e) => dispatch({ type: Actions.ON_CHANGE_NEW_TODO, e }),
+    handleChange: (t: Todo) => (e: TextareaChangeEventHandler) =>
+      dispatch({ type: Actions.ON_CHANGE_TODO, id: t.id, value: e.target.value }),
+    handleChangeNewTodo: () => dispatch({ type: Actions.ON_CHANGE_NEW_TODO }),
     handleAddTodo: async () => {
       const addedTodo = {
         id: `tds${generateUniqueId()}`,

@@ -1,18 +1,22 @@
 import { TodoListsState } from 'src/state/todo-lists/TodoListsProvider';
+import { TodoList } from 'src/types/main';
 
-export default function reducer(state: TodoListsState, action: any): TodoListsState {
+export default function reducer(
+  state: TodoListsState,
+  action: { type: string; todoLists?: TodoList[]; newTodoList?: TodoList; listId?: string }
+): TodoListsState {
   switch (action.type) {
     case 'setTodoLists': {
       return {
         ...state,
-        todoLists: action.todoLists
+        todoLists: action.todoLists!
       };
     }
     case 'onAddTodoList': {
       const { todoLists } = state;
       const { newTodoList } = action;
       const todoListsCopy = [...todoLists];
-      todoListsCopy.push(newTodoList);
+      todoListsCopy.push(newTodoList!);
       return {
         ...state,
         todoLists: todoListsCopy

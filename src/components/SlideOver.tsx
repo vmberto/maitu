@@ -1,8 +1,6 @@
-import { FC, Fragment, useRef, useState } from 'react';
+import { FC, Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import { XMarkIcon } from '@heroicons/react/20/solid';
-import { JSXElement } from '@babel/types';
 
 interface ModalProps {
   title: string;

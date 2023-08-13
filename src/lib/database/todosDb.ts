@@ -1,9 +1,9 @@
 import { Db } from 'src/lib/database/index';
-import { Todo } from 'src/types/main';
+import { Todo, TodoList } from 'src/types/main';
 
 export const get = async (listId: string | string[] | undefined) => {
-  const todos = (await Db.todos.where({ listId }).toArray()) || [];
-  const selectedTodoList = (await Db.todoLists.where({ id: listId }).first()) || {};
+  const todos = (await Db.todos.where({ listId }).toArray()) || ([] as Todo[]);
+  const selectedTodoList = (await Db.todoLists.where({ id: listId }).first()) || ({} as TodoList);
   return { todos, selectedTodoList };
 };
 

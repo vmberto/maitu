@@ -1,13 +1,9 @@
-import { FC, Fragment, MouseEventHandler } from 'react';
-import { Menu, Transition } from '@headlessui/react';
+import { FC } from 'react';
+import { Menu } from '@headlessui/react';
 import { Bars3BottomRightIcon } from '@heroicons/react/24/solid';
 import { GenericEvent } from 'src/types/events';
 
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(' ');
-}
-
-const Dropdown: FC = ({ children }) => {
+const Dropdown: FC = () => {
   const handleClick = (e: GenericEvent) => e.stopPropagation();
 
   return (
