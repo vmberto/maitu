@@ -5,8 +5,6 @@ const withPWA = require('next-pwa')({
   dest: 'public',
   register: true,
   skipWaiting: false,
-  trailingSlash: true,
-  output: 'export',
   runtimeCaching
 });
 const nextConfig = withPWA({});
