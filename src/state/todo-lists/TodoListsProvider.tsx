@@ -1,7 +1,7 @@
 import { createContext, FC, useEffect, useReducer } from 'react';
-import reducer from '@/state/todo-lists/useTodoListsReducer';
-import * as TodoListDb from '@/lib/database/todoListDb';
-import { TodoList } from '@/types/main';
+import reducer from 'src/state/todo-lists/useTodoListsReducer';
+import * as TodoListDb from 'src/lib/database/todoListDb';
+import { TodoList } from 'src/types/main';
 
 export interface TodoListsState {
   todoLists: TodoList[];

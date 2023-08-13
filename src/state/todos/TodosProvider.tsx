@@ -1,11 +1,11 @@
-import { createContext, FC, useContext, useEffect, useReducer } from 'react';
-import reducer from '@/state/todos/useTodoReducer';
-import { Todo, TodoList } from '@/types/main';
-import { GenericEvent } from '@/types/events';
-import mongoObjectId from '@/lib/generateUniqueId';
+import { createContext, FC, useEffect, useReducer } from 'react';
+import reducer from 'src/state/todos/useTodoReducer';
+import { Todo, TodoList } from 'src/types/main';
+import { GenericEvent } from 'src/types/events';
+import generateUniqueId from 'src/lib/generateUniqueId';
 import { useRouter } from 'next/router';
-import { TodosDispatchActions as Actions } from '@/state/todos/actions';
-import * as TodosDb from '@/lib/database/todosDb';
+import { TodosDispatchActions as Actions } from 'src/state/todos/actions';
+import * as TodosDb from 'src/lib/database/todosDb';
 
 export interface TodosState {
   selectedTodoList: TodoList;
@@ -19,7 +19,7 @@ interface TodosActions {
   handleChange: (t: Todo) => (e: GenericEvent) => void;
   handleChangeNewTodo: (e: GenericEvent) => void;
   handleAddTodo: () => void;
-  handleRemoveTodo: (_id: string) => void;
+  handleRemoveTodo: (id: string) => void;
   handleUpdateTodo: (t: Todo) => void;
   handleCompleteTodo: (t: Todo) => void;
 }
@@ -32,7 +32,7 @@ const initialState = {
 } as TodosState;
 
 export const TodosContext = createContext({} as TodosState & TodosActions);
-let timeouts = [] as { _id: string; timeout: NodeJS.Timeout }[];
+let timeouts = [] as { id: string; timeout: NodeJS.Timeout }[];
 
 interface TodosProviderProps {}
 
@@ -55,11 +55,11 @@ const TodosProvider: FC<TodosProviderProps> = ({ children }) => {
 
   const value: TodosState & TodosActions = {
     ...state,
-    handleChange: (t: Todo) => (e) => dispatch({ type: Actions.ON_CHANGE_TODO, _id: t._id, e }),
+    handleChange: (t: Todo) => (e) => dispatch({ type: Actions.ON_CHANGE_TODO, id: t.id, e }),
     handleChangeNewTodo: (e) => dispatch({ type: Actions.ON_CHANGE_NEW_TODO, e }),
     handleAddTodo: async () => {
       const addedTodo = {
-        _id: mongoObjectId(),
+        id: `tds${generateUniqueId()}`,
         listId,
         title: state.newTodo.title,
         complete: false,
@@ -68,33 +68,33 @@ const TodosProvider: FC<TodosProviderProps> = ({ children }) => {
       dispatch({ type: Actions.ADD_TODO, addedTodo });
       await TodosDb.add(addedTodo);
     },
-    handleRemoveTodo: async (_id) => {
-      dispatch({ type: Actions.REMOVE_TODO, _id });
-      await TodosDb.remove(_id);
+    handleRemoveTodo: async (id) => {
+      dispatch({ type: Actions.REMOVE_TODO, id });
+      await TodosDb.remove(id);
     },
     handleUpdateTodo: async (t) => {
-      await TodosDb.update(t._id, t);
+      await TodosDb.update(t.id, t);
     },
     handleCompleteTodo: async (t) => {
       if (!t.complete) {
         timeouts.push({
-          _id: t._id,
+          id: t.id,
           timeout: setTimeout(async () => {
-            dispatch({ type: Actions.COMPLETE_DISABLED_TODO, _id: t._id });
-            await TodosDb.update(t._id, { ...t, completeDisabled: true });
+            dispatch({ type: Actions.COMPLETE_DISABLED_TODO, id: t.id });
+            await TodosDb.update(t.id, { ...t, completeDisabled: true });
           }, 2000)
         });
       } else {
-        const timeoutObj = timeouts.find((timeout) => timeout._id === t._id);
+        const timeoutObj = timeouts.find((timeout) => timeout.id === t.id);
         if (timeoutObj) {
           clearTimeout(timeoutObj.timeout);
-          timeouts = timeouts.filter((t) => t._id !== timeoutObj._id);
+          timeouts = timeouts.filter((t) => t.id !== timeoutObj.id);
         }
       }
-      await TodosDb.update(t._id, { ...t, complete: !t.complete });
+      await TodosDb.update(t.id, { ...t, complete: !t.complete });
       dispatch({
         type: Actions.COMPLETE_TODO,
-        _id: t._id,
+        id: t.id,
         complete: t.complete
       });
     }

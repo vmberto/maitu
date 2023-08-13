@@ -1,10 +1,10 @@
 import { FC, useContext, useState } from 'react';
-import { GenericEvent } from '@/types/events';
-import { TodoList } from '@/types/main';
-import mongoObjectId from '@/lib/generateUniqueId';
-import { TodoListsContext } from '@/state/todo-lists/TodoListsProvider';
-import { Input } from '@/components/Input';
-import { ColorPicker, Colors } from '@/components/ColorPicker';
+import { GenericEvent } from 'src/types/events';
+import { TodoList } from 'src/types/main';
+import generateUniqueId from 'src/lib/generateUniqueId';
+import { TodoListsContext } from 'src/state/todo-lists/TodoListsProvider';
+import { Input } from 'src/components/Input';
+import { ColorPicker, Colors } from 'src/components/ColorPicker';
 
 interface AddListSlideOver {
   setOpen: (open: boolean) => void;
@@ -23,7 +23,7 @@ const AddListModal: FC<AddListSlideOver> = ({ setOpen }) => {
     e.preventDefault();
     if (listTitle.length > 0) {
       const newList: TodoList = {
-        _id: mongoObjectId(),
+        id: `tdl${generateUniqueId()}`,
         title: listTitle,
         color,
         dateAdded: new Date()

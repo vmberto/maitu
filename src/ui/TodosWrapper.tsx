@@ -1,9 +1,9 @@
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
-import TodoInput from '@/components/TodoInput';
+import TodoInput from 'src/components/TodoInput';
 import { FC, KeyboardEventHandler, useContext, useMemo, useState } from 'react';
-import { Todo } from '@/types/main';
+import { Todo } from 'src/types/main';
 import Link from 'next/link';
-import { TodosContext } from '@/state/todos/TodosProvider';
+import { TodosContext } from 'src/state/todos/TodosProvider';
 
 const TodosWrapper: FC = () => {
   const [currentTodo, setCurrentTodo] = useState({} as Todo);
@@ -46,7 +46,7 @@ const TodosWrapper: FC = () => {
   const updateTodo = (t: Todo) => async () => {
     setClickScreenFocusHandler(false);
     if (t.title.length <= 0) {
-      await handleRemoveTodo(t._id);
+      await handleRemoveTodo(t.id);
     } else {
       if (t.title !== currentTodo.title) {
         await handleUpdateTodo(t);
@@ -90,10 +90,10 @@ const TodosWrapper: FC = () => {
             <h1 className="text-2xl font-bold">{selectedTodoList?.title}</h1>
           </div>
           <div id="Todos" className="mt-5 mb-60">
-            {todosToComplete.map((t, index) => (
+            {todosToComplete.map((t) => (
               <TodoInput
-                key={t._id}
-                id={t._id}
+                key={t.id}
+                id={t.id}
                 value={t.title}
                 todoData={t}
                 handleCompleteTodo={handleCompleteTodo}
@@ -124,7 +124,7 @@ const TodosWrapper: FC = () => {
               </div>
               <div id="Todos">
                 {completedTodos.map((t, index) => (
-                  <TodoInput key={t._id} id={t._id} todoData={t} value={t.title} disabled />
+                  <TodoInput key={t.id} id={t.id} todoData={t} value={t.title} disabled />
                 ))}
               </div>
             </>

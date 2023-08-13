@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import dynamic from 'next/dynamic';
-const TodosProvider = dynamic(() => import('@/state/todos/TodosProvider'), { ssr: false });
-const TodoListsProvider = dynamic(() => import('@/state/todo-lists/TodoListsProvider'), {
+const TodosProvider = dynamic(() => import('src/state/todos/TodosProvider'), { ssr: false });
+const TodoListsProvider = dynamic(() => import('src/state/todo-lists/TodoListsProvider'), {
   ssr: false
 });
 

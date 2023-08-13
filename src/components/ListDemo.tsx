@@ -1,11 +1,11 @@
 import Link from 'next/link';
 import { ReactNode, useState } from 'react';
-import SlideOver from '@/components/SlideOver';
+import SlideOver from 'src/components/SlideOver';
 import { Menu } from '@headlessui/react';
 import { Bars3BottomRightIcon } from '@heroicons/react/24/solid';
-import { GenericEvent } from '@/types/events';
-import { DeleteList } from '@/components/DeleteList';
-import { TodoList } from '@/types/main';
+import { GenericEvent } from 'src/types/events';
+import { DeleteList } from 'src/components/DeleteList';
+import { TodoList } from 'src/types/main';
 
 interface ListDemoProps {
   todoList: TodoList;
@@ -24,7 +24,7 @@ export const ListDemo = ({ todoList }: ListDemoProps) => {
       <Link
         href={{
           pathname: '/todos',
-          query: { listId: todoList._id }
+          query: { listId: todoList.id }
         }}>
         <div
           className={`my-2.5
@@ -47,7 +47,7 @@ export const ListDemo = ({ todoList }: ListDemoProps) => {
         </div>
       </Link>
       <SlideOver title={todoList.title} open={open} setOpen={setOpen}>
-        <DeleteList listTitle={todoList.title} _id={todoList._id} />
+        <DeleteList listTitle={todoList.title} id={todoList.id} />
       </SlideOver>
     </>
   );

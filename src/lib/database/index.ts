@@ -1,15 +1,23 @@
-import Dexie, { Table } from 'dexie';
-import { Todo, TodoList } from '@/types/main';
+import Dexie from 'dexie';
+import { Todo, TodoList } from 'src/types/main';
+import dexieCloud, { DexieCloudTable } from 'dexie-cloud-addon';
 
 export class Database extends Dexie {
-  todoLists!: Table<TodoList>;
-  todos!: Table<Todo>;
+  todos!: DexieCloudTable<Todo, 'id'>;
+  todoLists!: DexieCloudTable<TodoList, 'id'>;
 
   constructor() {
-    super('maitu');
+    super('maitu', {
+      addons: [dexieCloud]
+    });
     this.version(1).stores({
-      todoLists: '++_id, title, dateAdded',
-      todos: '++_id, title, listId'
+      todoLists: '@id, title, dateAdded',
+      todos: '@id, title, listId'
+    });
+    this.cloud.configure({
+      databaseUrl: 'https://znweybxm5.dexie.cloud',
+      tryUseServiceWorker: true,
+      requireAuth: false
     });
   }
 }

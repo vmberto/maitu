@@ -1,8 +1,8 @@
 import { FC, useContext, useState } from 'react';
-import { ListDemo } from '@/components/ListDemo';
-import { TodoListsContext } from '@/state/todo-lists/TodoListsProvider';
-import AddListSlideOver from '@/ui/AddListSlideOver';
-import SlideOver from '@/components/SlideOver';
+import { ListDemo } from 'src/components/ListDemo';
+import { TodoListsContext } from 'src/state/todo-lists/TodoListsProvider';
+import AddListSlideOver from 'src/ui/AddListSlideOver';
+import SlideOver from 'src/components/SlideOver';
 
 const TodoListsWrapper: FC = () => {
   const [open, setOpen] = useState(false);
@@ -19,7 +19,7 @@ const TodoListsWrapper: FC = () => {
       </header>
       <div className="max-w-2xl mt-0 mb-60 mx-auto p-5">
         {todoLists.map((list) => (
-          <ListDemo key={list._id} todoList={list} />
+          <ListDemo key={list.id} todoList={list} />
         ))}
       </div>
       <SlideOver title="Adicionar Lista" open={open} setOpen={setOpen}>

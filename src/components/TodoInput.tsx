@@ -1,6 +1,6 @@
 import React, { DetailedHTMLProps, useEffect, useRef, FC, TextareaHTMLAttributes } from 'react';
-import { GenericEvent } from '@/types/events';
-import { Todo } from '@/types/main';
+import { GenericEvent } from 'src/types/events';
+import { Todo } from 'src/types/main';
 
 type ElProps<T, R> = DetailedHTMLProps<T, R>;
 

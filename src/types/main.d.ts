@@ -1,7 +1,7 @@
-import { Colors } from '@/components/ColorPicker';
+import { Colors } from 'src/components/ColorPicker';
 
 export interface TodoList {
-  _id: string;
+  id: string;
   title: string;
   color: Colors;
 
@@ -9,7 +9,7 @@ export interface TodoList {
 }
 
 export interface Todo {
-  _id: string;
+  id: string;
   title: string;
 
   listId: string;

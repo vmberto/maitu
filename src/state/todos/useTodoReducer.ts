@@ -1,6 +1,6 @@
-import { Todo } from '@/types/main';
-import { TodosState } from '@/state/todos/TodosProvider';
-import { TodosDispatchActions } from '@/state/todos/actions';
+import { Todo } from 'src/types/main';
+import { TodosState } from 'src/state/todos/TodosProvider';
+import { TodosDispatchActions } from 'src/state/todos/actions';
 
 export default function reducer(state: TodosState, action: any): TodosState {
   switch (action.type) {
@@ -13,9 +13,9 @@ export default function reducer(state: TodosState, action: any): TodosState {
     }
     case TodosDispatchActions.ON_CHANGE_TODO: {
       const { todos } = state;
-      const { _id, e } = action;
+      const { id, e } = action;
       const todosCopy = [...todos];
-      const changedTodo = todosCopy.find((t) => t._id === _id);
+      const changedTodo = todosCopy.find((t) => t.id === id);
       if (changedTodo) {
         const { value } = e.target;
         changedTodo.title = value;
@@ -42,13 +42,13 @@ export default function reducer(state: TodosState, action: any): TodosState {
       return {
         ...state,
         todos: todosCopy,
-        newTodo: { _id: '', title: '', listId: '' } as Todo
+        newTodo: { id: '', title: '', listId: '' } as Todo
       };
     }
     case TodosDispatchActions.REMOVE_TODO: {
       const { todos } = state;
-      const { _id } = action;
-      const todosCopy = [...todos].filter((t) => t._id !== _id);
+      const { id } = action;
+      const todosCopy = [...todos].filter((t) => t.id !== id);
       return {
         ...state,
         todos: todosCopy
@@ -56,9 +56,9 @@ export default function reducer(state: TodosState, action: any): TodosState {
     }
     case TodosDispatchActions.COMPLETE_TODO: {
       const { todos } = state;
-      const { _id, complete } = action;
+      const { id, complete } = action;
       const todosCopy = [...todos];
-      const completedTodo = todosCopy.find((t) => t._id === _id);
+      const completedTodo = todosCopy.find((t) => t.id === id);
       if (completedTodo) {
         completedTodo.complete = !complete;
       }
@@ -69,9 +69,9 @@ export default function reducer(state: TodosState, action: any): TodosState {
     }
     case TodosDispatchActions.COMPLETE_DISABLED_TODO: {
       const { todos } = state;
-      const { _id } = action;
+      const { id } = action;
       const todosCopy = [...todos];
-      const completedTodo = todosCopy.find((t) => t._id === _id);
+      const completedTodo = todosCopy.find((t) => t.id === id);
       if (completedTodo) {
         completedTodo.completeDisabled = true;
       }

@@ -1,4 +1,4 @@
-import { TodoListsState } from '@/state/todo-lists/TodoListsProvider';
+import { TodoListsState } from 'src/state/todo-lists/TodoListsProvider';
 
 export default function reducer(state: TodoListsState, action: any): TodoListsState {
   switch (action.type) {
@@ -21,7 +21,7 @@ export default function reducer(state: TodoListsState, action: any): TodoListsSt
     case 'onDeleteTodoList': {
       const { todoLists } = state;
       const { listId } = action;
-      const todoListsCopy = [...todoLists].filter((tl) => tl._id !== listId);
+      const todoListsCopy = [...todoLists].filter((tl) => tl.id !== listId);
       return {
         ...state,
         todoLists: todoListsCopy
