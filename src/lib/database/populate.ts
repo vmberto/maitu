@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Database } from 'src/lib/database';
 
 export function populate(db: Database) {
