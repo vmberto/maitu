@@ -1,4 +1,4 @@
-import { createContext, FC, FormEvent, useEffect, useReducer } from 'react';
+import { createContext, FC, useEffect, useReducer } from 'react';
 import reducer from 'src/state/todos/useTodoReducer';
 import { Todo, TodoList } from 'src/types/main';
 import { GenericEvent, TextareaChangeEventHandler } from 'src/types/events';
@@ -6,7 +6,6 @@ import { useRouter } from 'next/router';
 import { TodosDispatchActions as Actions } from 'src/state/todos/actions';
 import * as TodosDb from 'src/lib/database/todosDb';
 import { useLiveQuery } from 'dexie-react-hooks';
-import * as TodoListDb from 'src/lib/database/todoListDb';
 
 export interface TodosState {
   selectedTodoList: TodoList;

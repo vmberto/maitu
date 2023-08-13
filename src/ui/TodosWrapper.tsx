@@ -1,6 +1,6 @@
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
 import TodoInput from 'src/components/TodoInput';
-import { FC, useMemo } from 'react';
+import { FC } from 'react';
 import Link from 'next/link';
 import { useHandleTodoCreation } from 'src/hooks/useHandleTodoCreation';
 
