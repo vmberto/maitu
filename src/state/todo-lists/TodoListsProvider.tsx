@@ -25,8 +25,6 @@ const TodoListsProvider: FC = ({ children }) => {
 
   useLiveQuery(async () => {
     const todoLists = await TodoListDb.get();
-    console.log(todoLists);
-    Db.cloud.syncState.subscribe((x) => console.log(x));
     dispatch({ type: 'setTodoLists', todoLists });
   }, []);
 
