@@ -8,6 +8,7 @@ export const get = async (listId: string | string[] | undefined) => {
 };
 
 export const add = async (addedTodo: Todo) => {
+  await Db.cloud.sync();
   await Db.todos.add(addedTodo);
 };
 

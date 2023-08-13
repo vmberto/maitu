@@ -1,11 +1,12 @@
-import { createContext, FC, useEffect, useReducer } from 'react';
+import { createContext, FC, FormEvent, useEffect, useReducer } from 'react';
 import reducer from 'src/state/todos/useTodoReducer';
 import { Todo, TodoList } from 'src/types/main';
 import { GenericEvent, TextareaChangeEventHandler } from 'src/types/events';
-import generateUniqueId from 'src/lib/generateUniqueId';
 import { useRouter } from 'next/router';
 import { TodosDispatchActions as Actions } from 'src/state/todos/actions';
 import * as TodosDb from 'src/lib/database/todosDb';
+import { useLiveQuery } from 'dexie-react-hooks';
+import * as TodoListDb from 'src/lib/database/todoListDb';
 
 export interface TodosState {
   selectedTodoList: TodoList;
@@ -40,6 +41,18 @@ const TodosProvider: FC<TodosProviderProps> = ({ children }) => {
   const { listId } = useRouter().query;
   const [state, dispatch] = useReducer(reducer, initialState);
 
+  useLiveQuery(() => {
+    (async () => {
+      if (listId) {
+        const { selectedTodoList, todos } = await TodosDb.get(listId);
+        dispatch({
+          type: Actions.SET_TODOS,
+          selectedTodoList,
+          todos
+        });
+      }
+    })();
+  }, [listId]);
   useEffect(() => {
     (async () => {
       if (listId) {
@@ -57,10 +70,10 @@ const TodosProvider: FC<TodosProviderProps> = ({ children }) => {
     ...state,
     handleChange: (t: Todo) => (e: TextareaChangeEventHandler) =>
       dispatch({ type: Actions.ON_CHANGE_TODO, id: t.id, value: e.target.value }),
-    handleChangeNewTodo: () => dispatch({ type: Actions.ON_CHANGE_NEW_TODO }),
+    handleChangeNewTodo: (e: TextareaChangeEventHandler) =>
+      dispatch({ type: Actions.ON_CHANGE_NEW_TODO, value: e.target.value }),
     handleAddTodo: async () => {
       const addedTodo = {
-        id: `tds${generateUniqueId()}`,
         listId,
         title: state.newTodo.title,
         complete: false,

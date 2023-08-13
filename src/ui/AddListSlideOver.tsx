@@ -1,7 +1,6 @@
 import { FC, useContext, useState } from 'react';
 import { GenericEvent } from 'src/types/events';
 import { TodoList } from 'src/types/main';
-import generateUniqueId from 'src/lib/generateUniqueId';
 import { TodoListsContext } from 'src/state/todo-lists/TodoListsProvider';
 import { Input } from 'src/components/Input';
 import { ColorPicker, Colors } from 'src/components/ColorPicker';
@@ -22,12 +21,11 @@ const AddListModal: FC<AddListSlideOver> = ({ setOpen }) => {
   const handleSubmit = async (e: GenericEvent) => {
     e.preventDefault();
     if (listTitle.length > 0) {
-      const newList: TodoList = {
-        id: `tdl${generateUniqueId()}`,
+      const newList = {
         title: listTitle,
         color,
         dateAdded: new Date()
-      };
+      } as TodoList;
       handleAddTodoList(newList);
       setOpen(false);
     }

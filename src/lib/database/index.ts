@@ -1,7 +1,6 @@
 import Dexie from 'dexie';
 import { Todo, TodoList } from 'src/types/main';
 import dexieCloud, { DexieCloudTable } from 'dexie-cloud-addon';
-import { populate } from 'src/lib/database/populate';
 
 export class Database extends Dexie {
   todos!: DexieCloudTable<Todo, 'id'>;
@@ -18,13 +17,8 @@ export class Database extends Dexie {
     this.cloud.configure({
       databaseUrl: 'https://znweybxm5.dexie.cloud',
       tryUseServiceWorker: true,
-      requireAuth: true
-    });
-
-    this.on('populate', () => {
-      this.on('ready', () => {
-        return populate(this);
-      });
+      requireAuth: true,
+      periodicSync: { minInterval: 5000 }
     });
   }
 }

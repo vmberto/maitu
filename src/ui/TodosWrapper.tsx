@@ -1,76 +1,27 @@
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
 import TodoInput from 'src/components/TodoInput';
-import { FC, KeyboardEventHandler, useContext, useMemo, useState } from 'react';
-import { Todo } from 'src/types/main';
+import { FC, useMemo } from 'react';
 import Link from 'next/link';
-import { TodosContext } from 'src/state/todos/TodosProvider';
+import { useHandleTodoCreation } from 'src/hooks/useHandleTodoCreation';
 
 const TodosWrapper: FC = () => {
-  const [currentTodo, setCurrentTodo] = useState({} as Todo);
-  const [clickScreenFocusHandler, setClickScreenFocusHandler] = useState(false);
   const {
-    todos,
+    todosToComplete,
+    completedTodos,
     newTodo,
     selectedTodoList,
+    clickScreenFocusHandler,
+    handleKeyPressAdd,
+    addTodo,
     handleChange,
     handleChangeNewTodo,
-    handleUpdateTodo,
-    handleRemoveTodo,
-    handleAddTodo,
-    handleCompleteTodo
-  } = useContext(TodosContext);
-
-  const handleClickScreen = () => {
-    document.getElementById('new-todo')?.focus();
-    setClickScreenFocusHandler(true);
-  };
-
-  const removeFocus = () => {
-    setClickScreenFocusHandler(false);
-  };
-
-  const handleKeyPress: KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
-    if (e.key === 'Enter') {
-      setClickScreenFocusHandler(true);
-      e.preventDefault();
-      document.getElementById('new-todo')?.focus();
-    }
-  };
-
-  const handleInputFocus = (t: Todo) => async () => {
-    setClickScreenFocusHandler(true);
-    const currentTodo = { ...t };
-    setCurrentTodo(currentTodo);
-  };
-
-  const updateTodo = (t: Todo) => async () => {
-    setClickScreenFocusHandler(false);
-    if (t.title.length <= 0) {
-      await handleRemoveTodo(t.id);
-    } else {
-      if (t.title !== currentTodo.title) {
-        await handleUpdateTodo(t);
-      }
-    }
-  };
-
-  const addTodo = async () => {
-    setClickScreenFocusHandler(false);
-    if (newTodo?.title?.length > 0) {
-      await handleAddTodo();
-      document.getElementById('new-todo')?.focus();
-    }
-  };
-
-  const handleKeyPressAdd: KeyboardEventHandler<HTMLTextAreaElement> = async (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      await addTodo();
-    }
-  };
-
-  const todosToComplete = useMemo(() => todos.filter((t) => !t.completeDisabled), [todos]);
-  const completedTodos = useMemo(() => todos.filter((t) => t.completeDisabled), [todos]);
+    handleCompleteTodo,
+    updateTodo,
+    handleInputFocus,
+    handleKeyPress,
+    removeFocus,
+    handleClickScreen
+  } = useHandleTodoCreation();
 
   // @Todo: Fix absolute div height (should be the same size as the screen)
   return (

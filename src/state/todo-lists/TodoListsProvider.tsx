@@ -1,7 +1,8 @@
-import { createContext, FC, useEffect, useReducer } from 'react';
+import { createContext, FC, useReducer } from 'react';
 import reducer from 'src/state/todo-lists/useTodoListsReducer';
 import * as TodoListDb from 'src/lib/database/todoListDb';
 import { TodoList } from 'src/types/main';
+import { useLiveQuery } from 'dexie-react-hooks';
 
 export interface TodoListsState {
   todoLists: TodoList[];
@@ -21,11 +22,9 @@ export const TodoListsContext = createContext({} as TodoListsState & TodoListsAc
 const TodoListsProvider: FC = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  useEffect(() => {
-    (async () => {
-      const todoLists = await TodoListDb.get();
-      dispatch({ type: 'setTodoLists', todoLists });
-    })();
+  useLiveQuery(async () => {
+    const todoLists = await TodoListDb.get();
+    dispatch({ type: 'setTodoLists', todoLists });
   }, []);
 
   const value: TodoListsState & TodoListsActions = {
