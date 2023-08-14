@@ -17,11 +17,8 @@ export class Database extends Dexie {
     this.cloud.configure({
       databaseUrl: 'https://znweybxm5.dexie.cloud',
       tryUseServiceWorker: true,
-      requireAuth: true,
-      periodicSync: { minInterval: 5000 }
+      requireAuth: true
     });
-    this.cloud.persistedSyncState.subscribe((x) => console.log('persistedSyncState', x));
-    this.cloud.webSocketStatus.subscribe((x) => console.log('webSocketStatus', x));
   }
 }
 
