@@ -20,6 +20,8 @@ export class Database extends Dexie {
       requireAuth: true,
       periodicSync: { minInterval: 5000 }
     });
+    this.cloud.persistedSyncState.subscribe((x) => console.log('persistedSyncState', x));
+    this.cloud.webSocketStatus.subscribe((x) => console.log('webSocketStatus', x));
   }
 }
 
