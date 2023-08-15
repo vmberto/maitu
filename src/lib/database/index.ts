@@ -21,6 +21,9 @@ export class Database extends Dexie {
       requireAuth: true
     });
     this.cloud.persistedSyncState.subscribe((x) => console.log('persistedSyncState', x));
+
+    this.cloud.currentUser.subscribe((x) => console.log('currentUser', x));
+    console.log(this.cloud);
     this.cloud.webSocketStatus.subscribe((x) => console.log('webSocketStatus', x));
   }
 }
