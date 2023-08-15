@@ -8,7 +8,8 @@ export class Database extends Dexie {
 
   constructor() {
     super('maitu', {
-      addons: [dexieCloud]
+      addons: [dexieCloud],
+      cache: 'immutable'
     });
     this.version(1).stores({
       todoLists: '@id, title, dateAdded',
