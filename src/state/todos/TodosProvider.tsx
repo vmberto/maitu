@@ -34,25 +34,11 @@ const initialState = {
 export const TodosContext = createContext({} as TodosState & TodosActions);
 let timeouts = [] as { id: string; timeout: NodeJS.Timeout }[];
 
-interface TodosProviderProps {}
-
-const TodosProvider: FC<TodosProviderProps> = ({ children }) => {
+const TodosProvider: FC = ({ children }) => {
   const { listId } = useRouter().query;
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useLiveQuery(() => {
-    (async () => {
-      if (listId) {
-        const { selectedTodoList, todos } = await TodosDb.get(listId);
-        dispatch({
-          type: Actions.SET_TODOS,
-          selectedTodoList,
-          todos
-        });
-      }
-    })();
-  }, [listId]);
-  useEffect(() => {
     (async () => {
       if (listId) {
         const { selectedTodoList, todos } = await TodosDb.get(listId);

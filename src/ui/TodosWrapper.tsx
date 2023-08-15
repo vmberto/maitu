@@ -41,20 +41,22 @@ const TodosWrapper: FC = () => {
             <h1 className="text-2xl font-bold">{selectedTodoList?.title}</h1>
           </div>
           <div id="Todos" className="mt-5 mb-60">
-            {todosToComplete.map((t) => (
-              <TodoInput
-                key={t.id}
-                id={t.id}
-                value={t.title}
-                todoData={t}
-                handleCompleteTodo={handleCompleteTodo}
-                onClick={(e) => e.stopPropagation()}
-                onKeyDown={handleKeyPress}
-                onBlur={updateTodo(t)}
-                onFocus={handleInputFocus(t)}
-                onChange={handleChange(t)}
-              />
-            ))}
+            {todosToComplete.map((t) => {
+              return (
+                <TodoInput
+                  key={t.id}
+                  id={t.id}
+                  value={t.title}
+                  todoData={t}
+                  handleCompleteTodo={handleCompleteTodo}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={handleKeyPress}
+                  onBlur={updateTodo(t)}
+                  onFocus={handleInputFocus(t)}
+                  onChange={handleChange(t)}
+                />
+              );
+            })}
             <TodoInput
               id="new-todo"
               value={newTodo.title}

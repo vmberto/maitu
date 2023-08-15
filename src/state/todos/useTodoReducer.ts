@@ -25,9 +25,9 @@ export default function reducer(
     case TodosDispatchActions.ON_CHANGE_TODO: {
       const { todos } = state;
       const { id } = action;
-      const todosCopy = [...todos];
+      const todosCopy: Todo[] = JSON.parse(JSON.stringify(todos));
       const changedTodo = todosCopy.find((t) => t.id === id);
-      if (changedTodo) {
+      if (changedTodo?.id) {
         changedTodo.title = action.value!;
       }
       return {
@@ -44,12 +44,12 @@ export default function reducer(
       };
     }
     case TodosDispatchActions.ADD_TODO: {
-      const { todos } = state;
-      const todosCopy = [...todos];
-      todosCopy.push(action.addedTodo!);
+      // const { todos } = state;
+      // const todosCopy = [...todos];
+      // todosCopy.push(action.addedTodo!);
       return {
         ...state,
-        todos: todosCopy,
+        // todos: todosCopy,
         newTodo: { id: '', title: '', listId: '' } as Todo
       };
     }

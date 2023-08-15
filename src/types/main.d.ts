@@ -5,7 +5,7 @@ export interface TodoList {
   title: string;
   color: Colors;
 
-  dateAdded: Date;
+  createdAt: Date;
 }
 
 export interface Todo {

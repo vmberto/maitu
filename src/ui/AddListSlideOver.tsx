@@ -24,7 +24,7 @@ const AddListModal: FC<AddListSlideOver> = ({ setOpen }) => {
       const newList = {
         title: listTitle,
         color,
-        dateAdded: new Date()
+        createdAt: new Date()
       } as TodoList;
       handleAddTodoList(newList);
       setOpen(false);
