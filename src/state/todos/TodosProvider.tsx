@@ -1,4 +1,4 @@
-import { createContext, FC, useEffect, useReducer } from 'react';
+import { createContext, FC, useReducer } from 'react';
 import reducer from 'src/state/todos/useTodoReducer';
 import { Todo, TodoList } from 'src/types/main';
 import { GenericEvent, TextareaChangeEventHandler } from 'src/types/events';
