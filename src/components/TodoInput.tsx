@@ -20,7 +20,6 @@ const TodoInput: FC<TodoInputProps> = ({ todoData, handleCompleteTodo, ...rest }
   }, [rest.value]);
 
   const handleClickCompleteTodo = (e: GenericEvent) => {
-    console.log(1);
     e.stopPropagation();
     if (todoData && handleCompleteTodo) {
       handleCompleteTodo(todoData);

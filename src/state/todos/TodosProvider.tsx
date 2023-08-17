@@ -79,8 +79,7 @@ const TodosProvider: FC = ({ children }) => {
         timeouts.push({
           id: t.id,
           timeout: setTimeout(async () => {
-            dispatch({ type: Actions.COMPLETE_DISABLED_TODO, id: t.id });
-            await TodosDb.update(t.id, { ...t, completeDisabled: true });
+            await TodosDb.update(t.id, { ...t, complete: true, completeDisabled: true });
           }, 2000)
         });
       } else {
@@ -91,11 +90,6 @@ const TodosProvider: FC = ({ children }) => {
         }
       }
       await TodosDb.update(t.id, { ...t, complete: !t.complete });
-      dispatch({
-        type: Actions.COMPLETE_TODO,
-        id: t.id,
-        complete: t.complete
-      });
     }
   };
 

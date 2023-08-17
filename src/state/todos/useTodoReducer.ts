@@ -44,12 +44,8 @@ export default function reducer(
       };
     }
     case TodosDispatchActions.ADD_TODO: {
-      // const { todos } = state;
-      // const todosCopy = [...todos];
-      // todosCopy.push(action.addedTodo!);
       return {
         ...state,
-        // todos: todosCopy,
         newTodo: { id: '', title: '', listId: '' } as Todo
       };
     }
