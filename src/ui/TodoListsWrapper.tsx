@@ -1,13 +1,14 @@
-import { FC, useContext, useState } from 'react';
+import { FC, useState } from 'react';
 import { ListDemo } from 'src/components/ListDemo';
-import { TodoListsContext } from 'src/state/todo-lists/TodoListsProvider';
 import AddListSlideOver from 'src/ui/AddListSlideOver';
 import SlideOver from 'src/components/SlideOver';
+import { useTodoLists } from 'src/state/todo-lists/useTodoLists';
 
 const TodoListsWrapper: FC = () => {
   const [open, setOpen] = useState(false);
-  const { todoLists } = useContext(TodoListsContext);
+  const { todoLists, handleAddTodoList } = useTodoLists();
 
+  console.log(todoLists);
   return (
     <>
       <header className="flex flex-row max-w-3xl my-0 mx-auto py-2 px-6 mt-2.5 border-b-2 items-center">
@@ -24,7 +25,7 @@ const TodoListsWrapper: FC = () => {
         ))}
       </div>
       <SlideOver title="Adicionar Lista" open={open} setOpen={setOpen}>
-        <AddListSlideOver setOpen={setOpen} />
+        <AddListSlideOver setOpen={setOpen} handleAddTodoList={handleAddTodoList} />
       </SlideOver>
     </>
   );

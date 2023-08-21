@@ -1,23 +1,24 @@
-import { FC, useContext, useState } from 'react';
+import { FC, useState } from 'react';
 import { GenericEvent } from 'src/types/events';
 import { TodoList } from 'src/types/main';
-import { TodoListsContext } from 'src/state/todo-lists/TodoListsProvider';
 import { Input } from 'src/components/Input';
 import { ColorPicker, Colors } from 'src/components/ColorPicker';
+import { Button } from 'src/components/Button';
 
 interface AddListSlideOver {
   setOpen: (open: boolean) => void;
+  handleAddTodoList: (newTodoList: TodoList) => void;
 }
 
-const AddListModal: FC<AddListSlideOver> = ({ setOpen }) => {
+const AddListModal: FC<AddListSlideOver> = ({ setOpen, handleAddTodoList }) => {
   const [listTitle, setListTitle] = useState('');
   const [color, setColor] = useState(Colors[0]);
-  const { handleAddTodoList } = useContext(TodoListsContext);
 
   const handleInputChange = (e: GenericEvent) => {
     const { value } = e.target;
     setListTitle(value);
   };
+
   const handleSubmit = async (e: GenericEvent) => {
     e.preventDefault();
     if (listTitle.length > 0) {
@@ -37,27 +38,7 @@ const AddListModal: FC<AddListSlideOver> = ({ setOpen }) => {
         <Input value={listTitle} onChange={handleInputChange} label={<>Nome da Lista</>} />
         <ColorPicker color={color} setColor={setColor} />
       </div>
-      <button
-        type="submit"
-        className={`
-    px-6
-    py-2.5
-    bg-${color}
-    text-white
-    font-medium
-    text-xs 
-    leading-tight
-    uppercase
-    rounded
-    shadow-md
-    hover:bg-${color}-700 hover:shadow-lg
-    focus:bg-${color}-700 focus:shadow-lg focus:outline-none focus:ring-0
-    active:bg-${color}-800 active:shadow-lg
-    transition
-    duration-150
-    ease-in-out`}>
-        Submit
-      </button>
+      <Button type="submit" color={color} />
     </form>
   );
 };

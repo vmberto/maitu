@@ -1,7 +1,7 @@
 import { GenericEvent } from 'src/types/events';
-import { FC, useContext, useState } from 'react';
-import { TodoListsContext } from 'src/state/todo-lists/TodoListsProvider';
+import { FC, useState } from 'react';
 import { Input } from 'src/components/Input';
+import { useTodoLists } from 'src/state/todo-lists/useTodoLists';
 
 interface DeleteListProps {
   id: string;
@@ -9,15 +9,17 @@ interface DeleteListProps {
 }
 export const DeleteList: FC<DeleteListProps> = ({ id, listTitle }) => {
   const [listTitleInput, setListTitleInput] = useState('');
-  const { handleDeleteTodoList } = useContext(TodoListsContext);
+  const { handleDeleteTodoList } = useTodoLists();
+
   const handleInputChange = (e: GenericEvent) => {
     const { value } = e.target;
     setListTitleInput(value);
   };
 
-  const deleteTodoList = (listId: string) => () => {
+  const deleteTodoList = (listId: string) => (e: GenericEvent) => {
+    e.preventDefault();
     if (listTitleInput === listTitle) {
-      handleDeleteTodoList(listId);
+      handleDeleteTodoList(listId).catch(console.error);
     }
   };
 

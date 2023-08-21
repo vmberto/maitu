@@ -1,9 +1,9 @@
-import { FC, Fragment } from 'react';
+import { FC, Fragment, ReactNode } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/20/solid';
 
 interface ModalProps {
-  title: string;
+  title: string | ReactNode;
   open: boolean;
   setOpen: (open: boolean) => void;
 }

@@ -6,17 +6,33 @@ import { Bars3BottomRightIcon } from '@heroicons/react/24/solid';
 import { GenericEvent } from 'src/types/events';
 import { DeleteList } from 'src/components/DeleteList';
 import { TodoList } from 'src/types/main';
+import { ColorPicker } from 'src/components/ColorPicker';
+import { useTodoLists } from 'src/state/todo-lists/useTodoLists';
+import { Button } from 'src/components/Button';
 
 interface ListDemoProps {
   todoList: TodoList;
   actions?: ReactNode | undefined;
 }
 export const ListDemo = ({ todoList }: ListDemoProps) => {
+  const { handleUpdateTodoList } = useTodoLists();
   const [open, setOpen] = useState(false);
+  const [color, setColor] = useState(todoList.color);
+  const [listTitle, setListTitle] = useState(todoList.title);
+
+  const handleInputChange = (e: GenericEvent) => {
+    const { value } = e.target;
+    setListTitle(value);
+  };
 
   const handleClick = (e: GenericEvent) => {
     e.stopPropagation();
     setOpen(true);
+  };
+
+  const saveChanges = async () => {
+    await handleUpdateTodoList(todoList.id, { title: listTitle, color } as TodoList);
+    setOpen(false);
   };
 
   return (
@@ -46,8 +62,13 @@ export const ListDemo = ({ todoList }: ListDemoProps) => {
           </div>
         </div>
       </Link>
-      <SlideOver title={todoList.title} open={open} setOpen={setOpen}>
+      <SlideOver
+        title={<input defaultValue={listTitle} onChange={handleInputChange} />}
+        open={open}
+        setOpen={setOpen}>
         <DeleteList listTitle={todoList.title} id={todoList.id} />
+        <ColorPicker color={color} setColor={setColor} />
+        <Button color={color} onClick={saveChanges} className="mt-10" type="button" />
       </SlideOver>
     </>
   );
