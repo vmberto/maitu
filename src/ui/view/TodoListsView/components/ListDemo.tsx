@@ -1,14 +1,13 @@
 import Link from 'next/link';
-import { ReactNode, useState } from 'react';
-import SlideOver from 'src/components/SlideOver';
+import { ReactNode, useEffect, useState } from 'react';
+import SlideOver from 'src/ui/common/SlideOver';
 import { Menu } from '@headlessui/react';
 import { Bars3BottomRightIcon } from '@heroicons/react/24/solid';
 import { GenericEvent } from 'src/types/events';
-import { DeleteList } from 'src/components/DeleteList';
+import { DeleteList } from 'src/ui/view/TodoListsView/components/DeleteList';
 import { TodoList } from 'src/types/main';
-import { ColorPicker } from 'src/components/ColorPicker';
+import { ColorPicker } from 'src/ui/common/ColorPicker';
 import { useTodoLists } from 'src/state/todo-lists/useTodoLists';
-import { Button } from 'src/components/Button';
 
 interface ListDemoProps {
   todoList: TodoList;
@@ -19,10 +18,19 @@ export const ListDemo = ({ todoList }: ListDemoProps) => {
   const [open, setOpen] = useState(false);
   const [color, setColor] = useState(todoList.color);
   const [listTitle, setListTitle] = useState(todoList.title);
+  const [definedListTitle, setDefinedListTitle] = useState(todoList.title);
 
   const handleInputChange = (e: GenericEvent) => {
     const { value } = e.target;
     setListTitle(value);
+  };
+
+  const handleDefineTitle = () => {
+    if (listTitle) {
+      setDefinedListTitle(listTitle);
+    } else {
+      setListTitle(todoList.title);
+    }
   };
 
   const handleClick = (e: GenericEvent) => {
@@ -30,10 +38,11 @@ export const ListDemo = ({ todoList }: ListDemoProps) => {
     setOpen(true);
   };
 
-  const saveChanges = async () => {
-    await handleUpdateTodoList(todoList.id, { title: listTitle, color } as TodoList);
-    setOpen(false);
-  };
+  useEffect(() => {
+    (async () => {
+      await handleUpdateTodoList(todoList.id, { title: definedListTitle, color } as TodoList);
+    })();
+  }, [color, definedListTitle]);
 
   return (
     <>
@@ -63,12 +72,27 @@ export const ListDemo = ({ todoList }: ListDemoProps) => {
         </div>
       </Link>
       <SlideOver
-        title={<input defaultValue={listTitle} onChange={handleInputChange} />}
+        title={
+          <input
+            id="title-input"
+            maxLength={30}
+            tabIndex={-1}
+            defaultValue={listTitle}
+            className="focus:outline-0 w-full"
+            onChange={handleInputChange}
+            onBlur={handleDefineTitle}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') {
+                handleDefineTitle();
+              }
+            }}
+          />
+        }
         open={open}
         setOpen={setOpen}>
-        <DeleteList listTitle={todoList.title} id={todoList.id} />
         <ColorPicker color={color} setColor={setColor} />
-        <Button color={color} onClick={saveChanges} className="mt-10" type="button" />
+
+        <DeleteList listTitle={todoList.title} id={todoList.id} />
       </SlideOver>
     </>
   );

@@ -1,4 +1,4 @@
-import { Colors } from 'src/components/ColorPicker';
+import { Colors } from 'src/ui/common/ColorPicker';
 
 export interface TodoList {
   id: string;

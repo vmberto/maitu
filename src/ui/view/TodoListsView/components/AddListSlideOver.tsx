@@ -1,16 +1,16 @@
 import { FC, useState } from 'react';
 import { GenericEvent } from 'src/types/events';
 import { TodoList } from 'src/types/main';
-import { Input } from 'src/components/Input';
-import { ColorPicker, Colors } from 'src/components/ColorPicker';
-import { Button } from 'src/components/Button';
+import { Input } from 'src/ui/common/Input';
+import { ColorPicker, Colors } from 'src/ui/common/ColorPicker';
+import { Button } from 'src/ui/common/Button';
 
-interface AddListSlideOver {
+interface AddListSlideOverProps {
   setOpen: (open: boolean) => void;
   handleAddTodoList: (newTodoList: TodoList) => void;
 }
 
-const AddListModal: FC<AddListSlideOver> = ({ setOpen, handleAddTodoList }) => {
+const AddListSlideOver: FC<AddListSlideOverProps> = ({ setOpen, handleAddTodoList }) => {
   const [listTitle, setListTitle] = useState('');
   const [color, setColor] = useState(Colors[0]);
 
@@ -35,7 +35,12 @@ const AddListModal: FC<AddListSlideOver> = ({ setOpen, handleAddTodoList }) => {
   return (
     <form id="addData-form" onSubmit={handleSubmit}>
       <div className="form-group mb-6">
-        <Input value={listTitle} onChange={handleInputChange} label={<>Nome da Lista</>} />
+        <Input
+          value={listTitle}
+          maxLength={30}
+          onChange={handleInputChange}
+          label="Nome da Lista"
+        />
         <ColorPicker color={color} setColor={setColor} />
       </div>
       <Button type="submit" color={color} />
@@ -43,4 +48,4 @@ const AddListModal: FC<AddListSlideOver> = ({ setOpen, handleAddTodoList }) => {
   );
 };
 
-export default AddListModal;
+export default AddListSlideOver;

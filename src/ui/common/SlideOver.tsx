@@ -37,7 +37,7 @@ const SlideOver: FC<ModalProps> = ({ title, open, setOpen, children }) => {
                 <Dialog.Panel className="pointer-events-auto relative w-screen max-w-2xl">
                   <div className="flex h-full flex-col overflow-y-scroll mt-20 bg-white pb-6 shadow-xl">
                     <div className="px-4 pt-4 pb-3 sm:px-6 w-full flex align-baseline z-10 fixed bg-white border-b-2">
-                      <Dialog.Title className="text-lg font-medium text-gray-900">
+                      <Dialog.Title className="text-lg flex-grow font-medium text-gray-900">
                         {title}
                       </Dialog.Title>
                       <button

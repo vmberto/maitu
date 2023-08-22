@@ -1,10 +1,10 @@
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
-import TodoInput from 'src/components/TodoInput';
+import TodoInput from 'src/ui/view/TodosView/components/TodoInput';
 import { FC } from 'react';
 import Link from 'next/link';
 import { useHandleTodoCreation } from 'src/hooks/useHandleTodoCreation';
 
-const TodosWrapper: FC = () => {
+const TodosView: FC = () => {
   const {
     todosToComplete,
     completedTodos,
@@ -32,7 +32,7 @@ const TodosWrapper: FC = () => {
       <div className="min-h-screen" onClick={handleClickScreen}>
         <div className="max-w-xl my-0 mx-auto p-5">
           <div className="flex items-center">
-            <Link href="..">
+            <Link href="../../..">
               <ArrowLeftIcon
                 className={`relative z-10 cursor-pointer h-6 w-6 mr-5 fill-${selectedTodoList.color}`}
               />
@@ -88,4 +88,4 @@ const TodosWrapper: FC = () => {
   );
 };
 
-export default TodosWrapper;
+export default TodosView;

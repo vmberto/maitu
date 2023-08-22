@@ -1,5 +1,5 @@
-import TodoListsWrapper from 'src/ui/TodoListsWrapper';
+import TodoListsView from 'src/ui/view/TodoListsView';
 
 export default function Home() {
-  return <TodoListsWrapper />;
+  return <TodoListsView />;
 }

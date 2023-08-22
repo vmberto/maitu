@@ -1,7 +1,7 @@
 import { FC, InputHTMLAttributes, ReactElement } from 'react';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
-  label: ReactElement;
+  label: string | ReactElement;
 }
 
 export const Input: FC<InputProps> = ({ label, value, onChange }) => (
