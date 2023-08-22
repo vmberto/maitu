@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint:js": "eslint './*.[jt]s?(x)' './**/*.[jt]s?(x)'"
+    "lint": "eslint './*.[jt]s?(x)' './**/*.[jt]s?(x)'"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.10",
