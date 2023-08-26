@@ -1,5 +1,5 @@
-import { KeyboardEventHandler, useContext, useMemo, useState } from 'react';
-import { TodosContext } from 'src/state/todos/TodosProvider';
+import { KeyboardEventHandler, useMemo, useState } from 'react';
+import { useTodos } from 'src/state/todos/useTodos';
 import { Todo } from 'src/types/main';
 
 export const useHandleTodoCreation = () => {
@@ -8,13 +8,13 @@ export const useHandleTodoCreation = () => {
     todos,
     newTodo,
     selectedTodoList,
-    handleChange,
+    handleChangeExistingTodo,
     handleChangeNewTodo,
     handleUpdateTodo,
     handleRemoveTodo,
     handleAddTodo,
     handleCompleteTodo
-  } = useContext(TodosContext);
+  } = useTodos();
 
   const [clickScreenFocusHandler, setClickScreenFocusHandler] = useState(false);
 
@@ -78,7 +78,7 @@ export const useHandleTodoCreation = () => {
     clickScreenFocusHandler,
     handleKeyPressAdd,
     addTodo,
-    handleChange,
+    handleChangeExistingTodo,
     handleChangeNewTodo,
     handleCompleteTodo,
     updateTodo,

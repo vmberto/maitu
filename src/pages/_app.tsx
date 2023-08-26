@@ -1,7 +1,6 @@
 import Head from 'next/head';
 import 'src/styles/globals.css';
 import { AppProps } from 'next/app';
-import { AppContextProvider } from 'src/state/AppContextProvider';
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -13,9 +12,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
           content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"
         />
       </Head>
-      <AppContextProvider>
-        <Component {...pageProps} />
-      </AppContextProvider>
+      <Component {...pageProps} />
     </>
   );
 }

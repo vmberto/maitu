@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { ReactNode, useEffect, useState } from 'react';
 import SlideOver from 'src/ui/common/SlideOver';
 import { Menu } from '@headlessui/react';
-import { Bars3BottomRightIcon } from '@heroicons/react/24/solid';
+import { EllipsisVerticalIcon } from '@heroicons/react/24/solid';
 import { GenericEvent } from 'src/types/events';
 import { DeleteList } from 'src/ui/view/TodoListsView/components/DeleteList';
 import { TodoList } from 'src/types/main';
@@ -65,7 +65,7 @@ export const ListDemo = ({ todoList }: ListDemoProps) => {
                 className="inline-flex w-full justify-center
                 p-1 text-sm font-medium text-gray-700 betterhover:hover:bg-gray-200
                 focus:ring-offset-2 focus:ring-offset-gray-200 rounded-full">
-                <Bars3BottomRightIcon className="h-6 w-6" />
+                <EllipsisVerticalIcon className="h-8 w-8" />
               </Menu.Button>
             </Menu>
           </div>
@@ -78,7 +78,7 @@ export const ListDemo = ({ todoList }: ListDemoProps) => {
             maxLength={30}
             tabIndex={-1}
             defaultValue={listTitle}
-            className="focus:outline-0 w-full"
+            className="focus:outline-0 w-full leading-7"
             onChange={handleInputChange}
             onBlur={handleDefineTitle}
             onKeyPress={(e) => {

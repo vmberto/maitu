@@ -1,6 +1,17 @@
-import React, { DetailedHTMLProps, useEffect, useRef, FC, TextareaHTMLAttributes } from 'react';
+import React, {
+  DetailedHTMLProps,
+  useEffect,
+  useRef,
+  FC,
+  TextareaHTMLAttributes,
+  useState
+} from 'react';
 import { GenericEvent } from 'src/types/events';
 import { Todo } from 'src/types/main';
+import { Menu } from '@headlessui/react';
+import { PlusCircleIcon, MinusSmallIcon } from '@heroicons/react/24/outline';
+import { CheckCircleIcon } from '@heroicons/react/24/solid';
+import SlideOver from 'src/ui/common/SlideOver';
 
 type ElProps<T, R> = DetailedHTMLProps<T, R>;
 
@@ -12,6 +23,7 @@ export interface TodoInputProps
 
 const TodoInput: FC<TodoInputProps> = ({ todoData, handleCompleteTodo, ...rest }) => {
   const textareaRef = useRef({} as HTMLTextAreaElement);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     textareaRef.current.style.height = '0px';
@@ -24,6 +36,11 @@ const TodoInput: FC<TodoInputProps> = ({ todoData, handleCompleteTodo, ...rest }
     if (todoData && handleCompleteTodo) {
       handleCompleteTodo(todoData);
     }
+  };
+
+  const handleClick = (e: GenericEvent) => {
+    e.stopPropagation();
+    setOpen(true);
   };
 
   return (
@@ -50,6 +67,28 @@ const TodoInput: FC<TodoInputProps> = ({ todoData, handleCompleteTodo, ...rest }
                     outline-0
                     focus:outline-none"
         {...rest}></textarea>
+      <Menu as="div" className="relative inline-block text-left">
+        <Menu.Button
+          onClick={handleClick}
+          className="inline-flex w-full justify-center
+                p-1 text-sm font-medium text-gray-700 betterhover:hover:bg-gray-200
+                focus:ring-offset-2 focus:ring-offset-gray-200 rounded-full">
+          <PlusCircleIcon className="h-6 w-6" />
+        </Menu.Button>
+      </Menu>
+      <SlideOver
+        title={
+          <div className="inline-flex justify-center gap-2.5 content-center">
+            {todoData?.completeDisabled ? (
+              <CheckCircleIcon className="h-6 w-6" />
+            ) : (
+              <MinusSmallIcon className="h-6 w-6" />
+            )}
+            {todoData?.title}
+          </div>
+        }
+        open={open}
+        setOpen={setOpen}></SlideOver>
     </div>
   );
 };
