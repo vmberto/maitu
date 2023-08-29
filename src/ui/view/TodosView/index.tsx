@@ -3,7 +3,7 @@ import TodoInput from 'src/ui/view/TodosView/components/TodoInput';
 import { FC } from 'react';
 import Link from 'next/link';
 import { useHandleTodoCreation } from 'src/hooks/useHandleTodoCreation';
-import { FontColor, HexColors } from 'src/ui/common/ColorPicker';
+import { FontColor, HexColors } from 'src/utils/colorMappers';
 
 const TodosView: FC = () => {
   const {

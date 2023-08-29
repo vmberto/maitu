@@ -13,7 +13,7 @@ export class Database extends Dexie {
     });
     this.version(1).stores({
       todoLists: '@id, title, createdAt',
-      todos: '@id, title, listId, complete, completeDisabled'
+      todos: '@id, title, listId, complete, completeDisabled, createdAt'
     });
     this.cloud.configure({
       databaseUrl: 'https://znweybxm5.dexie.cloud',

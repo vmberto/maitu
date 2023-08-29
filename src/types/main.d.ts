@@ -16,4 +16,6 @@ export interface Todo {
 
   complete: boolean;
   completeDisabled: boolean;
+
+  createdAt: Date;
 }

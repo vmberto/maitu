@@ -7,6 +7,7 @@ module.exports = {
     colors: ({ colors }) => ({
       primary: '#3664FF',
       danger: '#DE623E',
+      success: '#21e824',
       palette_one: '#F55C30',
       palette_two: '#25E87B',
       palette_three: '#E825C7',

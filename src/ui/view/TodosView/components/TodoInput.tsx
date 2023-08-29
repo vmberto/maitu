@@ -9,11 +9,30 @@ import React, {
 import { GenericEvent } from 'src/types/events';
 import { Todo } from 'src/types/main';
 import { Menu } from '@headlessui/react';
-import { PlusCircleIcon, MinusSmallIcon } from '@heroicons/react/24/outline';
+import { EllipsisHorizontalCircleIcon, PlayCircleIcon } from '@heroicons/react/24/outline';
 import { CheckCircleIcon } from '@heroicons/react/24/solid';
 import SlideOver from 'src/ui/common/SlideOver';
+import { HexColors } from 'src/utils/colorMappers';
 
 type ElProps<T, R> = DetailedHTMLProps<T, R>;
+
+/**
+ * A function that formats a date in the format DD/MM/YYYY HH:mm
+ */
+
+// Generate a function that formats a Date object in DD/MM/YYYY HH:mm
+// format
+export const formatDate = (date: Date) => {
+  console.log(date);
+  const day = date.getDate();
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear();
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  return `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year} ${hours
+    .toString()
+    .padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+};
 
 export interface TodoInputProps
   extends ElProps<TextareaHTMLAttributes<HTMLTextAreaElement>, HTMLTextAreaElement> {
@@ -67,28 +86,32 @@ const TodoInput: FC<TodoInputProps> = ({ todoData, handleCompleteTodo, ...rest }
                     outline-0
                     focus:outline-none"
         {...rest}></textarea>
-      <Menu as="div" className="relative inline-block text-left">
-        <Menu.Button
-          onClick={handleClick}
-          className="inline-flex w-full justify-center
+      {todoData?.id && (
+        <>
+          <Menu as="div" className="relative inline-block text-left">
+            <Menu.Button
+              onClick={handleClick}
+              className="inline-flex w-full justify-center
                 p-1 text-sm font-medium text-gray-700 betterhover:hover:bg-gray-200
                 focus:ring-offset-2 focus:ring-offset-gray-200 rounded-full">
-          <PlusCircleIcon className="h-6 w-6" />
-        </Menu.Button>
-      </Menu>
-      <SlideOver
-        title={
-          <div className="inline-flex justify-center gap-2.5 content-center">
-            {todoData?.completeDisabled ? (
-              <CheckCircleIcon className="h-6 w-6" />
-            ) : (
-              <MinusSmallIcon className="h-6 w-6" />
-            )}
-            {todoData?.title}
-          </div>
-        }
-        open={open}
-        setOpen={setOpen}></SlideOver>
+              <EllipsisHorizontalCircleIcon className="h-6 w-6" />
+            </Menu.Button>
+          </Menu>
+          <SlideOver
+            title={
+              <div className="inline-flex justify-center items-center gap-2.5 content-center">
+                {todoData?.completeDisabled ? (
+                  <CheckCircleIcon className="h-6 w-6" color="#5aee5c" />
+                ) : (
+                  <PlayCircleIcon className="h-6 w-6" color={HexColors.get('primary')} />
+                )}
+                {todoData?.title}
+              </div>
+            }
+            open={open}
+            setOpen={setOpen}></SlideOver>
+        </>
+      )}
     </div>
   );
 };

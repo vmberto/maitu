@@ -54,7 +54,8 @@ export const useTodos = () => {
       listId,
       title: newTodo.title,
       complete: false,
-      completeDisabled: false
+      completeDisabled: false,
+      createdAt: new Date()
     } as Todo;
     setNewTodo({ title: '' } as Todo);
     await TodosDb.add(addedTodo);
