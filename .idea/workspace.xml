@@ -6,10 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/state/todos/useTodos.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/state/todos/useTodos.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/AddListSlideOver.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/AddListSlideOver.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/view/TodosView/components/TodoInput.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodosView/components/TodoInput.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/view/TodosView/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodosView/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/view/TodoListsView/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodoListsView/index.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

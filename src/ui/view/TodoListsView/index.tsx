@@ -1,10 +1,9 @@
-import { FC, useState } from 'react';
+import { useState } from 'react';
 import { ListDemo } from 'src/ui/view/TodoListsView/components/ListDemo';
 import AddListSlideOver from 'src/ui/view/TodoListsView/components/AddListSlideOver';
-import SlideOver from 'src/ui/common/SlideOver';
 import { useTodoLists } from 'src/state/todo-lists/useTodoLists';
 
-const TodoListsView: FC = () => {
+const TodoListsView = () => {
   const [open, setOpen] = useState(false);
   const { todoLists, handleAddTodoList } = useTodoLists();
 
@@ -23,9 +22,12 @@ const TodoListsView: FC = () => {
           <ListDemo key={list.id} todoList={list} />
         ))}
       </div>
-      <SlideOver title="Adicionar Lista" open={open} setOpen={setOpen}>
-        <AddListSlideOver setOpen={setOpen} handleAddTodoList={handleAddTodoList} />
-      </SlideOver>
+      <AddListSlideOver
+        title="Add New Lsta"
+        open={open}
+        setOpen={setOpen}
+        handleAddTodoList={handleAddTodoList}
+      />
     </>
   );
 };
