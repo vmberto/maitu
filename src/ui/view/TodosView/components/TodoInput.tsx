@@ -4,7 +4,10 @@ import React, {
   useRef,
   FC,
   TextareaHTMLAttributes,
-  useState
+  useState,
+  forwardRef,
+  ForwardedRef,
+  useImperativeHandle
 } from 'react';
 import { GenericEvent } from 'src/types/events';
 import { Todo } from 'src/types/main';
@@ -13,26 +16,9 @@ import { EllipsisHorizontalCircleIcon, PlayCircleIcon } from '@heroicons/react/2
 import { CheckCircleIcon } from '@heroicons/react/24/solid';
 import SlideOver from 'src/ui/common/SlideOver';
 import { HexColors } from 'src/utils/colorMappers';
+import { formatDate } from 'src/utils/functions';
 
 type ElProps<T, R> = DetailedHTMLProps<T, R>;
-
-/**
- * A function that formats a date in the format DD/MM/YYYY HH:mm
- */
-
-// Generate a function that formats a Date object in DD/MM/YYYY HH:mm
-// format
-export const formatDate = (date: Date) => {
-  console.log(date);
-  const day = date.getDate();
-  const month = date.getMonth() + 1;
-  const year = date.getFullYear();
-  const hours = date.getHours();
-  const minutes = date.getMinutes();
-  return `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year} ${hours
-    .toString()
-    .padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-};
 
 export interface TodoInputProps
   extends ElProps<TextareaHTMLAttributes<HTMLTextAreaElement>, HTMLTextAreaElement> {
@@ -40,42 +26,48 @@ export interface TodoInputProps
   handleCompleteTodo?: (t: Todo) => void;
 }
 
-const TodoInput: FC<TodoInputProps> = ({ todoData, handleCompleteTodo, ...rest }) => {
-  const textareaRef = useRef({} as HTMLTextAreaElement);
-  const [open, setOpen] = useState(false);
+const TodoInput = forwardRef(
+  (
+    { todoData, handleCompleteTodo, ...rest }: TodoInputProps,
+    ref: ForwardedRef<HTMLTextAreaElement>
+  ) => {
+    const textareaRef = useRef({} as HTMLTextAreaElement);
+    const [open, setOpen] = useState(false);
 
-  useEffect(() => {
-    textareaRef.current.style.height = '0px';
-    const scrollHeight = textareaRef.current.scrollHeight;
-    textareaRef.current.style.height = scrollHeight + 'px';
-  }, [rest.value]);
+    useImperativeHandle(ref, () => textareaRef.current);
 
-  const handleClickCompleteTodo = (e: GenericEvent) => {
-    e.stopPropagation();
-    if (todoData && handleCompleteTodo) {
-      handleCompleteTodo(todoData);
-    }
-  };
+    useEffect(() => {
+      textareaRef.current.style.height = '0px';
+      const scrollHeight = textareaRef.current.scrollHeight;
+      textareaRef.current.style.height = scrollHeight + 'px';
+    }, [rest.value]);
 
-  const handleClick = (e: GenericEvent) => {
-    e.stopPropagation();
-    setOpen(true);
-  };
+    const handleClickCompleteTodo = (e: GenericEvent) => {
+      e.stopPropagation();
+      if (todoData && handleCompleteTodo) {
+        handleCompleteTodo(todoData);
+      }
+    };
 
-  return (
-    <div className="flex items-center border-t-2">
-      <div
-        onClick={handleClickCompleteTodo}
-        className="cursor-pointer relative
+    const handleClick = (e: GenericEvent) => {
+      e.stopPropagation();
+      setOpen(true);
+    };
+
+    return (
+      <div className="flex items-center border-t-2">
+        <div
+          onClick={handleClickCompleteTodo}
+          className="cursor-pointer relative
         transition-all border-primary border mr-3
           p-3.5 rounded-full font-semibold items-center">
-        {todoData?.complete && (
-          <div className="absolute bg-primary h-5 w-5 rounded-full right-1 top-1"></div>
-        )}
-      </div>
-      <textarea
-        ref={textareaRef}
-        className="block
+          {todoData?.complete && (
+            <div className="absolute bg-primary h-5 w-5 rounded-full right-1 top-1"></div>
+          )}
+        </div>
+        <textarea
+          ref={textareaRef}
+          className="block
                     w-full
                     relative z-10
                     bg-transparent
@@ -85,35 +77,42 @@ const TodoInput: FC<TodoInputProps> = ({ todoData, handleCompleteTodo, ...rest }
                     px-2 py-4
                     outline-0
                     focus:outline-none"
-        {...rest}></textarea>
-      {todoData?.id && (
-        <>
-          <Menu as="div" className="relative inline-block text-left">
-            <Menu.Button
-              onClick={handleClick}
-              className="inline-flex w-full justify-center
+          {...rest}></textarea>
+        {todoData?.id && (
+          <>
+            <Menu as="div" className="relative inline-block text-left">
+              <Menu.Button
+                onClick={handleClick}
+                className="inline-flex w-full justify-center
                 p-1 text-sm font-medium text-gray-700 betterhover:hover:bg-gray-200
                 focus:ring-offset-2 focus:ring-offset-gray-200 rounded-full">
-              <EllipsisHorizontalCircleIcon className="h-6 w-6" />
-            </Menu.Button>
-          </Menu>
-          <SlideOver
-            title={
-              <div className="inline-flex justify-center items-center gap-2.5 content-center">
-                {todoData?.completeDisabled ? (
-                  <CheckCircleIcon className="h-6 w-6" color="#5aee5c" />
-                ) : (
-                  <PlayCircleIcon className="h-6 w-6" color={HexColors.get('primary')} />
+                <EllipsisHorizontalCircleIcon className="h-6 w-6" />
+              </Menu.Button>
+            </Menu>
+            <SlideOver
+              title={
+                <div className="inline-flex justify-center items-center gap-2.5 content-center">
+                  {todoData?.completeDisabled ? (
+                    <CheckCircleIcon className="h-6 w-6" color="#5aee5c" />
+                  ) : (
+                    <PlayCircleIcon className="h-6 w-6" color={HexColors.get('primary')} />
+                  )}
+                  {todoData?.title}
+                </div>
+              }
+              open={open}
+              setOpen={setOpen}>
+              <div>
+                {todoData?.createdAt instanceof Date && (
+                  <div className="flex flex-col gap-2.5">{formatDate(todoData?.createdAt)}</div>
                 )}
-                {todoData?.title}
               </div>
-            }
-            open={open}
-            setOpen={setOpen}></SlideOver>
-        </>
-      )}
-    </div>
-  );
-};
+            </SlideOver>
+          </>
+        )}
+      </div>
+    );
+  }
+);
 
 export default TodoInput;

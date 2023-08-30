@@ -1,11 +1,12 @@
 import { ArrowSmallLeftIcon } from '@heroicons/react/24/solid';
 import TodoInput from 'src/ui/view/TodosView/components/TodoInput';
-import { FC } from 'react';
+import { FC, useRef } from 'react';
 import Link from 'next/link';
 import { useHandleTodoCreation } from 'src/hooks/useHandleTodoCreation';
 import { FontColor, HexColors } from 'src/utils/colorMappers';
 
 const TodosView: FC = () => {
+  const newTodoInputRef = useRef({} as HTMLTextAreaElement);
   const {
     todosToComplete,
     completedTodos,
@@ -22,7 +23,7 @@ const TodosView: FC = () => {
     handleKeyPress,
     removeFocus,
     handleClickScreen
-  } = useHandleTodoCreation();
+  } = useHandleTodoCreation(newTodoInputRef.current);
 
   // @Todo: Fix absolute div height (should be the same size as the screen)
   return (
@@ -35,7 +36,7 @@ const TodosView: FC = () => {
           <div className="flex items-center">
             <Link href="../../..">
               <ArrowSmallLeftIcon
-                className={`relative z-10 stroke-2 cursor-pointer h-6 w-6 mr-5`}
+                className="relative z-10 stroke-2 cursor-pointer h-6 w-6 mr-5"
                 color={HexColors.get(selectedTodoList.color)}
               />
             </Link>
@@ -61,6 +62,7 @@ const TodosView: FC = () => {
             ))}
             <TodoInput
               id="new-todo"
+              ref={newTodoInputRef}
               value={newTodo.title}
               onChange={handleChangeNewTodo}
               onFocus={handleInputFocus(newTodo)}

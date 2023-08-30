@@ -2,7 +2,7 @@ import { KeyboardEventHandler, useMemo, useState } from 'react';
 import { useTodos } from 'src/state/todos/useTodos';
 import { Todo } from 'src/types/main';
 
-export const useHandleTodoCreation = () => {
+export const useHandleTodoCreation = (newTodoInput: HTMLTextAreaElement) => {
   const [currentTodo, setCurrentTodo] = useState({} as Todo);
   const {
     todos,
@@ -19,7 +19,7 @@ export const useHandleTodoCreation = () => {
   const [clickScreenFocusHandler, setClickScreenFocusHandler] = useState(false);
 
   const handleClickScreen = () => {
-    document.getElementById('new-todo')?.focus();
+    newTodoInput.focus();
     setClickScreenFocusHandler(true);
   };
 
@@ -31,7 +31,7 @@ export const useHandleTodoCreation = () => {
     if (e.key === 'Enter') {
       setClickScreenFocusHandler(true);
       e.preventDefault();
-      document.getElementById('new-todo')?.focus();
+      newTodoInput.focus();
     }
   };
 
@@ -56,7 +56,7 @@ export const useHandleTodoCreation = () => {
     setClickScreenFocusHandler(false);
     if (newTodo?.title?.length > 0) {
       await handleAddTodo();
-      document.getElementById('new-todo')?.focus();
+      newTodoInput.focus();
     }
   };
 

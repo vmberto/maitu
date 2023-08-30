@@ -5,19 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/components/Button.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/ListDetailSlideOver.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/utils/functions.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/vercel.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/DeleteList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/DeleteList.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/Input.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Input.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/ListDemo.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ListDemo.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/SlideOver.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/SlideOver.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/database/todoListDb.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/database/todoListDb.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/state/AppContextProvider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/state/AppContextProvider.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/state/todo-lists/TodoListsProvider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/state/todo-lists/useTodoLists.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/state/todo-lists/useTodoListsReducer.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/AddListSlideOver.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/AddListSlideOver.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/TodoListsWrapper.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/TodoListsWrapper.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/hooks/useHandleTodoCreation.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useHandleTodoCreation.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/ListDemo.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/ListDemo.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/view/TodosView/components/TodoInput.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodosView/components/TodoInput.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/view/TodosView/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodosView/index.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -64,11 +58,11 @@
       <recent name="$PROJECT_DIR$/src/state" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/public" />
-      <recent name="$PROJECT_DIR$/src/components" />
-      <recent name="$PROJECT_DIR$/src/state/todos" />
-      <recent name="$PROJECT_DIR$/src/pages/todos" />
-      <recent name="$PROJECT_DIR$/src/pages/api" />
+      <recent name="$PROJECT_DIR$/src/ui/view/TodoListsView/components" />
+      <recent name="$PROJECT_DIR$/src/ui/view/TodosView/components" />
+      <recent name="$PROJECT_DIR$/src/ui/view/TodosView" />
+      <recent name="$PROJECT_DIR$/src/ui/common" />
+      <recent name="$PROJECT_DIR$/src/ui/view/TodoListsView" />
     </key>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
@@ -90,7 +84,10 @@
       <workItem from="1691866591483" duration="49480000" />
       <workItem from="1692296752138" duration="171000" />
       <workItem from="1692587181919" duration="519000" />
-      <workItem from="1692587843798" duration="3821000" />
+      <workItem from="1692587843798" duration="15006000" />
+      <workItem from="1692799172361" duration="174000" />
+      <workItem from="1692799365465" duration="598000" />
+      <workItem from="1693001181891" duration="20558000" />
     </task>
     <servers />
   </component>
