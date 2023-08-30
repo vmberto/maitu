@@ -81,7 +81,7 @@ export const useTodos = (newTodoInput: HTMLTextAreaElement) => {
 
   const addTodo = async () => {
     setClickScreenFocusHandler(false);
-    if (newTodo?.title?.length > 0) {
+    if (newTodo?.title?.length) {
       const addedTodo = {
         listId,
         title: newTodo.title,

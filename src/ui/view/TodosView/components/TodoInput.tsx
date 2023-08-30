@@ -2,7 +2,6 @@ import React, {
   DetailedHTMLProps,
   useEffect,
   useRef,
-  FC,
   TextareaHTMLAttributes,
   useState,
   forwardRef,

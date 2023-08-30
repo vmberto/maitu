@@ -21,7 +21,7 @@ const AddListSlideOver: FC<AddListSlideOverProps> = ({ setOpen, handleAddTodoLis
 
   const handleSubmit = async (e: GenericEvent) => {
     e.preventDefault();
-    if (listTitle.length > 0) {
+    if (listTitle.length) {
       const newList = {
         title: listTitle,
         color,

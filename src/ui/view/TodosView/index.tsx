@@ -73,7 +73,7 @@ const TodosView: FC = () => {
               Click to add new Todo
             </h1>
           </div>
-          {completedTodos.length > 0 && (
+          {!!completedTodos.length && (
             <>
               <div className="flex align-middle text-lg font-semibold mt-5">
                 <h2>Complete Todos</h2>
