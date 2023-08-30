@@ -5,12 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/ListDetailSlideOver.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/utils/functions.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/hooks/useHandleTodoCreation.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useHandleTodoCreation.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/ListDemo.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/ListDemo.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/view/TodosView/components/TodoInput.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodosView/components/TodoInput.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/hooks/useHandleTodoCreation.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/state/todos/useTodos.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/state/todos/useTodos.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ui/view/TodosView/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodosView/index.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -58,11 +55,11 @@
       <recent name="$PROJECT_DIR$/src/state" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/state/todos" />
       <recent name="$PROJECT_DIR$/src/ui/view/TodoListsView/components" />
       <recent name="$PROJECT_DIR$/src/ui/view/TodosView/components" />
       <recent name="$PROJECT_DIR$/src/ui/view/TodosView" />
       <recent name="$PROJECT_DIR$/src/ui/common" />
-      <recent name="$PROJECT_DIR$/src/ui/view/TodoListsView" />
     </key>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
@@ -87,7 +84,7 @@
       <workItem from="1692587843798" duration="15006000" />
       <workItem from="1692799172361" duration="174000" />
       <workItem from="1692799365465" duration="598000" />
-      <workItem from="1693001181891" duration="20558000" />
+      <workItem from="1693001181891" duration="21253000" />
     </task>
     <servers />
   </component>

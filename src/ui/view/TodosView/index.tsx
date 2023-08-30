@@ -2,7 +2,7 @@ import { ArrowSmallLeftIcon } from '@heroicons/react/24/solid';
 import TodoInput from 'src/ui/view/TodosView/components/TodoInput';
 import { FC, useRef } from 'react';
 import Link from 'next/link';
-import { useHandleTodoCreation } from 'src/hooks/useHandleTodoCreation';
+import { useTodos } from 'src/state/todos/useTodos';
 import { FontColor, HexColors } from 'src/utils/colorMappers';
 
 const TodosView: FC = () => {
@@ -23,7 +23,7 @@ const TodosView: FC = () => {
     handleKeyPress,
     removeFocus,
     handleClickScreen
-  } = useHandleTodoCreation(newTodoInputRef.current);
+  } = useTodos(newTodoInputRef.current);
 
   // @Todo: Fix absolute div height (should be the same size as the screen)
   return (
