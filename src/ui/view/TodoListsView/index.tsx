@@ -23,7 +23,7 @@ const TodoListsView = () => {
         ))}
       </div>
       <AddListSlideOver
-        title="Add New Lsta"
+        title="Add New List"
         open={open}
         setOpen={setOpen}
         handleAddTodoList={handleAddTodoList}
