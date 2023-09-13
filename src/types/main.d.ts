@@ -18,4 +18,5 @@ export interface Todo {
   completeDisabled: boolean;
 
   createdAt: Date;
+  completedAt: Date;
 }

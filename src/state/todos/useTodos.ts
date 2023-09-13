@@ -107,7 +107,12 @@ export const useTodos = (newTodoInput: HTMLTextAreaElement) => {
       timeouts.push({
         id: t.id,
         timeout: setTimeout(async () => {
-          await TodosDb.update(t.id, { ...t, complete: true, completeDisabled: true });
+          await TodosDb.update(t.id, {
+            ...t,
+            complete: true,
+            completeDisabled: true,
+            completedAt: new Date()
+          });
         }, 2000)
       });
     } else {
