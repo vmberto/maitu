@@ -91,7 +91,6 @@ export const useTodos = (newTodoInput: HTMLTextAreaElement) => {
       } as Todo;
       setNewTodo({ title: '' } as Todo);
       await TodosDb.add(addedTodo);
-      newTodoInput.focus();
     }
   };
 
