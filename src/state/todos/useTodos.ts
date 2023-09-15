@@ -1,6 +1,6 @@
 import { KeyboardEventHandler, useMemo, useState } from 'react';
 import { Todo, TodoList } from 'src/types/main';
-import * as TodosDb from 'src/lib/database/todosDb';
+import * as TodosDb from 'src/db/todosDb';
 import { useRouter } from 'next/router';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { TextareaChangeEventHandler } from 'src/types/events';

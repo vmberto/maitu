@@ -1,4 +1,4 @@
-import { Db } from 'src/lib/database/index';
+import { Db } from 'src/db/index';
 import { TodoList } from 'src/types/main';
 
 export const get = async () => {

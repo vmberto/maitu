@@ -1,6 +1,7 @@
 import { FC, Fragment, ReactNode } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/20/solid';
+import { useSwipeEvents } from 'src/hooks/useSwipeEvents';
 
 interface ModalProps {
   title: string | ReactNode;
@@ -9,6 +10,8 @@ interface ModalProps {
 }
 
 const SlideOver: FC<ModalProps> = ({ title, open, setOpen, children }) => {
+  const swipe = useSwipeEvents({ onSwipedDown: () => setOpen(false) });
+
   return (
     <Transition.Root show={open} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={setOpen}>
@@ -36,7 +39,9 @@ const SlideOver: FC<ModalProps> = ({ title, open, setOpen, children }) => {
                 leaveTo="translate-y-full">
                 <Dialog.Panel className="pointer-events-auto relative w-screen max-w-2xl">
                   <div className="flex h-full flex-col overflow-y-scroll mt-20 bg-white pb-6 shadow-xl">
-                    <div className="px-4 pt-4 pb-3 sm:px-6 w-full flex align-baseline z-10 fixed bg-white border-b-2">
+                    <div
+                      className="px-4 pt-4 pb-3 sm:px-6 w-full flex align-baseline z-10 fixed bg-white border-b-2"
+                      {...swipe}>
                       <Dialog.Title className="text-lg flex-grow font-medium text-gray-900">
                         {title}
                       </Dialog.Title>

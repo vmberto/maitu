@@ -1,4 +1,4 @@
-import * as TodoListDb from 'src/lib/database/todoListDb';
+import * as TodoListDb from 'src/db/todoListDb';
 import { TodoList } from 'src/types/main';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useState } from 'react';
