@@ -3,8 +3,7 @@
 @tailwind utilities;
 
 body {
-    -webkit-overflow-scrolling: touch;
     background-color: #EFF3FA;
-    overflow-y: hidden;
+    overscroll-behavior: none;
 }
 
