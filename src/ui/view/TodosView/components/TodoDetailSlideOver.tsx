@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
+import React, { ChangeEvent, useRef, useState } from 'react';
 import SlideOver from 'src/ui/common/SlideOver';
 import { Todo } from 'src/types/main';
 import { CheckCircleIcon } from '@heroicons/react/24/solid';
@@ -61,6 +61,7 @@ export const TodoDetailSlideOver = ({ todoData, setOpen, open }: TodoDetailSlide
           ref={textareaRef}
           rows={rows}
           value={description}
+          placeholder="Set a description"
           className="rounded-md border-2 outline-0 pt-2 pb-3 px-3 resize-none block w-full
                     relative
                     bg-transparent
