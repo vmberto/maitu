@@ -50,10 +50,10 @@ const SlideOver: FC<ModalProps> = ({ title, open, setOpen, children }) => {
                         className="ml-auto rounded-md text-gray-600 hover:text-gray-400 focus:outline-none focus:ring-2 focus:ring-white"
                         onClick={() => setOpen(false)}>
                         <span className="sr-only">Close panel</span>
-                        <XMarkIcon className="h-6 w-6" aria-hidden="true" />
+                        <XMarkIcon className="h-8 w-8" aria-hidden="true" />
                       </button>
                     </div>
-                    <div className="relative mt-20 mb-40 flex-1 px-4 sm:px-6">{children}</div>
+                    <div className="relative mt-24 mb-40 flex-1 px-4 sm:px-6">{children}</div>
                   </div>
                 </Dialog.Panel>
               </Transition.Child>
