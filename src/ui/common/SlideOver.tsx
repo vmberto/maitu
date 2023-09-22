@@ -40,7 +40,7 @@ const SlideOver: FC<ModalProps> = ({ title, open, setOpen, children }) => {
                 <Dialog.Panel className="pointer-events-auto relative w-screen max-w-2xl">
                   <div className="flex h-full flex-col overflow-y-scroll mt-20 bg-white pb-6 shadow-xl">
                     <div
-                      className="px-4 pt-4 pb-3 sm:px-6 w-full flex align-baseline z-10 fixed bg-white border-b-2"
+                      className="px-4 pt-4 pb-3 sm:px-6 w-full flex align-baseline z-10 bg-white border-b-2"
                       {...swipe}>
                       <Dialog.Title className="text-lg flex-grow font-medium text-gray-900">
                         {title}
@@ -53,7 +53,7 @@ const SlideOver: FC<ModalProps> = ({ title, open, setOpen, children }) => {
                         <XMarkIcon className="h-8 w-8" aria-hidden="true" />
                       </button>
                     </div>
-                    <div className="relative mt-24 mb-40 flex-1 px-4 sm:px-6">{children}</div>
+                    <div className="relative mb-40 flex-1 px-4 sm:px-6">{children}</div>
                   </div>
                 </Dialog.Panel>
               </Transition.Child>

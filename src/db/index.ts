@@ -11,9 +11,9 @@ export class Database extends Dexie {
       addons: [dexieCloud],
       cache: 'immutable'
     });
-    this.version(1).stores({
+    this.version(2).stores({
       todoLists: '@id, title, createdAt',
-      todos: '@id, title, listId, complete, completeDisabled, createdAt, completedAt'
+      todos: '@id, title, listId, description, complete, completeDisabled, createdAt, completedAt'
     });
     this.cloud.configure({
       databaseUrl: 'https://znweybxm5.dexie.cloud',

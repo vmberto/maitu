@@ -7,8 +7,8 @@ import { TextareaChangeEventHandler } from 'src/types/events';
 
 let timeouts = [] as { id: string; timeout: NodeJS.Timeout }[];
 
-export const useTodos = (newTodoInput: HTMLTextAreaElement) => {
-  const { listId } = useRouter().query;
+export const useTodos = (newTodoInput?: HTMLTextAreaElement) => {
+  const { listId } = useRouter().query as { listId: string };
   const [currentTodo, setCurrentTodo] = useState({} as Todo);
   const [todos, setTodos] = useState<Todo[]>([] as Todo[]);
   const [selectedTodoList, setSelectedTodoList] = useState<TodoList>({} as TodoList);
@@ -27,7 +27,7 @@ export const useTodos = (newTodoInput: HTMLTextAreaElement) => {
   const [clickScreenFocusHandler, setClickScreenFocusHandler] = useState(false);
 
   const handleClickScreen = () => {
-    newTodoInput.focus();
+    newTodoInput?.focus();
     setClickScreenFocusHandler(true);
   };
 
@@ -39,7 +39,7 @@ export const useTodos = (newTodoInput: HTMLTextAreaElement) => {
     if (e.key === 'Enter') {
       setClickScreenFocusHandler(true);
       e.preventDefault();
-      newTodoInput.focus();
+      newTodoInput?.focus();
     }
   };
 
@@ -71,12 +71,17 @@ export const useTodos = (newTodoInput: HTMLTextAreaElement) => {
     setClickScreenFocusHandler(false);
     if (t.title.length <= 0) {
       await TodosDb.remove(t.id);
+
       return;
     }
 
     if (t.title !== currentTodo.title) {
-      await TodosDb.update(t.id, t);
+      await TodosDb.update(t);
     }
+  };
+
+  const updateTodoData = (t: Todo) => async () => {
+    await TodosDb.update(t);
   };
 
   const addTodo = async () => {
@@ -87,6 +92,7 @@ export const useTodos = (newTodoInput: HTMLTextAreaElement) => {
         title: newTodo.title,
         complete: false,
         completeDisabled: false,
+        description: '',
         createdAt: new Date()
       } as Todo;
       setNewTodo({ title: '' } as Todo);
@@ -106,7 +112,7 @@ export const useTodos = (newTodoInput: HTMLTextAreaElement) => {
       timeouts.push({
         id: t.id,
         timeout: setTimeout(async () => {
-          await TodosDb.update(t.id, {
+          await TodosDb.update({
             ...t,
             complete: true,
             completeDisabled: true,
@@ -121,7 +127,7 @@ export const useTodos = (newTodoInput: HTMLTextAreaElement) => {
         timeouts = timeouts.filter((t) => t.id !== timeoutObj.id);
       }
     }
-    await TodosDb.update(t.id, { ...t, complete: !t.complete });
+    await TodosDb.update({ ...t, complete: !t.complete });
   };
 
   const todosToComplete = useMemo(() => todos.filter((t) => !t.completeDisabled), [todos]);
@@ -139,6 +145,7 @@ export const useTodos = (newTodoInput: HTMLTextAreaElement) => {
     handleChangeNewTodo,
     handleCompleteTodo,
     updateTodo,
+    updateTodoData,
     handleInputFocus,
     handleKeyPress,
     removeFocus,

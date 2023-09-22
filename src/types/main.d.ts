@@ -14,6 +14,8 @@ export interface Todo {
 
   listId: string;
 
+  description: string;
+
   complete: boolean;
   completeDisabled: boolean;
 
