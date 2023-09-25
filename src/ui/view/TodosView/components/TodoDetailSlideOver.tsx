@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useRef, useState } from 'react';
+import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import SlideOver from 'src/ui/common/SlideOver';
 import { Todo } from 'src/types/main';
 import { CheckCircleIcon } from '@heroicons/react/24/solid';
@@ -20,6 +20,11 @@ export const TodoDetailSlideOver = ({ todoData, setOpen, open }: TodoDetailSlide
   const textareaRef = useRef({} as HTMLTextAreaElement);
   const [description, setDescription] = useState(todoData?.description || '');
   const [rows, setRows] = useState(3);
+
+  useEffect(() => {
+    const { rows } = textareaRef.current;
+    setRows(rows < maxRows ? rows : maxRows);
+  }, []);
 
   const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     const textareaLineHeight = 24;
