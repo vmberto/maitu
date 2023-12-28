@@ -4,7 +4,7 @@ import "leaflet-defaulticon-compatibility"
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css"
 import * as TodosDb from "src/db/todosDb";
 import {useEffect, useState} from "react";
-import {Todo} from "src/types/main";
+import {Todo} from "../../../../types/main";
 
 
 export default function MyMap() {

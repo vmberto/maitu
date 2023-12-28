@@ -1,8 +1,8 @@
 import {useEffect, useState} from 'react';
 import SlideOver from 'src/ui/common/SlideOver';
-import {GenericEvent} from 'src/types/events';
+import {GenericEvent} from '../../../../../types/events';
 import {DeleteList} from 'src/ui/view/TodoListsView/components/DeleteList';
-import {TodoList} from 'src/types/main';
+import {TodoList} from '../../../../../types/main';
 import {ColorPicker} from 'src/ui/common/ColorPicker';
 import {useTodoLists} from 'src/hooks/useTodoLists';
 

@@ -1,12 +1,12 @@
 import React, {ChangeEvent, useRef, useState} from 'react';
 import SlideOver from 'src/ui/common/SlideOver';
-import {Todo} from 'src/types/main';
+import {Todo} from '../../../../../types/main';
 import {CheckCircleIcon} from '@heroicons/react/24/solid';
 import {PlayCircleIcon} from '@heroicons/react/24/outline';
-import {HexColors} from 'src/utils/colorMappers';
-import {formatDate} from 'src/utils/functions';
+import {HexColors} from 'src/utils/colors.utils';
+import {formatDate} from 'src/utils/functions.utils';
 import {useTodos} from 'src/hooks/useTodos';
-import {GenericEvent} from "src/types/events";
+import {GenericEvent} from "../../../../../types/events";
 
 const minRows = 3;
 const maxRows = 15;

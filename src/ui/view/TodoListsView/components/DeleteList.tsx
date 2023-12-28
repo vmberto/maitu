@@ -1,4 +1,4 @@
-import {GenericEvent} from 'src/types/events';
+import {GenericEvent} from '../../../../../types/events';
 import {FC, useState} from 'react';
 import {Input} from 'src/ui/common/Input';
 import {useTodoLists} from 'src/hooks/useTodoLists';

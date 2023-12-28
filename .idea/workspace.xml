@@ -6,7 +6,25 @@
   <component name="ChangeListManager">
     <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/db/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/db/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/db/todoListDb.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/db/todoListDb.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/db/todosDb.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/db/todosDb.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/hooks/useTodoLists.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useTodoLists.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/hooks/useTodos.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useTodos.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/types/events.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/types/events.d.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/types/main.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/types/main.d.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/common/ColorPicker.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/common/ColorPicker.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ui/view/Map/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/Map/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/AddListSlideOver.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/AddListSlideOver.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/DeleteList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/DeleteList.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/ListDemo.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/ListDemo.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/ListDetailSlideOver.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/ListDetailSlideOver.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/NewListButton.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/NewListButton.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/view/TodosView/components/TodoDetailSlideOver.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodosView/components/TodoDetailSlideOver.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/view/TodosView/components/TodoInput.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodosView/components/TodoInput.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/view/TodosView/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodosView/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/colorMappers.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/colors.utils.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/functions.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/functions.utils.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,29 +48,29 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "main",
-    "javascript.nodejs.core.library.configured.version": "18.18.2",
-    "javascript.nodejs.core.library.typings.version": "18.18.2",
-    "last_opened_file_path": "/Users/vmberto/Documents/maitu/my-todo-app",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.standard": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.standard": "",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "prettier.import.notification.dismissed": "true",
-    "prettierjs.PrettierConfiguration.Package": "/Users/vmberto/Documents/my-todo-app/node_modules/prettier",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "ts.external.directory.path": "/Users/vmberto/Documents/maitu/my-todo-app/node_modules/typescript/lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;javascript.nodejs.core.library.configured.version&quot;: &quot;18.18.2&quot;,
+    &quot;javascript.nodejs.core.library.typings.version&quot;: &quot;18.18.2&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/vmberto/Documents/maitu/my-todo-app&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.standard&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.standard&quot;: &quot;&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;prettier.import.notification.dismissed&quot;: &quot;true&quot;,
+    &quot;prettierjs.PrettierConfiguration.Package&quot;: &quot;/Users/vmberto/Documents/my-todo-app/node_modules/prettier&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/Users/vmberto/Documents/maitu/my-todo-app/node_modules/typescript/lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/state/todo-lists" />
@@ -61,11 +79,11 @@
       <recent name="$PROJECT_DIR$/src/state" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/src/hooks" />
       <recent name="$PROJECT_DIR$/src/state/todos" />
       <recent name="$PROJECT_DIR$/src/ui/view/TodoListsView/components" />
       <recent name="$PROJECT_DIR$/src/ui/view/TodosView/components" />
-      <recent name="$PROJECT_DIR$/src/ui/view/TodosView" />
     </key>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
@@ -96,7 +114,9 @@
       <workItem from="1698987114839" duration="599000" />
       <workItem from="1701788513849" duration="25000" />
       <workItem from="1703211466458" duration="15540000" />
-      <workItem from="1703700848149" duration="6318000" />
+      <workItem from="1703700848149" duration="7463000" />
+      <workItem from="1703736904232" duration="902000" />
+      <workItem from="1703780131318" duration="27000" />
     </task>
     <servers />
   </component>

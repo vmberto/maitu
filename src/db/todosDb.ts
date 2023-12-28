@@ -1,5 +1,5 @@
 import {Db} from 'src/db/index';
-import {Todo, TodoList} from 'src/types/main';
+import {Todo, TodoList} from '../../types/main';
 
 export const get = async (listId: string) => {
     const todos = (await Db.todos.where({listId}).toArray()) || ([] as Todo[]);

@@ -1,9 +1,9 @@
 import {KeyboardEventHandler, useMemo, useState} from 'react';
-import {Todo, TodoList} from 'src/types/main';
+import {Todo, TodoList} from '../../types/main';
 import * as TodosDb from 'src/db/todosDb';
 import {useRouter} from 'next/router';
 import {useLiveQuery} from 'dexie-react-hooks';
-import {TextareaChangeEventHandler} from 'src/types/events';
+import {TextareaChangeEventHandler} from '../../types/events';
 
 let timeouts = [] as { id: string; timeout: NodeJS.Timeout }[];
 

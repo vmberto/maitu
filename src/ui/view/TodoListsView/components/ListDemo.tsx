@@ -2,11 +2,11 @@ import Link from 'next/link';
 import {ReactNode, useState} from 'react';
 import {Menu} from '@headlessui/react';
 import {EllipsisVerticalIcon} from '@heroicons/react/24/solid';
-import {GenericEvent} from 'src/types/events';
-import {TodoList} from 'src/types/main';
+import {GenericEvent} from '../../../../../types/events';
+import {TodoList} from '../../../../../types/main';
 import {ListDetailSlideOver} from 'src/ui/view/TodoListsView/components/ListDetailSlideOver';
 
-interface ListDemoProps {
+type ListDemoProps = {
     todoList: TodoList;
     actions?: ReactNode | undefined;
 }

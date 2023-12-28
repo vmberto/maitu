@@ -1,5 +1,5 @@
 import Dexie from 'dexie';
-import {Todo, TodoList} from 'src/types/main';
+import {Todo, TodoList} from '../../types/main';
 import dexieCloud, {DexieCloudTable} from 'dexie-cloud-addon';
 
 export class Database extends Dexie {

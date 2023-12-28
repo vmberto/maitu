@@ -1,4 +1,4 @@
-interface NewListButtonProps {
+type NewListButtonProps = {
     onClick: () => void;
 }
 

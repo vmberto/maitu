@@ -1,12 +1,12 @@
 import {useState} from 'react';
-import {GenericEvent} from 'src/types/events';
-import {TodoList} from 'src/types/main';
+import {GenericEvent} from '../../../../../types/events';
+import {TodoList} from '../../../../../types/main';
 import {Input} from 'src/ui/common/Input';
 import {ColorPicker, Colors} from 'src/ui/common/ColorPicker';
 import {Button} from 'src/ui/common/Button';
 import SlideOver from 'src/ui/common/SlideOver';
 
-interface AddListSlideOverProps {
+type AddListSlideOverProps = {
     title: string;
     open: boolean;
     setOpen: (open: boolean) => void;
