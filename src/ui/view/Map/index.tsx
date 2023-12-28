@@ -30,6 +30,7 @@ export default function MyMap() {
         <MapContainer className="h-screen" zoom={4} center={{lat: -14.235004, lng: -51.925282}}
                       scrollWheelZoom={false}>
             <TileLayer
+                detectRetina={true}
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />

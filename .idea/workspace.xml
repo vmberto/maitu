@@ -6,15 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/hooks/useSwipeEvents.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useSwipeEvents.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/state/todo-lists/useTodoLists.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useTodoLists.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/state/todos/useTodos.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useTodos.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/DeleteList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/DeleteList.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/ListDetailSlideOver.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/ListDetailSlideOver.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/view/TodoListsView/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodoListsView/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/view/TodosView/components/Select.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodosView/components/Select.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/view/TodosView/components/TodoDetailSlideOver.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodosView/components/TodoDetailSlideOver.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/view/TodosView/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodosView/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/view/Map/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/Map/index.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -104,7 +96,7 @@
       <workItem from="1698987114839" duration="599000" />
       <workItem from="1701788513849" duration="25000" />
       <workItem from="1703211466458" duration="15540000" />
-      <workItem from="1703700848149" duration="5990000" />
+      <workItem from="1703700848149" duration="6318000" />
     </task>
     <servers />
   </component>
