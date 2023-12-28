@@ -3,7 +3,7 @@ import TodoInput from 'src/ui/view/TodosView/components/TodoInput';
 import {FC, useRef} from 'react';
 import Link from 'next/link';
 import {useTodos} from 'src/hooks/useTodos';
-import {FontColor, HexColors} from 'src/utils/colors.utils';
+import {FontColor, HexColors} from 'src/lib/colors';
 
 const TodosView: FC = () => {
     const newTodoInputRef = useRef({} as HTMLTextAreaElement);

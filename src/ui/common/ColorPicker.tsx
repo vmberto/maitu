@@ -1,5 +1,5 @@
 import React, {FC} from 'react';
-import {Backgrounds, Borders} from 'src/utils/colors.utils';
+import {BackgroundColors, BorderColors} from 'src/lib/colors';
 
 export const Colors = ['primary', 'palette_one', 'palette_two', 'palette_three', 'palette_four'];
 
@@ -21,8 +21,8 @@ export const ColorPicker: FC<ColorPickerProps> = ({color, setColor}) => {
                     <div
                         key={c}
                         onClick={changeColor(c)}
-                        className={`${color === c ? 'border-gray-900' : Borders.get(c)}
-        relative cursor-pointer transition-all border-4 ${Backgrounds.get(
+                        className={`${color === c ? 'border-gray-900' : BorderColors.get(c)}
+        relative cursor-pointer transition-all border-4 ${BackgroundColors.get(
                             c
                         )} p-4 rounded-full items-center`}></div>
                 ))}
