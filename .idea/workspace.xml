@@ -5,23 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/pages/map.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ui/view/Map/index.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/NewListButton.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ui/view/TodosView/components/Select.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/db/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/db/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/db/todosDb.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/db/todosDb.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/state/todos/useTodos.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/state/todos/useTodos.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/types/main.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types/main.d.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/common/SlideOver.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/common/SlideOver.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/AddListSlideOver.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/AddListSlideOver.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/ListDemo.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/ListDemo.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/hooks/useSwipeEvents.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useSwipeEvents.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/state/todo-lists/useTodoLists.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useTodoLists.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/state/todos/useTodos.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useTodos.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/DeleteList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/DeleteList.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/ListDetailSlideOver.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/ListDetailSlideOver.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ui/view/TodoListsView/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodoListsView/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/view/TodosView/components/Select.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodosView/components/Select.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ui/view/TodosView/components/TodoDetailSlideOver.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodosView/components/TodoDetailSlideOver.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tailwind.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/tailwind.config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/view/TodosView/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodosView/index.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -76,11 +69,11 @@
       <recent name="$PROJECT_DIR$/src/state" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/hooks" />
       <recent name="$PROJECT_DIR$/src/state/todos" />
       <recent name="$PROJECT_DIR$/src/ui/view/TodoListsView/components" />
       <recent name="$PROJECT_DIR$/src/ui/view/TodosView/components" />
       <recent name="$PROJECT_DIR$/src/ui/view/TodosView" />
-      <recent name="$PROJECT_DIR$/src/ui/common" />
     </key>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
@@ -111,7 +104,7 @@
       <workItem from="1698987114839" duration="599000" />
       <workItem from="1701788513849" duration="25000" />
       <workItem from="1703211466458" duration="15540000" />
-      <workItem from="1703700848149" duration="3968000" />
+      <workItem from="1703700848149" duration="5990000" />
     </task>
     <servers />
   </component>

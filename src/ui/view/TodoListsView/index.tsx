@@ -1,7 +1,7 @@
 import {useState} from 'react';
 import {ListDemo} from 'src/ui/view/TodoListsView/components/ListDemo';
 import AddListSlideOver from 'src/ui/view/TodoListsView/components/AddListSlideOver';
-import {useTodoLists} from 'src/state/todo-lists/useTodoLists';
+import {useTodoLists} from 'src/hooks/useTodoLists';
 import {NewListButton} from "src/ui/view/TodoListsView/components/NewListButton";
 
 const TodoListsView = () => {

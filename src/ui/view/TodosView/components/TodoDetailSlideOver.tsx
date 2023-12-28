@@ -1,12 +1,11 @@
-import React, {ChangeEvent, Dispatch, useEffect, useRef, useState} from 'react';
+import React, {ChangeEvent, useRef, useState} from 'react';
 import SlideOver from 'src/ui/common/SlideOver';
 import {Todo} from 'src/types/main';
 import {CheckCircleIcon} from '@heroicons/react/24/solid';
 import {PlayCircleIcon} from '@heroicons/react/24/outline';
 import {HexColors} from 'src/utils/colorMappers';
 import {formatDate} from 'src/utils/functions';
-import {useTodos} from 'src/state/todos/useTodos';
-import {Select} from "src/ui/view/TodosView/components/Select";
+import {useTodos} from 'src/hooks/useTodos';
 import {GenericEvent} from "src/types/events";
 
 const minRows = 3;
