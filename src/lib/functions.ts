@@ -1,3 +1,5 @@
+import {GenericEvent} from "../../types/events";
+
 export const formatDate = (date: Date) => {
     const day = date.getDate();
     const month = date.getMonth() + 1;
@@ -8,3 +10,5 @@ export const formatDate = (date: Date) => {
         .toString()
         .padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
 };
+
+export const stopPropagationFn = (e: GenericEvent) => e.stopPropagation();
