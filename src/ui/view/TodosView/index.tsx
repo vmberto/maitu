@@ -45,7 +45,7 @@ const TodosView: FC = () => {
                             {selectedTodoList?.title}
                         </h1>
                     </div>
-                    <div id="Todos" className="mb-60 px-5 pb-5">
+                    <div id="todos" className="mb-60 px-5 pb-5">
                         {todosToComplete.map((t) => (
                             <TodoInput
                                 key={t.id}
@@ -74,7 +74,7 @@ const TodosView: FC = () => {
                         </h1>
                     </div>
                     {!!completedTodos.length && (
-                        <>
+                        <div id="complete-todos" className="px-5 pb-5">
                             <div className="flex align-middle text-lg font-semibold mt-5">
                                 <h2>Complete Todos</h2>
                                 <span className="text-sm font-semibold ml-auto">{completedTodos.length}</span>
@@ -84,7 +84,7 @@ const TodosView: FC = () => {
                                     <TodoInput key={t.id} id={t.id} todoData={t} value={t.title} disabled/>
                                 ))}
                             </div>
-                        </>
+                        </div>
                     )}
                 </div>
             </div>
