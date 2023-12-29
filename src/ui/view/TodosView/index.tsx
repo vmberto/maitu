@@ -1,4 +1,4 @@
-import {ChevronLeftIcon} from '@heroicons/react/24/solid';
+import {ArrowLeftIcon} from '@heroicons/react/24/solid';
 import TodoInput from 'src/ui/view/TodosView/components/TodoInput';
 import {FC, useRef} from 'react';
 import Link from 'next/link';
@@ -36,7 +36,7 @@ const TodosView: FC = () => {
                     <div className="flex items-center py-2">
                         <Link className="pl-5 flex h-12" href=".."
                               onClick={(e: GenericEvent) => e.stopPropagation()}>
-                            <ChevronLeftIcon
+                            <ArrowLeftIcon
                                 className="relative cursor-pointer w-6 mr-5"
                                 color={HexColors.get(selectedTodoList.color)}
                             />
