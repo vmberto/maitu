@@ -4,6 +4,7 @@ import {FC, useRef} from 'react';
 import Link from 'next/link';
 import {useTodos} from 'src/hooks/useTodos';
 import {FontColor, HexColors} from 'src/lib/colors';
+import {GenericEvent} from "../../../../types/events";
 
 const TodosView: FC = () => {
     const newTodoInputRef = useRef({} as HTMLTextAreaElement);
@@ -34,7 +35,7 @@ const TodosView: FC = () => {
             <div className="min-h-screen" onClick={handleClickScreen}>
                 <div className="max-w-xl my-0 mx-auto p-5">
                     <div className="flex items-center">
-                        <Link href="../../..">
+                        <Link href=".." onClick={(e: GenericEvent) => e.stopPropagation()}>
                             <ArrowSmallLeftIcon
                                 className="relative z-10 stroke-2 cursor-pointer h-6 w-6 mr-5"
                                 color={HexColors.get(selectedTodoList.color)}

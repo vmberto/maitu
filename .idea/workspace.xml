@@ -6,9 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/view/TodosView/components/TodoDetailSlideOver.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodosView/components/TodoDetailSlideOver.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ui/view/TodosView/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodosView/index.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -102,7 +99,7 @@
       <workItem from="1703700848149" duration="7463000" />
       <workItem from="1703736904232" duration="902000" />
       <workItem from="1703780131318" duration="27000" />
-      <workItem from="1703883290871" duration="356000" />
+      <workItem from="1703883290871" duration="968000" />
     </task>
     <servers />
   </component>
