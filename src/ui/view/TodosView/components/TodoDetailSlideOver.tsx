@@ -80,7 +80,7 @@ export const TodoDetailSlideOver = ({todoData, setOpen, open}: TodoDetailSlideOv
             </div>
             <div className="mb-3">
                 <label className="block text-sm font-medium leading-6 text-gray-900">Location</label>
-                <input placeholder="Latitude" className="rounded-md mb-2 border-2 outline-0 p-3 resize-none block w-full
+                <input placeholder="Latitude, Longitude" className="rounded-md mb-2 border-2 outline-0 p-3 resize-none block w-full
                             relative
                             bg-transparent
                             overflow-auto

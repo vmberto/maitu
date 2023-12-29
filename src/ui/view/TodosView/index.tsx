@@ -29,7 +29,7 @@ const TodosView: FC = () => {
     return (
         <div className="relative">
             {clickScreenFocusHandler && (
-                <div className="absolute w-full h-screen" onClick={removeFocus}></div>
+                <div className="absolute w-full h-full" onClick={removeFocus}></div>
             )}
             <div className="min-h-screen" onClick={handleClickScreen}>
                 <div className="max-w-xl my-0 mx-auto p-5">
