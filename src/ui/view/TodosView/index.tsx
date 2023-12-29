@@ -1,4 +1,4 @@
-import {ArrowSmallLeftIcon} from '@heroicons/react/24/solid';
+import {ChevronLeftIcon} from '@heroicons/react/24/solid';
 import TodoInput from 'src/ui/view/TodosView/components/TodoInput';
 import {FC, useRef} from 'react';
 import Link from 'next/link';
@@ -26,27 +26,26 @@ const TodosView: FC = () => {
         handleClickScreen
     } = useTodos(newTodoInputRef.current);
 
-    // @Todo: Fix absolute div height (should be the same size as the screen)
     return (
         <div className="relative">
             {clickScreenFocusHandler && (
                 <div className="absolute w-full h-full" onClick={removeFocus}></div>
             )}
             <div className="min-h-screen" onClick={handleClickScreen}>
-                <div className="max-w-xl my-0 mx-auto p-5">
-                    <div className="flex items-center">
-                        <Link href=".." onClick={(e: GenericEvent) => e.stopPropagation()}>
-                            <ArrowSmallLeftIcon
-                                className="relative z-10 stroke-2 cursor-pointer h-6 w-6 mr-5"
+                <div className="max-w-xl my-0 mx-auto">
+                    <div className="flex items-center py-2">
+                        <Link className="pl-5 flex h-12" href=".."
+                              onClick={(e: GenericEvent) => e.stopPropagation()}>
+                            <ChevronLeftIcon
+                                className="relative cursor-pointer w-6 mr-5"
                                 color={HexColors.get(selectedTodoList.color)}
                             />
                         </Link>
-
-                        <h1 className={`text-2xl font-bold ${FontColor.get(selectedTodoList.color)}`}>
+                        <h1 className={`text-2xl font-bold pr-5 ${FontColor.get(selectedTodoList.color)}`}>
                             {selectedTodoList?.title}
                         </h1>
                     </div>
-                    <div id="Todos" className="mt-5 mb-60">
+                    <div id="Todos" className="mb-60 px-5 pb-5">
                         {todosToComplete.map((t) => (
                             <TodoInput
                                 key={t.id}
