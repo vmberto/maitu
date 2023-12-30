@@ -4,7 +4,6 @@ import {FC, useRef} from 'react';
 import Link from 'next/link';
 import {useTodos} from 'src/hooks/useTodos';
 import {FontColor, HexColors} from 'src/lib/colors';
-import {GenericEvent} from "../../../../types/events";
 import {stopPropagationFn} from "src/lib/functions";
 
 const TodosView: FC = () => {
