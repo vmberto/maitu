@@ -1,6 +1,7 @@
 import Dexie from 'dexie';
 import {Todo, TodoList} from '../../types/main';
 import dexieCloud, {DexieCloudTable} from 'dexie-cloud-addon';
+import * as process from "process";
 
 export class Database extends Dexie {
     todos!: DexieCloudTable<Todo, 'id'>;
@@ -21,7 +22,7 @@ export class Database extends Dexie {
             roles: "[realmId+name]",
         });
         this.cloud.configure({
-            databaseUrl: 'https://znweybxm5.dexie.cloud',
+            databaseUrl: process.env.NEXT_PUBLIC_DEXIE_CLOUD_URL!,
             tryUseServiceWorker: true,
             requireAuth: true,
         });
