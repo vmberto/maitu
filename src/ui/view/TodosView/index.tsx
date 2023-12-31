@@ -43,7 +43,7 @@ const TodosView: FC = () => {
                         {selectedTodoList?.title}
                     </h1>
                 </div>
-                <div id="todos" className="mb-60 px-5 pb-5">
+                <div id="todos" className="px-5 pb-5 mb-28">
                     {todosToComplete.map((t) => (
                         <TodoInput
                             key={t.id}
@@ -67,8 +67,8 @@ const TodosView: FC = () => {
                         onBlur={addTodo}
                         onKeyDown={handleKeyPressAdd}
                     />
-                    <h1 className="text-sm border-t-2 pt-5 text-center font-light text-gray-500">
-                        Click to add new Todo
+                    <h1 className="text-sm cursor-default border-t-2 pt-5 text-center font-light text-gray-500">
+                        Click anywhere to add Todo
                     </h1>
                 </div>
                 {!!completedTodos.length && (

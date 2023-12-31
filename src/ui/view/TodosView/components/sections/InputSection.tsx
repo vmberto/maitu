@@ -12,7 +12,7 @@ type InputSectionProps = {
 }
 
 export const InputSection = ({todoData, todoService, label, propertyName}: InputSectionProps) => {
-    const [value, setValue] = useState();
+    const [value, setValue] = useState(todoData[propertyName] as string);
 
     return (
         <div className="mb-3">

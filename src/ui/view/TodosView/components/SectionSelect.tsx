@@ -40,7 +40,7 @@ export function SectionSelect({selectedSections, setSection}: SectionSelectProps
                     <div className={`relative ${selectedSections.length ? 'mt-8' : 'mt-0'}`}>
                         <Listbox.Button
                             className="relative w-full cursor-default font-semibold text-center rounded-md bg-white p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm uppercase sm:leading-6">
-                            Add New Section
+                            Add Section
                         </Listbox.Button>
 
                         <Transition
