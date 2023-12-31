@@ -7,7 +7,7 @@ export default function Document() {
             <Head>
                 <meta charSet="utf-8"/>
                 <meta httpEquiv="X-UA-Compatible" content="IE=edge"/>
-                <meta name="description" content="Description"/>
+                <meta name="description" content="an application to save your goals"/>
                 <meta name="keywords" content="Keywords"/>
                 <link rel="manifest" href="/manifest.json"/>
                 <link rel="apple-touch-icon" href="/touch-icon.png"></link>

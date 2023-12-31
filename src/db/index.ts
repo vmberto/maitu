@@ -13,12 +13,17 @@ export class Database extends Dexie {
         });
         this.version(2).stores({
             todoLists: '@id, title, createdAt',
-            todos: '@id, title, listId, description, complete, completeDisabled, location, createdAt, completedAt'
+            todos: '@id, title, listId, description, complete, completeDisabled, location, createdAt, completedAt',
+
+            // Access Control tables
+            realms: "@realmId",
+            members: "@id,[realmId+email]",
+            roles: "[realmId+name]",
         });
         this.cloud.configure({
             databaseUrl: 'https://znweybxm5.dexie.cloud',
             tryUseServiceWorker: true,
-            requireAuth: true
+            requireAuth: true,
         });
     }
 }

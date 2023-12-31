@@ -49,3 +49,7 @@ next-env.d.ts
 /public/workbox-*.js.map
 /public/worker-*.js.map
 /public/fallback-*.js
+
+# dexie db
+dexie-cloud.json
+dexie-cloud.key
