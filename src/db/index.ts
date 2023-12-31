@@ -30,3 +30,4 @@ export class Database extends Dexie {
 }
 
 export const Db = new Database();
+console.log(Db.hasFailed())
