@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import {ReactNode, useState} from 'react';
+import {useState} from 'react';
 import {Menu} from '@headlessui/react';
 import {EllipsisVerticalIcon} from '@heroicons/react/24/solid';
 import {GenericEvent} from '../../../../../types/events';
@@ -8,7 +8,6 @@ import {ListDetailSlideOver} from 'src/ui/view/TodoListsView/components/ListDeta
 
 type ListDemoProps = {
     todoList: TodoList;
-    actions?: ReactNode | undefined;
 }
 
 export const ListDemo = ({todoList}: ListDemoProps) => {
@@ -26,8 +25,7 @@ export const ListDemo = ({todoList}: ListDemoProps) => {
                 query: {listId: todoList.id}
             }}>
             <div
-                className={`my-2.5
-        transition-all cursor-pointer active:opacity-50
+                className={`mb-2 transition-all cursor-pointer active:opacity-50
          border-l-detail border-${todoList.color}
          bg-white p-4 rounded-md font-semibold items-center
          flex align-middle betterhover:hover:border-l-detail-hover shadow-sm`}>

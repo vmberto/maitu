@@ -1,6 +1,7 @@
 import {Db} from 'src/db/index';
 import {TodoList} from '../../types/main';
 
+
 export const get = async () => {
     return (await Db.todoLists.toArray()) || [];
 };

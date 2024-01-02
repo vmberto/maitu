@@ -12,3 +12,11 @@ export const formatDate = (date: Date) => {
 };
 
 export const stopPropagationFn = (e: GenericEvent) => e.stopPropagation();
+
+export const reorderArray = (array: unknown[], startIndex: number, endIndex: number): unknown[] => {
+    const result = Array.from(array);
+    const [removed] = result.splice(startIndex, 1);
+    result.splice(endIndex, 0, removed);
+
+    return result;
+};

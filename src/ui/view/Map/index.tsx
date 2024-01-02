@@ -19,7 +19,6 @@ export default function MyMap() {
 
     const locatedTodos = useMemo(() => todos.filter(t => t.location), [todos])
 
-    console.log(locatedTodos)
     return (
         <div id="map-wrapper" className="max-h-screen h-screen">
             <header className="flex flex-row max-w-3xl my-0 mx-auto py-2 px-6 mt-2.5 border-b-2 items-center">

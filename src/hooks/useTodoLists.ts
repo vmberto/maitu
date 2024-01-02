@@ -10,6 +10,10 @@ export const useTodoLists = () => {
         setTodoLists(await TodoListDb.get());
     }, []);
 
+    const updateTodoListsOrder = (lists: TodoList[]) => {
+        setTodoLists(lists);
+    }
+
     const handleAddTodoList = async (newTodoList: TodoList) => {
         await TodoListDb.add(newTodoList);
     };
@@ -22,5 +26,5 @@ export const useTodoLists = () => {
         await TodoListDb.remove(listId);
     };
 
-    return {todoLists, handleAddTodoList, handleDeleteTodoList, handleUpdateTodoList};
+    return {todoLists, updateTodoListsOrder, handleAddTodoList, handleDeleteTodoList, handleUpdateTodoList};
 };

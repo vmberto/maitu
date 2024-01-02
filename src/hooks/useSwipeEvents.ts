@@ -45,7 +45,6 @@ export const useSwipeEvents = (input: SwipeInput): SwipeOutput => {
         const isUpSwipe = yDistance > minSwipeDistance;
         const isDownSwipe = yDistance < -minSwipeDistance;
 
-        console.log(1);
         if (isLeftSwipe && input.onSwipedLeft) {
             input.onSwipedLeft();
         }
