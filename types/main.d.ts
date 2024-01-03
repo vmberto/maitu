@@ -5,6 +5,8 @@ export interface TodoList {
     title: string;
     color: Colors;
 
+    index: number;
+
     createdAt: Date;
 }
 

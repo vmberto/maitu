@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useState} from 'react';
 import SlideOver from 'src/ui/common/SlideOver';
 import {GenericEvent} from '../../../../../types/events';
 import {DeleteList} from 'src/ui/view/TodoListsView/components/DeleteList';
@@ -31,11 +31,12 @@ export const ListDetailSlideOver = ({open, setOpen, todoList}: ListDetailSlideOv
         }
     };
 
-    useEffect(() => {
-        (async () => {
-            await handleUpdateTodoList(todoList.id, {title: definedListTitle, color} as TodoList);
-        })();
-    }, [color, definedListTitle]);
+    // @Todo refactor 100%
+    // useEffect(() => {
+    //     (async () => {
+    //         await handleUpdateTodoList(todoList.id, {title: definedListTitle, color} as TodoList);
+    //     })();
+    // }, [color, definedListTitle]);
 
     return (
         <SlideOver

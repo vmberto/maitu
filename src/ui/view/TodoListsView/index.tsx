@@ -3,25 +3,11 @@ import {ListDemo} from 'src/ui/view/TodoListsView/components/ListDemo';
 import AddListSlideOver from 'src/ui/view/TodoListsView/components/AddListSlideOver';
 import {useTodoLists} from 'src/hooks/useTodoLists';
 import {NewListButton} from "src/ui/view/TodoListsView/components/NewListButton";
-import {DragDropContext, Droppable, Draggable, DropResult} from 'react-beautiful-dnd';
-import {TodoList} from '../../../../types/main';
-import {reorderArray} from "src/lib/functions";
+import {DragDropContext, Droppable, Draggable} from 'react-beautiful-dnd';
 
 const TodoListsView = () => {
     const [open, setOpen] = useState(false);
     const {todoLists, updateTodoListsOrder, handleAddTodoList} = useTodoLists();
-
-    const onDragEnd = (result: DropResult) => {
-        if (!result.destination) return;
-
-        const newItems = reorderArray(
-            todoLists,
-            result.source.index,
-            result.destination.index
-        ) as TodoList[];
-
-        updateTodoListsOrder(newItems)
-    };
 
     return (
         <>
@@ -34,7 +20,7 @@ const TodoListsView = () => {
                 </a>
             </header>
             <div className="max-w-2xl mt-0 mb-60 mx-auto p-5">
-                <DragDropContext onDragEnd={onDragEnd}>
+                <DragDropContext onDragEnd={updateTodoListsOrder}>
                     <Droppable droppableId="droppable-list">
                         {(provided) => (
                             <div ref={provided.innerRef} {...provided.droppableProps}>
@@ -48,7 +34,9 @@ const TodoListsView = () => {
                                             <div
                                                 ref={provided.innerRef}
                                                 {...provided.draggableProps}
-                                                {...provided.dragHandleProps}>
+                                                {...provided.dragHandleProps}
+                                                style={provided.draggableProps.style}
+                                                className="mb-2">
                                                 <ListDemo key={list.id} todoList={list}/>
                                             </div>
                                         )}
