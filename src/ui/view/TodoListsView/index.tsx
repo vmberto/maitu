@@ -3,7 +3,8 @@ import {ListDemo} from 'src/ui/view/TodoListsView/components/ListDemo';
 import AddListSlideOver from 'src/ui/view/TodoListsView/components/AddListSlideOver';
 import {useTodoLists} from 'src/hooks/useTodoLists';
 import {NewListButton} from "src/ui/view/TodoListsView/components/NewListButton";
-import {DragDropContext, Droppable, Draggable} from 'react-beautiful-dnd';
+import {DragAndDropWrapper} from "src/ui/common/dnd/DragAndDropWrapper";
+import {DraggableWrapper} from "src/ui/common/dnd/DraggableWrapper";
 
 const TodoListsView = () => {
     const [open, setOpen] = useState(false);
@@ -20,34 +21,11 @@ const TodoListsView = () => {
                 </a>
             </header>
             <div className="max-w-2xl mt-0 mb-60 mx-auto p-5">
-                <DragDropContext onDragEnd={updateTodoListsOrder}>
-                    <Droppable droppableId="droppable-list">
-                        {(provided) => (
-                            <div ref={provided.innerRef} {...provided.droppableProps}>
-                                {todoLists.map((list, index) => (
-                                    <Draggable
-                                        key={list.id}
-                                        draggableId={`${list.id}`}
-                                        index={index}
-                                    >
-                                        {(provided) => (
-                                            <div
-                                                ref={provided.innerRef}
-                                                {...provided.draggableProps}
-                                                {...provided.dragHandleProps}
-                                                style={provided.draggableProps.style}
-                                                className="mb-2">
-                                                <ListDemo key={list.id} todoList={list}/>
-                                            </div>
-                                        )}
-                                    </Draggable>
-                                ))}
-                                {provided.placeholder}
-                            </div>
-                        )}
-                    </Droppable>
-                </DragDropContext>
-
+                <DragAndDropWrapper onDragEnd={updateTodoListsOrder}>
+                    {todoLists.map(list => (
+                        <ListDemo key={list.id} todoList={list}/>
+                    ))}
+                </DragAndDropWrapper>
                 <NewListButton onClick={() => setOpen(true)}/>
             </div>
 
