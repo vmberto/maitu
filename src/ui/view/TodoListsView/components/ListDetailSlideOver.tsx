@@ -4,7 +4,8 @@ import {GenericEvent} from '../../../../../types/events';
 import {DeleteList} from 'src/ui/view/TodoListsView/components/DeleteList';
 import {TodoList} from '../../../../../types/main';
 import {ColorPicker} from 'src/ui/common/ColorPicker';
-import {useTodoLists} from 'src/hooks/useTodoLists';
+
+// import {useTodoLists} from 'src/hooks/useTodoLists';
 
 interface ListDetailSlideOver {
     open: boolean;
@@ -13,10 +14,10 @@ interface ListDetailSlideOver {
 }
 
 export const ListDetailSlideOver = ({open, setOpen, todoList}: ListDetailSlideOver) => {
-    const {handleUpdateTodoList} = useTodoLists();
+    // const {handleUpdateTodoList} = useTodoLists();
     const [color, setColor] = useState(todoList.color);
     const [listTitle, setListTitle] = useState(todoList.title);
-    const [definedListTitle, setDefinedListTitle] = useState(todoList.title);
+    // const [definedListTitle, setDefinedListTitle] = useState(todoList.title);
 
     const handleInputChange = (e: GenericEvent) => {
         const {value} = e.target;
@@ -25,7 +26,7 @@ export const ListDetailSlideOver = ({open, setOpen, todoList}: ListDetailSlideOv
 
     const handleDefineTitle = () => {
         if (listTitle) {
-            setDefinedListTitle(listTitle);
+            // setDefinedListTitle(listTitle);
         } else {
             setListTitle(todoList.title);
         }
