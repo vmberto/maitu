@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint './*.[jt]s?(x)' './**/*.[jt]s?(x)'"
+    "lint": "next lint --fix"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.10",
@@ -30,19 +30,30 @@
     "@types/node": "17.0.4",
     "@types/react": "17.0.38",
     "@types/react-beautiful-dnd": "^13.1.8",
-    "@typescript-eslint/eslint-plugin": "^6.3.0",
+    "@typescript-eslint/eslint-plugin": "^6.17.0",
     "@typescript-eslint/parser": "^6.3.0",
     "autoprefixer": "^10.4.13",
-    "eslint": "^8.47.0",
+    "eslint": "^8.56.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-airbnb-typescript": "^17.1.0",
     "eslint-config-next": "^14.0.4",
-    "eslint-config-semistandard": "^17.0.0",
-    "eslint-config-standard": "^17.1.0",
-    "eslint-plugin-import": "^2.28.0",
-    "eslint-plugin-n": "^15.7.0",
-    "eslint-plugin-promise": "^6.1.1",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-jest": "^27.6.0",
+    "eslint-plugin-jest-dom": "^5.1.0",
+    "eslint-plugin-jest-formatting": "^3.1.0",
+    "eslint-plugin-jsx-a11y": "^6.8.0",
+    "eslint-plugin-playwright": "^0.20.0",
+    "eslint-plugin-prettier": "^5.1.2",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-simple-import-sort": "^10.0.0",
+    "eslint-plugin-storybook": "^0.6.15",
+    "eslint-plugin-tailwindcss": "^3.13.1",
+    "eslint-plugin-testing-library": "^6.2.0",
+    "eslint-plugin-unused-imports": "^3.0.0",
     "postcss": "^8.4.21",
-    "prettier": "2.8.4",
     "tailwindcss": "^3.2.6",
-    "typescript": "4.5.4"
+    "typescript": "^4.5.4"
   }
 }

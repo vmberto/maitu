@@ -1,11 +1,13 @@
-import React, { FC, HTMLProps } from 'react';
+/* eslint-disable tailwindcss/no-custom-classname */
+/* eslint-disable tailwindcss/classnames-order */
+import React, { type HTMLProps } from 'react';
 
 type ButtonProps = HTMLProps<HTMLButtonElement> & {
   type: 'button' | 'submit' | 'reset';
   color: string;
 };
 
-export const Button: FC<ButtonProps> = ({ color, ...props }) => {
+export const Button = ({ color, ...props }: ButtonProps) => {
   return (
     <button
       {...props}
@@ -27,7 +29,8 @@ export const Button: FC<ButtonProps> = ({ color, ...props }) => {
         active:bg-${color}-800 active:shadow-lg
         transition
         duration-150
-        ease-in-out`}>
+        ease-in-out`}
+    >
       Submit
     </button>
   );
