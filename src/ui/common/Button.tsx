@@ -1,5 +1,6 @@
 /* eslint-disable tailwindcss/no-custom-classname */
 /* eslint-disable tailwindcss/classnames-order */
+/* eslint-disable react/button-has-type */
 import React, { type HTMLProps } from 'react';
 
 type ButtonProps = HTMLProps<HTMLButtonElement> & {
