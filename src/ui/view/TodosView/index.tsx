@@ -2,13 +2,13 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
 import Link from 'next/link';
-import { type FC, useRef } from 'react';
+import { useRef } from 'react';
 import { useTodos } from 'src/hooks/useTodos';
 import { FontColor, HexColors } from 'src/lib/colors';
 import { stopPropagationFn } from 'src/lib/functions';
 import { TodoInput } from 'src/ui/view/TodosView/components/TodoInput';
 
-const TodosView: FC = () => {
+const TodosView = () => {
   const newTodoInputRef = useRef({} as HTMLTextAreaElement);
   const {
     todosToComplete,

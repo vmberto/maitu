@@ -2,8 +2,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { useState } from 'react';
 import { type DropResult } from 'react-beautiful-dnd';
 import * as TodoListDb from 'src/db/todoListDb';
-
-import { type TodoList } from '../../types/main';
+import { type TodoList } from 'types/main';
 
 export const useTodoLists = () => {
   const [todoLists, setTodoLists] = useState<TodoList[]>([] as TodoList[]);

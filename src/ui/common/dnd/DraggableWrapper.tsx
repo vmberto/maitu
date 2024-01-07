@@ -2,7 +2,6 @@ import { type ReactNode } from 'react';
 import { Draggable } from 'react-beautiful-dnd';
 
 interface DraggableWrapperProps {
-  key: string;
   draggableId: string;
   index: number;
   children: ReactNode;
@@ -10,13 +9,12 @@ interface DraggableWrapperProps {
 }
 
 export const DraggableWrapper = ({
-  key,
   draggableId,
   index,
   children,
   className,
 }: DraggableWrapperProps) => (
-  <Draggable key={key} draggableId={draggableId} index={index}>
+  <Draggable draggableId={draggableId} index={index}>
     {(provided) => (
       <div
         ref={provided.innerRef}
