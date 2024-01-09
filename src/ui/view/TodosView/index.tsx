@@ -19,7 +19,6 @@ const TodosView = () => {
     handleKeyPressAdd,
     addTodo,
     handleChangeExistingTodo,
-    updateTodosOrder,
     handleChangeNewTodo,
     handleCompleteTodo,
     updateTodo,
