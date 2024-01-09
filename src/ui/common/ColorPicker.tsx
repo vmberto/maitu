@@ -9,10 +9,10 @@ export const Colors = [
   'palette_four',
 ];
 
-interface ColorPickerProps {
+type ColorPickerProps = {
   color: string;
   setColor: (color: string) => void;
-}
+};
 
 export const ColorPicker: FC<ColorPickerProps> = ({ color, setColor }) => {
   const changeColor = (newColor: string) => () => {

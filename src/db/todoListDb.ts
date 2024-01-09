@@ -8,7 +8,8 @@ export const get = async () => {
 };
 
 export const add = async (newTodoList: TodoList) => {
-  await Db.todoLists.add(newTodoList);
+  const { length: index } = await get();
+  await Db.todoLists.add({ ...newTodoList, index });
 };
 
 export const update = async (listId: string, newTodoList: TodoList) => {

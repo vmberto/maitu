@@ -23,6 +23,8 @@ export interface Todo {
 
   location?: string;
 
+  index: number;
+
   createdAt: Date;
   completedAt: Date;
 }

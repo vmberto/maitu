@@ -19,14 +19,13 @@ import { type Todo } from '../../../../../types/main';
 
 type ElProps<T, R> = DetailedHTMLProps<T, R>;
 
-export interface TodoInputComponentProps
-  extends ElProps<
-    TextareaHTMLAttributes<HTMLTextAreaElement>,
-    HTMLTextAreaElement
-  > {
+export type TodoInputComponentProps = ElProps<
+  TextareaHTMLAttributes<HTMLTextAreaElement>,
+  HTMLTextAreaElement
+> & {
   todoData?: Todo;
   handleCompleteTodo?: (t: Todo) => void;
-}
+};
 
 const TodoInputComponent = (
   { todoData, handleCompleteTodo, ...rest }: TodoInputComponentProps,
@@ -69,36 +68,26 @@ const TodoInputComponent = (
       </div>
       <textarea
         ref={textareaRef}
-        className="relative
-                    z-10
-                    block w-full
-                    resize-none
-                    overflow-hidden
-                    bg-transparent
-                    px-2
-                    py-4 text-base
-                    outline-0
-                    focus:outline-none"
+        className="relative z-10 block w-full resize-none overflow-hidden
+                    bg-transparent px-2 py-4 text-base outline-0 focus:outline-none"
         {...rest}
       />
       {todoData?.id && (
-        <>
-          <Menu as="div" className="relative inline-block text-left">
-            <Menu.Button
-              onClick={handleClick}
-              className="inline-flex w-full justify-center
+        <Menu as="div" className="relative inline-block text-left">
+          <Menu.Button
+            onClick={handleClick}
+            className="inline-flex w-full justify-center
                 rounded-full p-1 text-sm font-medium text-gray-700
                 focus:ring-offset-2 focus:ring-offset-gray-200 betterhover:hover:bg-gray-200"
-            >
-              <EllipsisHorizontalCircleIcon className="h-6 w-6" />
-            </Menu.Button>
-          </Menu>
+          >
+            <EllipsisHorizontalCircleIcon className="h-6 w-6" />
+          </Menu.Button>
           <TodoDetailSlideOver
             todoData={todoData}
             open={open}
             setOpen={setOpen}
           />
-        </>
+        </Menu>
       )}
     </div>
   );

@@ -1,6 +1,7 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useRouter } from 'next/router';
 import { type KeyboardEventHandler, useMemo, useState } from 'react';
+import type { DropResult } from 'react-beautiful-dnd';
 import * as TodosDb from 'src/db/todosDb';
 
 import { type TextareaChangeEventHandler } from '../../types/events';
@@ -138,6 +139,16 @@ export const useTodos = (newTodoInput?: HTMLTextAreaElement) => {
     await TodosDb.update({ ...t, complete: !t.complete });
   };
 
+  const updateTodosOrder = async (result: DropResult) => {
+    if (!result.destination) return;
+
+    await TodosDb.updateOrder(
+      listId,
+      result.source.index,
+      result.destination.index,
+    );
+  };
+
   const todosToComplete = useMemo(
     () => todos.filter((t) => !t.completeDisabled),
     [todos],
@@ -153,6 +164,7 @@ export const useTodos = (newTodoInput?: HTMLTextAreaElement) => {
     newTodo,
     selectedTodoList,
     clickScreenFocusHandler,
+    updateTodosOrder,
     handleKeyPressAdd,
     addTodo,
     handleChangeExistingTodo,

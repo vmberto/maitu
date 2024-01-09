@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { useTodoLists } from 'src/hooks/useTodoLists';
 import { DragAndDropWrapper } from 'src/ui/common/dnd/DragAndDropWrapper';
+import { Typography } from 'src/ui/common/Typography';
 import AddListSlideOver from 'src/ui/view/TodoListsView/components/AddListSlideOver';
 import { ListDemo } from 'src/ui/view/TodoListsView/components/ListDemo';
 import { NewListButton } from 'src/ui/view/TodoListsView/components/NewListButton';
@@ -13,7 +14,9 @@ const TodoListsView = () => {
   return (
     <>
       <header className="mx-auto my-0 mt-2.5 flex max-w-3xl flex-row items-center border-b-2 px-6 py-2">
-        <h1 className="text-xl font-semibold text-primary">Maitu</h1>
+        <Typography as="h1" className="text-xl font-semibold text-primary">
+          Maitu
+        </Typography>
         <Link
           className="ml-auto mr-5 border-b-2 border-primary px-3 py-0.5 text-base text-primary"
           href="/map"

@@ -4,6 +4,7 @@ import { EllipsisVerticalIcon } from '@heroicons/react/24/solid';
 import Link from 'next/link';
 import { useState } from 'react';
 import { DraggableWrapper } from 'src/ui/common/dnd/DraggableWrapper';
+import { Typography } from 'src/ui/common/Typography';
 import { ListDetailSlideOver } from 'src/ui/view/TodoListsView/components/ListDetailSlideOver';
 
 import { type GenericEvent } from '../../../../../types/events';
@@ -39,7 +40,7 @@ export const ListDemo = ({ todoList }: ListDemoProps) => {
          items-center rounded-md border-l-detail bg-white p-4 align-middle font-semibold
          shadow-sm transition-all active:opacity-50 betterhover:hover:border-l-detail-hover`}
         >
-          <h1>{todoList.title}</h1>
+          <Typography as="h2">{todoList.title}</Typography>
           <div className="ml-auto">
             <Menu as="div" className="relative inline-block text-left">
               <Menu.Button
