@@ -54,3 +54,4 @@ next-env.d.ts
 # dexie db
 dexie-cloud.json
 dexie-cloud.key
+database.json

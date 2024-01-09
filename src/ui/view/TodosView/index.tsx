@@ -6,8 +6,6 @@ import { useRef } from 'react';
 import { useTodos } from 'src/hooks/useTodos';
 import { FontColor, HexColors } from 'src/lib/colors';
 import { stopPropagationFn } from 'src/lib/functions';
-import { DragAndDropWrapper } from 'src/ui/common/dnd/DragAndDropWrapper';
-import { DraggableWrapper } from 'src/ui/common/dnd/DraggableWrapper';
 import { TodoInput } from 'src/ui/view/TodosView/components/TodoInput';
 
 const TodosView = () => {
@@ -57,23 +55,20 @@ const TodosView = () => {
           </h1>
         </div>
         <div id="todos" className="mb-28 px-5 pb-5">
-          <DragAndDropWrapper onDragEnd={updateTodosOrder}>
-            {todosToComplete.map((t) => (
-              <DraggableWrapper key={t.id} draggableId={t.id} index={t.index}>
-                <TodoInput
-                  id={t.id}
-                  value={t.title}
-                  todoData={t}
-                  handleCompleteTodo={handleCompleteTodo}
-                  onClick={stopPropagationFn}
-                  onKeyDown={handleKeyPress}
-                  onBlur={updateTodo(t)}
-                  onFocus={handleInputFocus(t)}
-                  onChange={handleChangeExistingTodo(t)}
-                />
-              </DraggableWrapper>
-            ))}
-          </DragAndDropWrapper>
+          {todosToComplete.map((t) => (
+            <TodoInput
+              key={t.id}
+              id={t.id}
+              value={t.title}
+              todoData={t}
+              handleCompleteTodo={handleCompleteTodo}
+              onClick={stopPropagationFn}
+              onKeyDown={handleKeyPress}
+              onBlur={updateTodo(t)}
+              onFocus={handleInputFocus(t)}
+              onChange={handleChangeExistingTodo(t)}
+            />
+          ))}
           <TodoInput
             id="new-todo"
             ref={newTodoInputRef}

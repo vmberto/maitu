@@ -19,14 +19,16 @@ export const useTodos = (newTodoInput?: HTMLTextAreaElement) => {
   const [newTodo, setNewTodo] = useState<Todo>({} as Todo);
 
   useLiveQuery(() => {
-    (async () => {
+    const fetchData = async () => {
       if (listId) {
         const { selectedTodoList: dbList, todos: dbTodos } =
           await TodosDb.get(listId);
         setTodos(dbTodos);
         setSelectedTodoList(dbList);
       }
-    })();
+    };
+
+    return fetchData();
   }, [listId]);
 
   const [clickScreenFocusHandler, setClickScreenFocusHandler] = useState(false);
@@ -54,12 +56,12 @@ export const useTodos = (newTodoInput?: HTMLTextAreaElement) => {
     (todo: Todo) => (e: TextareaChangeEventHandler) => {
       const { value } = e.target;
       const { id } = todo;
-      const todosCopy: Todo[] = JSON.parse(JSON.stringify(todos));
-      const changedTodo = todosCopy.find((t) => t.id === id);
-      if (changedTodo?.id) {
-        changedTodo.title = value!;
-      }
-      setTodos(todosCopy);
+
+      const updatedTodos = todos.map((t) =>
+        t.id === id ? { ...t, title: value } : t,
+      );
+
+      setTodos([...updatedTodos]);
     };
 
   const handleChangeNewTodo = (e: TextareaChangeEventHandler) => {
@@ -93,15 +95,18 @@ export const useTodos = (newTodoInput?: HTMLTextAreaElement) => {
 
   const addTodo = async () => {
     setClickScreenFocusHandler(false);
-    if (newTodo?.title?.length) {
+    const { title } = newTodo;
+
+    if (title && title.length > 0) {
       const addedTodo = {
         listId,
-        title: newTodo.title,
+        title,
         complete: false,
         completeDisabled: false,
         description: '',
         createdAt: new Date(),
       } as Todo;
+
       setNewTodo({ title: '' } as Todo);
       await TodosDb.add(addedTodo);
     }
