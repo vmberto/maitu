@@ -13,7 +13,6 @@ export interface TodosState {
   completedTodos: Todo[];
   newTodo: Todo;
   selectedTodoList: TodoList;
-  clickScreenFocusHandler: boolean;
   updateTodoData: (t: Todo) => () => Promise<void>;
   handleClickScreen: () => void;
   handleChangeExistingTodo: (
@@ -24,7 +23,6 @@ export interface TodosState {
   handleKeyPressAdd: KeyboardEventHandler<HTMLTextAreaElement>;
   handleChangeNewTodo: (e: TextareaChangeEventHandler) => void;
   handleInputFocus: (t: Todo) => () => Promise<void>;
-  removeFocus: () => void;
   addTodo: () => Promise<void>;
   updateTodosOrder: (result: DropResult) => Promise<void>;
   updateTodo: (t: Todo) => () => Promise<void>;
@@ -38,7 +36,6 @@ export const useTodos = (newTodoInput?: HTMLTextAreaElement): TodosState => {
     {} as TodoList,
   );
   const [newTodo, setNewTodo] = useState<Todo>({} as Todo);
-  const [clickScreenFocusHandler, setClickScreenFocusHandler] = useState(false);
 
   useLiveQuery(() => {
     const fetchData = async () => {
@@ -55,18 +52,12 @@ export const useTodos = (newTodoInput?: HTMLTextAreaElement): TodosState => {
 
   const handleClickScreen = () => {
     newTodoInput?.focus();
-    setClickScreenFocusHandler(true);
-  };
-
-  const removeFocus = () => {
-    setClickScreenFocusHandler(false);
   };
 
   const handleKeyPress: KeyboardEventHandler<
     HTMLTextAreaElement | HTMLDivElement
   > = (e) => {
     if (e.key === 'Enter') {
-      setClickScreenFocusHandler(true);
       e.preventDefault();
       newTodoInput?.focus();
     }
@@ -92,12 +83,10 @@ export const useTodos = (newTodoInput?: HTMLTextAreaElement): TodosState => {
   };
 
   const handleInputFocus = (t: Todo) => async () => {
-    setClickScreenFocusHandler(true);
     setCurrentTodo({ ...t });
   };
 
   const updateTodo = (t: Todo) => async () => {
-    setClickScreenFocusHandler(false);
     if (t.title.length <= 0) {
       await TodosDb.remove(t.id);
 
@@ -114,7 +103,6 @@ export const useTodos = (newTodoInput?: HTMLTextAreaElement): TodosState => {
   };
 
   const addTodo = async () => {
-    setClickScreenFocusHandler(false);
     const { title } = newTodo;
 
     if (title && title.length > 0) {
@@ -188,7 +176,6 @@ export const useTodos = (newTodoInput?: HTMLTextAreaElement): TodosState => {
     completedTodos,
     newTodo,
     selectedTodoList,
-    clickScreenFocusHandler,
     updateTodosOrder,
     handleKeyPressAdd,
     addTodo,
@@ -199,7 +186,6 @@ export const useTodos = (newTodoInput?: HTMLTextAreaElement): TodosState => {
     updateTodoData,
     handleInputFocus,
     handleKeyPress,
-    removeFocus,
     handleClickScreen,
   };
 };

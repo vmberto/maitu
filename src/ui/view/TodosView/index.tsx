@@ -11,16 +11,11 @@ const TodosView = () => {
   const newTodoInputRef = useRef({} as HTMLTextAreaElement);
   const todosState = useTodos(newTodoInputRef.current);
 
-  const { handleClickScreen, clickScreenFocusHandler, removeFocus } =
-    todosState;
+  const { handleClickScreen } = todosState;
 
   return (
     <TodosContext.Provider value={todosState}>
       <div className="relative min-h-screen" onClick={handleClickScreen}>
-        {clickScreenFocusHandler && (
-          <div className="absolute h-full w-full" onClick={removeFocus} />
-        )}
-
         <div className="mx-auto my-0 h-full max-w-xl">
           <Header />
 
