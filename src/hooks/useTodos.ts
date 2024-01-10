@@ -3,13 +3,34 @@ import { useRouter } from 'next/router';
 import { type KeyboardEventHandler, useMemo, useState } from 'react';
 import type { DropResult } from 'react-beautiful-dnd';
 import * as TodosDb from 'src/db/todosDb';
-
-import { type TextareaChangeEventHandler } from '../../types/events';
-import { type Todo, type TodoList } from '../../types/main';
+import type { TextareaChangeEventHandler } from 'types/events';
+import { type Todo, type TodoList } from 'types/main';
 
 let timeouts = [] as Array<{ id: string; timeout: NodeJS.Timeout }>;
 
-export const useTodos = (newTodoInput?: HTMLTextAreaElement) => {
+export interface TodosState {
+  todosToComplete: Todo[];
+  completedTodos: Todo[];
+  newTodo: Todo;
+  selectedTodoList: TodoList;
+  clickScreenFocusHandler: boolean;
+  updateTodoData: (t: Todo) => () => Promise<void>;
+  handleClickScreen: () => void;
+  handleChangeExistingTodo: (
+    t: Todo,
+  ) => (e: TextareaChangeEventHandler) => void;
+  handleCompleteTodo: (t: Todo) => Promise<void>;
+  handleKeyPress: KeyboardEventHandler<HTMLTextAreaElement | HTMLDivElement>;
+  handleKeyPressAdd: KeyboardEventHandler<HTMLTextAreaElement>;
+  handleChangeNewTodo: (e: TextareaChangeEventHandler) => void;
+  handleInputFocus: (t: Todo) => () => Promise<void>;
+  removeFocus: () => void;
+  addTodo: () => Promise<void>;
+  updateTodosOrder: (result: DropResult) => Promise<void>;
+  updateTodo: (t: Todo) => () => Promise<void>;
+}
+
+export const useTodos = (newTodoInput?: HTMLTextAreaElement): TodosState => {
   const { listId } = useRouter().query as { listId: string };
   const [currentTodo, setCurrentTodo] = useState({} as Todo);
   const [todos, setTodos] = useState<Todo[]>([] as Todo[]);
@@ -17,6 +38,7 @@ export const useTodos = (newTodoInput?: HTMLTextAreaElement) => {
     {} as TodoList,
   );
   const [newTodo, setNewTodo] = useState<Todo>({} as Todo);
+  const [clickScreenFocusHandler, setClickScreenFocusHandler] = useState(false);
 
   useLiveQuery(() => {
     const fetchData = async () => {
@@ -30,8 +52,6 @@ export const useTodos = (newTodoInput?: HTMLTextAreaElement) => {
 
     return fetchData();
   }, [listId]);
-
-  const [clickScreenFocusHandler, setClickScreenFocusHandler] = useState(false);
 
   const handleClickScreen = () => {
     newTodoInput?.focus();

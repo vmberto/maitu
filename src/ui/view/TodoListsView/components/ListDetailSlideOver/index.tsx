@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { ColorPicker } from 'src/ui/common/ColorPicker';
 import SlideOver from 'src/ui/common/SlideOver';
-import { DeleteList } from 'src/ui/view/TodoListsView/components/DeleteList';
+import { DeleteList } from 'src/ui/view/TodoListsView/components/ListDetailSlideOver/DeleteList';
 
-import { type GenericEvent } from '../../../../../types/events';
-import { type TodoList } from '../../../../../types/main';
+import { type GenericEvent } from '../../../../../../types/events';
+import { type TodoList } from '../../../../../../types/main';
 
 // import {useTodoLists} from 'src/hooks/useTodoLists';
 

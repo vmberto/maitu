@@ -6,9 +6,8 @@ import { useState } from 'react';
 import { DraggableWrapper } from 'src/ui/common/dnd/DraggableWrapper';
 import { Typography } from 'src/ui/common/Typography';
 import { ListDetailSlideOver } from 'src/ui/view/TodoListsView/components/ListDetailSlideOver';
-
-import { type GenericEvent } from '../../../../../types/events';
-import { type TodoList } from '../../../../../types/main';
+import { type GenericEvent } from 'types/events';
+import { type TodoList } from 'types/main';
 
 type ListDemoProps = {
   todoList: TodoList;
@@ -41,18 +40,16 @@ export const ListDemo = ({ todoList }: ListDemoProps) => {
          shadow-sm transition-all active:opacity-50 betterhover:hover:border-l-detail-hover`}
         >
           <Typography as="h2">{todoList.title}</Typography>
-          <div className="ml-auto">
-            <Menu as="div" className="relative inline-block text-left">
-              <Menu.Button
-                onClick={handleClick}
-                className="inline-flex w-full justify-center
+          <Menu as="div" className="relative ml-auto inline-block text-left">
+            <Menu.Button
+              onClick={handleClick}
+              className="inline-flex w-full justify-center
                 rounded-full p-1 text-sm font-medium text-gray-700
                 focus:ring-offset-2 focus:ring-offset-gray-200 betterhover:hover:bg-gray-200"
-              >
-                <EllipsisVerticalIcon className="h-8 w-8" />
-              </Menu.Button>
-            </Menu>
-          </div>
+            >
+              <EllipsisVerticalIcon className="h-8 w-8" />
+            </Menu.Button>
+          </Menu>
         </div>
         <ListDetailSlideOver
           open={open}

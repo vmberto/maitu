@@ -2,7 +2,7 @@ import { type FC, useState } from 'react';
 import { useTodoLists } from 'src/hooks/useTodoLists';
 import { Input } from 'src/ui/common/Input';
 
-import { type GenericEvent } from '../../../../../types/events';
+import { type GenericEvent } from '../../../../../../types/events';
 
 interface DeleteListProps {
   id: string;
