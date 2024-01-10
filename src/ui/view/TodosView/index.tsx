@@ -29,11 +29,11 @@ const TodosView = () => {
   } = useTodos(newTodoInputRef.current);
 
   return (
-    <div className="relative" onClick={handleClickScreen}>
+    <div className="relative min-h-screen" onClick={handleClickScreen}>
       {clickScreenFocusHandler && (
         <div className="absolute h-full w-full" onClick={removeFocus} />
       )}
-      <div className="mx-auto my-0 max-w-xl">
+      <div className="mx-auto my-0 h-full max-w-xl">
         <div className="flex items-center py-2">
           <Link
             className="flex h-12 pl-5"
