@@ -63,7 +63,7 @@ export const ListDetailSlideOver = ({
         />
       }
       open={open}
-      setOpen={setOpen}
+      onClose={() => setOpen(false)}
     >
       <ColorPicker color={color} setColor={setColor} />
 
