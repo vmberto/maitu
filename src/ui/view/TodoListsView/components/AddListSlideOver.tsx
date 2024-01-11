@@ -42,7 +42,7 @@ const AddListSlideOver = ({
   };
 
   return (
-    <SlideOver title={title} open={open} setOpen={setOpen}>
+    <SlideOver title={title} open={open} onClose={() => setOpen(false)}>
       <form id="addData-form" onSubmit={handleSubmit}>
         <div className="mb-6">
           <Input
