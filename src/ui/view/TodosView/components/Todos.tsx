@@ -1,7 +1,8 @@
 import type { Ref } from 'react';
 import { useContext } from 'react';
-import { TodosContext } from 'src/context/TodosContext';
+import { TodosContext } from 'src/hooks/useTodos';
 import { stopPropagationFn } from 'src/lib/functions';
+import { Typography } from 'src/ui/common/Typography';
 import { TodoInput } from 'src/ui/view/TodosView/components/TodoInput';
 
 type TodosProps = {
@@ -47,9 +48,12 @@ export const Todos = ({ newTodoInputRef }: TodosProps) => {
         onBlur={addTodo}
         onKeyDown={handleKeyPressAdd}
       />
-      <h1 className="cursor-default border-t-2 pt-5 text-center text-sm font-light text-gray-500">
+      <Typography
+        as="h1"
+        className="cursor-default border-t-2 pt-5 text-center text-sm font-light text-gray-500"
+      >
         Click anywhere to add Todo
-      </h1>
+      </Typography>
     </div>
   );
 };

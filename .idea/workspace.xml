@@ -4,7 +4,20 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="" />
+    <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/context/TodosContext.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/context/TodosContext.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/hooks/useTodos.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useTodos.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/common/SlideOver.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/common/SlideOver.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/view/TodosView/components/CompleteTodos.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodosView/components/CompleteTodos.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/view/TodosView/components/Header.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodosView/components/Header.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/view/TodosView/components/TodoDetailSlideOver.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodosView/components/TodoDetailSlideOver.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/view/TodosView/components/TodoInput.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodosView/components/TodoInput.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/view/TodosView/components/Todos.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodosView/components/Todos.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/view/TodosView/components/sections/DescriptionSection.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodosView/components/sections/DescriptionSection.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/view/TodosView/components/sections/InputSection.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodosView/components/sections/InputSection.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/view/TodosView/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodosView/index.tsx" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -63,6 +76,9 @@
       <recent name="$PROJECT_DIR$/src/state/todos" />
       <recent name="$PROJECT_DIR$/src/ui/view/TodoListsView/components" />
       <recent name="$PROJECT_DIR$/src/ui/view/TodosView/components" />
+    </key>
+    <key name="es6.move.members.recent.items">
+      <recent name="$PROJECT_DIR$/src/hooks/useTodos.ts" />
     </key>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />

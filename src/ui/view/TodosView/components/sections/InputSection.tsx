@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { type useTodos } from 'src/hooks/useTodos';
 
 import { type GenericEvent } from '../../../../../../types/events';
 import { type Todo } from '../../../../../../types/main';
@@ -7,13 +6,13 @@ import { type Todo } from '../../../../../../types/main';
 interface InputSectionProps {
   label: string;
   propertyName: keyof Todo;
-  todoService: ReturnType<typeof useTodos>;
+  updateTodoData: (todo: Todo) => (e: GenericEvent) => Promise<void>;
   todoData: Todo;
 }
 
 export const InputSection = ({
   todoData,
-  todoService,
+  updateTodoData,
   label,
   propertyName,
 }: InputSectionProps) => {
@@ -30,14 +29,9 @@ export const InputSection = ({
       <input
         id="input"
         placeholder="Latitude, Longitude"
-        className="relative mb-2 block h-auto w-full resize-none overflow-auto rounded-md
-                            border-2
-                            bg-transparent
-                            p-3
-                            text-base
-                            outline-0
-                            focus:outline-none"
-        onBlur={todoService.updateTodoData({
+        className="relative mb-2 block h-auto w-full resize-none overflow-auto
+        rounded-md border-2 bg-transparent p-3 text-base outline-0 focus:outline-none"
+        onBlur={updateTodoData({
           ...todoData,
           [propertyName]: value,
         })}

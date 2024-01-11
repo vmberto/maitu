@@ -1,7 +1,7 @@
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
 import Link from 'next/link';
 import { useContext } from 'react';
-import { TodosContext } from 'src/context/TodosContext';
+import { TodosContext } from 'src/hooks/useTodos';
 import { FontColor, HexColors } from 'src/lib/colors';
 import { stopPropagationFn } from 'src/lib/functions';
 

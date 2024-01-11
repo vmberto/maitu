@@ -1,16 +1,16 @@
 import React, { type ChangeEvent, useRef, useState } from 'react';
-import { type useTodos } from 'src/hooks/useTodos';
 
+import type { GenericEvent } from '../../../../../../types/events';
 import { type Todo } from '../../../../../../types/main';
 
 interface DescriptionSectionProps {
-  todoService: ReturnType<typeof useTodos>;
+  updateTodoData: (todo: Todo) => (e: GenericEvent) => Promise<void>;
   todoData: Todo;
 }
 
 export const DescriptionSection = ({
   todoData,
-  todoService,
+  updateTodoData,
 }: DescriptionSectionProps) => {
   const textareaRef = useRef({} as HTMLTextAreaElement);
   const [description, setDescription] = useState(todoData?.description || '');
@@ -34,7 +34,7 @@ export const DescriptionSection = ({
           className="relative block h-auto w-full resize-none overflow-auto rounded-md
         border-2 bg-transparent px-3 pb-3 pt-2 text-base outline-0 focus:outline-none"
           onChange={handleChange}
-          onBlur={todoService.updateTodoData({
+          onBlur={updateTodoData({
             ...todoData,
             description,
           })}

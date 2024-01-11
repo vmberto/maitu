@@ -1,11 +1,11 @@
 import { useContext } from 'react';
-import { TodosContext } from 'src/context/TodosContext';
+import { TodosContext } from 'src/hooks/useTodos';
 import { TodoInput } from 'src/ui/view/TodosView/components/TodoInput';
 
 export const CompleteTodos = () => {
-  const { completedTodos } = useContext(TodosContext);
+  const { completeTodos } = useContext(TodosContext);
 
-  if (!completedTodos.length) {
+  if (!completeTodos.length) {
     return null;
   }
 
@@ -14,11 +14,12 @@ export const CompleteTodos = () => {
       <div className="mt-5 flex align-middle text-lg font-semibold">
         <h2>Complete Todos</h2>
         <span className="ml-auto text-sm font-semibold">
-          {completedTodos.length}
+          {completeTodos.length}
         </span>
       </div>
+      Todos
       <div id="Todos">
-        {completedTodos.map((t) => (
+        {completeTodos.map((t) => (
           <TodoInput
             key={t.id}
             id={t.id}

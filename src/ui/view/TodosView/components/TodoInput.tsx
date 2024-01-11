@@ -7,12 +7,12 @@ import React, {
   type ForwardedRef,
   forwardRef,
   type TextareaHTMLAttributes,
+  useContext,
   useEffect,
   useImperativeHandle,
   useRef,
-  useState,
 } from 'react';
-import { TodoDetailSlideOver } from 'src/ui/view/TodosView/components/TodoDetailSlideOver';
+import { TodosContext } from 'src/hooks/useTodos';
 
 import { type GenericEvent } from '../../../../../types/events';
 import { type Todo } from '../../../../../types/main';
@@ -32,8 +32,7 @@ const TodoInputComponent = (
   ref: ForwardedRef<HTMLTextAreaElement>,
 ) => {
   const textareaRef = useRef({} as HTMLTextAreaElement);
-  const [open, setOpen] = useState(false);
-
+  const { handleOpenSlideOver } = useContext(TodosContext);
   useImperativeHandle(ref, () => textareaRef.current);
 
   useEffect(() => {
@@ -47,11 +46,6 @@ const TodoInputComponent = (
     if (todoData && handleCompleteTodo) {
       handleCompleteTodo(todoData);
     }
-  };
-
-  const handleClick = (e: GenericEvent) => {
-    e.stopPropagation();
-    setOpen(true);
   };
 
   return (
@@ -75,18 +69,13 @@ const TodoInputComponent = (
       {todoData?.id && (
         <Menu as="div" className="relative inline-block text-left">
           <Menu.Button
-            onClick={handleClick}
+            onClick={handleOpenSlideOver(todoData)}
             className="inline-flex w-full justify-center
                 rounded-full p-1 text-sm font-medium text-gray-700
                 focus:ring-offset-2 focus:ring-offset-gray-200 betterhover:hover:bg-gray-200"
           >
             <EllipsisHorizontalCircleIcon className="h-6 w-6" />
           </Menu.Button>
-          <TodoDetailSlideOver
-            todoData={todoData}
-            open={open}
-            setOpen={setOpen}
-          />
         </Menu>
       )}
     </div>

@@ -1,7 +1,7 @@
 import { PlayCircleIcon } from '@heroicons/react/24/outline';
 import { CheckCircleIcon } from '@heroicons/react/24/solid';
-import React, { useEffect, useState } from 'react';
-import { useTodos } from 'src/hooks/useTodos';
+import React, { useContext, useEffect, useState } from 'react';
+import { TodosContext } from 'src/hooks/useTodos';
 import { HexColors } from 'src/lib/colors';
 import { formatDate } from 'src/lib/functions';
 import SlideOver from 'src/ui/common/SlideOver';
@@ -12,40 +12,33 @@ import {
   SectionSelect,
 } from 'src/ui/view/TodosView/components/SectionSelect';
 
-import { type Todo } from '../../../../../types/main';
-
-interface TodoDetailSlideOverProps {
-  open: boolean;
-  setOpen: (open: boolean) => void;
-  todoData: Todo;
-}
-
-export const TodoDetailSlideOver = ({
-  todoData,
-  setOpen,
-  open,
-}: TodoDetailSlideOverProps) => {
-  const todoService = useTodos();
+export const TodoDetailSlideOver = () => {
+  const {
+    isTodoDetailOpen,
+    currentTodo,
+    handleCloseSlideOver,
+    updateTodoData,
+  } = useContext(TodosContext);
   const [selectedSections, setSection] = useState<Section[]>([]);
 
   useEffect(() => {
     if (
-      todoData.description &&
+      currentTodo.description &&
       !selectedSections.includes(Section.DESCRIPTION)
     ) {
       setSection((prevSections) => [...prevSections, Section.DESCRIPTION]);
     }
 
-    if (todoData.location && !selectedSections.includes(Section.LOCATION)) {
+    if (currentTodo.location && !selectedSections.includes(Section.LOCATION)) {
       setSection((prevSections) => [...prevSections, Section.LOCATION]);
     }
-  }, [todoData.description, todoData.location, selectedSections]);
+  }, [currentTodo.description, currentTodo.location, selectedSections]);
 
   return (
     <SlideOver
       title={
         <>
-          {todoData?.completeDisabled ? (
+          {currentTodo?.completeDisabled ? (
             <CheckCircleIcon
               className="mb-1 mr-1 inline h-6 w-6"
               color="#5aee5c"
@@ -56,26 +49,29 @@ export const TodoDetailSlideOver = ({
               color={HexColors.get('primary')}
             />
           )}
-          <div className="inline">{todoData?.title}</div>
-          {todoData?.createdAt instanceof Date && (
+          <div className="inline">{currentTodo?.title}</div>
+          {currentTodo?.createdAt instanceof Date && (
             <div className="mt-2 flex flex-col gap-2.5 text-sm text-gray-500">
-              {formatDate(todoData?.createdAt)}
+              {formatDate(currentTodo?.createdAt)}
             </div>
           )}
         </>
       }
-      open={open}
-      setOpen={setOpen}
+      open={isTodoDetailOpen}
+      onClose={handleCloseSlideOver}
     >
       {selectedSections.includes(Section.DESCRIPTION) && (
-        <DescriptionSection todoData={todoData} todoService={todoService} />
+        <DescriptionSection
+          todoData={currentTodo}
+          updateTodoData={updateTodoData}
+        />
       )}
       {selectedSections.includes(Section.LOCATION) && (
         <InputSection
-          todoService={todoService}
+          todoData={currentTodo}
+          updateTodoData={updateTodoData}
           label="Location"
           propertyName="location"
-          todoData={todoData}
         />
       )}
       <SectionSelect

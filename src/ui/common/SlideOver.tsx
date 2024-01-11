@@ -6,19 +6,19 @@ import { useSwipeEvents } from 'src/hooks/useSwipeEvents';
 type ModalProps = {
   title: string | ReactNode;
   open: boolean;
-  setOpen: (open: boolean) => void;
+  onClose: () => void;
 };
 
-const SlideOver: FC<ModalProps> = ({ title, open, setOpen, children }) => {
+const SlideOver: FC<ModalProps> = ({ title, open, onClose, children }) => {
   const swipe = useSwipeEvents({
     onSwipedDown: () => {
-      setOpen(false);
+      onClose();
     },
   });
 
   return (
     <Transition.Root show={open} as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={setOpen}>
+      <Dialog as="div" className="relative z-10" onClose={onClose}>
         <Transition.Child
           as={Fragment}
           enter="ease-in-out duration-500"
@@ -36,10 +36,10 @@ const SlideOver: FC<ModalProps> = ({ title, open, setOpen, children }) => {
             <div className="pointer-events-none fixed inset-y-0 flex max-w-full px-2">
               <Transition.Child
                 as={Fragment}
-                enter="transform transition ease-in-out duration-500 sm:duration-700"
+                enter="transform transition ease-in-out duration-700 sm:duration-700"
                 enterFrom="translate-y-full"
                 enterTo="translate-y-0"
-                leave="transform transition ease-in-out duration-500 sm:duration-700"
+                leave="transform transition ease-in-out duration-700 sm:duration-700"
                 leaveFrom="translate-y-0"
                 leaveTo="translate-y-full"
               >
@@ -56,7 +56,7 @@ const SlideOver: FC<ModalProps> = ({ title, open, setOpen, children }) => {
                         type="button"
                         className="ml-auto rounded-md text-gray-600 hover:text-gray-400 focus:outline-none focus:ring-2 focus:ring-white"
                         onClick={() => {
-                          setOpen(false);
+                          onClose();
                         }}
                       >
                         <span className="sr-only">Close panel</span>

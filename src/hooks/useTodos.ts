@@ -1,18 +1,29 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useRouter } from 'next/router';
-import { type KeyboardEventHandler, useMemo, useState } from 'react';
+import {
+  createContext,
+  type KeyboardEventHandler,
+  useMemo,
+  useState,
+} from 'react';
 import type { DropResult } from 'react-beautiful-dnd';
 import * as TodosDb from 'src/db/todosDb';
-import type { TextareaChangeEventHandler } from 'types/events';
+import type { GenericEvent, TextareaChangeEventHandler } from 'types/events';
 import { type Todo, type TodoList } from 'types/main';
 
 let timeouts = [] as Array<{ id: string; timeout: NodeJS.Timeout }>;
 
 export interface TodosState {
   todosToComplete: Todo[];
-  completedTodos: Todo[];
+  completeTodos: Todo[];
   newTodo: Todo;
+  currentTodo: Todo;
   selectedTodoList: TodoList;
+  isTodoDetailOpen: boolean;
+
+  handleOpenSlideOver: (todo: Todo) => (e: GenericEvent) => void;
+  handleCloseSlideOver: () => void;
+
   updateTodoData: (t: Todo) => () => Promise<void>;
   handleClickScreen: () => void;
   handleChangeExistingTodo: (
@@ -30,12 +41,11 @@ export interface TodosState {
 
 export const useTodos = (newTodoInput?: HTMLTextAreaElement): TodosState => {
   const { listId } = useRouter().query as { listId: string };
+  const [todos, setTodos] = useState([] as Todo[]);
   const [currentTodo, setCurrentTodo] = useState({} as Todo);
-  const [todos, setTodos] = useState<Todo[]>([] as Todo[]);
-  const [selectedTodoList, setSelectedTodoList] = useState<TodoList>(
-    {} as TodoList,
-  );
-  const [newTodo, setNewTodo] = useState<Todo>({} as Todo);
+  const [newTodo, setNewTodo] = useState({} as Todo);
+  const [selectedTodoList, setSelectedTodoList] = useState({} as TodoList);
+  const [isTodoDetailOpen, setIsTodoDetailOpen] = useState(false);
 
   useLiveQuery(() => {
     const fetchData = async () => {
@@ -49,6 +59,16 @@ export const useTodos = (newTodoInput?: HTMLTextAreaElement): TodosState => {
 
     return fetchData();
   }, [listId]);
+
+  const handleOpenSlideOver = (todo: Todo) => (e: GenericEvent) => {
+    e.stopPropagation();
+    setCurrentTodo(todo);
+    setIsTodoDetailOpen(true);
+  };
+
+  const handleCloseSlideOver = () => {
+    setIsTodoDetailOpen(false);
+  };
 
   const handleClickScreen = () => {
     newTodoInput?.focus();
@@ -166,16 +186,20 @@ export const useTodos = (newTodoInput?: HTMLTextAreaElement): TodosState => {
     () => todos.filter((t) => !t.completeDisabled),
     [todos],
   );
-  const completedTodos = useMemo(
+  const completeTodos = useMemo(
     () => todos.filter((t) => t.completeDisabled),
     [todos],
   );
 
   return {
     todosToComplete,
-    completedTodos,
+    completeTodos,
     newTodo,
     selectedTodoList,
+    currentTodo,
+    isTodoDetailOpen,
+    handleOpenSlideOver,
+    handleCloseSlideOver,
     updateTodosOrder,
     handleKeyPressAdd,
     addTodo,
@@ -189,3 +213,4 @@ export const useTodos = (newTodoInput?: HTMLTextAreaElement): TodosState => {
     handleClickScreen,
   };
 };
+export const TodosContext = createContext<TodosState>({} as TodosState);
