@@ -17,12 +17,11 @@ export const CompleteTodos = () => {
           {completeTodos.length}
         </span>
       </div>
-      Todos
       <div id="Todos">
         {completeTodos.map((t) => (
           <TodoInput
-            key={t.id}
-            id={t.id}
+            key={t._id?.toString()}
+            id={t._id?.toString()}
             todoData={t}
             value={t.title}
             disabled

@@ -57,7 +57,8 @@
         "react/require-default-props": "off",
         // Allow non-defined react props as undefined
         "react/jsx-props-no-spreading": "off",
-//        "react/button-has-type": "off",
+        "no-underscore-dangle": "off",
+        //        "react/button-has-type": "off",
         "import/no-extraneous-dependencies": [
           "error",
           {
@@ -98,8 +99,16 @@
     },
     // Configuration for testing
     {
-      "files": ["**/*.test.ts", "**/*.test.tsx"],
-      "plugins": ["jest", "jest-formatting", "testing-library", "jest-dom"],
+      "files": [
+        "**/*.test.ts",
+        "**/*.test.tsx"
+      ],
+      "plugins": [
+        "jest",
+        "jest-formatting",
+        "testing-library",
+        "jest-dom"
+      ],
       "extends": [
         "plugin:jest/recommended",
         "plugin:jest-formatting/recommended",
@@ -109,8 +118,12 @@
     },
     // Configuration for e2e testing (Playwright)
     {
-      "files": ["**/*.spec.ts"],
-      "extends": ["plugin:playwright/recommended"]
+      "files": [
+        "**/*.spec.ts"
+      ],
+      "extends": [
+        "plugin:playwright/recommended"
+      ]
     }
   ]
 }

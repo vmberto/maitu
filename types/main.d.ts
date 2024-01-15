@@ -1,6 +1,8 @@
+import type { ObjectId } from 'mongodb';
 import { type Colors } from 'src/ui/common/ColorPicker';
 
 export interface TodoList {
+  _id: string | any;
   id: string;
   title: string;
   color: Colors;
@@ -11,7 +13,7 @@ export interface TodoList {
 }
 
 export interface Todo {
-  id: string;
+  _id: ObjectId | undefined;
   title: string;
 
   listId: string;
@@ -25,6 +27,8 @@ export interface Todo {
 
   index: number;
 
-  createdAt: Date;
-  completedAt: Date;
+  createdAt: string;
+  completedAt: string;
 }
+
+type TodosResponse = TodoList & { todos: Todo[] };

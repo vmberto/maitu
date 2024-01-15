@@ -66,7 +66,7 @@ const TodoInputComponent = (
                     bg-transparent px-2 py-4 text-base outline-0 focus:outline-none"
         {...rest}
       />
-      {todoData?.id && (
+      {todoData?._id && (
         <Menu as="div" className="relative inline-block text-left">
           <Menu.Button
             onClick={handleOpenSlideOver(todoData)}

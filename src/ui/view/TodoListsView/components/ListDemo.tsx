@@ -1,12 +1,12 @@
 /* eslint-disable tailwindcss/no-custom-classname */
+/* eslint-disable no-underscore-dangle */
 import { Menu } from '@headlessui/react';
 import { EllipsisVerticalIcon } from '@heroicons/react/24/solid';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useContext } from 'react';
+import { TodoListsContext } from 'src/hooks/useTodoLists';
 import { DraggableWrapper } from 'src/ui/common/dnd/DraggableWrapper';
 import { Typography } from 'src/ui/common/Typography';
-import { ListDetailSlideOver } from 'src/ui/view/TodoListsView/components/ListDetailSlideOver';
-import { type GenericEvent } from 'types/events';
 import { type TodoList } from 'types/main';
 
 type ListDemoProps = {
@@ -14,24 +14,19 @@ type ListDemoProps = {
 };
 
 export const ListDemo = ({ todoList }: ListDemoProps) => {
-  const [open, setOpen] = useState(false);
-
-  const handleClick = (e: GenericEvent) => {
-    e.stopPropagation();
-    setOpen(true);
-  };
+  const { handleOpenSlideOver } = useContext(TodoListsContext);
 
   return (
     <DraggableWrapper
-      key={todoList.id}
-      draggableId={todoList.id}
+      key={todoList._id.toString()}
+      draggableId={todoList._id.toString()}
       index={todoList.index}
       className="mb-2"
     >
       <Link
         href={{
           pathname: '/todos',
-          query: { listId: todoList.id },
+          query: { listId: todoList._id },
         }}
       >
         <div
@@ -42,7 +37,7 @@ export const ListDemo = ({ todoList }: ListDemoProps) => {
           <Typography as="h2">{todoList.title}</Typography>
           <Menu as="div" className="relative ml-auto inline-block text-left">
             <Menu.Button
-              onClick={handleClick}
+              onClick={handleOpenSlideOver(todoList)}
               className="inline-flex w-full justify-center
                 rounded-full p-1 text-sm font-medium text-gray-700
                 focus:ring-offset-2 focus:ring-offset-gray-200 betterhover:hover:bg-gray-200"
@@ -51,11 +46,6 @@ export const ListDemo = ({ todoList }: ListDemoProps) => {
             </Menu.Button>
           </Menu>
         </div>
-        <ListDetailSlideOver
-          open={open}
-          setOpen={setOpen}
-          todoList={todoList}
-        />
       </Link>
     </DraggableWrapper>
   );

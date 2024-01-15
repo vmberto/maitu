@@ -4,21 +4,19 @@ import { ColorPicker, Colors } from 'src/ui/common/ColorPicker';
 import { Input } from 'src/ui/common/Input';
 import SlideOver from 'src/ui/common/SlideOver';
 
-import { type GenericEvent } from '../../../../../types/events';
-import { type TodoList } from '../../../../../types/main';
+import { type GenericEvent } from '../../../../../../types/events';
+import { type TodoList } from '../../../../../../types/main';
 
-interface AddListSlideOverProps {
-  title: string;
+type AddListSlideOverProps = {
   open: boolean;
   setOpen: (open: boolean) => void;
   handleAddTodoList: (newTodoList: TodoList) => void;
-}
+};
 
-const AddListSlideOver = ({
+export const AddListSlideOver = ({
   setOpen,
   handleAddTodoList,
   open,
-  title,
 }: AddListSlideOverProps) => {
   const [listTitle, setListTitle] = useState('');
   const [color, setColor] = useState(Colors[0]);
@@ -42,21 +40,17 @@ const AddListSlideOver = ({
   };
 
   return (
-    <SlideOver title={title} open={open} onClose={() => setOpen(false)}>
+    <SlideOver title="Add List" open={open} onClose={() => setOpen(false)}>
       <form id="addData-form" onSubmit={handleSubmit}>
-        <div className="mb-6">
-          <Input
-            value={listTitle}
-            maxLength={30}
-            onChange={handleInputChange}
-            label="List Name"
-          />
-          <ColorPicker color={color} setColor={setColor} />
-        </div>
-        <Button type="submit" color={color} />
+        <Input
+          value={listTitle}
+          maxLength={30}
+          onChange={handleInputChange}
+          label="List Name"
+        />
+        <ColorPicker color={color} setColor={setColor} />
+        <Button type="submit" className="mt-8" color={color} />
       </form>
     </SlideOver>
   );
 };
-
-export default AddListSlideOver;

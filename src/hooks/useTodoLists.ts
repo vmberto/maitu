@@ -1,42 +1,104 @@
-import { useLiveQuery } from 'dexie-react-hooks';
-import { useState } from 'react';
+import axios from 'axios';
+import { createContext, useEffect, useState } from 'react';
 import { type DropResult } from 'react-beautiful-dnd';
-import * as TodoListDb from 'src/db/todoListDb';
-import { type TodoList } from 'types/main';
+import type { TodoList } from 'types/main';
 
-export const useTodoLists = () => {
+import type { GenericEvent } from '../../types/events';
+
+type TodoListsState = {
+  todoLists: TodoList[];
+  currentTodoList: TodoList;
+
+  isListDetailOpen: boolean;
+  handleOpenSlideOver: (list: TodoList) => (e: GenericEvent) => void;
+  handleCloseSlideOver: () => void;
+
+  updateTodoListsOrder: (result: DropResult) => Promise<void>;
+  handleAddTodoList: (newTodoList: TodoList) => Promise<void>;
+  handleUpdateTodoList: (
+    listId: string,
+    updateTodoList: TodoList,
+  ) => Promise<void>;
+  handleDeleteTodoList: (listId: string) => Promise<void>;
+};
+
+export const useTodoLists = (lists: TodoList[]): TodoListsState => {
   const [todoLists, setTodoLists] = useState<TodoList[]>([] as TodoList[]);
+  const [currentTodoList, setCurrentTodoList] = useState<TodoList>(
+    {} as TodoList,
+  );
+  const [isListDetailOpen, setIsListDetailOpen] = useState(false);
 
-  useLiveQuery(async () => {
-    setTodoLists(await TodoListDb.get());
-  }, []);
+  useEffect(() => {
+    setTodoLists(lists);
+  }, [lists]);
 
-  const updateTodoListsOrder = async (result: DropResult) => {
-    if (!result.destination) return;
+  const handleOpenSlideOver = (todoList: TodoList) => (e: GenericEvent) => {
+    e.stopPropagation();
+    setCurrentTodoList(todoList);
+    setIsListDetailOpen(true);
+  };
 
-    await TodoListDb.updateOrder(result.source.index, result.destination.index);
+  const handleCloseSlideOver = () => {
+    setIsListDetailOpen(false);
   };
 
   const handleAddTodoList = async (newTodoList: TodoList) => {
-    await TodoListDb.add(newTodoList);
+    const response = await axios.post<TodoList>('/api/lists', {
+      ...newTodoList,
+      index: lists.length - 1,
+    });
+    setTodoLists([...todoLists, response.data]);
   };
 
-  const handleUpdateTodoList = async (
-    listId: string,
-    updatedTodoList: TodoList,
-  ) => {
-    await TodoListDb.update(listId, updatedTodoList);
+  const handleUpdateTodoList = async () =>
+    // listId: string,
+    // updatedTodoList: TodoList,
+    {
+      // await TodoListDb.update(listId, updatedTodoList);
+    };
+
+  const updateTodoListsOrder = async (result: DropResult) => {
+    const { source, destination } = result;
+
+    if (!destination) return;
+
+    let todoListsCopy = [...todoLists];
+    const [movedElement] = todoListsCopy.splice(source.index, 1);
+    todoListsCopy.splice(destination.index, 0, movedElement);
+    todoListsCopy = todoListsCopy.map((list, index) => ({
+      ...list,
+      index,
+    }));
+
+    setTodoLists(todoListsCopy);
+
+    await axios.put('api/lists/order', {
+      initialIndex: source.index,
+      destinationIndex: destination.index,
+    });
   };
 
   const handleDeleteTodoList = async (listId: string) => {
-    await TodoListDb.remove(listId);
+    await axios.delete(`/api/lists/${listId}`);
+    setTodoLists(todoLists.filter((list) => list._id !== listId));
+    handleCloseSlideOver();
   };
 
   return {
     todoLists,
-    updateTodoListsOrder,
+    currentTodoList,
+    isListDetailOpen,
+    handleOpenSlideOver,
+    handleCloseSlideOver,
     handleAddTodoList,
     handleDeleteTodoList,
+
+    updateTodoListsOrder,
     handleUpdateTodoList,
   };
 };
+
+export const TodoListsContext = createContext<TodoListsState>(
+  {} as TodoListsState,
+);

@@ -5,17 +5,16 @@ import 'leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
-import * as TodosDb from 'src/db/todosDb';
 
 import { type Todo } from '../../../../types/main';
 
 export default function MyMap() {
-  const [todos, setTodos] = useState<Todo[]>([]);
+  const [todos] = useState<Todo[]>([]);
 
   useEffect(() => {
     (async () => {
-      const { todos: allTodos } = await TodosDb.getAll();
-      setTodos(allTodos);
+      // const { todos: allTodos } = await TodosDb.getAll();
+      // setTodos(allTodos);
     })();
   }, []);
 
@@ -24,7 +23,7 @@ export default function MyMap() {
   return (
     <div id="map-wrapper" className="h-screen max-h-screen">
       <header className="mx-auto my-0 mt-2.5 flex max-w-3xl flex-row items-center border-b-2 px-6 py-2">
-        <h1 className="text-xl font-semibold text-primary">Maitu</h1>
+        <h1 className="text-xl font-semibold text-primary">maitu</h1>
         <Link
           className="ml-auto mr-5 border-b-2 border-primary px-3 py-0.5 text-base text-primary"
           href="/"
@@ -35,7 +34,7 @@ export default function MyMap() {
       <div className="flex h-full">
         <div className="max-w-md">
           {locatedTodos.map((todo) => {
-            return <div key={todo.id}>{todo.title}</div>;
+            return <div key={todo._id?.toString()}>{todo.title}</div>;
           })}
         </div>
         <MapContainer

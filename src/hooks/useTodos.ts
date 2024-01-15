@@ -1,4 +1,5 @@
-import { useLiveQuery } from 'dexie-react-hooks';
+import axios from 'axios';
+import type { ObjectId } from 'mongodb';
 import { useRouter } from 'next/router';
 import {
   createContext,
@@ -6,12 +7,13 @@ import {
   useMemo,
   useState,
 } from 'react';
-import type { DropResult } from 'react-beautiful-dnd';
-import * as TodosDb from 'src/db/todosDb';
 import type { GenericEvent, TextareaChangeEventHandler } from 'types/events';
 import { type Todo, type TodoList } from 'types/main';
 
-let timeouts = [] as Array<{ id: string; timeout: NodeJS.Timeout }>;
+let timeouts = [] as Array<{
+  id: ObjectId | undefined;
+  timeout: NodeJS.Timeout;
+}>;
 
 export interface TodosState {
   todosToComplete: Todo[];
@@ -24,7 +26,6 @@ export interface TodosState {
   handleOpenSlideOver: (todo: Todo) => (e: GenericEvent) => void;
   handleCloseSlideOver: () => void;
 
-  updateTodoData: (t: Todo) => () => Promise<void>;
   handleClickScreen: () => void;
   handleChangeExistingTodo: (
     t: Todo,
@@ -34,31 +35,24 @@ export interface TodosState {
   handleKeyPressAdd: KeyboardEventHandler<HTMLTextAreaElement>;
   handleChangeNewTodo: (e: TextareaChangeEventHandler) => void;
   handleInputFocus: (t: Todo) => () => Promise<void>;
+
+  updateTodoData: (t: Todo) => () => Promise<void>;
   addTodo: () => Promise<void>;
-  updateTodosOrder: (result: DropResult) => Promise<void>;
   updateTodo: (t: Todo) => () => Promise<void>;
 }
 
-export const useTodos = (newTodoInput?: HTMLTextAreaElement): TodosState => {
+export const useTodos = (
+  listDb: TodoList,
+  todosDb: Todo[],
+  newTodoInput?: HTMLTextAreaElement,
+): TodosState => {
   const { listId } = useRouter().query as { listId: string };
-  const [todos, setTodos] = useState([] as Todo[]);
+
+  const [todos, setTodos] = useState(todosDb);
+
   const [currentTodo, setCurrentTodo] = useState({} as Todo);
   const [newTodo, setNewTodo] = useState({} as Todo);
-  const [selectedTodoList, setSelectedTodoList] = useState({} as TodoList);
   const [isTodoDetailOpen, setIsTodoDetailOpen] = useState(false);
-
-  useLiveQuery(() => {
-    const fetchData = async () => {
-      if (listId) {
-        const { selectedTodoList: dbList, todos: dbTodos } =
-          await TodosDb.get(listId);
-        setTodos(dbTodos);
-        setSelectedTodoList(dbList);
-      }
-    };
-
-    return fetchData();
-  }, [listId]);
 
   const handleOpenSlideOver = (todo: Todo) => (e: GenericEvent) => {
     e.stopPropagation();
@@ -86,10 +80,9 @@ export const useTodos = (newTodoInput?: HTMLTextAreaElement): TodosState => {
   const handleChangeExistingTodo =
     (todo: Todo) => (e: TextareaChangeEventHandler) => {
       const { value } = e.target;
-      const { id } = todo;
 
       const updatedTodos = todos.map((t) =>
-        t.id === id ? { ...t, title: value } : t,
+        t._id === todo._id ? { ...t, title: value } : t,
       );
 
       setTodos([...updatedTodos]);
@@ -106,37 +99,55 @@ export const useTodos = (newTodoInput?: HTMLTextAreaElement): TodosState => {
     setCurrentTodo({ ...t });
   };
 
-  const updateTodo = (t: Todo) => async () => {
+  const onBlurUpdateTodo = (t: Todo) => async () => {
     if (t.title.length <= 0) {
-      await TodosDb.remove(t.id);
+      await axios.delete(`/api/todos/${t._id}`);
+      setTodos(todos.filter((todo) => todo._id !== t._id));
 
       return;
     }
 
     if (t.title !== currentTodo.title) {
-      await TodosDb.update(t);
+      await axios.put(`/api/todos/${t._id}`, t);
+      const updatedTodos = todos.map((todo, i) => {
+        if (i === todos.indexOf(t)) {
+          return {
+            ...todo,
+            title: t.title,
+          };
+        }
+        return todo;
+      });
+      setTodos(updatedTodos);
     }
   };
 
   const updateTodoData = (t: Todo) => async () => {
-    await TodosDb.update(t);
+    await axios.put(`/api/todos/${t._id}`, t);
   };
 
   const addTodo = async () => {
     const { title } = newTodo;
 
     if (title && title.length > 0) {
-      const addedTodo = {
+      const todo = {
         listId,
         title,
         complete: false,
         completeDisabled: false,
         description: '',
-        createdAt: new Date(),
+        createdAt: new Date().toISOString(),
       } as Todo;
 
       setNewTodo({ title: '' } as Todo);
-      await TodosDb.add(addedTodo);
+
+      // @Todo insert the setTodos above the axios request and after, set an update to add the returned id
+      const { data: newTodoObject } = await axios.post<Todo>(
+        '/api/todos',
+        todo,
+      );
+
+      setTodos([...todos, newTodoObject]);
     }
   };
 
@@ -152,34 +163,27 @@ export const useTodos = (newTodoInput?: HTMLTextAreaElement): TodosState => {
   const handleCompleteTodo = async (t: Todo) => {
     if (!t.complete) {
       timeouts.push({
-        id: t.id,
+        id: t._id,
         timeout: setTimeout(async () => {
-          await TodosDb.update({
+          await axios.put(`/api/todos/${t._id}`, {
             ...t,
             complete: true,
             completeDisabled: true,
-            completedAt: new Date(),
+            completedAt: new Date().toISOString(),
           });
         }, 2000),
       });
     } else {
-      const timeoutObj = timeouts.find((timeout) => timeout.id === t.id);
+      const timeoutObj = timeouts.find((timeout) => timeout.id === t._id);
       if (timeoutObj) {
         clearTimeout(timeoutObj.timeout);
         timeouts = timeouts.filter((timeout) => timeout.id !== timeoutObj.id);
       }
     }
-    await TodosDb.update({ ...t, complete: !t.complete });
-  };
-
-  const updateTodosOrder = async (result: DropResult) => {
-    if (!result.destination) return;
-
-    await TodosDb.updateOrder(
-      listId,
-      result.source.index,
-      result.destination.index,
-    );
+    await axios.put(`/api/todos/${t._id}`, {
+      ...t,
+      complete: !t.complete,
+    });
   };
 
   const todosToComplete = useMemo(
@@ -195,18 +199,17 @@ export const useTodos = (newTodoInput?: HTMLTextAreaElement): TodosState => {
     todosToComplete,
     completeTodos,
     newTodo,
-    selectedTodoList,
+    selectedTodoList: listDb,
     currentTodo,
     isTodoDetailOpen,
     handleOpenSlideOver,
     handleCloseSlideOver,
-    updateTodosOrder,
     handleKeyPressAdd,
     addTodo,
     handleChangeExistingTodo,
     handleChangeNewTodo,
     handleCompleteTodo,
-    updateTodo,
+    updateTodo: onBlurUpdateTodo,
     updateTodoData,
     handleInputFocus,
     handleKeyPress,

@@ -27,8 +27,8 @@ export const Todos = ({ newTodoInputRef }: TodosProps) => {
     <div id="todos" className="mb-28 px-5 pb-5">
       {todosToComplete.map((t) => (
         <TodoInput
-          key={t.id}
-          id={t.id}
+          key={t._id?.toString()}
+          id={t._id?.toString()}
           value={t.title}
           todoData={t}
           handleCompleteTodo={handleCompleteTodo}

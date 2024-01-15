@@ -10,7 +10,7 @@ import { InputSection } from 'src/ui/view/TodosView/components/sections/InputSec
 import {
   Section,
   SectionSelect,
-} from 'src/ui/view/TodosView/components/SectionSelect';
+} from 'src/ui/view/TodosView/components/sections/SectionSelect';
 
 export const TodoDetailSlideOver = () => {
   const {
@@ -50,7 +50,7 @@ export const TodoDetailSlideOver = () => {
             />
           )}
           <div className="inline">{currentTodo?.title}</div>
-          {currentTodo?.createdAt instanceof Date && (
+          {currentTodo?.createdAt && (
             <div className="mt-2 flex flex-col gap-2.5 text-sm text-gray-500">
               {formatDate(currentTodo?.createdAt)}
             </div>

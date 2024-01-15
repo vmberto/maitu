@@ -1,13 +1,30 @@
+import type { NextApiRequest } from 'next';
 import { resetServerContext } from 'react-beautiful-dnd';
+import { getListTodos } from 'src/api/services/todos.service';
 import TodosView from 'src/ui/view/TodosView';
 
-export default function Todos() {
-  return <TodosView />;
+import type { Todo, TodoList } from '../../types/main';
+
+type TodosPageProps = {
+  list: TodoList;
+  todos: Todo[];
+};
+
+export default function Todos({ list, todos }: TodosPageProps) {
+  return <TodosView list={list} todos={todos} />;
 }
 
-export const getServerSideProps = () => {
+export const getServerSideProps = async (req: NextApiRequest) => {
   resetServerContext();
+
+  const response = await getListTodos(req.query.listId as string);
+
+  const { todos, ...list } = JSON.parse(JSON.stringify(response));
+
   return {
-    props: {},
+    props: {
+      list,
+      todos,
+    },
   };
 };

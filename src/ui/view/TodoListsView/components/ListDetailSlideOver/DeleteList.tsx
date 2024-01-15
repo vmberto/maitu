@@ -1,5 +1,5 @@
-import { type FC, useState } from 'react';
-import { useTodoLists } from 'src/hooks/useTodoLists';
+import { type FC, useContext, useState } from 'react';
+import { TodoListsContext } from 'src/hooks/useTodoLists';
 import { Input } from 'src/ui/common/Input';
 
 import { type GenericEvent } from '../../../../../../types/events';
@@ -11,7 +11,7 @@ interface DeleteListProps {
 
 export const DeleteList: FC<DeleteListProps> = ({ id, listTitle }) => {
   const [listTitleInput, setListTitleInput] = useState('');
-  const { handleDeleteTodoList } = useTodoLists();
+  const { handleDeleteTodoList } = useContext(TodoListsContext);
 
   const handleInputChange = (e: GenericEvent) => {
     const { value } = e.target;

@@ -5,18 +5,45 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/api/services/lists.service.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/api/services/todos.service.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/lib/enums.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/lib/mongodb.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/pages/api/lists/[id].ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/pages/api/lists/index.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/pages/api/lists/order.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/pages/api/todos/[id].ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/pages/api/todos/index.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/Lists.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/MaituHeader.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.env" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.eslintrc.json" beforeDir="false" afterPath="$PROJECT_DIR$/.eslintrc.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/context/TodosContext.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/context/TodosContext.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/db/index.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/db/todoListDb.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/db/todosDb.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/hooks/useTodoLists.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useTodoLists.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/hooks/useTodos.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useTodos.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/common/SlideOver.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/common/SlideOver.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/functions.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/functions.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/_app.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/_app.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/todos.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/todos.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/view/Map/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/Map/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/AddListSlideOver.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/AddListSlideOver/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/ListDemo.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/ListDemo.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/ListDetailSlideOver/DeleteList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/ListDetailSlideOver/DeleteList.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/ListDetailSlideOver/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/ListDetailSlideOver/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/view/TodoListsView/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodoListsView/index.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ui/view/TodosView/components/CompleteTodos.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodosView/components/CompleteTodos.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/view/TodosView/components/Header.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodosView/components/Header.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/view/TodosView/components/SectionSelect.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodosView/components/sections/SectionSelect.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ui/view/TodosView/components/TodoDetailSlideOver.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodosView/components/TodoDetailSlideOver.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ui/view/TodosView/components/TodoInput.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodosView/components/TodoInput.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ui/view/TodosView/components/Todos.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodosView/components/Todos.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/view/TodosView/components/sections/DescriptionSection.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodosView/components/sections/DescriptionSection.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/view/TodosView/components/sections/InputSection.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodosView/components/sections/InputSection.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ui/view/TodosView/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/view/TodosView/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/types/main.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/types/main.d.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,46 +67,64 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;javascript.nodejs.core.library.configured.version&quot;: &quot;18.18.2&quot;,
-    &quot;javascript.nodejs.core.library.typings.version&quot;: &quot;18.18.2&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/vmberto/Documents/maitu/my-todo-app&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.standard&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.standard&quot;: &quot;&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;prettier.import.notification.dismissed&quot;: &quot;true&quot;,
-    &quot;prettierjs.PrettierConfiguration.Package&quot;: &quot;/Users/vmberto/Documents/my-todo-app/node_modules/prettier&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;/Users/vmberto/Documents/maitu/my-todo-app/node_modules/typescript/lib&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "main",
+    "javascript.nodejs.core.library.configured.version": "18.18.2",
+    "javascript.nodejs.core.library.typings.version": "18.18.2",
+    "last_opened_file_path": "/Users/vmberto/Documents/maitu/my-todo-app/src/pages/api/todos",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.standard": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.standard": "",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "prettier.import.notification.dismissed": "true",
+    "prettierjs.PrettierConfiguration.Package": "/Users/vmberto/Documents/my-todo-app/node_modules/prettier",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "ts.external.directory.path": "/Users/vmberto/Documents/maitu/my-todo-app/node_modules/typescript/lib",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/pages/api/todos" />
+      <recent name="$PROJECT_DIR$/src/api/services" />
+      <recent name="$PROJECT_DIR$/src/ui/view/TodoListsView/components" />
       <recent name="$PROJECT_DIR$/src/state/todo-lists" />
       <recent name="$PROJECT_DIR$/src/components" />
-      <recent name="$PROJECT_DIR$/src/pages" />
-      <recent name="$PROJECT_DIR$/src/state" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/ui/view/TodosView/components/sections" />
+      <recent name="$PROJECT_DIR$/src/ui/view/TodoListsView/components/AddListSlideOver" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/src/hooks" />
       <recent name="$PROJECT_DIR$/src/state/todos" />
-      <recent name="$PROJECT_DIR$/src/ui/view/TodoListsView/components" />
-      <recent name="$PROJECT_DIR$/src/ui/view/TodosView/components" />
     </key>
     <key name="es6.move.members.recent.items">
       <recent name="$PROJECT_DIR$/src/hooks/useTodos.ts" />
     </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="dev" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="dev" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="npm.dev" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -114,6 +159,7 @@
       <workItem from="1703780131318" duration="27000" />
       <workItem from="1703883290871" duration="17763000" />
       <workItem from="1704053512724" duration="9391000" />
+      <workItem from="1705082088175" duration="30105000" />
     </task>
     <servers />
   </component>

@@ -7,10 +7,17 @@ import { Header } from 'src/ui/view/TodosView/components/Header';
 import { TodoDetailSlideOver } from 'src/ui/view/TodosView/components/TodoDetailSlideOver';
 import { Todos } from 'src/ui/view/TodosView/components/Todos';
 
-const TodosView = () => {
+import type { Todo, TodoList } from '../../../../types/main';
+
+type TodosViewProps = {
+  list: TodoList;
+  todos: Todo[];
+};
+
+const TodosView = ({ list, todos }: TodosViewProps) => {
   const newTodoInputRef = useRef({} as HTMLTextAreaElement);
 
-  const todosState = useTodos(newTodoInputRef.current);
+  const todosState = useTodos(list, todos, newTodoInputRef.current);
 
   const { handleClickScreen } = todosState;
 
