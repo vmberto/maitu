@@ -5,82 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/app/api/lists/[id]/route.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/api/lists/order/route.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/api/lists/route.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/api/services/users.service.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/api/todos/[id]/route.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/api/todos/order/route.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/api/todos/route.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/apple-icon.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/favicon.ico" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/globals.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/layout.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/lists/components/ListsContainer.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/lists/page.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/page.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/todos/components/TodosContainer.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/todos/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/favicon.ico" beforeDir="false" afterPath="$PROJECT_DIR$/public-old/favicon.ico" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/icons/icon-128x128.png" beforeDir="false" afterPath="$PROJECT_DIR$/public-old/icons/icon-128x128.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/icons/icon-144x144.png" beforeDir="false" afterPath="$PROJECT_DIR$/public-old/icons/icon-144x144.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/icons/icon-152x152.png" beforeDir="false" afterPath="$PROJECT_DIR$/public-old/icons/icon-152x152.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/icons/icon-16x16.png" beforeDir="false" afterPath="$PROJECT_DIR$/public-old/icons/icon-16x16.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/icons/icon-192x192.png" beforeDir="false" afterPath="$PROJECT_DIR$/public-old/icons/icon-192x192.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/icons/icon-32x32.png" beforeDir="false" afterPath="$PROJECT_DIR$/public-old/icons/icon-32x32.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/icons/icon-384x384.png" beforeDir="false" afterPath="$PROJECT_DIR$/public-old/icons/icon-384x384.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/icons/icon-512x512.png" beforeDir="false" afterPath="$PROJECT_DIR$/public-old/icons/icon-512x512.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/icons/icon-72x72.png" beforeDir="false" afterPath="$PROJECT_DIR$/public-old/icons/icon-72x72.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/icons/icon-96x96.png" beforeDir="false" afterPath="$PROJECT_DIR$/public-old/icons/icon-96x96.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/public-old/manifest.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/touch-icon.png" beforeDir="false" afterPath="$PROJECT_DIR$/public-old/touch-icon.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/api/services/lists.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/services/lists.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/api/services/todos.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/services/todos.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/hooks/useTodoLists.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/lists/hooks/useTodoLists.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/hooks/useTodos.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/todos/hooks/useTodos.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/_app.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/_document.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/lists/[id].ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/lists/index.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/lists/order.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/todos/[id].ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/api/todos/index.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/index.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/map.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/todos.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/styles/globals.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/common/Button.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Button.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/common/ColorPicker.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ColorPicker.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/common/Input.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Input.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/common/SlideOver.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/SlideOver.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/common/Typography.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Typography.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/common/dnd/DragAndDropWrapper.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/dnd/DragAndDropWrapper.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/common/dnd/DraggableWrapper.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/dnd/DraggableWrapper.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/view/Map/index.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/AddListSlideOver/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/lists/components/AddListSlideOver/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/ListDemo.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/lists/components/ListDemo.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/ListDetailSlideOver/DeleteList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/lists/components/ListDetailSlideOver/DeleteList.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/ListDetailSlideOver/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/lists/components/ListDetailSlideOver/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/Lists.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/lists/components/Lists.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/MaituHeader.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/lists/components/MaituHeader.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/view/TodoListsView/components/NewListButton.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/lists/components/NewListButton.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/view/TodoListsView/index.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/view/TodosView/components/CompleteTodos.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/todos/components/CompleteTodos.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/view/TodosView/components/Header.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/todos/components/Header.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/view/TodosView/components/TodoDetailSlideOver.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/todos/components/TodoDetailSlideOver.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/view/TodosView/components/TodoInput.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/todos/components/TodoInput.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/view/TodosView/components/Todos.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/todos/components/Todos.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/view/TodosView/components/sections/DescriptionSection.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/todos/components/sections/DescriptionSection.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/view/TodosView/components/sections/InputSection.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/todos/components/sections/InputSection.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/view/TodosView/components/sections/SectionSelect.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/todos/components/sections/SectionSelect.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/view/TodosView/index.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/tsconfig.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/types/events.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/types/events.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/types/main.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/types/main.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/layout.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
