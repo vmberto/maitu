@@ -1,5 +1,3 @@
-'use client';
-
 import { type DropResult } from '@hello-pangea/dnd';
 import axios from 'axios';
 import { createContext, useEffect, useState } from 'react';

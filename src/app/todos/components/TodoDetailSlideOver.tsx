@@ -1,5 +1,3 @@
-'use client';
-
 import { PlayCircleIcon } from '@heroicons/react/24/outline';
 import { CheckCircleIcon } from '@heroicons/react/24/solid';
 import React, { useContext, useEffect, useState } from 'react';

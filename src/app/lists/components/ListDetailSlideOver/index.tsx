@@ -1,5 +1,3 @@
-'use client';
-
 import { useContext, useState } from 'react';
 
 import { DeleteList } from '@/src/app/lists/components/ListDetailSlideOver/DeleteList';

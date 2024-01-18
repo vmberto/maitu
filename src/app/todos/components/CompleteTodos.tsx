@@ -1,5 +1,3 @@
-'use client';
-
 import { useContext } from 'react';
 
 import { TodoInput } from '@/src/app/todos/components/TodoInput';
