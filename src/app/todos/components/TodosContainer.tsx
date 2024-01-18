@@ -3,7 +3,7 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 
-import React, { useRef } from 'react';
+import React from 'react';
 
 import { CompleteTodos } from '@/src/app/todos/components/CompleteTodos';
 import { Header } from '@/src/app/todos/components/Header';
@@ -18,23 +18,15 @@ type TodosContainerProps = {
 };
 
 export const TodosContainer = ({ list, todos }: TodosContainerProps) => {
-  const newTodoInputRef = useRef({} as HTMLTextAreaElement);
-
-  const todosState = useTodos(list, todos, newTodoInputRef.current);
-
-  const { handleClickScreen } = todosState;
-
-  if (!newTodoInputRef) {
-    return null;
-  }
+  const todosState = useTodos(list, todos);
 
   return (
     <TodosContext.Provider value={todosState}>
-      <div className="relative min-h-screen" onClick={handleClickScreen}>
+      <div className="relative min-h-screen">
         <div className="mx-auto my-0 h-full max-w-xl">
           <Header />
 
-          <Todos newTodoInputRef={newTodoInputRef} />
+          <Todos />
 
           <CompleteTodos />
 

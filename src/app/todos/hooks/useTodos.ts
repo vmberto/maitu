@@ -26,12 +26,10 @@ export interface TodosState {
   handleOpenSlideOver: (todo: Todo) => (e: GenericEvent) => void;
   handleCloseSlideOver: () => void;
 
-  handleClickScreen: () => void;
   handleChangeExistingTodo: (
     t: Todo,
   ) => (e: TextareaChangeEventHandler) => void;
   handleCompleteTodo: (t: Todo) => Promise<void>;
-  handleKeyPress: KeyboardEventHandler<HTMLTextAreaElement | HTMLDivElement>;
   handleKeyPressAdd: KeyboardEventHandler<HTMLTextAreaElement>;
   handleChangeNewTodo: (e: TextareaChangeEventHandler) => void;
   handleInputFocus: (t: Todo) => () => Promise<void>;
@@ -41,11 +39,7 @@ export interface TodosState {
   updateTodo: (t: Todo) => () => Promise<void>;
 }
 
-export const useTodos = (
-  listDb: TodoList,
-  todosDb: Todo[],
-  newTodoInput?: HTMLTextAreaElement,
-): TodosState => {
+export const useTodos = (listDb: TodoList, todosDb: Todo[]): TodosState => {
   const listId = listDb._id;
 
   const [todos, setTodos] = useState(todosDb);
@@ -62,19 +56,6 @@ export const useTodos = (
 
   const handleCloseSlideOver = () => {
     setIsTodoDetailOpen(false);
-  };
-
-  const handleClickScreen = () => {
-    newTodoInput?.focus();
-  };
-
-  const handleKeyPress: KeyboardEventHandler<
-    HTMLTextAreaElement | HTMLDivElement
-  > = (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      newTodoInput?.focus();
-    }
   };
 
   const handleChangeExistingTodo =
@@ -212,8 +193,6 @@ export const useTodos = (
     updateTodo: onBlurUpdateTodo,
     updateTodoData,
     handleInputFocus,
-    handleKeyPress,
-    handleClickScreen,
   };
 };
 export const TodosContext = createContext<TodosState>({} as TodosState);

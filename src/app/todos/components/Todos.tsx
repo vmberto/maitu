@@ -1,4 +1,3 @@
-import type { Ref } from 'react';
 import { useContext } from 'react';
 
 import { TodoInput } from '@/src/app/todos/components/TodoInput';
@@ -6,15 +5,10 @@ import { TodosContext } from '@/src/app/todos/hooks/useTodos';
 import { Typography } from '@/src/components/Typography';
 import { stopPropagationFn } from '@/src/lib/functions';
 
-type TodosProps = {
-  newTodoInputRef: Ref<HTMLTextAreaElement>;
-};
-
-export const Todos = ({ newTodoInputRef }: TodosProps) => {
+export const Todos = () => {
   const {
     todosToComplete,
     handleCompleteTodo,
-    handleKeyPress,
     updateTodo,
     handleInputFocus,
     handleChangeExistingTodo,
@@ -34,7 +28,6 @@ export const Todos = ({ newTodoInputRef }: TodosProps) => {
           todoData={t}
           handleCompleteTodo={handleCompleteTodo}
           onClick={stopPropagationFn}
-          onKeyDown={handleKeyPress}
           onBlur={updateTodo(t)}
           onFocus={handleInputFocus(t)}
           onChange={handleChangeExistingTodo(t)}
@@ -42,7 +35,6 @@ export const Todos = ({ newTodoInputRef }: TodosProps) => {
       ))}
       <TodoInput
         id="new-todo"
-        ref={newTodoInputRef}
         value={newTodo.title}
         onChange={handleChangeNewTodo}
         onFocus={handleInputFocus(newTodo)}
