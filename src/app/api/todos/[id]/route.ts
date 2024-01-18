@@ -2,11 +2,13 @@ import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { basename } from 'path';
 
-import * as TodoListsService from '@/src/app/api/services/lists.service';
+import * as TodosService from '@/src/app/api/services/todos.service';
 
-export async function PUT(req: Request) {
+export async function PUT(req: NextRequest) {
+  const { pathname } = req.nextUrl;
+  const id = basename(pathname);
   const data = await req.json();
-  const response = await TodoListsService.update(data.id, data.todoList);
+  const response = await TodosService.update(id, data.todoList);
 
   return NextResponse.json({ response });
 }
@@ -14,7 +16,7 @@ export async function PUT(req: Request) {
 export async function DELETE(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const id = basename(pathname);
-  const response = await TodoListsService.remove(id);
+  const response = TodosService.remove(id);
 
   return NextResponse.json({ response });
 }

@@ -4,9 +4,11 @@ import { basename } from 'path';
 
 import * as TodoListsService from '@/src/app/api/services/lists.service';
 
-export async function PUT(req: Request) {
+export async function PUT(req: NextRequest) {
+  const { pathname } = req.nextUrl;
+  const id = basename(pathname);
   const data = await req.json();
-  const response = await TodoListsService.update(data.id, data.todoList);
+  const response = await TodoListsService.update(id, data.todoList);
 
   return NextResponse.json({ response });
 }

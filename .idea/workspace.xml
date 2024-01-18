@@ -6,8 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/manifest.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/manifest.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tailwind.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/tailwind.config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/api/lists/[id]/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/lists/[id]/route.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/api/todos/[id]/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/todos/[id]/route.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/api/todos/order/route.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/api/todos/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/todos/route.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

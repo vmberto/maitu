@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
 
-import * as ListsService from '@/src/app/api/services/lists.service';
-import type { TodoList } from '@/types/main';
+import * as TodosService from '@/src/app/api/services/todos.service';
+import type { Todo } from '@/types/main';
 
 export async function POST(req: Request) {
-  const data = await req.json();
-  const response = await ListsService.add(data as TodoList);
+  const data = (await req.json()) as Todo;
+  const response = await TodosService.add(data);
 
   return NextResponse.json({ response });
 }
