@@ -25,10 +25,15 @@ export const getListTodos = async (listId: string): Promise<TodosResponse> => {
 
 export const add = async (todo: Todo) => {
   const mongo = await getMongoDb();
-  const response = await mongo
-    .collection('todos')
-    .insertOne({ ...todo, listId: new ObjectId(todo.listId) });
-  return { ...todo, _id: response.insertedId };
+
+  const newTodo: Todo = {
+    ...todo,
+    listId: new ObjectId(todo.listId),
+  };
+
+  const response = await mongo.collection<Todo>('todos').insertOne(newTodo);
+
+  return { ...newTodo, _id: response.insertedId };
 };
 
 export const remove = async (id: string) => {

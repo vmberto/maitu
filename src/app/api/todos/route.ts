@@ -7,5 +7,5 @@ export async function POST(req: Request) {
   const data = (await req.json()) as Todo;
   const response = await TodosService.add(data);
 
-  return NextResponse.json({ response });
+  return NextResponse.json(response);
 }

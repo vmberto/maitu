@@ -122,13 +122,9 @@ export const useTodos = (listDb: TodoList, todosDb: Todo[]): TodosState => {
 
       setNewTodo({ title: '' } as Todo);
 
-      // @Todo insert the setTodos above the axios request and after, set an update to add the returned id
-      const { data: newTodoObject } = await axios.post<Todo>(
-        '/api/todos',
-        todo,
-      );
+      const response = await axios.post<Todo>('/api/todos', todo);
 
-      setTodos([...todos, newTodoObject]);
+      setTodos([...todos, response.data]);
     }
   };
 

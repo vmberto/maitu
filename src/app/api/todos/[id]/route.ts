@@ -8,7 +8,7 @@ export async function PUT(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const id = basename(pathname);
   const data = await req.json();
-  const response = await TodosService.update(id, data.todoList);
+  const response = await TodosService.update(id, data);
 
   return NextResponse.json({ response });
 }

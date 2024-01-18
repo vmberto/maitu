@@ -7,5 +7,5 @@ export async function POST(req: Request) {
   const data = await req.json();
   const response = await ListsService.add(data as TodoList);
 
-  return NextResponse.json({ response });
+  return NextResponse.json(response);
 }

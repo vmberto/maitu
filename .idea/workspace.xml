@@ -6,12 +6,13 @@
   <component name="ChangeListManager">
     <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/next.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/next.config.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/layout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/manifest.ts" beforeDir="false" afterPath="$PROJECT_DIR$/public/manifest.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/todos/components/Todos.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/todos/components/Todos.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/todos/components/TodosContainer.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/todos/components/TodosContainer.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/api/lists/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/lists/route.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/api/services/todos.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/services/todos.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/api/todos/[id]/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/todos/[id]/route.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/api/todos/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/todos/route.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/lists/components/ListDemo.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/lists/components/ListDemo.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/todos/hooks/useTodos.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/todos/hooks/useTodos.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/types/main.ts" beforeDir="false" afterPath="$PROJECT_DIR$/types/main.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -129,6 +130,7 @@
       <workItem from="1703883290871" duration="17763000" />
       <workItem from="1704053512724" duration="9391000" />
       <workItem from="1705082088175" duration="30105000" />
+      <workItem from="1705587320660" duration="6493000" />
     </task>
     <servers />
   </component>

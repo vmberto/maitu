@@ -31,6 +31,7 @@ export const ListDemo = ({ todoList }: ListDemoProps) => {
         }}
       >
         <div
+          id={todoList._id}
           className={`border-${todoList.color} flex cursor-pointer
          items-center rounded-md border-l-detail bg-white p-4 align-middle font-semibold
          shadow-sm transition-all active:opacity-50 betterhover:hover:border-l-detail-hover`}

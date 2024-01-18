@@ -24,7 +24,7 @@ export interface Todo {
   _id: ObjectId | undefined;
   title: string;
 
-  listId: string;
+  listId: ObjectId;
 
   description: string;
 
