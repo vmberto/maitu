@@ -6,7 +6,7 @@ export default function manifest(): MetadataRoute.Manifest {
     description: 'an application to save your goals',
     short_name: 'maitu',
     theme_color: '#ffffff',
-    background_color: '#004740',
+    background_color: '#3664FF',
     display: 'fullscreen',
     orientation: 'portrait',
     scope: '/',
