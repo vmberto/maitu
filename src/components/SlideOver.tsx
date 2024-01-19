@@ -38,10 +38,10 @@ const SlideOver = ({ title, open, onClose, children }: ModalProps) => {
             <div className="pointer-events-none fixed inset-y-0 flex max-w-full px-2">
               <Transition.Child
                 as={Fragment}
-                enter="transform transition ease-in-out duration-700 sm:duration-700"
+                enter="transform transition ease-in-out duration-300 sm:duration-300"
                 enterFrom="translate-y-full"
                 enterTo="translate-y-0"
-                leave="transform transition ease-in-out duration-700 sm:duration-700"
+                leave="transform transition ease-in-out duration-300 sm:duration-300"
                 leaveFrom="translate-y-0"
                 leaveTo="translate-y-full"
               >
