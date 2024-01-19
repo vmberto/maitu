@@ -1,3 +1,6 @@
+import type { ObjectId } from 'mongodb';
+import type { Dispatch, SetStateAction } from 'react';
+
 import { type GenericEvent } from '../../types/events';
 
 export const formatDate = (dateString: string) => {
@@ -17,3 +20,27 @@ export const formatDate = (dateString: string) => {
 export const stopPropagationFn = (e: GenericEvent) => {
   e.stopPropagation();
 };
+
+export function updateSingleElement<T extends { _id: ObjectId | undefined }>(
+  elId: ObjectId | undefined,
+  elementsArray: T[],
+  setState: Dispatch<SetStateAction<T[]>>,
+  fieldsToUpdate: Record<string, unknown>,
+): void {
+  const arrayCopy = [...elementsArray];
+  const indexToUpdate = arrayCopy.findIndex(
+    (el) => el?._id?.toString() === elId,
+  );
+  if (indexToUpdate >= 0) {
+    const update = arrayCopy.map((el, index) => {
+      if (index === indexToUpdate) {
+        return {
+          ...el,
+          ...fieldsToUpdate,
+        };
+      }
+      return el;
+    });
+    setState(update);
+  }
+}

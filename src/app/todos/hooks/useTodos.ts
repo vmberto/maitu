@@ -7,6 +7,7 @@ import {
   useState,
 } from 'react';
 
+import { updateSingleElement } from '@/src/lib/functions';
 import type { GenericEvent, TextareaChangeEventHandler } from '@/types/events';
 import { type Todo, type TodoList } from '@/types/main';
 
@@ -43,7 +44,6 @@ export const useTodos = (listDb: TodoList, todosDb: Todo[]): TodosState => {
   const listId = listDb._id;
 
   const [todos, setTodos] = useState(todosDb);
-
   const [currentTodo, setCurrentTodo] = useState({} as Todo);
   const [newTodo, setNewTodo] = useState({} as Todo);
   const [isTodoDetailOpen, setIsTodoDetailOpen] = useState(false);
@@ -90,16 +90,6 @@ export const useTodos = (listDb: TodoList, todosDb: Todo[]): TodosState => {
 
     if (t.title !== currentTodo.title) {
       await axios.put(`/api/todos/${t._id}`, t);
-      const updatedTodos = todos.map((todo, i) => {
-        if (i === todos.indexOf(t)) {
-          return {
-            ...todo,
-            title: t.title,
-          };
-        }
-        return todo;
-      });
-      setTodos(updatedTodos);
     }
   };
 
@@ -112,12 +102,12 @@ export const useTodos = (listDb: TodoList, todosDb: Todo[]): TodosState => {
 
     if (title && title.length > 0) {
       const todo = {
-        listId,
-        title,
         complete: false,
         completeDisabled: false,
         description: '',
         createdAt: new Date().toISOString(),
+        listId,
+        title,
       } as Todo;
 
       setNewTodo({ title: '' } as Todo);
@@ -139,15 +129,19 @@ export const useTodos = (listDb: TodoList, todosDb: Todo[]): TodosState => {
 
   const handleCompleteTodo = async (t: Todo) => {
     if (!t.complete) {
+      const dataToUpdate = {
+        complete: true,
+        completeDisabled: true,
+        completedAt: new Date().toISOString(),
+      };
       timeouts.push({
         id: t._id,
         timeout: setTimeout(async () => {
           await axios.put(`/api/todos/${t._id}`, {
             ...t,
-            complete: true,
-            completeDisabled: true,
-            completedAt: new Date().toISOString(),
+            ...dataToUpdate,
           });
+          updateSingleElement<Todo>(t._id, todos, setTodos, dataToUpdate);
         }, 2000),
       });
     } else {
@@ -159,6 +153,9 @@ export const useTodos = (listDb: TodoList, todosDb: Todo[]): TodosState => {
     }
     await axios.put(`/api/todos/${t._id}`, {
       ...t,
+      complete: !t.complete,
+    });
+    updateSingleElement<Todo>(t._id, todos, setTodos, {
       complete: !t.complete,
     });
   };

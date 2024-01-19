@@ -6,13 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/api/lists/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/lists/route.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/api/services/todos.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/services/todos.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/api/todos/[id]/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/todos/[id]/route.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/api/todos/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/todos/route.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/lists/components/ListDemo.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/lists/components/ListDemo.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/next.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/next.config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/todos/hooks/useTodos.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/todos/hooks/useTodos.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/types/main.ts" beforeDir="false" afterPath="$PROJECT_DIR$/types/main.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/functions.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/functions.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
