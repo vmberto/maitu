@@ -1,19 +1,39 @@
 import { ObjectId } from 'mongodb';
 
+import { getSessionServerSide } from '@/src/app/api/auth/[...nextauth]/auth-options';
 import { getMongoDb } from '@/src/lib/mongodb';
 import { type TodoList } from '@/types/main';
 
 export const get = async () => {
+  const authSession = await getSessionServerSide();
+
+  if (!authSession) {
+    throw Error();
+  }
+
   const mongo = await getMongoDb();
+
   return mongo
     .collection('lists')
-    .find<TodoList>({}, { sort: { index: 1 } })
+    .find<TodoList>(
+      { owner: new ObjectId(authSession.user._id) },
+      { sort: { index: 1 } },
+    )
     .toArray();
 };
 
 export const add = async (list: TodoList): Promise<TodoList> => {
+  const authSession = await getSessionServerSide();
+
+  if (!authSession) {
+    throw Error();
+  }
   const mongo = await getMongoDb();
-  const response = await mongo.collection('lists').insertOne(list);
+
+  const response = await mongo.collection('lists').insertOne({
+    ...list,
+    owner: new ObjectId(authSession.user._id),
+  });
   return { ...list, _id: response.insertedId };
 };
 
@@ -37,7 +57,14 @@ export const updateOrder = async ({
   initialIndex: number;
   destinationIndex: number;
 }) => {
+  const authSession = await getSessionServerSide();
+
+  if (!authSession) {
+    throw Error();
+  }
+
   const mongo = await getMongoDb();
+
   const items = await get();
 
   const [movedElement] = items.splice(initialIndex, 1);
@@ -45,9 +72,13 @@ export const updateOrder = async ({
   items.splice(destinationIndex, 0, movedElement);
 
   items.map((item, index) => {
-    return mongo
-      .collection('lists')
-      .updateOne({ _id: new ObjectId(item._id) }, { $set: { index } });
+    return mongo.collection('lists').updateOne(
+      {
+        _id: new ObjectId(item._id),
+        owner: new ObjectId(authSession.user._id),
+      },
+      { $set: { index } },
+    );
   });
 
   await Promise.all(items);

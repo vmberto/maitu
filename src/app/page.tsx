@@ -1,9 +1,19 @@
 import { redirect } from 'next/navigation';
+import { getServerSession } from 'next-auth';
 
-export default function Home() {
-  redirect('/lists');
+import { nextAuthOptions } from '@/src/app/api/auth/[...nextauth]/auth-options';
+import LoginForm from '@/src/components/LoginForm';
+
+export default async function Home() {
+  const authSession = await getServerSession(nextAuthOptions);
+
+  if (authSession) {
+    redirect('/lists');
+  }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24" />
+    <main>
+      <LoginForm />
+    </main>
   );
 }

@@ -2,7 +2,7 @@ import type { ObjectId } from 'mongodb';
 
 import type { Colors } from '@/src/components/ColorPicker';
 
-export interface User {
+export interface UserObject {
   _id: ObjectId | undefined;
   username: string;
   email: string;

@@ -1,7 +1,9 @@
 import { getMongoDb } from '@/src/lib/mongodb';
-import type { User } from '@/types/main';
+import type { UserObject } from '@/types/main';
 
-export const getUserByEmail = async (email: string): Promise<User | null> => {
+export const getUserByEmail = async (
+  email: string,
+): Promise<UserObject | null> => {
   const mongo = await getMongoDb();
-  return mongo.collection('users').findOne<User>({ email });
+  return mongo.collection('users').findOne<UserObject>({ email });
 };

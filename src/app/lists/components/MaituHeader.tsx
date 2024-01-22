@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { signOut } from 'next-auth/react';
 
 import { Typography } from '@/src/components/Typography';
 
@@ -7,11 +7,12 @@ export const MaituHeader = () => (
     <Typography as="h1" className="text-xl font-semibold text-primary">
       maitu
     </Typography>
-    <Link
+    <button
+      type="button"
       className="ml-auto mr-5 border-b-2 border-primary px-3 py-0.5 text-base text-primary"
-      href="/map"
+      onClick={() => signOut({ callbackUrl: '/' })}
     >
-      Map
-    </Link>
+      Logout
+    </button>
   </header>
 );

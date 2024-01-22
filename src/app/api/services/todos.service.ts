@@ -1,15 +1,25 @@
 import { ObjectId } from 'mongodb';
 
+import { getSessionServerSide } from '@/src/app/api/auth/[...nextauth]/auth-options';
 import { getMongoDb } from '@/src/lib/mongodb';
 import type { Todo, TodosResponse } from '@/types/main';
 
 export const getListTodos = async (listId: string): Promise<TodosResponse> => {
+  const authSession = await getSessionServerSide();
+
+  if (!authSession) {
+    throw Error();
+  }
+
   const mongo = await getMongoDb();
   return (await mongo
     .collection('lists')
     .aggregate([
       {
-        $match: { _id: new ObjectId(listId) },
+        $match: {
+          _id: new ObjectId(listId),
+          owner: new ObjectId(authSession.user._id),
+        },
       },
       {
         $lookup: {
