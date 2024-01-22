@@ -98,6 +98,7 @@ export const useTodos = (listDb: TodoList, todosDb: Todo[]): TodosState => {
   };
 
   const addTodo = async () => {
+    const todosCopy = [...todos];
     const { title } = newTodo;
 
     if (title && title.length > 0) {
@@ -112,9 +113,11 @@ export const useTodos = (listDb: TodoList, todosDb: Todo[]): TodosState => {
 
       setNewTodo({ title: '' } as Todo);
 
+      setTodos([...todosCopy, todo]);
+
       const response = await axios.post<Todo>('/api/todos', todo);
 
-      setTodos([...todos, response.data]);
+      setTodos([...todosCopy, response.data]);
     }
   };
 
