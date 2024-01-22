@@ -1,16 +1,10 @@
-import './globals.css';
+import '@/src/app/globals.css';
 
-import type { Metadata, Viewport } from 'next';
+import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import type { ReactNode } from 'react';
 
 const inter = Inter({ subsets: ['latin'] });
-
-export const viewport: Viewport = {
-  minimumScale: 1,
-  initialScale: 1,
-  viewportFit: 'cover',
-};
 
 export const metadata: Metadata = {
   title: 'maitu',
