@@ -15,6 +15,8 @@ type ListsContainerProps = {
 export const ListsContainer = ({ lists }: ListsContainerProps) => {
   const todoListsState = useTodoLists(lists);
 
+  console.log(lists);
+
   return (
     <TodoListsContext.Provider value={todoListsState}>
       <MaituHeader />

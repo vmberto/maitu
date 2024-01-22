@@ -151,10 +151,6 @@ export const useTodos = (listDb: TodoList, todosDb: Todo[]): TodosState => {
         timeouts = timeouts.filter((timeout) => timeout.id !== timeoutObj.id);
       }
     }
-    await axios.put(`/api/todos/${t._id}`, {
-      ...t,
-      complete: !t.complete,
-    });
     updateSingleElement<Todo>(t._id, todos, setTodos, {
       complete: !t.complete,
     });

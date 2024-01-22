@@ -19,6 +19,30 @@ export const getListTodos = async (listId: string): Promise<TodosResponse> => {
           as: 'todos',
         },
       },
+      // {
+      //   $project: {
+      //     _id: 1,
+      //     title: 1,
+      //     color: 1,
+      //     createdAt: 1,
+      //     index: 1,
+      //     owner: 1,
+      //     doingTodos: {
+      //       $filter: {
+      //         input: '$todos',
+      //         as: 'todo',
+      //         cond: { $eq: ['$$todo.complete', false] },
+      //       },
+      //     },
+      //     completeTodos: {
+      //       $filter: {
+      //         input: '$todos',
+      //         as: 'todo',
+      //         cond: { $eq: ['$$todo.complete', true] },
+      //       },
+      //     },
+      //   },
+      // },
     ])
     .next()) as Promise<TodosResponse>;
 };
