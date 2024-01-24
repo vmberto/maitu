@@ -21,18 +21,16 @@ export const TodosContainer = ({ list, todos }: TodosContainerProps) => {
   const todosState = useTodos(list, todos);
 
   return (
-    <TodosContext.Provider value={todosState}>
-      <div className="relative min-h-screen">
-        <div className="mx-auto my-0 h-full max-w-xl">
-          <Header />
+    <main className="mx-auto my-0 h-full max-w-xl">
+      <TodosContext.Provider value={todosState}>
+        <Header />
 
-          <Todos />
+        <Todos />
 
-          <CompleteTodos />
+        <CompleteTodos />
 
-          <TodoDetailSlideOver />
-        </div>
-      </div>
-    </TodosContext.Provider>
+        <TodoDetailSlideOver />
+      </TodosContext.Provider>
+    </main>
   );
 };

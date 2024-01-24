@@ -5,20 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/app/api/auth/[...nextauth]/auth-options.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/api/auth/[...nextauth]/route.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/LoginForm.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/middleware.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/types/next-auth.d.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/api/services/lists.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/services/lists.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/api/services/todos.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/services/todos.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/api/services/users.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/services/users.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/lists/components/MaituHeader.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/lists/components/MaituHeader.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/types/main.ts" beforeDir="false" afterPath="$PROJECT_DIR$/types/main.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/todos/components/TodosContainer.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/todos/components/TodosContainer.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/todos/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/todos/llll.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -140,7 +129,7 @@
       <workItem from="1705691888444" duration="13686000" />
       <workItem from="1705952070779" duration="750000" />
       <workItem from="1705952830017" duration="12000" />
-      <workItem from="1705952842591" duration="5722000" />
+      <workItem from="1705952842591" duration="12542000" />
     </task>
     <servers />
   </component>
