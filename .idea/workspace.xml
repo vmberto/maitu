@@ -5,27 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/app/lists/hooks/useLists.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/lists/loading.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/api/lists/[id]/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/lists/[id]/route.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/api/lists/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/lists/route.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/api/services/lists.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/services/lists.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/lists/components/AddListSlideOver/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/lists/components/AddListSlideOver/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/lists/components/ListDemo.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/lists/components/ListDemo.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/lists/components/ListDetailSlideOver/DeleteList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/lists/components/ListDetailSlideOver/DeleteList.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/lists/components/ListDetailSlideOver/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/lists/components/ListDetailSlideOver/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/lists/components/Lists.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/lists/components/Lists.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/lists/components/ListsContainer.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/lists/components/ListsContainer.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/lists/hooks/useTodoLists.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/lists/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/lists/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/todos/components/Header.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/todos/components/Header.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/todos/components/TodoInput.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/todos/components/TodoInput.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/todos/components/TodosContainer.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/todos/components/TodosContainer.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/todos/hooks/useTodos.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/todos/hooks/useTodos.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/todos/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/todos/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/SlideOver.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/SlideOver.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/functions.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/functions.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/types/main.ts" beforeDir="false" afterPath="$PROJECT_DIR$/types/main.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
