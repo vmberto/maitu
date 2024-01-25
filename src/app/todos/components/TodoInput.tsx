@@ -49,11 +49,11 @@ const TodoInputComponent = (
   };
 
   return (
-    <div className="flex items-center border-t-2">
+    <div className="flex items-center border-t-2 py-3">
       <div
         onClick={handleClickCompleteTodo}
-        className="relative mr-2
-        cursor-pointer items-center rounded-full border-2
+        className="relative mr-2 cursor-pointer
+        items-center self-start rounded-full border-2
           border-primary p-3.5 font-semibold transition-all"
       >
         {todoData?.complete && (
@@ -63,11 +63,11 @@ const TodoInputComponent = (
       <textarea
         ref={textareaRef}
         className="relative z-10 block w-full resize-none overflow-hidden
-                    bg-transparent px-2 py-4 text-base outline-0 focus:outline-none"
+                    bg-transparent px-2 text-base outline-0 focus:outline-none"
         {...rest}
       />
       {todoData?._id && (
-        <Menu as="div" className="relative inline-block text-left">
+        <Menu as="div" className="relative inline-block self-start text-left">
           <Menu.Button
             onClick={handleOpenSlideOver(todoData)}
             className="inline-flex w-full justify-center

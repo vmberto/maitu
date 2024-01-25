@@ -2,23 +2,20 @@
 
 import { Lists } from '@/src/app/lists/components/Lists';
 import { MaituHeader } from '@/src/app/lists/components/MaituHeader';
-import {
-  TodoListsContext,
-  useTodoLists,
-} from '@/src/app/lists/hooks/useTodoLists';
-import type { TodoList } from '@/types/main';
+import { ListsContext, useLists } from '@/src/app/lists/hooks/useLists';
+import type { List } from '@/types/main';
 
 type ListsContainerProps = {
-  lists: TodoList[];
+  lists: List[];
 };
 
 export const ListsContainer = ({ lists }: ListsContainerProps) => {
-  const todoListsState = useTodoLists(lists);
+  const listsState = useLists(lists);
 
   return (
-    <TodoListsContext.Provider value={todoListsState}>
+    <ListsContext.Provider value={listsState}>
       <MaituHeader />
       <Lists />
-    </TodoListsContext.Provider>
+    </ListsContext.Provider>
   );
 };

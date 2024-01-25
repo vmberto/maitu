@@ -1,24 +1,24 @@
 import { useContext, useState } from 'react';
 
 import { DeleteList } from '@/src/app/lists/components/ListDetailSlideOver/DeleteList';
-import { TodoListsContext } from '@/src/app/lists/hooks/useTodoLists';
+import { ListsContext } from '@/src/app/lists/hooks/useLists';
 import { ColorPicker } from '@/src/components/ColorPicker';
 import SlideOver from '@/src/components/SlideOver';
 
 export const ListDetailSlideOver = () => {
   const {
-    currentTodoList: todoList,
+    currentList: list,
     isListDetailOpen,
     handleCloseSlideOver,
-  } = useContext(TodoListsContext);
+  } = useContext(ListsContext);
 
-  // const {handleUpdateTodoList} = useTodoLists();
-  const [color, setColor] = useState(todoList.color);
-  // const [listTitle, setListTitle] = useState(todoList.title);
+  // const {handleUpdateList} = useLists();
+  const [color, setColor] = useState(list.color);
+  // const [listTitle, setListTitle] = useState(list.title);
 
   // useEffect(() => {
-  //   setListTitle(todoList.title);
-  // }, [todoList]);
+  //   setListTitle(list.title);
+  // }, [list]);
 
   // const handleInputChange = (e: InputChangeEventHandler) => {
   //   const { value } = e.target;
@@ -29,14 +29,14 @@ export const ListDetailSlideOver = () => {
   //   if (listTitle) {
   //     // setDefinedListTitle(listTitle);
   //   } else {
-  //     setListTitle(todoList.title);
+  //     setListTitle(list.title);
   //   }
   // };
 
   // @Todo refactor 100%
   // useEffect(() => {
   //     (async () => {
-  //         await handleUpdateTodoList(todoList.id, {title: definedListTitle, color} as TodoList);
+  //         await handleUpdateList(list.id, {title: definedListTitle, color} as List);
   //     })();
   // }, [color, definedListTitle]);
 
@@ -56,13 +56,13 @@ export const ListDetailSlideOver = () => {
 
   return (
     <SlideOver
-      title={todoList.title}
+      title={list.title}
       open={isListDetailOpen}
       onClose={handleCloseSlideOver}
     >
       <ColorPicker color={color} setColor={setColor} />
 
-      <DeleteList listTitle={todoList.title} id={todoList._id} />
+      <DeleteList listTitle={list.title} id={list._id} />
     </SlideOver>
   );
 };

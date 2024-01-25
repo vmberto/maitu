@@ -7,7 +7,7 @@ import { FontColor, HexColors } from '@/src/lib/colors';
 import { stopPropagationFn } from '@/src/lib/functions';
 
 export const Header = () => {
-  const { selectedTodoList } = useContext(TodosContext);
+  const { selectedList } = useContext(TodosContext);
 
   return (
     <div className="flex items-center py-2">
@@ -18,15 +18,15 @@ export const Header = () => {
       >
         <ArrowLeftIcon
           className="relative mr-3 w-6 cursor-pointer"
-          color={HexColors.get(selectedTodoList.color)}
+          color={HexColors.get(selectedList.color)}
         />
       </Link>
       <h1
         className={`pr-5 text-2xl font-bold ${FontColor.get(
-          selectedTodoList.color,
+          selectedList.color,
         )}`}
       >
-        {selectedTodoList?.title}
+        {selectedList?.title}
       </h1>
     </div>
   );

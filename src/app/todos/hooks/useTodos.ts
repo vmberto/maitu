@@ -9,7 +9,7 @@ import {
 
 import { updateSingleElement } from '@/src/lib/functions';
 import type { GenericEvent, TextareaChangeEventHandler } from '@/types/events';
-import { type Todo, type TodoList } from '@/types/main';
+import { type List, type Todo } from '@/types/main';
 
 let timeouts = [] as Array<{
   id: ObjectId | undefined;
@@ -21,7 +21,7 @@ export interface TodosState {
   completeTodos: Todo[];
   newTodo: Todo;
   currentTodo: Todo;
-  selectedTodoList: TodoList;
+  selectedList: List;
   isTodoDetailOpen: boolean;
 
   handleOpenSlideOver: (todo: Todo) => (e: GenericEvent) => void;
@@ -40,7 +40,7 @@ export interface TodosState {
   updateTodo: (t: Todo) => () => Promise<void>;
 }
 
-export const useTodos = (listDb: TodoList, todosDb: Todo[]): TodosState => {
+export const useTodos = (listDb: List, todosDb: Todo[]): TodosState => {
   const listId = listDb._id;
 
   const [todos, setTodos] = useState(todosDb);
@@ -172,7 +172,7 @@ export const useTodos = (listDb: TodoList, todosDb: Todo[]): TodosState => {
     todosToComplete,
     completeTodos,
     newTodo,
-    selectedTodoList: listDb,
+    selectedList: listDb,
     currentTodo,
     isTodoDetailOpen,
     handleOpenSlideOver,

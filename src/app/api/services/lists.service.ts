@@ -2,7 +2,7 @@ import { ObjectId } from 'mongodb';
 
 import { getSessionServerSide } from '@/src/app/api/auth/[...nextauth]/auth-options';
 import { getMongoDb } from '@/src/lib/mongodb';
-import { type TodoList } from '@/types/main';
+import { type List } from '@/types/main';
 
 export const get = async () => {
   const authSession = await getSessionServerSide();
@@ -15,14 +15,14 @@ export const get = async () => {
 
   return mongo
     .collection('lists')
-    .find<TodoList>(
+    .find<List>(
       { owner: new ObjectId(authSession.user._id) },
       { sort: { index: 1 } },
     )
     .toArray();
 };
 
-export const add = async (list: TodoList): Promise<TodoList> => {
+export const add = async (list: List): Promise<List> => {
   const authSession = await getSessionServerSide();
 
   if (!authSession) {
@@ -37,7 +37,7 @@ export const add = async (list: TodoList): Promise<TodoList> => {
   return { ...list, _id: response.insertedId };
 };
 
-export const update = async (listId: string, updatedList: TodoList) => {
+export const update = async (listId: string, updatedList: List) => {
   const mongo = await getMongoDb();
   return mongo
     .collection('lists')

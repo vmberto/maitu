@@ -5,17 +5,17 @@ import { ColorPicker, Colors } from '@/src/components/ColorPicker';
 import { Input } from '@/src/components/Input';
 import SlideOver from '@/src/components/SlideOver';
 import type { GenericEvent, InputChangeEventHandler } from '@/types/events';
-import { type TodoList } from '@/types/main';
+import { type List } from '@/types/main';
 
 type AddListSlideOverProps = {
   open: boolean;
   setOpen: (open: boolean) => void;
-  handleAddTodoList: (newTodoList: TodoList) => void;
+  handleAddList: (newList: List) => void;
 };
 
 export const AddListSlideOver = ({
   setOpen,
-  handleAddTodoList,
+  handleAddList,
   open,
 }: AddListSlideOverProps) => {
   const [listTitle, setListTitle] = useState('');
@@ -33,8 +33,8 @@ export const AddListSlideOver = ({
         title: listTitle,
         color,
         createdAt: new Date(),
-      } as TodoList;
-      handleAddTodoList(newList);
+      } as List;
+      handleAddList(newList);
       setOpen(false);
     }
   };

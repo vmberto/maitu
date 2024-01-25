@@ -9,7 +9,7 @@ export interface UserObject {
   password: string;
 }
 
-export interface TodoList {
+export interface List {
   _id: string | any;
   id: string;
   title: string;
@@ -39,4 +39,4 @@ export interface Todo {
   completedAt: string;
 }
 
-export type TodosResponse = TodoList & { todos: Todo[] };
+export type TodosResponse = List & { todos: Todo[] };

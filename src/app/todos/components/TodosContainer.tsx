@@ -10,10 +10,10 @@ import { Header } from '@/src/app/todos/components/Header';
 import { TodoDetailSlideOver } from '@/src/app/todos/components/TodoDetailSlideOver';
 import { Todos } from '@/src/app/todos/components/Todos';
 import { TodosContext, useTodos } from '@/src/app/todos/hooks/useTodos';
-import type { Todo, TodoList } from '@/types/main';
+import type { List, Todo } from '@/types/main';
 
 type TodosContainerProps = {
-  list: TodoList;
+  list: List;
   todos: Todo[];
 };
 

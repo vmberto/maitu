@@ -44,3 +44,5 @@ export function updateSingleElement<T extends { _id: ObjectId | undefined }>(
     setState(update);
   }
 }
+
+export const json = (data: unknown) => JSON.parse(JSON.stringify(data));
