@@ -17,9 +17,7 @@ import { TodosContext } from '@/src/app/todos/hooks/useTodos';
 import { type GenericEvent } from '@/types/events';
 import { type Todo } from '@/types/main';
 
-type ElProps<T, R> = DetailedHTMLProps<T, R>;
-
-export type TodoInputComponentProps = ElProps<
+export type TodoInputComponentProps = DetailedHTMLProps<
   TextareaHTMLAttributes<HTMLTextAreaElement>,
   HTMLTextAreaElement
 > & {
@@ -57,7 +55,7 @@ const TodoInputComponent = (
           border-primary p-3.5 font-semibold transition-all"
       >
         {todoData?.complete && (
-          <div className="absolute right-1 top-1 h-5 w-5 rounded-full bg-primary" />
+          <div className="absolute right-1 top-1 size-5 rounded-full bg-primary" />
         )}
       </div>
       <textarea
@@ -74,7 +72,7 @@ const TodoInputComponent = (
                 rounded-full p-1 text-sm font-medium text-gray-700
                 focus:ring-offset-2 focus:ring-offset-gray-200 betterhover:hover:bg-gray-200"
           >
-            <EllipsisHorizontalCircleIcon className="h-6 w-6" />
+            <EllipsisHorizontalCircleIcon className="size-6" />
           </Menu.Button>
         </Menu>
       )}
