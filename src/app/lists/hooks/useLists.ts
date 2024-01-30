@@ -1,6 +1,6 @@
 import { type DropResult } from '@hello-pangea/dnd';
 import axios from 'axios';
-import { createContext, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 
 import type { GenericEvent } from '@/types/events';
 import type { List } from '@/types/main';
@@ -20,9 +20,13 @@ export type ListsState = {
 };
 
 export const useLists = (listsDb: List[]): ListsState => {
-  const [lists, setLists] = useState<List[]>(listsDb);
+  const [lists, setLists] = useState<List[]>([]);
   const [currentList, setCurrentList] = useState<List>({} as List);
   const [isListDetailOpen, setIsListDetailOpen] = useState(false);
+
+  useEffect(() => {
+    setLists(listsDb);
+  }, []);
 
   const handleOpenSlideOver = (list: List) => (e: GenericEvent) => {
     e.stopPropagation();
