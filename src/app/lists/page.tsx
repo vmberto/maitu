@@ -1,4 +1,4 @@
-import * as ListsService from '@/src/app/api/services/lists.service';
+import * as ListsService from '@/src/actions/lists.service';
 import { ListsContainer } from '@/src/app/lists/components/ListsContainer';
 import { json } from '@/src/lib/functions';
 

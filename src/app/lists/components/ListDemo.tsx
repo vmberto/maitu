@@ -44,7 +44,7 @@ export const ListDemo = ({ list }: ListDemoProps) => {
                 rounded-full p-1 text-sm font-medium text-gray-700
                 focus:ring-offset-2 focus:ring-offset-gray-200 betterhover:hover:bg-gray-200"
             >
-              <EllipsisVerticalIcon className="h-8 w-8" />
+              <EllipsisVerticalIcon className="size-8" />
             </Menu.Button>
           </Menu>
         </div>

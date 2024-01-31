@@ -1,6 +1,10 @@
+'use server';
+
 import { ObjectId } from 'mongodb';
+import { revalidatePath } from 'next/cache';
 
 import { getSessionServerSide } from '@/src/app/api/auth/[...nextauth]/auth-options';
+import { json } from '@/src/lib/functions';
 import { getMongoDb } from '@/src/lib/mongodb';
 import { type List } from '@/types/main';
 
@@ -34,11 +38,15 @@ export const add = async (list: List): Promise<List> => {
     ...list,
     owner: new ObjectId(authSession.user._id),
   });
-  return { ...list, _id: response.insertedId };
+
+  revalidatePath('/lists');
+  return json({ ...list, _id: response.insertedId });
 };
 
 export const update = async (listId: string, updatedList: List) => {
   const mongo = await getMongoDb();
+
+  revalidatePath('/lists');
   return mongo
     .collection('lists')
     .updateOne({ _id: new ObjectId(listId) }, updatedList);
@@ -46,6 +54,8 @@ export const update = async (listId: string, updatedList: List) => {
 
 export const remove = async (listId: string) => {
   const mongo = await getMongoDb();
+
+  revalidatePath('/lists');
   await mongo.collection('todos').deleteMany({ listId });
   return mongo.collection('lists').deleteOne({ _id: new ObjectId(listId) });
 };
@@ -81,5 +91,6 @@ export const updateOrder = async ({
     );
   });
 
+  revalidatePath('/lists');
   await Promise.all(items);
 };

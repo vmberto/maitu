@@ -41,12 +41,12 @@ export const TodoDetailSlideOver = () => {
         <>
           {currentTodo?.completeDisabled ? (
             <CheckCircleIcon
-              className="mb-1 mr-1 inline h-6 w-6"
+              className="mb-1 mr-1 inline size-6"
               color="#5aee5c"
             />
           ) : (
             <PlayCircleIcon
-              className="mb-1 mr-1 inline h-6 w-6"
+              className="mb-1 mr-1 inline size-6"
               color={HexColors.get('primary')}
             />
           )}

@@ -1,4 +1,3 @@
-import axios from 'axios';
 import type { ObjectId } from 'mongodb';
 import {
   createContext,
@@ -7,6 +6,7 @@ import {
   useState,
 } from 'react';
 
+import { add, remove, update } from '@/src/actions/todos.service';
 import { updateSingleElement } from '@/src/lib/functions';
 import type { GenericEvent, TextareaChangeEventHandler } from '@/types/events';
 import { type List, type Todo } from '@/types/main';
@@ -81,20 +81,23 @@ export const useTodos = (listDb: List, todosDb: Todo[]): TodosState => {
   };
 
   const onBlurUpdateTodo = (t: Todo) => async () => {
-    if (t.title.length <= 0) {
-      await axios.delete(`/api/todos/${t._id}`);
+    if (t.title.length <= 0 && t._id) {
       setTodos(todos.filter((todo) => todo._id !== t._id));
+
+      await remove(t._id.toString());
 
       return;
     }
 
-    if (t.title !== currentTodo.title) {
-      await axios.put(`/api/todos/${t._id}`, t);
+    if (t.title !== currentTodo.title && t._id) {
+      await update(t._id.toString(), t);
     }
   };
 
   const updateTodoData = (t: Todo) => async () => {
-    await axios.put(`/api/todos/${t._id}`, t);
+    if (t._id) {
+      await update(t._id.toString(), t);
+    }
   };
 
   const addTodo = async () => {
@@ -115,9 +118,9 @@ export const useTodos = (listDb: List, todosDb: Todo[]): TodosState => {
 
       setTodos([...todosCopy, todo]);
 
-      const response = await axios.post<Todo>('/api/todos', todo);
+      const response = await add(todo);
 
-      setTodos([...todosCopy, response.data]);
+      setTodos([...todosCopy, response]);
     }
   };
 
@@ -140,11 +143,13 @@ export const useTodos = (listDb: List, todosDb: Todo[]): TodosState => {
       timeouts.push({
         id: t._id,
         timeout: setTimeout(async () => {
-          await axios.put(`/api/todos/${t._id}`, {
-            ...t,
-            ...dataToUpdate,
-          });
-          updateSingleElement<Todo>(t._id, todos, setTodos, dataToUpdate);
+          if (t._id) {
+            await update(t._id.toString(), {
+              ...t,
+              ...dataToUpdate,
+            });
+            updateSingleElement<Todo>(t._id, todos, setTodos, dataToUpdate);
+          }
         }, 2000),
       });
     } else {

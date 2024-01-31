@@ -1,6 +1,6 @@
 import React from 'react';
 
-import * as TodosService from '@/src/app/api/services/todos.service';
+import * as TodosService from '@/src/actions/todos.service';
 import { TodosContainer } from '@/src/app/todos/components/TodosContainer';
 import { json } from '@/src/lib/functions';
 

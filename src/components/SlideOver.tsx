@@ -62,7 +62,7 @@ const SlideOver = ({ title, open, onClose, children }: ModalProps) => {
                         }}
                       >
                         <span className="sr-only">Close panel</span>
-                        <XMarkIcon className="h-8 w-8" aria-hidden="true" />
+                        <XMarkIcon className="size-8" aria-hidden="true" />
                       </button>
                     </div>
                     <div className="relative mb-40 flex-1 px-4 sm:px-6">

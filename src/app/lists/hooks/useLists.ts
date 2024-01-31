@@ -2,6 +2,7 @@ import { type DropResult } from '@hello-pangea/dnd';
 import axios from 'axios';
 import { createContext, useEffect, useState } from 'react';
 
+import { add, updateOrder } from '@/src/actions/lists.service';
 import type { GenericEvent } from '@/types/events';
 import type { List } from '@/types/main';
 
@@ -39,19 +40,12 @@ export const useLists = (listsDb: List[]): ListsState => {
   };
 
   const handleAddList = async (newList: List) => {
-    const response = await axios.post<List>('/api/lists', {
-      ...newList,
-      index: lists.length - 1,
-    });
-    setLists([...lists, response.data]);
+    const newListResponse = await add({ ...newList, index: lists.length - 1 });
+
+    setLists([...lists, newListResponse]);
   };
 
-  const handleUpdateList = async () =>
-    // listId: string,
-    // updatedList: List,
-    {
-      // await ListDb.update(listId, updatedList);
-    };
+  const handleUpdateList = async () => {};
 
   const updateListsOrder = async (result: DropResult) => {
     const { source, destination } = result;
@@ -68,7 +62,7 @@ export const useLists = (listsDb: List[]): ListsState => {
 
     setLists(listsCopy);
 
-    await axios.put('api/lists/order', {
+    await updateOrder({
       initialIndex: source.index,
       destinationIndex: destination.index,
     });

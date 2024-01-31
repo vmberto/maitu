@@ -32,7 +32,7 @@ export const AddListSlideOver = ({
       const newList = {
         title: listTitle,
         color,
-        createdAt: new Date(),
+        createdAt: new Date().toISOString(),
       } as List;
       handleAddList(newList);
       setOpen(false);

@@ -11,12 +11,12 @@ export const sections = [
   {
     id: Section.DESCRIPTION,
     name: 'Description',
-    icon: <DocumentTextIcon className="h-5 w-5" aria-hidden="true" />,
+    icon: <DocumentTextIcon className="size-5" aria-hidden="true" />,
   },
   {
     id: Section.LOCATION,
     name: 'Location',
-    icon: <MapPinIcon className="h-5 w-5" aria-hidden="true" />,
+    icon: <MapPinIcon className="size-5" aria-hidden="true" />,
   },
 ];
 

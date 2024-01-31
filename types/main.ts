@@ -17,7 +17,7 @@ export interface List {
 
   index: number;
 
-  createdAt: Date;
+  createdAt: string;
 }
 
 export interface Todo {
