@@ -41,17 +41,12 @@ yarn-error.log*
 next-env.d.ts
 
 # next-pwa
-/public/precache.*.*.js
-/public/sw.js
-/public/workbox-*.js
-/public/worker-*.js
-/public/fallback-*.js
-/public/precache.*.*.js.map
-/public/sw.js.map
-/public/workbox-*.js.map
-/public/worker-*.js.map
-
-# dexie db
-dexie-cloud.json
-dexie-cloud.key
-database.json
+#/public/precache.*.*.js
+#/public/sw.js
+#/public/workbox-*.js
+#/public/worker-*.js
+#/public/fallback-*.js
+#/public/precache.*.*.js.map
+#/public/sw.js.map
+#/public/workbox-*.js.map
+#/public/worker-*.js.map
