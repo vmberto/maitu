@@ -1,7 +1,7 @@
 import '@/src/app/globals.css';
 
 import { SpeedInsights } from '@vercel/speed-insights/next';
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import type { ReactNode } from 'react';
 
@@ -20,6 +20,10 @@ export const metadata: Metadata = {
     statusBarStyle: 'default',
     title: 'maitu',
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: '#3664FF',
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
