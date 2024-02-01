@@ -11,6 +11,15 @@ export const metadata: Metadata = {
   title: 'maitu',
   description: 'an application to save your goals',
   manifest: '/manifest.json',
+  icons: {
+    shortcut: '/favicon.ico',
+    apple: [{ url: '/icons/apple-touch-icon.webp', sizes: '180x180' }],
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'maitu',
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

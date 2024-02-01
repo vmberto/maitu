@@ -1,0 +1,24 @@
+{
+  "name": "maitu",
+  "description": "an application to save your goals",
+  "short_name": "maitu",
+  "theme_color": "#3664FF",
+  "background_color": "#3664FF",
+  "display": "fullscreen",
+  "orientation": "portrait",
+  "scope": ".",
+  "start_url": "./",
+  "icons": [
+    {
+      "src": "/icons/android-chrome-192x192.webp",
+      "sizes": "192x192",
+      "type": "image/webp",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512x512.webp",
+      "sizes": "512x512",
+      "type": "image/webp"
+    }
+  ]
+}
