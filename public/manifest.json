@@ -4,7 +4,7 @@
   "short_name": "maitu",
   "theme_color": "#3664FF",
   "background_color": "#3664FF",
-  "display": "fullscreen",
+  "display": "standalone",
   "orientation": "portrait",
   "scope": ".",
   "start_url": "./",
