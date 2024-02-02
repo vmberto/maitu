@@ -1,29 +1,15 @@
-const withPWA = require('@ducanh2912/next-pwa').default({
-  cacheOnFrontEndNav: true,
-  aggressiveFrontEndNavCaching: true,
-  reloadOnOnline: true,
-  swcMinify: true,
-  dest: 'public',
-  fallbacks: {
-    // image: "/static/images/fallback.png",
-    document: '/offline', // if you want to fallback to a custom page rather than /_offline
-    // font: '/static/font/fallback.woff2',
-    // audio: ...,
-    // video: ...,
-  },
-  workboxOptions: {
-    disableDevLogs: true,
-  },
-  // ... other options you like
+const withSerwist = require('@serwist/next').default({
+  // Note: This is only an example. If you use Pages Router,
+  // use something else that works, such as "service-worker/index.ts".
+  swSrc: 'public/sw.ts',
+  swDest: 'public/sw.js',
+  disable: process.env.NODE_ENV === 'development',
 });
 
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+module.exports = withSerwist({
   reactStrictMode: true,
   swcMinify: true,
   compiler: {
     removeConsole: process.env.NODE_ENV !== 'development',
   },
-};
-
-module.exports = withPWA(nextConfig);
+});
