@@ -146,11 +146,11 @@ export const useTodos = (listDb: List, todosDb: Todo[]): TodosState => {
         id: t._id,
         timeout: setTimeout(async () => {
           if (t._id) {
+            updateSingleElement<Todo>(t._id, todos, setTodos, dataToUpdate);
             await update(t._id.toString(), {
               ...t,
               ...dataToUpdate,
             });
-            updateSingleElement<Todo>(t._id, todos, setTodos, dataToUpdate);
           }
         }, 2000),
       });
