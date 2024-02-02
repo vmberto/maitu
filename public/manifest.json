@@ -19,6 +19,11 @@
       "src": "/icons/icon-512x512.webp",
       "sizes": "512x512",
       "type": "image/webp"
+    },
+    {
+      "src": "/icons/icon-512x512.svg",
+      "sizes": "512x512",
+      "type": "image/svg"
     }
   ]
 }
