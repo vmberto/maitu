@@ -22,7 +22,7 @@ export const Todos = () => {
     <div id="todos" className="mb-28 px-5 pb-5">
       {todosToComplete.map((t) => (
         <TodoInput
-          key={t._id?.toString()}
+          key={t._id?.toString() || t.createdAt.toString()}
           id={t._id?.toString()}
           value={t.title}
           todoData={t}

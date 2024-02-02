@@ -96,6 +96,8 @@ export const useTodos = (listDb: List, todosDb: Todo[]): TodosState => {
 
   const updateTodoData = (t: Todo) => async () => {
     if (t._id) {
+      updateSingleElement<Todo>(t._id, todos, setTodos, { ...t });
+
       await update(t._id.toString(), t);
     }
   };

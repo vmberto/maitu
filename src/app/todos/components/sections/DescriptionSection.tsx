@@ -1,4 +1,4 @@
-import React, { type ChangeEvent, useRef, useState } from 'react';
+import React, { type ChangeEvent, useEffect, useRef, useState } from 'react';
 
 import type { GenericEvent } from '@/types/events';
 import type { Todo } from '@/types/main';
@@ -14,6 +14,15 @@ export const DescriptionSection = ({
 }: DescriptionSectionProps) => {
   const textareaRef = useRef({} as HTMLTextAreaElement);
   const [description, setDescription] = useState(todoData?.description || '');
+
+  useEffect(() => {
+    textareaRef.current.style.height = '0px';
+    let { scrollHeight } = textareaRef.current;
+    if (scrollHeight < 96) {
+      scrollHeight = 96;
+    }
+    textareaRef.current.style.height = `${scrollHeight}px`;
+  }, [textareaRef.current.value]);
 
   const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     setDescription(event.target.value);
@@ -31,8 +40,8 @@ export const DescriptionSection = ({
           ref={textareaRef}
           value={description}
           placeholder="Set a description"
-          className="relative block h-auto w-full resize-none overflow-auto rounded-md
-        border-2 bg-transparent px-3 pb-3 pt-2 text-base outline-0 focus:outline-none"
+          className="relative z-10 mb-4 block w-full resize-none overflow-hidden
+           rounded-md border-2 bg-transparent px-2 pb-2 pt-1 text-base outline-0 focus:outline-none"
           onChange={handleChange}
           onBlur={updateTodoData({
             ...todoData,
