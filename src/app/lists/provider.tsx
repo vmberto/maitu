@@ -41,7 +41,7 @@ export const ListsProvider = ({ listsDb, children }: ListsProviderProps) => {
 
   useEffect(() => {
     setLists(listsDb);
-  }, []);
+  }, [listsDb]);
 
   const handleOpenSlideOver = (list: List) => (e: GenericEvent) => {
     e.stopPropagation();
@@ -109,7 +109,6 @@ export const ListsProvider = ({ listsDb, children }: ListsProviderProps) => {
       handleCloseSlideOver,
       handleAddList,
       handleDeleteList,
-
       updateListsOrder,
       handleUpdateList,
     }),
