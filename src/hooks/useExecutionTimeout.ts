@@ -10,14 +10,13 @@ export const useExecutionTimeout = (delay: number = 2000) => {
   const [timeouts, setTimeouts] = useState<TimeoutObject[]>([]);
 
   const clearTimeoutById = (id: string) => {
-    setTimeouts((prevTimeouts) => {
-      const timeoutObj = prevTimeouts.find((timeout) => timeout.id === id);
-      if (timeoutObj) {
-        clearTimeout(timeoutObj.timeout);
-        return prevTimeouts.filter((timeout) => timeout.id !== id);
-      }
-      return prevTimeouts;
-    });
+    let timeoutsCopy = [...timeouts];
+    const timeoutObj = timeoutsCopy.find((timeout) => timeout.id === id);
+    if (timeoutObj) {
+      clearTimeout(timeoutObj.timeout);
+      timeoutsCopy = timeoutsCopy.filter((timeout) => timeout.id !== id);
+      setTimeouts(timeoutsCopy);
+    }
   };
 
   const setExecutionTimeout = (id: string, callback: () => void) => {
@@ -26,7 +25,7 @@ export const useExecutionTimeout = (delay: number = 2000) => {
       clearTimeoutById(id);
     }, delay);
 
-    setTimeouts((prevTimeouts) => [...prevTimeouts, { id, timeout }]);
+    setTimeouts([...timeouts, { id, timeout }]);
   };
 
   return { setExecutionTimeout, clearTimeoutById };
