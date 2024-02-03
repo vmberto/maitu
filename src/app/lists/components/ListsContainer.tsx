@@ -2,7 +2,7 @@
 
 import { Lists } from '@/src/app/lists/components/Lists';
 import { MaituHeader } from '@/src/app/lists/components/MaituHeader';
-import { ListsContext, useLists } from '@/src/app/lists/hooks/useLists';
+import { ListsProvider } from '@/src/app/lists/provider';
 import type { List } from '@/types/main';
 
 type ListsContainerProps = {
@@ -10,12 +10,10 @@ type ListsContainerProps = {
 };
 
 export const ListsContainer = ({ lists }: ListsContainerProps) => {
-  const listsState = useLists(lists);
-
   return (
-    <ListsContext.Provider value={listsState}>
+    <ListsProvider listsDb={lists}>
       <MaituHeader />
       <Lists />
-    </ListsContext.Provider>
+    </ListsProvider>
   );
 };

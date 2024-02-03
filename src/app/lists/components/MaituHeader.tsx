@@ -9,7 +9,7 @@ export const MaituHeader = () => (
     </Typography>
     <button
       type="button"
-      className="ml-auto mr-5 border-b-2 border-primary px-3 py-0.5 text-base text-primary"
+      className="ml-auto mr-5 rounded-full border-2 border-primary px-3 py-0.5 text-base text-primary transition hover:bg-primary hover:text-white"
       onClick={() => signOut({ callbackUrl: '/' })}
     >
       Logout

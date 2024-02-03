@@ -1,7 +1,7 @@
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 
 import { DeleteList } from '@/src/app/lists/components/ListDetailSlideOver/DeleteList';
-import { ListsContext } from '@/src/app/lists/hooks/useLists';
+import { useLists } from '@/src/app/lists/provider';
 import { ColorPicker } from '@/src/components/ColorPicker';
 import SlideOver from '@/src/components/SlideOver';
 
@@ -10,7 +10,7 @@ export const ListDetailSlideOver = () => {
     currentList: list,
     isListDetailOpen,
     handleCloseSlideOver,
-  } = useContext(ListsContext);
+  } = useLists();
 
   // const {handleUpdateList} = useLists();
   const [color, setColor] = useState(list.color);

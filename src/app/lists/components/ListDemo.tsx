@@ -3,9 +3,8 @@
 import { Menu } from '@headlessui/react';
 import { EllipsisVerticalIcon } from '@heroicons/react/24/solid';
 import Link from 'next/link';
-import { useContext } from 'react';
 
-import { ListsContext } from '@/src/app/lists/hooks/useLists';
+import { useLists } from '@/src/app/lists/provider';
 import { DraggableWrapper } from '@/src/components/dnd/DraggableWrapper';
 import { Typography } from '@/src/components/Typography';
 import { type List } from '@/types/main';
@@ -15,7 +14,7 @@ type ListDemoProps = {
 };
 
 export const ListDemo = ({ list }: ListDemoProps) => {
-  const { handleOpenSlideOver } = useContext(ListsContext);
+  const { handleOpenSlideOver } = useLists();
 
   return (
     <DraggableWrapper

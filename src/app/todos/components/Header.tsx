@@ -1,13 +1,12 @@
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
 import Link from 'next/link';
-import { useContext } from 'react';
 
-import { TodosContext } from '@/src/app/todos/hooks/useTodos';
+import { useTodos } from '@/src/app/todos/provider';
 import { FontColor, HexColors } from '@/src/lib/colors';
 import { stopPropagationFn } from '@/src/lib/functions';
 
 export const Header = () => {
-  const { selectedList } = useContext(TodosContext);
+  const { selectedList } = useTodos();
 
   return (
     <div className="flex items-center py-2">

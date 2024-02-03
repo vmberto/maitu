@@ -1,10 +1,8 @@
-import { useContext } from 'react';
-
 import { TodoInput } from '@/src/app/todos/components/TodoInput';
-import { TodosContext } from '@/src/app/todos/hooks/useTodos';
+import { useTodos } from '@/src/app/todos/provider';
 
 export const CompleteTodos = () => {
-  const { completeTodos } = useContext(TodosContext);
+  const { completeTodos } = useTodos();
 
   if (!completeTodos.length) {
     return null;

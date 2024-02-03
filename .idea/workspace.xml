@@ -5,8 +5,23 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/hooks/useExecutionTimeout.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/todos/hooks/useTodos.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/todos/hooks/useTodos.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/lists/components/ListDemo.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/lists/components/ListDemo.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/lists/components/ListDetailSlideOver/DeleteList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/lists/components/ListDetailSlideOver/DeleteList.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/lists/components/ListDetailSlideOver/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/lists/components/ListDetailSlideOver/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/lists/components/Lists.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/lists/components/Lists.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/lists/components/ListsContainer.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/lists/components/ListsContainer.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/lists/components/MaituHeader.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/lists/components/MaituHeader.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/lists/hooks/useLists.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/lists/provider.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/offline/page.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/todos/components/CompleteTodos.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/todos/components/CompleteTodos.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/todos/components/Header.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/todos/components/Header.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/todos/components/TodoDetailSlideOver.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/todos/components/TodoDetailSlideOver.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/todos/components/TodoInput.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/todos/components/TodoInput.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/todos/components/Todos.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/todos/components/Todos.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/todos/components/TodosContainer.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/todos/components/TodosContainer.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/todos/hooks/useTodos.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/todos/provider.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -62,11 +77,11 @@
       <recent name="$PROJECT_DIR$/src/api/services" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/app/lists" />
+      <recent name="$PROJECT_DIR$/src/app/todos" />
       <recent name="$PROJECT_DIR$/public/icons" />
       <recent name="$PROJECT_DIR$/public" />
       <recent name="$PROJECT_DIR$/src/app" />
-      <recent name="$PROJECT_DIR$/src" />
-      <recent name="$PROJECT_DIR$/src/app/api/auth" />
     </key>
     <key name="es6.move.members.recent.items">
       <recent name="$PROJECT_DIR$/src/app/lists/components/ListsContainer.tsx" />
@@ -129,17 +144,12 @@
       <workItem from="1705952070779" duration="750000" />
       <workItem from="1705952830017" duration="12000" />
       <workItem from="1705952842591" duration="12542000" />
-      <workItem from="1706759764848" duration="12121000" />
+      <workItem from="1706759764848" duration="19708000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
-    <option name="exactExcludedFiles">
-      <list>
-        <option value="$PROJECT_DIR$/public/sw.js" />
-      </list>
-    </option>
   </component>
   <component name="UnknownFeatures">
     <option featureType="com.intellij.fileTypeFactory" implementationName="*.key" />

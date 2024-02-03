@@ -1,6 +1,6 @@
 import { PlayCircleIcon } from '@heroicons/react/24/outline';
 import { CheckCircleIcon } from '@heroicons/react/24/solid';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { DescriptionSection } from '@/src/app/todos/components/sections/DescriptionSection';
 import { InputSection } from '@/src/app/todos/components/sections/InputSection';
@@ -8,7 +8,7 @@ import {
   Section,
   SectionSelect,
 } from '@/src/app/todos/components/sections/SectionSelect';
-import { TodosContext } from '@/src/app/todos/hooks/useTodos';
+import { useTodos } from '@/src/app/todos/provider';
 import SlideOver from '@/src/components/SlideOver';
 import { HexColors } from '@/src/lib/colors';
 import { formatDate } from '@/src/lib/functions';
@@ -19,7 +19,7 @@ export const TodoDetailSlideOver = () => {
     currentTodo,
     handleCloseSlideOver,
     updateTodoData,
-  } = useContext(TodosContext);
+  } = useTodos();
   const [selectedSections, setSection] = useState<Section[]>([]);
 
   useEffect(() => {

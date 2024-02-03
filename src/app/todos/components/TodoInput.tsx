@@ -7,13 +7,12 @@ import React, {
   type ForwardedRef,
   forwardRef,
   type TextareaHTMLAttributes,
-  useContext,
   useEffect,
   useImperativeHandle,
   useRef,
 } from 'react';
 
-import { TodosContext } from '@/src/app/todos/hooks/useTodos';
+import { useTodos } from '@/src/app/todos/provider';
 import { type GenericEvent } from '@/types/events';
 import { type Todo } from '@/types/main';
 
@@ -30,7 +29,7 @@ const TodoInputComponent = (
   ref: ForwardedRef<HTMLTextAreaElement>,
 ) => {
   const textareaRef = useRef({} as HTMLTextAreaElement);
-  const { handleOpenSlideOver } = useContext(TodosContext);
+  const { handleOpenSlideOver } = useTodos();
   useImperativeHandle(ref, () => textareaRef.current);
 
   useEffect(() => {

@@ -1,15 +1,12 @@
 'use client';
 
-/* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable jsx-a11y/no-static-element-interactions */
-
 import React from 'react';
 
 import { CompleteTodos } from '@/src/app/todos/components/CompleteTodos';
 import { Header } from '@/src/app/todos/components/Header';
 import { TodoDetailSlideOver } from '@/src/app/todos/components/TodoDetailSlideOver';
 import { Todos } from '@/src/app/todos/components/Todos';
-import { TodosContext, useTodos } from '@/src/app/todos/hooks/useTodos';
+import { TodosProvider } from '@/src/app/todos/provider';
 import type { List, Todo } from '@/types/main';
 
 type TodosContainerProps = {
@@ -17,20 +14,16 @@ type TodosContainerProps = {
   todos: Todo[];
 };
 
-export const TodosContainer = ({ list, todos }: TodosContainerProps) => {
-  const todosState = useTodos(list, todos);
+export const TodosContainer = ({ list, todos }: TodosContainerProps) => (
+  <main className="mx-auto my-0 h-full max-w-xl">
+    <TodosProvider listDb={list} todosDb={todos}>
+      <Header />
 
-  return (
-    <main className="mx-auto my-0 h-full max-w-xl">
-      <TodosContext.Provider value={todosState}>
-        <Header />
+      <Todos />
 
-        <Todos />
+      <CompleteTodos />
 
-        <CompleteTodos />
-
-        <TodoDetailSlideOver />
-      </TodosContext.Provider>
-    </main>
-  );
-};
+      <TodoDetailSlideOver />
+    </TodosProvider>
+  </main>
+);

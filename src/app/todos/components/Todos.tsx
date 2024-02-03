@@ -1,7 +1,5 @@
-import { useContext } from 'react';
-
 import { TodoInput } from '@/src/app/todos/components/TodoInput';
-import { TodosContext } from '@/src/app/todos/hooks/useTodos';
+import { useTodos } from '@/src/app/todos/provider';
 import { Typography } from '@/src/components/Typography';
 import { stopPropagationFn } from '@/src/lib/functions';
 
@@ -16,7 +14,7 @@ export const Todos = () => {
     handleChangeNewTodo,
     addTodo,
     handleKeyPressAdd,
-  } = useContext(TodosContext);
+  } = useTodos();
 
   return (
     <div id="todos" className="mb-28 px-5 pb-5">

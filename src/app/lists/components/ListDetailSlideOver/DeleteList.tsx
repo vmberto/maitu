@@ -1,6 +1,6 @@
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 
-import { ListsContext } from '@/src/app/lists/hooks/useLists';
+import { useLists } from '@/src/app/lists/provider';
 import { Input } from '@/src/components/Input';
 import type { FormEventHandler, InputChangeEventHandler } from '@/types/events';
 
@@ -11,7 +11,7 @@ type DeleteListProps = {
 
 export const DeleteList = ({ id, listTitle }: DeleteListProps) => {
   const [listTitleInput, setListTitleInput] = useState('');
-  const { handleDeleteList } = useContext(ListsContext);
+  const { handleDeleteList } = useLists();
 
   const handleInputChange = (e: InputChangeEventHandler) => {
     const { value } = e.target;
