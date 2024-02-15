@@ -1,3 +1,5 @@
+'use client';
+
 import type { KeyboardEventHandler, ReactNode } from 'react';
 import {
   createContext,
@@ -21,6 +23,9 @@ export interface TodosState {
   selectedList: List;
   isTodoDetailOpen: boolean;
 
+  handleSetTodos: (tds: Todo[]) => void;
+  handleSetList: (list: List) => void;
+
   handleOpenSlideOver: (todo: Todo) => (e: GenericEvent) => void;
   handleCloseSlideOver: () => void;
 
@@ -38,25 +43,27 @@ export interface TodosState {
 }
 
 type TodosProviderProps = {
-  listDb: List;
-  todosDb: Todo[];
   children: ReactNode;
 };
 
 const TodosContext = createContext<TodosState>({} as TodosState);
 
-export const TodosProvider = ({
-  listDb,
-  todosDb,
-  children,
-}: TodosProviderProps) => {
-  const listId = listDb._id;
+export const TodosProvider = ({ children }: TodosProviderProps) => {
   const { setExecutionTimeout, clearTimeoutById } = useExecutionTimeout();
 
-  const [todos, setTodos] = useState(todosDb);
+  const [list, setList] = useState({} as List);
+  const [todos, setTodos] = useState([] as Todo[]);
   const [currentTodo, setCurrentTodo] = useState({} as Todo);
   const [newTodo, setNewTodo] = useState({} as Todo);
   const [isTodoDetailOpen, setIsTodoDetailOpen] = useState(false);
+
+  const handleSetTodos = (tds: Todo[]) => {
+    setTodos(tds);
+  };
+
+  const handleSetList = (lst: List) => {
+    setList(lst);
+  };
 
   const handleOpenSlideOver = (todo: Todo) => (e: GenericEvent) => {
     e.stopPropagation();
@@ -133,7 +140,7 @@ export const TodosProvider = ({
         completeDisabled: false,
         description: '',
         createdAt: new Date().toISOString(),
-        listId,
+        listId: list.id,
         title,
       } as Todo;
 
@@ -145,7 +152,7 @@ export const TodosProvider = ({
 
       setTodos([...todosCopy, response]);
     }
-  }, [listId, newTodo, todos]);
+  }, [list.id, newTodo, todos]);
 
   const handleKeyPressAdd: KeyboardEventHandler<HTMLTextAreaElement> =
     useCallback(
@@ -207,7 +214,9 @@ export const TodosProvider = ({
       todosToComplete,
       completeTodos,
       newTodo,
-      selectedList: listDb,
+      selectedList: list,
+      handleSetTodos,
+      handleSetList,
       currentTodo,
       isTodoDetailOpen,
       handleOpenSlideOver,
@@ -230,7 +239,7 @@ export const TodosProvider = ({
       handleCompleteTodo,
       handleKeyPressAdd,
       isTodoDetailOpen,
-      listDb,
+      list,
       newTodo,
       onBlurUpdateTodo,
       todosToComplete,

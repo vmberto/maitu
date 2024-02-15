@@ -9,7 +9,7 @@ import {
   useState,
 } from 'react';
 
-import { add, remove, updateOrder } from '@/src/actions/lists.service';
+import { add, remove, update, updateOrder } from '@/src/actions/lists.service';
 import type { GenericEvent } from '@/types/events';
 import type { List } from '@/types/main';
 
@@ -23,7 +23,10 @@ export type ListsState = {
 
   updateListsOrder: (result: DropResult) => Promise<void>;
   handleAddList: (newList: List) => Promise<void>;
-  handleUpdateList: (listId: string, updateList: List) => Promise<void>;
+  handleUpdateList: (
+    listId: string,
+    updateList: Partial<List>,
+  ) => Promise<void>;
   handleDeleteList: (listId: string) => Promise<void>;
 };
 
@@ -65,7 +68,9 @@ export const ListsProvider = ({ listsDb, children }: ListsProviderProps) => {
     [lists],
   );
 
-  const handleUpdateList = async () => {};
+  const handleUpdateList = async (id: string, updatedData: Partial<List>) => {
+    await update(id, updatedData);
+  };
 
   const updateListsOrder = useCallback(
     async (result: DropResult) => {

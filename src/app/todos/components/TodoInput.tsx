@@ -1,3 +1,5 @@
+'use client';
+
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 import { Menu } from '@headlessui/react';
@@ -46,7 +48,7 @@ const TodoInputComponent = (
   };
 
   return (
-    <div className="flex items-center border-t-2 py-3">
+    <div className="flex items-center border-t-2 border-gray-100 py-3">
       <div
         onClick={handleClickCompleteTodo}
         className="relative mr-2 cursor-pointer

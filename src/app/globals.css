@@ -3,7 +3,6 @@
 @tailwind utilities;
 
 body {
-  background-color: #EFF3FA;
   overscroll-behavior: none;
 }
 

@@ -3,7 +3,7 @@ import type { ObjectId } from 'mongodb';
 import type { Colors } from '@/src/components/ColorPicker';
 
 export interface UserObject {
-  _id: ObjectId | undefined;
+  _id?: ObjectId;
   username: string;
   email: string;
   password: string;
@@ -21,10 +21,10 @@ export interface List {
 }
 
 export interface Todo {
-  _id: ObjectId | undefined;
+  _id?: ObjectId | string;
   title: string;
 
-  listId: ObjectId;
+  listId: ObjectId | string;
 
   description: string;
 
@@ -33,10 +33,8 @@ export interface Todo {
 
   location?: string;
 
-  index: number;
+  index?: number;
 
   createdAt: string;
-  completedAt: string;
+  completedAt?: string;
 }
-
-export type TodosResponse = List & { todos: Todo[] };

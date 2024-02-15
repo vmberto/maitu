@@ -21,8 +21,8 @@ export const stopPropagationFn = (e: GenericEvent) => {
   e.stopPropagation();
 };
 
-export function updateSingleElement<T extends { _id: ObjectId | undefined }>(
-  elId: ObjectId | undefined,
+export function updateSingleElement<T extends { _id?: ObjectId | string }>(
+  elId: ObjectId | string,
   elementsArray: T[],
   setState: Dispatch<SetStateAction<T[]>>,
   fieldsToUpdate: Record<string, unknown>,

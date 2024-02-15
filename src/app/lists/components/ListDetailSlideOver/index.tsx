@@ -1,66 +1,64 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { DeleteList } from '@/src/app/lists/components/ListDetailSlideOver/DeleteList';
 import { useLists } from '@/src/app/lists/provider';
 import { ColorPicker } from '@/src/components/ColorPicker';
 import SlideOver from '@/src/components/SlideOver';
+import type { InputChangeEventHandler } from '@/types/events';
+import type { List } from '@/types/main';
 
 export const ListDetailSlideOver = () => {
   const {
     currentList: list,
     isListDetailOpen,
     handleCloseSlideOver,
+    handleUpdateList,
   } = useLists();
 
-  // const {handleUpdateList} = useLists();
   const [color, setColor] = useState(list.color);
-  // const [listTitle, setListTitle] = useState(list.title);
+  const [listTitle, setListTitle] = useState(list.title);
 
-  // useEffect(() => {
-  //   setListTitle(list.title);
-  // }, [list]);
+  useEffect(() => {
+    setListTitle(list.title);
+    setColor(list.color);
+  }, [list]);
 
-  // const handleInputChange = (e: InputChangeEventHandler) => {
-  //   const { value } = e.target;
-  //   setListTitle(value);
-  // };
-  //
-  // const handleDefineTitle = () => {
-  //   if (listTitle) {
-  //     // setDefinedListTitle(listTitle);
-  //   } else {
-  //     setListTitle(list.title);
-  //   }
-  // };
+  const handleInputChange = (e: InputChangeEventHandler) => {
+    const { value } = e.target;
+    setListTitle(value);
+  };
 
-  // @Todo refactor 100%
-  // useEffect(() => {
-  //     (async () => {
-  //         await handleUpdateList(list.id, {title: definedListTitle, color} as List);
-  //     })();
-  // }, [color, definedListTitle]);
-
-  // <input
-  //   id="title-input"
-  //   maxLength={30}
-  //   value={listTitle}
-  //   className="w-full leading-7 focus:outline-0"
-  //   onChange={handleInputChange}
-  //   onBlur={handleDefineTitle}
-  //   onKeyPress={(e) => {
-  //     if (e.key === 'Enter') {
-  //       handleDefineTitle();
-  //     }
-  //   }}
-  // />
+  const updateList = async (listData: Partial<List>) => {
+    await handleUpdateList(list._id, listData);
+  };
 
   return (
     <SlideOver
-      title={list.title}
+      title={
+        <input
+          id="title-input"
+          maxLength={30}
+          value={listTitle}
+          className="w-full leading-7 focus:outline-0"
+          onChange={handleInputChange}
+          onBlur={() => updateList({ title: listTitle })}
+          onKeyPress={async (e) => {
+            if (e.key === 'Enter') {
+              await updateList({ title: listTitle });
+            }
+          }}
+        />
+      }
       open={isListDetailOpen}
       onClose={handleCloseSlideOver}
     >
-      <ColorPicker color={color} setColor={setColor} />
+      <ColorPicker
+        color={color}
+        setColor={async (c) => {
+          await updateList({ color: c });
+          setColor(c);
+        }}
+      />
 
       <DeleteList listTitle={list.title} id={list._id} />
     </SlideOver>

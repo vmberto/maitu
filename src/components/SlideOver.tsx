@@ -12,7 +12,7 @@ type ModalProps = {
 };
 
 const SlideOver = ({ title, open, onClose, children }: ModalProps) => {
-  const swipe = useSwipeEvents({
+  const swipeActions = useSwipeEvents({
     onSwipedDown: () => {
       onClose();
     },
@@ -48,12 +48,9 @@ const SlideOver = ({ title, open, onClose, children }: ModalProps) => {
                 <Dialog.Panel className="pointer-events-auto relative w-screen max-w-2xl">
                   <div className="mt-20 flex h-full flex-col overflow-y-scroll bg-white pb-6 shadow-xl">
                     <div
-                      className="z-10 mb-5 flex w-full border-b-2 bg-white px-4 pb-3 pt-4 align-baseline sm:px-6"
-                      {...swipe}
+                      className="z-10 mb-5 flex w-full flex-row-reverse border-b-2 bg-white px-4 pb-3 pt-4 align-baseline sm:px-6"
+                      {...swipeActions}
                     >
-                      <Dialog.Title className="grow text-lg font-medium text-gray-900">
-                        {title}
-                      </Dialog.Title>
                       <button
                         type="button"
                         className="ml-auto rounded-md text-gray-600 hover:text-gray-400 focus:outline-none focus:ring-2 focus:ring-white"
@@ -64,6 +61,9 @@ const SlideOver = ({ title, open, onClose, children }: ModalProps) => {
                         <span className="sr-only">Close panel</span>
                         <XMarkIcon className="size-8" aria-hidden="true" />
                       </button>
+                      <Dialog.Title className="grow text-lg font-medium text-gray-900">
+                        {title}
+                      </Dialog.Title>
                     </div>
                     <div className="relative mb-40 flex-1 px-4 sm:px-6">
                       {children}

@@ -1,17 +1,16 @@
-import { PlayCircleIcon } from '@heroicons/react/24/outline';
-import { CheckCircleIcon } from '@heroicons/react/24/solid';
+'use client';
+
 import React, { useEffect, useState } from 'react';
 
-import { DescriptionSection } from '@/src/app/todos/components/sections/DescriptionSection';
-import { InputSection } from '@/src/app/todos/components/sections/InputSection';
+import { DescriptionSection } from '@/src/app/todos/components/TodoDetailSlideOver/components/DescriptionSection';
+import { InputSection } from '@/src/app/todos/components/TodoDetailSlideOver/components/InputSection';
 import {
   Section,
   SectionSelect,
-} from '@/src/app/todos/components/sections/SectionSelect';
+} from '@/src/app/todos/components/TodoDetailSlideOver/components/SectionSelect';
+import { TodoDetailTitle } from '@/src/app/todos/components/TodoDetailSlideOver/components/TodoDetailTitle';
 import { useTodos } from '@/src/app/todos/provider';
 import SlideOver from '@/src/components/SlideOver';
-import { HexColors } from '@/src/lib/colors';
-import { formatDate } from '@/src/lib/functions';
 
 export const TodoDetailSlideOver = () => {
   const {
@@ -37,27 +36,7 @@ export const TodoDetailSlideOver = () => {
 
   return (
     <SlideOver
-      title={
-        <>
-          {currentTodo?.completeDisabled ? (
-            <CheckCircleIcon
-              className="mb-1 mr-1 inline size-6"
-              color="#5aee5c"
-            />
-          ) : (
-            <PlayCircleIcon
-              className="mb-1 mr-1 inline size-6"
-              color={HexColors.get('primary')}
-            />
-          )}
-          <div className="inline">{currentTodo?.title}</div>
-          {currentTodo?.createdAt && (
-            <div className="mt-2 flex flex-col gap-2.5 text-sm text-gray-500">
-              {formatDate(currentTodo?.createdAt)}
-            </div>
-          )}
-        </>
-      }
+      title={<TodoDetailTitle currentTodo={currentTodo} />}
       open={isTodoDetailOpen}
       onClose={handleCloseSlideOver}
     >
@@ -67,6 +46,7 @@ export const TodoDetailSlideOver = () => {
           updateTodoData={updateTodoData}
         />
       )}
+
       {selectedSections.includes(Section.LOCATION) && (
         <InputSection
           todoData={currentTodo}
@@ -75,6 +55,7 @@ export const TodoDetailSlideOver = () => {
           propertyName="location"
         />
       )}
+
       <SectionSelect
         selectedSections={selectedSections}
         setSection={setSection}

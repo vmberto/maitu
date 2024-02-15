@@ -6,7 +6,7 @@ import { revalidatePath } from 'next/cache';
 import { getSessionServerSide } from '@/src/app/api/auth/[...nextauth]/auth-options';
 import { json } from '@/src/lib/functions';
 import { getMongoDb } from '@/src/lib/mongodb';
-import { type List } from '@/types/main';
+import type { List } from '@/types/main';
 
 export const get = async () => {
   const authSession = await getSessionServerSide();
@@ -26,6 +26,27 @@ export const get = async () => {
     .toArray();
 };
 
+export const getById = async (id: string): Promise<List> => {
+  const authSession = await getSessionServerSide();
+
+  if (!authSession) {
+    throw Error();
+  }
+
+  const mongo = await getMongoDb();
+  return (await mongo
+    .collection('lists')
+    .aggregate([
+      {
+        $match: {
+          _id: new ObjectId(id),
+          owner: new ObjectId(authSession.user._id),
+        },
+      },
+    ])
+    .next()) as Promise<List>;
+};
+
 export const add = async (list: List): Promise<List> => {
   const authSession = await getSessionServerSide();
 
@@ -43,13 +64,13 @@ export const add = async (list: List): Promise<List> => {
   return json({ ...list, _id: response.insertedId });
 };
 
-export const update = async (listId: string, updatedList: List) => {
+export const update = async (listId: string, updatedData: Partial<List>) => {
   const mongo = await getMongoDb();
 
   revalidatePath('/lists');
   return mongo
     .collection('lists')
-    .updateOne({ _id: new ObjectId(listId) }, updatedList);
+    .updateOne({ _id: new ObjectId(listId) }, { $set: updatedData });
 };
 
 export const remove = async (listId: string) => {

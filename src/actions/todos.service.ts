@@ -6,9 +6,9 @@ import { revalidatePath } from 'next/cache';
 import { getSessionServerSide } from '@/src/app/api/auth/[...nextauth]/auth-options';
 import { json } from '@/src/lib/functions';
 import { getMongoDb } from '@/src/lib/mongodb';
-import type { Todo, TodosResponse } from '@/types/main';
+import type { Todo } from '@/types/main';
 
-export const getListTodos = async (listId: string): Promise<TodosResponse> => {
+export const get = async (listId: string): Promise<Todo[]> => {
   const authSession = await getSessionServerSide();
 
   if (!authSession) {
@@ -16,49 +16,16 @@ export const getListTodos = async (listId: string): Promise<TodosResponse> => {
   }
 
   const mongo = await getMongoDb();
-  return (await mongo
-    .collection('lists')
-    .aggregate([
+  return mongo
+    .collection('todos')
+    .aggregate<Todo>([
       {
         $match: {
-          _id: new ObjectId(listId),
-          owner: new ObjectId(authSession.user._id),
+          listId: new ObjectId(listId),
         },
       },
-      {
-        $lookup: {
-          from: 'todos',
-          localField: '_id',
-          foreignField: 'listId',
-          as: 'todos',
-        },
-      },
-      // {
-      //   $project: {
-      //     _id: 1,
-      //     title: 1,
-      //     color: 1,
-      //     createdAt: 1,
-      //     index: 1,
-      //     owner: 1,
-      //     doingTodos: {
-      //       $filter: {
-      //         input: '$todos',
-      //         as: 'todo',
-      //         cond: { $eq: ['$$todo.complete', false] },
-      //       },
-      //     },
-      //     completeTodos: {
-      //       $filter: {
-      //         input: '$todos',
-      //         as: 'todo',
-      //         cond: { $eq: ['$$todo.complete', true] },
-      //       },
-      //     },
-      //   },
-      // },
     ])
-    .next()) as Promise<TodosResponse>;
+    .toArray();
 };
 
 export const add = async (todo: Todo) => {

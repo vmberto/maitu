@@ -6,7 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/lists/provider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/lists/provider.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,7 +34,7 @@
     "git-widget-placeholder": "main",
     "javascript.nodejs.core.library.configured.version": "18.18.2",
     "javascript.nodejs.core.library.typings.version": "18.18.2",
-    "last_opened_file_path": "/Users/vmberto/Documents/maitu/my-todo-app",
+    "last_opened_file_path": "/Users/vmberto/Documents/maitu/src/app/todos/components",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.standard": "true",
     "node.js.detected.package.tslint": "true",
@@ -52,18 +51,18 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/app/todos/components" />
+      <recent name="$PROJECT_DIR$/src/app/todos/components/Loading" />
       <recent name="$PROJECT_DIR$/src/app/api" />
       <recent name="$PROJECT_DIR$/src/app/api/lists" />
       <recent name="$PROJECT_DIR$/src" />
-      <recent name="$PROJECT_DIR$/src/pages/api/todos" />
-      <recent name="$PROJECT_DIR$/src/api/services" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src" />
+      <recent name="$PROJECT_DIR$/src/app/todos/components/TodoDetailSlideOver" />
       <recent name="$PROJECT_DIR$/src/app/lists" />
       <recent name="$PROJECT_DIR$/src/app/todos" />
       <recent name="$PROJECT_DIR$/public/icons" />
-      <recent name="$PROJECT_DIR$/public" />
-      <recent name="$PROJECT_DIR$/src/app" />
     </key>
     <key name="es6.move.members.recent.items">
       <recent name="$PROJECT_DIR$/src/app/lists/components/ListsContainer.tsx" />
@@ -127,11 +126,17 @@
       <workItem from="1705952830017" duration="12000" />
       <workItem from="1705952842591" duration="12542000" />
       <workItem from="1706759764848" duration="19968000" />
+      <workItem from="1707257866554" duration="17166000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+    <option name="exactExcludedFiles">
+      <list>
+        <option value="$PROJECT_DIR$/public/sw.js" />
+      </list>
+    </option>
   </component>
   <component name="UnknownFeatures">
     <option featureType="com.intellij.fileTypeFactory" implementationName="*.key" />

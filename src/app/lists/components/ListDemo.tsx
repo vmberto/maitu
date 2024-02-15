@@ -31,9 +31,9 @@ export const ListDemo = ({ list }: ListDemoProps) => {
       >
         <div
           id={list._id}
-          className={`border-${list.color} flex cursor-pointer
-         items-center rounded-md border-l-detail bg-white p-4 align-middle font-semibold
-         shadow-sm transition-all active:opacity-50 betterhover:hover:border-l-detail-hover`}
+          className={`border-${list.color} flex items-center rounded-md border-2 
+          border-l-8 border-y-gray-100 border-r-gray-100 p-4 align-middle font-semibold 
+          drop-shadow-sm transition-all hover:border-l-detail-hover active:opacity-50`}
         >
           <Typography as="h2">{list.title}</Typography>
           <Menu as="div" className="relative ml-auto inline-block text-left">
