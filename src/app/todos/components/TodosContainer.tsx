@@ -1,15 +1,29 @@
-'use server';
+'use client';
 
-import * as TodosService from '@/src/actions/todos.service';
+import React from 'react';
+
+import { CompleteTodos } from '@/src/app/todos/components/CompleteTodos';
+import { Header } from '@/src/app/todos/components/Header';
+import { TodoDetailSlideOver } from '@/src/app/todos/components/TodoDetailSlideOver';
 import { Todos } from '@/src/app/todos/components/Todos';
-import { json } from '@/src/lib/functions';
+import { TodosProvider } from '@/src/app/todos/provider';
+import type { List, Todo } from '@/types/main';
 
-type TodosProps = {
-  listId: string;
+type TodosContainerProps = {
+  list: List;
+  todos: Todo[];
 };
 
-export const TodosContainer = async ({ listId }: TodosProps) => {
-  const todos = await TodosService.get(listId);
+export const TodosContainer = ({ list, todos }: TodosContainerProps) => (
+  <main className="mx-auto my-0 h-full max-w-xl">
+    <TodosProvider listDb={list} todosDb={todos}>
+      <Header />
 
-  return <Todos todos={json(todos)} />;
-};
+      <Todos />
+
+      <CompleteTodos />
+
+      <TodoDetailSlideOver />
+    </TodosProvider>
+  </main>
+);

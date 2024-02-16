@@ -1,23 +1,13 @@
-'use client';
-
-import { useEffect } from 'react';
-
 import { TodoInput } from '@/src/app/todos/components/TodoInput';
 import { useTodos } from '@/src/app/todos/provider';
 import { Typography } from '@/src/components/Typography';
 import { stopPropagationFn } from '@/src/lib/functions';
-import type { Todo } from '@/types/main';
 
-type TodosProps = {
-  todos: Todo[];
-};
-
-export const Todos = ({ todos }: TodosProps) => {
+export const Todos = () => {
   const {
     todosToComplete,
     handleCompleteTodo,
     updateTodo,
-    handleSetTodos,
     handleInputFocus,
     handleChangeExistingTodo,
     newTodo,
@@ -25,10 +15,6 @@ export const Todos = ({ todos }: TodosProps) => {
     addTodo,
     handleKeyPressAdd,
   } = useTodos();
-
-  useEffect(() => {
-    handleSetTodos(todos);
-  }, [todos, handleSetTodos]);
 
   return (
     <div id="todos" className="mb-28 px-5 pb-5">

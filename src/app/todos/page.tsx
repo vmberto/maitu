@@ -1,33 +1,17 @@
-import React, { Suspense } from 'react';
+import React from 'react';
 
-import { CompleteTodos } from '@/src/app/todos/components/CompleteTodos';
-import { HeaderContainer } from '@/src/app/todos/components/HeaderContainer';
-import HeaderLoading from '@/src/app/todos/components/Loading/HeaderLoading';
-import TodosLoading from '@/src/app/todos/components/Loading/TodosLoading';
-import { TodoDetailSlideOver } from '@/src/app/todos/components/TodoDetailSlideOver';
+import * as TodosService from '@/src/actions/todos.service';
 import { TodosContainer } from '@/src/app/todos/components/TodosContainer';
-import { TodosProvider } from '@/src/app/todos/provider';
+import { json } from '@/src/lib/functions';
 
 type TodosPageProps = {
   searchParams: { listId: string };
 };
 
 export default async function TodosPage({ searchParams }: TodosPageProps) {
-  return (
-    <TodosProvider>
-      <main className="mx-auto my-0 h-full max-w-xl">
-        <Suspense fallback={<HeaderLoading />}>
-          <HeaderContainer listId={searchParams.listId} />
-        </Suspense>
-
-        <Suspense fallback={<TodosLoading />}>
-          <TodosContainer listId={searchParams.listId} />
-        </Suspense>
-
-        <CompleteTodos />
-
-        <TodoDetailSlideOver />
-      </main>
-    </TodosProvider>
+  const { todos, ...list } = await TodosService.getListTodos(
+    searchParams.listId,
   );
+
+  return <TodosContainer list={json(list)} todos={json(todos)} />;
 }

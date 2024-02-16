@@ -6,6 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/next.config.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tailwind.config.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/types/events.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/types/main.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/types/next-auth.d.ts" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,43 +31,43 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "main",
-    "javascript.nodejs.core.library.configured.version": "18.18.2",
-    "javascript.nodejs.core.library.typings.version": "18.18.2",
-    "last_opened_file_path": "/Users/vmberto/Documents/maitu/src/app/todos/components",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.standard": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.standard": "",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "prettier.import.notification.dismissed": "true",
-    "prettierjs.PrettierConfiguration.Package": "/Users/vmberto/Documents/my-todo-app/node_modules/prettier",
-    "settings.editor.selected.configurable": "actions.on.save",
-    "ts.external.directory.path": "/Users/vmberto/Documents/maitu/node_modules/typescript/lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;javascript.nodejs.core.library.configured.version&quot;: &quot;18.18.2&quot;,
+    &quot;javascript.nodejs.core.library.typings.version&quot;: &quot;18.18.2&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/vmberto/Documents/maitu/my-todo-app&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.standard&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.standard&quot;: &quot;&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;prettier.import.notification.dismissed&quot;: &quot;true&quot;,
+    &quot;prettierjs.PrettierConfiguration.Package&quot;: &quot;/Users/vmberto/Documents/my-todo-app/node_modules/prettier&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;actions.on.save&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/Users/vmberto/Documents/maitu/node_modules/typescript/lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/src/app/todos/components" />
-      <recent name="$PROJECT_DIR$/src/app/todos/components/Loading" />
       <recent name="$PROJECT_DIR$/src/app/api" />
       <recent name="$PROJECT_DIR$/src/app/api/lists" />
       <recent name="$PROJECT_DIR$/src" />
+      <recent name="$PROJECT_DIR$/src/pages/api/todos" />
+      <recent name="$PROJECT_DIR$/src/api/services" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/src" />
-      <recent name="$PROJECT_DIR$/src/app/todos/components/TodoDetailSlideOver" />
       <recent name="$PROJECT_DIR$/src/app/lists" />
       <recent name="$PROJECT_DIR$/src/app/todos" />
       <recent name="$PROJECT_DIR$/public/icons" />
+      <recent name="$PROJECT_DIR$/public" />
+      <recent name="$PROJECT_DIR$/src/app" />
     </key>
     <key name="es6.move.members.recent.items">
       <recent name="$PROJECT_DIR$/src/app/lists/components/ListsContainer.tsx" />
@@ -126,17 +131,11 @@
       <workItem from="1705952830017" duration="12000" />
       <workItem from="1705952842591" duration="12542000" />
       <workItem from="1706759764848" duration="19968000" />
-      <workItem from="1707257866554" duration="17166000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
-    <option name="exactExcludedFiles">
-      <list>
-        <option value="$PROJECT_DIR$/public/sw.js" />
-      </list>
-    </option>
   </component>
   <component name="UnknownFeatures">
     <option featureType="com.intellij.fileTypeFactory" implementationName="*.key" />

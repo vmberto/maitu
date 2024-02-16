@@ -6,9 +6,9 @@ import { revalidatePath } from 'next/cache';
 import { getSessionServerSide } from '@/src/app/api/auth/[...nextauth]/auth-options';
 import { json } from '@/src/lib/functions';
 import { getMongoDb } from '@/src/lib/mongodb';
-import type { Todo } from '@/types/main';
+import type { Todo, TodosResponse } from '@/types/main';
 
-export const get = async (listId: string): Promise<Todo[]> => {
+export const getListTodos = async (listId: string): Promise<TodosResponse> => {
   const authSession = await getSessionServerSide();
 
   if (!authSession) {
@@ -16,16 +16,25 @@ export const get = async (listId: string): Promise<Todo[]> => {
   }
 
   const mongo = await getMongoDb();
-  return mongo
-    .collection('todos')
-    .aggregate<Todo>([
+  return (await mongo
+    .collection('lists')
+    .aggregate([
       {
         $match: {
-          listId: new ObjectId(listId),
+          _id: new ObjectId(listId),
+          owner: new ObjectId(authSession.user._id),
+        },
+      },
+      {
+        $lookup: {
+          from: 'todos',
+          localField: '_id',
+          foreignField: 'listId',
+          as: 'todos',
         },
       },
     ])
-    .toArray();
+    .next()) as Promise<TodosResponse>;
 };
 
 export const add = async (todo: Todo) => {

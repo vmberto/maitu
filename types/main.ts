@@ -38,3 +38,5 @@ export interface Todo {
   createdAt: string;
   completedAt?: string;
 }
+
+export type TodosResponse = List & { todos: Todo[] };
