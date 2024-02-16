@@ -1,3 +1,5 @@
+'use client';
+
 import type { KeyboardEventHandler, ReactNode } from 'react';
 import {
   createContext,

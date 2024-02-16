@@ -1,3 +1,5 @@
+'use client';
+
 import { TodoInput } from '@/src/app/todos/components/TodoInput';
 import { useTodos } from '@/src/app/todos/provider';
 import { Typography } from '@/src/components/Typography';
