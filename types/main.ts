@@ -14,6 +14,7 @@ export interface List {
   id: string;
   title: string;
   color: Colors;
+  emoji: string;
 
   index: number;
 

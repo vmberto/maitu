@@ -6,12 +6,13 @@ import Link from 'next/link';
 import { useTodos } from '@/src/app/todos/provider';
 import { FontColor, HexColors } from '@/src/lib/colors';
 import { stopPropagationFn } from '@/src/lib/functions';
+import { clickStyle } from '@/src/lib/style-consts';
 
 export const Header = () => {
   const { selectedList } = useTodos();
 
   return (
-    <div className="flex items-center py-2">
+    <div className={`${clickStyle} flex items-center py-2`}>
       <Link
         className="flex h-12 pl-5"
         onClick={stopPropagationFn}
@@ -23,7 +24,7 @@ export const Header = () => {
         />
       </Link>
       <h1
-        className={`pr-5 text-2xl font-bold ${FontColor.get(
+        className={`cursor-default pr-5 text-2xl font-bold ${FontColor.get(
           selectedList.color,
         )}`}
       >

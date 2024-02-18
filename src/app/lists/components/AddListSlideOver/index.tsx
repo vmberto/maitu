@@ -1,7 +1,8 @@
 import { useState } from 'react';
 
 import { Button } from '@/src/components/Button';
-import { ColorPicker, Colors } from '@/src/components/ColorPicker';
+import { Colors } from '@/src/components/ColorPicker';
+import { EmojiPickerComponent } from '@/src/components/EmojiPicker';
 import { Input } from '@/src/components/Input';
 import SlideOver from '@/src/components/SlideOver';
 import type { GenericEvent, InputChangeEventHandler } from '@/types/events';
@@ -20,6 +21,7 @@ export const AddListSlideOver = ({
 }: AddListSlideOverProps) => {
   const [listTitle, setListTitle] = useState('');
   const [color, setColor] = useState(Colors.PRIMARY);
+  const [emoji, setEmoji] = useState('');
 
   const handleInputChange = (e: InputChangeEventHandler) => {
     const { value } = e.target;
@@ -28,10 +30,11 @@ export const AddListSlideOver = ({
 
   const handleSubmit = async (e: GenericEvent) => {
     e.preventDefault();
-    if (listTitle.length) {
+    if (listTitle.length && emoji) {
       const newList = {
         title: listTitle,
         color,
+        emoji,
         createdAt: new Date().toISOString(),
       } as List;
       handleAddList(newList);
@@ -48,8 +51,10 @@ export const AddListSlideOver = ({
           onChange={handleInputChange}
           label="List Name"
         />
-        <ColorPicker color={color} setColor={setColor} />
-        <Button type="submit" className="mt-8" color={color} />
+
+        <EmojiPickerComponent emoji={emoji} setEmoji={setEmoji} />
+
+        <Button type="submit" label="Submit" className="mt-8" color={color} />
       </form>
     </SlideOver>
   );

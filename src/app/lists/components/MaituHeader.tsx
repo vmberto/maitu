@@ -1,3 +1,4 @@
+import BarsIcon from '@heroicons/react/16/solid/Bars4Icon';
 import { signOut } from 'next-auth/react';
 
 import { Typography } from '@/src/components/Typography';
@@ -10,10 +11,11 @@ export const MaituHeader = () => (
       </Typography>
       <button
         type="button"
-        className="ml-auto rounded-full border-2 border-primary px-3 py-0.5 text-base text-primary transition hover:bg-primary hover:text-white"
+        className="ml-auto rounded-full px-3 py-0.5 text-base
+        text-primary transition hover:bg-gray-200"
         onClick={() => signOut({ callbackUrl: '/' })}
       >
-        Logout
+        <BarsIcon aria-label="bars" className="size-6" />
       </button>
     </div>
   </header>

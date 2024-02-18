@@ -13,7 +13,7 @@ import { add, remove, update } from '@/src/actions/todos.service';
 import { useExecutionTimeout } from '@/src/hooks/useExecutionTimeout';
 import { updateSingleElement } from '@/src/lib/functions';
 import type { GenericEvent, TextareaChangeEventHandler } from '@/types/events';
-import { type List, type Todo } from '@/types/main';
+import type { List, Todo } from '@/types/main';
 
 export interface TodosState {
   todosToComplete: Todo[];

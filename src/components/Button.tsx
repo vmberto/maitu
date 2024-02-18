@@ -8,7 +8,7 @@ type ButtonProps = HTMLProps<HTMLButtonElement> & {
   color: string;
 };
 
-export const Button = ({ color, ...props }: ButtonProps) => {
+export const Button = ({ color, label, ...props }: ButtonProps) => {
   return (
     <button
       {...props}
@@ -21,7 +21,7 @@ export const Button = ({ color, ...props }: ButtonProps) => {
         active:bg-${color}-800 active:shadow-lg transition duration-150
         ease-in-out`}
     >
-      Submit
+      {label}
     </button>
   );
 };

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { DeleteList } from '@/src/app/lists/components/ListDetailSlideOver/DeleteList';
 import { useLists } from '@/src/app/lists/provider';
-import { ColorPicker } from '@/src/components/ColorPicker';
+import { EmojiPickerComponent } from '@/src/components/EmojiPicker';
 import SlideOver from '@/src/components/SlideOver';
 import type { InputChangeEventHandler } from '@/types/events';
 import type { List } from '@/types/main';
@@ -15,12 +15,12 @@ export const ListDetailSlideOver = () => {
     handleUpdateList,
   } = useLists();
 
-  const [color, setColor] = useState(list.color);
+  const [emoji, setEmoji] = useState(list.emoji);
   const [listTitle, setListTitle] = useState(list.title);
 
   useEffect(() => {
     setListTitle(list.title);
-    setColor(list.color);
+    setEmoji(list.emoji);
   }, [list]);
 
   const handleInputChange = (e: InputChangeEventHandler) => {
@@ -42,7 +42,7 @@ export const ListDetailSlideOver = () => {
           className="w-full leading-7 focus:outline-0"
           onChange={handleInputChange}
           onBlur={() => updateList({ title: listTitle })}
-          onKeyPress={async (e) => {
+          onKeyDown={async (e) => {
             if (e.key === 'Enter') {
               await updateList({ title: listTitle });
             }
@@ -52,11 +52,11 @@ export const ListDetailSlideOver = () => {
       open={isListDetailOpen}
       onClose={handleCloseSlideOver}
     >
-      <ColorPicker
-        color={color}
-        setColor={async (c) => {
-          await updateList({ color: c });
-          setColor(c);
+      <EmojiPickerComponent
+        emoji={emoji}
+        setEmoji={async (e) => {
+          setEmoji(e);
+          await updateList({ emoji: e });
         }}
       />
 

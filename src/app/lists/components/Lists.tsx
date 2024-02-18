@@ -12,7 +12,7 @@ export const Lists = () => {
   const { updateListsOrder, handleAddList, lists } = useLists();
 
   return (
-    <div className="mx-auto mb-60 mt-0 max-w-2xl p-5">
+    <div className="mx-auto mb-60 mt-0 max-w-xl p-5">
       <DragAndDropWrapper onDragEnd={updateListsOrder}>
         {lists.map((list) => (
           <ListDemo key={list._id} list={list} />

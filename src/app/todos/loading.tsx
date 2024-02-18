@@ -23,7 +23,8 @@ export default function Loading() {
             />
             <div
               className="relative z-10 my-4 block w-full
-                    overflow-hidden rounded bg-gray-300 px-2 py-3 text-base outline-0 focus:outline-none"
+                    overflow-hidden rounded bg-gray-300 px-2 py-3
+                    text-base outline-0 focus:outline-none"
             />
           </div>
         ))}
