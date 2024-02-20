@@ -3,10 +3,10 @@ import React, { type ChangeEvent, useEffect, useRef, useState } from 'react';
 import type { GenericEvent } from '@/types/events';
 import type { Todo } from '@/types/main';
 
-interface DescriptionSectionProps {
+type DescriptionSectionProps = {
   updateTodoData: (todo: Todo) => (e: GenericEvent) => Promise<void>;
   todoData: Todo;
-}
+};
 
 export const DescriptionSection = ({
   todoData,

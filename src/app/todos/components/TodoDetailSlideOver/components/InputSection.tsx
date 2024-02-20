@@ -3,12 +3,12 @@ import React, { useState } from 'react';
 import type { GenericEvent, InputChangeEventHandler } from '@/types/events';
 import type { Todo } from '@/types/main';
 
-interface InputSectionProps {
+type InputSectionProps = {
   label: string;
   propertyName: keyof Todo;
   updateTodoData: (todo: Todo) => (e: GenericEvent) => Promise<void>;
   todoData: Todo;
-}
+};
 
 export const InputSection = ({
   todoData,

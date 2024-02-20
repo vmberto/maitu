@@ -20,17 +20,16 @@ export const Todos = () => {
 
   return (
     <div id="todos" className="mb-28 px-5 pb-5">
-      {todosToComplete.map((t) => (
+      {todosToComplete.map((todo) => (
         <TodoInput
-          key={t._id?.toString() || t.createdAt.toString()}
-          id={t._id?.toString()}
-          value={t.title}
-          todoData={t}
+          key={todo.createdAt}
+          todoData={todo}
+          value={todo.title}
           handleCompleteTodo={handleCompleteTodo}
           onClick={stopPropagationFn}
-          onBlur={updateTodo(t)}
-          onFocus={handleInputFocus(t)}
-          onChange={handleChangeExistingTodo(t)}
+          onBlur={updateTodo(todo)}
+          onFocus={handleInputFocus(todo)}
+          onChange={handleChangeExistingTodo(todo)}
         />
       ))}
       <TodoInput

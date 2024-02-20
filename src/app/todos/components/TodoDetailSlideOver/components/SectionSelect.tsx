@@ -20,10 +20,10 @@ export const sections = [
   },
 ];
 
-interface SectionSelectProps {
+type SectionSelectProps = {
   selectedSections: Section[];
   setSection: Dispatch<SetStateAction<Section[]>>;
-}
+};
 
 export function SectionSelect({
   selectedSections,
