@@ -12,12 +12,12 @@ export const ListDetailSlideOver = () => {
   const { handleUpdateList } = useLists();
   const { modalData: list, handleCloseSlideOver } = useModals();
 
-  const [emoji, setEmoji] = useState(list.emoji);
-  const [listTitle, setListTitle] = useState(list.title);
+  const [emoji, setEmoji] = useState(list?.emoji);
+  const [listTitle, setListTitle] = useState(list?.title);
 
   useEffect(() => {
-    setListTitle(list.title);
-    setEmoji(list.emoji);
+    setListTitle(list?.title);
+    setEmoji(list?.emoji);
   }, [list]);
 
   const handleInputChange = (e: InputChangeEventHandler) => {
@@ -26,7 +26,7 @@ export const ListDetailSlideOver = () => {
   };
 
   const updateList = async (listData: Partial<List>) => {
-    await handleUpdateList(list._id, listData);
+    await handleUpdateList(list?._id, listData);
   };
 
   return (
@@ -57,7 +57,7 @@ export const ListDetailSlideOver = () => {
         }}
       />
 
-      <DeleteList listTitle={list.title} id={list._id} />
+      <DeleteList listTitle={list?.title} id={list?._id} />
     </SlideOver>
   );
 };

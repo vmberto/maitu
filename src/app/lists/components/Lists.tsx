@@ -29,7 +29,7 @@ export const Lists = () => {
         }}
       />
 
-      {modalData && <ListDetailSlideOver />}
+      <ListDetailSlideOver />
 
       <AddListSlideOver
         open={open}

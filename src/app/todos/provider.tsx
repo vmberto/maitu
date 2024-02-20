@@ -12,7 +12,7 @@ import {
 import { add, remove, update } from '@/src/actions/todos.service';
 import { useExecutionTimeout } from '@/src/hooks/useExecutionTimeout';
 import { updateSingleElement } from '@/src/lib/functions';
-import type { GenericEvent, TextareaChangeEventHandler } from '@/types/events';
+import type { TextareaChangeEventHandler } from '@/types/events';
 import type { List, Todo } from '@/types/main';
 
 export interface TodosState {
@@ -21,10 +21,6 @@ export interface TodosState {
   newTodo: Todo;
   currentTodo: Todo;
   selectedList: List;
-  isTodoDetailOpen: boolean;
-
-  handleOpenSlideOver: (todo: Todo) => (e: GenericEvent) => void;
-  handleCloseSlideOver: () => void;
 
   handleChangeExistingTodo: (
     t: Todo,
@@ -58,17 +54,6 @@ export const TodosProvider = ({
   const [todos, setTodos] = useState(todosDb);
   const [currentTodo, setCurrentTodo] = useState({} as Todo);
   const [newTodo, setNewTodo] = useState({} as Todo);
-  const [isTodoDetailOpen, setIsTodoDetailOpen] = useState(false);
-
-  const handleOpenSlideOver = (todo: Todo) => (e: GenericEvent) => {
-    e.stopPropagation();
-    setCurrentTodo(todo);
-    setIsTodoDetailOpen(true);
-  };
-
-  const handleCloseSlideOver = () => {
-    setIsTodoDetailOpen(false);
-  };
 
   const handleChangeExistingTodo = useCallback(
     (todo: Todo) => (e: TextareaChangeEventHandler) => {
@@ -211,9 +196,6 @@ export const TodosProvider = ({
       newTodo,
       selectedList: listDb,
       currentTodo,
-      isTodoDetailOpen,
-      handleOpenSlideOver,
-      handleCloseSlideOver,
       handleKeyPressAdd,
       addTodo,
       handleChangeExistingTodo,
@@ -231,7 +213,6 @@ export const TodosProvider = ({
       handleChangeNewTodo,
       handleCompleteTodo,
       handleKeyPressAdd,
-      isTodoDetailOpen,
       listDb,
       newTodo,
       onBlurUpdateTodo,

@@ -14,7 +14,7 @@ import React, {
   useRef,
 } from 'react';
 
-import { useTodos } from '@/src/app/todos/provider';
+import { useModals } from '@/src/providers/slideover.provider';
 import { type GenericEvent } from '@/types/events';
 import { type Todo } from '@/types/main';
 
@@ -31,7 +31,7 @@ const TodoInputComponent = (
   ref: ForwardedRef<HTMLTextAreaElement>,
 ) => {
   const textareaRef = useRef({} as HTMLTextAreaElement);
-  const { handleOpenSlideOver } = useTodos();
+  const { handleOpenSlideOver } = useModals();
   useImperativeHandle(ref, () => textareaRef.current);
 
   useEffect(() => {

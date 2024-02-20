@@ -11,33 +11,30 @@ import {
 import { TodoDetailTitle } from '@/src/app/todos/components/TodoDetailSlideOver/components/TodoDetailTitle';
 import { useTodos } from '@/src/app/todos/provider';
 import SlideOver from '@/src/components/SlideOver';
+import { useModals } from '@/src/providers/slideover.provider';
 
 export const TodoDetailSlideOver = () => {
-  const {
-    isTodoDetailOpen,
-    currentTodo,
-    handleCloseSlideOver,
-    updateTodoData,
-  } = useTodos();
+  const { updateTodoData } = useTodos();
+  const { modalData: currentTodo, handleCloseSlideOver } = useModals();
   const [selectedSections, setSection] = useState<Section[]>([]);
 
   useEffect(() => {
     if (
-      currentTodo.description &&
+      currentTodo?.description &&
       !selectedSections.includes(Section.DESCRIPTION)
     ) {
       setSection((prevSections) => [...prevSections, Section.DESCRIPTION]);
     }
 
-    if (currentTodo.location && !selectedSections.includes(Section.LOCATION)) {
+    if (currentTodo?.location && !selectedSections.includes(Section.LOCATION)) {
       setSection((prevSections) => [...prevSections, Section.LOCATION]);
     }
-  }, [currentTodo.description, currentTodo.location, selectedSections]);
+  }, [currentTodo?.description, currentTodo?.location, selectedSections]);
 
   return (
     <SlideOver
       title={<TodoDetailTitle currentTodo={currentTodo} />}
-      open={isTodoDetailOpen}
+      open={!!currentTodo}
       onClose={handleCloseSlideOver}
     >
       {selectedSections.includes(Section.DESCRIPTION) && (
