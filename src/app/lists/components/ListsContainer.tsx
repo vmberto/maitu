@@ -1,18 +1,15 @@
-'use client';
+'use server';
 
+import * as ListsService from '@/src/actions/lists.service';
 import { Lists } from '@/src/app/lists/components/Lists';
-import { MaituHeader } from '@/src/app/lists/components/MaituHeader';
 import { ListsProvider } from '@/src/app/lists/provider';
-import type { List } from '@/types/main';
+import { json } from '@/src/lib/functions';
 
-type ListsContainerProps = {
-  lists: List[];
-};
+export const ListsContainer = async () => {
+  const lists = await ListsService.get();
 
-export const ListsContainer = ({ lists }: ListsContainerProps) => {
   return (
-    <ListsProvider listsDb={lists}>
-      <MaituHeader />
+    <ListsProvider listsDb={json(lists)}>
       <Lists />
     </ListsProvider>
   );

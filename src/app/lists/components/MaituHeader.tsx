@@ -1,3 +1,5 @@
+'use client';
+
 import BarsIcon from '@heroicons/react/16/solid/Bars4Icon';
 import { signOut } from 'next-auth/react';
 

@@ -1,9 +1,16 @@
-import * as ListsService from '@/src/actions/lists.service';
+import { Suspense } from 'react';
+
 import { ListsContainer } from '@/src/app/lists/components/ListsContainer';
-import { json } from '@/src/lib/functions';
+import { MaituHeader } from '@/src/app/lists/components/MaituHeader';
+import ListsLoading from '@/src/app/lists/loading';
 
 export default async function ListsPage() {
-  const lists = await ListsService.get();
-
-  return <ListsContainer lists={json(lists)} />;
+  return (
+    <>
+      <MaituHeader />
+      <Suspense fallback={<ListsLoading />}>
+        <ListsContainer />
+      </Suspense>
+    </>
+  );
 }

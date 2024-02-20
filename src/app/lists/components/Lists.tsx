@@ -1,3 +1,5 @@
+'use client';
+
 import { useState } from 'react';
 
 import { AddListSlideOver } from '@/src/app/lists/components/AddListSlideOver';

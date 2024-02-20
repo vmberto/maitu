@@ -1,3 +1,5 @@
+'use client';
+
 import { type DropResult } from '@hello-pangea/dnd';
 import type { ReactNode } from 'react';
 import {
