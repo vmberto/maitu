@@ -7,7 +7,6 @@ import { TodoDetailSlideOver } from '@/src/app/todos/components/TodoDetailSlideO
 import { Todos } from '@/src/app/todos/components/Todos';
 import { TodosProvider } from '@/src/app/todos/provider';
 import { json } from '@/src/lib/functions';
-import { ModalsProvider } from '@/src/providers/slideover.provider';
 
 type TodosPageProps = {
   searchParams: { listId: string };
@@ -20,17 +19,15 @@ export default async function TodosPage({ searchParams }: TodosPageProps) {
 
   return (
     <TodosProvider listDb={json(list)} todosDb={json(todos)}>
-      <ModalsProvider>
-        <main className="mx-auto my-0 h-full max-w-xl">
-          <Header />
+      <main className="mx-auto my-0 h-full max-w-xl">
+        <Header />
 
-          <Todos />
+        <Todos />
 
-          <CompleteTodos />
+        <CompleteTodos />
 
-          <TodoDetailSlideOver />
-        </main>
-      </ModalsProvider>
+        <TodoDetailSlideOver />
+      </main>
     </TodosProvider>
   );
 }

@@ -5,6 +5,8 @@ import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import type { ReactNode } from 'react';
 
+import { ModalsProvider } from '@/src/providers/slideover.provider';
+
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
@@ -31,7 +33,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="en">
       <head />
       <body className={inter.className}>
-        {children}
+        <ModalsProvider>{children}</ModalsProvider>
         <SpeedInsights />
       </body>
     </html>
