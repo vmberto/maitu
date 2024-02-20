@@ -5,13 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/app/lists/loading.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/lists/components/Loading/ListsLoading.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/lists/components/Lists.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/lists/components/Lists.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/lists/components/ListsContainer.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/lists/components/ListsContainer.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/lists/components/MaituHeader.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/lists/components/MaituHeader.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/lists/loading.tsx" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/lists/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/lists/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/lists/provider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/lists/provider.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -134,7 +131,7 @@
       <workItem from="1706759764848" duration="19968000" />
       <workItem from="1708049832315" duration="9926000" />
       <workItem from="1708228137834" duration="748000" />
-      <workItem from="1708398348568" duration="1032000" />
+      <workItem from="1708398348568" duration="1506000" />
     </task>
     <servers />
   </component>
