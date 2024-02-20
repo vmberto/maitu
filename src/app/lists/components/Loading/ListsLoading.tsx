@@ -8,7 +8,7 @@ export default function ListsLoading() {
           <div key={skeleton} className="mb-2 flex items-center">
             <div
               className="flex h-20 w-full animate-pulse items-center
-          justify-center gap-2 rounded-md border-2 border-gray-300
+          justify-center gap-2 rounded-md border-2 border-gray-100
           bg-gray-300 p-4 align-middle font-semibold
            transition-all active:opacity-30"
             />

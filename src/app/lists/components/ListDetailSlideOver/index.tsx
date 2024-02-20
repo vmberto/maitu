@@ -4,16 +4,13 @@ import { DeleteList } from '@/src/app/lists/components/ListDetailSlideOver/Delet
 import { useLists } from '@/src/app/lists/provider';
 import { EmojiPickerComponent } from '@/src/components/EmojiPicker';
 import SlideOver from '@/src/components/SlideOver';
+import { useModals } from '@/src/providers/slideover.provider';
 import type { InputChangeEventHandler } from '@/types/events';
 import type { List } from '@/types/main';
 
 export const ListDetailSlideOver = () => {
-  const {
-    currentList: list,
-    isListDetailOpen,
-    handleCloseSlideOver,
-    handleUpdateList,
-  } = useLists();
+  const { handleUpdateList } = useLists();
+  const { modalData: list, handleCloseSlideOver } = useModals();
 
   const [emoji, setEmoji] = useState(list.emoji);
   const [listTitle, setListTitle] = useState(list.title);
@@ -49,7 +46,7 @@ export const ListDetailSlideOver = () => {
           }}
         />
       }
-      open={isListDetailOpen}
+      open={!!list}
       onClose={handleCloseSlideOver}
     >
       <EmojiPickerComponent

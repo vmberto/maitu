@@ -12,16 +12,10 @@ import {
 } from 'react';
 
 import { add, remove, update, updateOrder } from '@/src/actions/lists.service';
-import type { GenericEvent } from '@/types/events';
 import type { List } from '@/types/main';
 
 export type ListsState = {
   lists: List[];
-  currentList: List;
-
-  isListDetailOpen: boolean;
-  handleOpenSlideOver: (list: List) => (e: GenericEvent) => void;
-  handleCloseSlideOver: () => void;
 
   updateListsOrder: (result: DropResult) => Promise<void>;
   handleAddList: (newList: List) => Promise<void>;
@@ -41,22 +35,10 @@ const ListsContext = createContext<ListsState>({} as ListsState);
 
 export const ListsProvider = ({ listsDb, children }: ListsProviderProps) => {
   const [lists, setLists] = useState<List[]>([]);
-  const [currentList, setCurrentList] = useState<List>({} as List);
-  const [isListDetailOpen, setIsListDetailOpen] = useState(false);
 
   useEffect(() => {
     setLists(listsDb);
   }, [listsDb]);
-
-  const handleOpenSlideOver = (list: List) => (e: GenericEvent) => {
-    e.stopPropagation();
-    setCurrentList(list);
-    setIsListDetailOpen(true);
-  };
-
-  const handleCloseSlideOver = () => {
-    setIsListDetailOpen(false);
-  };
 
   const handleAddList = useCallback(
     async (newList: List) => {
@@ -102,7 +84,6 @@ export const ListsProvider = ({ listsDb, children }: ListsProviderProps) => {
     async (listId: string) => {
       setLists(lists.filter((list) => list._id !== listId));
       await remove(listId);
-      handleCloseSlideOver();
     },
     [lists],
   );
@@ -110,23 +91,12 @@ export const ListsProvider = ({ listsDb, children }: ListsProviderProps) => {
   const contextValue = useMemo(
     () => ({
       lists,
-      currentList,
-      isListDetailOpen,
-      handleOpenSlideOver,
-      handleCloseSlideOver,
       handleAddList,
       handleDeleteList,
       updateListsOrder,
       handleUpdateList,
     }),
-    [
-      currentList,
-      handleAddList,
-      handleDeleteList,
-      isListDetailOpen,
-      lists,
-      updateListsOrder,
-    ],
+    [handleAddList, handleDeleteList, lists, updateListsOrder],
   );
 
   return (

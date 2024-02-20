@@ -1,3 +1,5 @@
+'use client';
+
 import type { ReactNode } from 'react';
 import { createContext, useContext, useMemo, useState } from 'react';
 
@@ -24,7 +26,7 @@ export const ModalsProvider = ({ children }: ModalProviderProps) => {
   };
 
   const handleCloseSlideOver = () => {
-    setModalData({});
+    setModalData(undefined);
   };
 
   const contextValue = useMemo(

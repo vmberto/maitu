@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { useLists } from '@/src/app/lists/provider';
 import { Input } from '@/src/components/Input';
+import { useModals } from '@/src/providers/slideover.provider';
 import type { FormEventHandler, InputChangeEventHandler } from '@/types/events';
 
 type DeleteListProps = {
@@ -12,6 +13,7 @@ type DeleteListProps = {
 export const DeleteList = ({ id, listTitle }: DeleteListProps) => {
   const [listTitleInput, setListTitleInput] = useState('');
   const { handleDeleteList } = useLists();
+  const { handleCloseSlideOver } = useModals();
 
   const handleInputChange = (e: InputChangeEventHandler) => {
     const { value } = e.target;
@@ -22,6 +24,7 @@ export const DeleteList = ({ id, listTitle }: DeleteListProps) => {
     e.preventDefault();
     if (listTitleInput === listTitle) {
       await handleDeleteList(listId);
+      handleCloseSlideOver();
     }
   };
 
