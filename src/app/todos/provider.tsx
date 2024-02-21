@@ -173,7 +173,14 @@ export const TodosProvider = ({
     [todos],
   );
   const completeTodos = useMemo(
-    () => todos.filter((t) => t.completeDisabled),
+    () =>
+      todos
+        .filter((t) => t.completeDisabled)
+        .sort(
+          (a, b) =>
+            new Date(b?.completedAt || '').getTime() -
+            new Date(a?.completedAt || '').getTime(),
+        ),
     [todos],
   );
 
