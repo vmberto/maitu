@@ -3,6 +3,7 @@ import { XMarkIcon } from '@heroicons/react/20/solid';
 import { Fragment, type ReactNode } from 'react';
 
 import { useSwipeEvents } from '@/src/hooks/useSwipeEvents';
+import { useModals } from '@/src/providers/slideover.provider';
 
 type ModalProps = {
   title: string | ReactNode;
@@ -12,6 +13,8 @@ type ModalProps = {
 };
 
 const SlideOver = ({ title, open, onClose, children }: ModalProps) => {
+  const { handleClearModalData } = useModals();
+
   const swipeActions = useSwipeEvents({
     onSwipedDown: () => {
       onClose();
@@ -19,7 +22,11 @@ const SlideOver = ({ title, open, onClose, children }: ModalProps) => {
   });
 
   return (
-    <Transition.Root show={open} as={Fragment}>
+    <Transition.Root
+      show={open}
+      as={Fragment}
+      afterLeave={handleClearModalData}
+    >
       <Dialog as="div" className="relative z-10" onClose={onClose}>
         <Transition.Child
           as={Fragment}

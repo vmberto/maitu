@@ -23,8 +23,8 @@ export const CompleteTodos = () => {
           <TodoInput
             key={t._id?.toString()}
             id={t._id?.toString()}
-            todoData={t}
             value={t.title}
+            todoData={t}
             disabled
           />
         ))}

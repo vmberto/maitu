@@ -7,7 +7,7 @@ import { formatDate } from '@/src/lib/functions';
 import type { Todo } from '@/types/main';
 
 type TodoDetailTitleProps = {
-  currentTodo: Todo;
+  currentTodo?: Todo;
 };
 
 export const TodoDetailTitle = ({ currentTodo }: TodoDetailTitleProps) => {

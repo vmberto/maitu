@@ -1,6 +1,6 @@
 'use client';
 
-import type { KeyboardEventHandler, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import {
   createContext,
   useCallback,
@@ -26,13 +26,12 @@ export interface TodosState {
     t: Todo,
   ) => (e: TextareaChangeEventHandler) => void;
   handleCompleteTodo: (t: Todo) => Promise<void>;
-  handleKeyPressAdd: KeyboardEventHandler<HTMLTextAreaElement>;
   handleChangeNewTodo: (e: TextareaChangeEventHandler) => void;
   handleInputFocus: (t: Todo) => () => Promise<void>;
 
-  updateTodoData: (t: Todo) => () => Promise<void>;
-  addTodo: () => Promise<void>;
-  updateTodo: (t: Todo) => () => Promise<void>;
+  handleAddTodo: () => Promise<void>;
+  handleRemoveOrUpdateTitle: (t: Todo) => () => Promise<void>;
+  handleUpdateTodo: (t: Todo) => () => Promise<void>;
 }
 
 type TodosProviderProps = {
@@ -82,7 +81,7 @@ export const TodosProvider = ({
     setCurrentTodo({ ...t });
   };
 
-  const onBlurUpdateTodo = useCallback(
+  const handleRemoveOrUpdateTitle = useCallback(
     (t: Todo) => async () => {
       if (t.title.length <= 0 && t._id) {
         setTodos(todos.filter((todo) => todo._id !== t._id));
@@ -99,7 +98,7 @@ export const TodosProvider = ({
     [currentTodo.title, todos],
   );
 
-  const updateTodoData = useCallback(
+  const handleUpdateTodo = useCallback(
     (t: Todo) => async () => {
       if (t._id) {
         updateSingleElement<Todo>(t._id, todos, setTodos, { ...t });
@@ -110,7 +109,7 @@ export const TodosProvider = ({
     [todos],
   );
 
-  const addTodo = useCallback(async () => {
+  const handleAddTodo = useCallback(async () => {
     const todosCopy = [...todos];
     const { title } = newTodo;
 
@@ -133,17 +132,6 @@ export const TodosProvider = ({
       setTodos([...todosCopy, response]);
     }
   }, [listId, newTodo, todos]);
-
-  const handleKeyPressAdd: KeyboardEventHandler<HTMLTextAreaElement> =
-    useCallback(
-      async (e) => {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          await addTodo();
-        }
-      },
-      [addTodo],
-    );
 
   const handleCompleteTodo = useCallback(
     async (t: Todo) => {
@@ -196,28 +184,26 @@ export const TodosProvider = ({
       newTodo,
       selectedList: listDb,
       currentTodo,
-      handleKeyPressAdd,
-      addTodo,
+      handleAddTodo,
       handleChangeExistingTodo,
       handleChangeNewTodo,
       handleCompleteTodo,
-      updateTodo: onBlurUpdateTodo,
-      updateTodoData,
+      handleRemoveOrUpdateTitle,
+      handleUpdateTodo,
       handleInputFocus,
     }),
     [
-      addTodo,
+      handleAddTodo,
       completeTodos,
       currentTodo,
       handleChangeExistingTodo,
       handleChangeNewTodo,
       handleCompleteTodo,
-      handleKeyPressAdd,
       listDb,
       newTodo,
-      onBlurUpdateTodo,
+      handleRemoveOrUpdateTitle,
       todosToComplete,
-      updateTodoData,
+      handleUpdateTodo,
     ],
   );
 

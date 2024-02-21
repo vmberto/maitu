@@ -12,10 +12,15 @@ import { TodoDetailTitle } from '@/src/app/todos/components/TodoDetailSlideOver/
 import { useTodos } from '@/src/app/todos/provider';
 import SlideOver from '@/src/components/SlideOver';
 import { useModals } from '@/src/providers/slideover.provider';
+import type { Todo } from '@/types/main';
 
 export const TodoDetailSlideOver = () => {
-  const { updateTodoData } = useTodos();
-  const { modalData: currentTodo, handleCloseSlideOver } = useModals();
+  const { handleUpdateTodo } = useTodos();
+  const {
+    modalData: currentTodo,
+    isOpen,
+    handleCloseSlideOver,
+  } = useModals<Todo>();
   const [selectedSections, setSection] = useState<Section[]>([]);
 
   useEffect(() => {
@@ -34,20 +39,20 @@ export const TodoDetailSlideOver = () => {
   return (
     <SlideOver
       title={<TodoDetailTitle currentTodo={currentTodo} />}
-      open={!!currentTodo}
+      open={isOpen}
       onClose={handleCloseSlideOver}
     >
-      {selectedSections.includes(Section.DESCRIPTION) && (
+      {currentTodo && selectedSections.includes(Section.DESCRIPTION) && (
         <DescriptionSection
           todoData={currentTodo}
-          updateTodoData={updateTodoData}
+          updateTodoData={handleUpdateTodo}
         />
       )}
 
-      {selectedSections.includes(Section.LOCATION) && (
+      {currentTodo && selectedSections.includes(Section.LOCATION) && (
         <InputSection
           todoData={currentTodo}
-          updateTodoData={updateTodoData}
+          updateTodoData={handleUpdateTodo}
           label="Location"
           propertyName="location"
         />

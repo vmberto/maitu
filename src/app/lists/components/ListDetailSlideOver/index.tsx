@@ -10,7 +10,7 @@ import type { List } from '@/types/main';
 
 export const ListDetailSlideOver = () => {
   const { handleUpdateList } = useLists();
-  const { modalData: list, handleCloseSlideOver } = useModals();
+  const { modalData: list, isOpen, handleCloseSlideOver } = useModals<List>();
 
   const [emoji, setEmoji] = useState(list?.emoji);
   const [listTitle, setListTitle] = useState(list?.title);
@@ -46,18 +46,18 @@ export const ListDetailSlideOver = () => {
           }}
         />
       }
-      open={!!list}
+      open={isOpen}
       onClose={handleCloseSlideOver}
     >
       <EmojiPickerComponent
-        emoji={emoji}
+        emoji={emoji || ''}
         setEmoji={async (e) => {
           setEmoji(e);
           await updateList({ emoji: e });
         }}
       />
 
-      <DeleteList listTitle={list?.title} id={list?._id} />
+      <DeleteList listTitle={list?.title || ''} id={list?._id} />
     </SlideOver>
   );
 };

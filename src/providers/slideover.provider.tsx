@@ -1,41 +1,62 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { createContext, useContext, useMemo, useState } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from 'react';
 
 import type { GenericEvent } from '@/types/events';
 
-export type ModalsState = {
-  modalData: any;
-  handleOpenSlideOver: (modalData: any) => (e: GenericEvent) => void;
+export type ModalsState<T> = {
+  modalData: T | undefined;
+  isOpen: boolean;
+  handleOpenSlideOver: (modalData: T) => (e: GenericEvent) => void;
+  handleClearModalData: () => void;
   handleCloseSlideOver: () => void;
 };
 
-const ModalContext = createContext<ModalsState>({} as ModalsState);
+const ModalContext = createContext<ModalsState<any>>({} as ModalsState<any>);
 
 type ModalProviderProps = {
   children: ReactNode;
 };
 
-export const ModalsProvider = ({ children }: ModalProviderProps) => {
-  const [modalData, setModalData] = useState<any>();
+export const ModalsProvider = <T extends unknown>({
+  children,
+}: ModalProviderProps) => {
+  const [isOpen, setOpen] = useState<boolean>(false);
+  const [modalData, setModalData] = useState<T>();
 
-  const handleOpenSlideOver = (data: any) => (e: GenericEvent) => {
-    e.stopPropagation();
-    setModalData(data);
+  const handleOpenSlideOver = useCallback(
+    (data: T) => (e: GenericEvent) => {
+      e.stopPropagation();
+      setModalData(data);
+      setOpen(true);
+    },
+    [],
+  );
+
+  const handleClearModalData = () => {
+    setModalData(undefined);
   };
 
   const handleCloseSlideOver = () => {
-    setModalData(undefined);
+    setOpen(false);
   };
 
   const contextValue = useMemo(
     () => ({
       modalData,
+      isOpen,
       handleOpenSlideOver,
       handleCloseSlideOver,
+      handleClearModalData,
     }),
-    [modalData],
+    [handleOpenSlideOver, isOpen, modalData],
   );
 
   return (
@@ -45,4 +66,5 @@ export const ModalsProvider = ({ children }: ModalProviderProps) => {
   );
 };
 
-export const useModals = (): ModalsState => useContext(ModalContext);
+export const useModals = <T extends unknown>(): ModalsState<T> =>
+  useContext(ModalContext);

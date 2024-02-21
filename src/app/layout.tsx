@@ -7,7 +7,7 @@ import type { ReactNode } from 'react';
 
 import { ModalsProvider } from '@/src/providers/slideover.provider';
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ subsets: ['latin'], display: 'swap' });
 
 export const metadata: Metadata = {
   title: 'maitu',
