@@ -6,7 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/todos/provider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/todos/provider.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,7 +34,7 @@
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;javascript.nodejs.core.library.configured.version&quot;: &quot;18.18.2&quot;,
     &quot;javascript.nodejs.core.library.typings.version&quot;: &quot;18.18.2&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/vmberto/Documents/maitu/my-todo-app&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/vmberto/Documents/maitu&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.standard&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
@@ -44,7 +43,7 @@
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;prettier.import.notification.dismissed&quot;: &quot;true&quot;,
-    &quot;prettierjs.PrettierConfiguration.Package&quot;: &quot;/Users/vmberto/Documents/my-todo-app/node_modules/prettier&quot;,
+    &quot;prettierjs.PrettierConfiguration.Package&quot;: &quot;/Users/vmberto/Documents/maitu/node_modules/prettier&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;settings.javascript.prettier&quot;,
     &quot;ts.external.directory.path&quot;: &quot;/Users/vmberto/Documents/maitu/node_modules/typescript/lib&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
@@ -130,6 +129,7 @@
       <workItem from="1708049832315" duration="9926000" />
       <workItem from="1708228137834" duration="748000" />
       <workItem from="1708398348568" duration="2016000" />
+      <workItem from="1711307239800" duration="101000" />
     </task>
     <servers />
   </component>
