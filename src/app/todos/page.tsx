@@ -5,7 +5,7 @@ import { CompleteTodos } from '@/src/app/todos/components/CompleteTodos';
 import { Header } from '@/src/app/todos/components/Header';
 import { TodoDetailSlideOver } from '@/src/app/todos/components/TodoDetailSlideOver';
 import { Todos } from '@/src/app/todos/components/Todos';
-import { TodosProvider } from '@/src/app/todos/provider';
+import { TodosProvider } from '@/src/app/todos/state/provider';
 import { json } from '@/src/lib/functions';
 
 type TodosPageProps = {

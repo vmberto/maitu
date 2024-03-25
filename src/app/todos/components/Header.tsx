@@ -3,7 +3,7 @@
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
 import Link from 'next/link';
 
-import { useTodos } from '@/src/app/todos/provider';
+import { useTodos } from '@/src/app/todos/state/provider';
 import { FontColor, HexColors } from '@/src/lib/colors';
 import { stopPropagationFn } from '@/src/lib/functions';
 import { clickStyle } from '@/src/lib/style-consts';

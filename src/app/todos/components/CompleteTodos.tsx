@@ -1,7 +1,7 @@
 'use client';
 
 import { TodoInput } from '@/src/app/todos/components/TodoInput';
-import { useTodos } from '@/src/app/todos/provider';
+import { useTodos } from '@/src/app/todos/state/provider';
 
 export const CompleteTodos = () => {
   const { completeTodos } = useTodos();

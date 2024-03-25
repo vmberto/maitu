@@ -3,7 +3,7 @@
 import type { KeyboardEventHandler } from 'react';
 
 import { TodoInput } from '@/src/app/todos/components/TodoInput';
-import { useTodos } from '@/src/app/todos/provider';
+import { useTodos } from '@/src/app/todos/state/provider';
 import { Typography } from '@/src/components/Typography';
 import { stopPropagationFn } from '@/src/lib/functions';
 

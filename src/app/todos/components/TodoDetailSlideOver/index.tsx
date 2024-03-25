@@ -9,7 +9,7 @@ import {
   SectionSelect,
 } from '@/src/app/todos/components/TodoDetailSlideOver/components/SectionSelect';
 import { TodoDetailTitle } from '@/src/app/todos/components/TodoDetailSlideOver/components/TodoDetailTitle';
-import { useTodos } from '@/src/app/todos/provider';
+import { useTodos } from '@/src/app/todos/state/provider';
 import SlideOver from '@/src/components/SlideOver';
 import { useModals } from '@/src/providers/slideover.provider';
 import type { Todo } from '@/types/main';
