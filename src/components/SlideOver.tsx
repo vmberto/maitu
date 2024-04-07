@@ -27,7 +27,7 @@ const SlideOver = ({ title, open, onClose, children }: ModalProps) => {
       as={Fragment}
       afterLeave={handleClearModalData}
     >
-      <Dialog as="div" className="relative z-10" onClose={onClose}>
+      <Dialog as="div" className="relative z-30" onClose={onClose}>
         <Transition.Child
           as={Fragment}
           enter="ease-in-out duration-500"

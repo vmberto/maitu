@@ -20,13 +20,11 @@ export default async function TodosPage({ searchParams }: TodosPageProps) {
   return (
     <TodosProvider listDb={json(list)} todosDb={json(todos)}>
       <Header />
-      <main className="mx-auto h-full max-w-xl">
+      <section className="mx-auto h-full max-w-xl">
         <Todos />
-
         <CompleteTodos />
-
         <TodoDetailSlideOver />
-      </main>
+      </section>
     </TodosProvider>
   );
 }
