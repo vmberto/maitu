@@ -15,7 +15,7 @@ export default function Loading() {
             </div>
             <div
               className="w-1/3 overflow-hidden rounded
-                    bg-gray-300 px-2 py-4 pr-5"
+                    bg-gray-300 px-2 py-3 pr-5"
             />
           </div>
         </div>
