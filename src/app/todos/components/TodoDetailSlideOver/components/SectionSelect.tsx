@@ -1,5 +1,5 @@
 import { Listbox, Transition } from '@headlessui/react';
-import { DocumentTextIcon, MapPinIcon } from '@heroicons/react/20/solid';
+import { MapPinIcon } from '@heroicons/react/20/solid';
 import { type Dispatch, Fragment, type SetStateAction, useMemo } from 'react';
 
 export enum Section {
@@ -8,11 +8,6 @@ export enum Section {
 }
 
 export const sections = [
-  {
-    id: Section.DESCRIPTION,
-    name: 'Description',
-    icon: <DocumentTextIcon className="size-5" aria-hidden="true" />,
-  },
   {
     id: Section.LOCATION,
     name: 'Location',

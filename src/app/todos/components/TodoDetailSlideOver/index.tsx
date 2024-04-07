@@ -4,10 +4,7 @@ import React, { useEffect, useState } from 'react';
 
 import { DescriptionSection } from '@/src/app/todos/components/TodoDetailSlideOver/components/DescriptionSection';
 import { InputSection } from '@/src/app/todos/components/TodoDetailSlideOver/components/InputSection';
-import {
-  Section,
-  SectionSelect,
-} from '@/src/app/todos/components/TodoDetailSlideOver/components/SectionSelect';
+import { Section } from '@/src/app/todos/components/TodoDetailSlideOver/components/SectionSelect';
 import { TodoDetailTitle } from '@/src/app/todos/components/TodoDetailSlideOver/components/TodoDetailTitle';
 import { useTodos } from '@/src/app/todos/state/provider';
 import SlideOver from '@/src/components/SlideOver';
@@ -42,7 +39,7 @@ export const TodoDetailSlideOver = () => {
       open={isOpen}
       onClose={handleCloseSlideOver}
     >
-      {currentTodo && selectedSections.includes(Section.DESCRIPTION) && (
+      {currentTodo && (
         <DescriptionSection
           todoData={currentTodo}
           updateTodoData={handleUpdateTodo}
@@ -57,11 +54,6 @@ export const TodoDetailSlideOver = () => {
           propertyName="location"
         />
       )}
-
-      <SectionSelect
-        selectedSections={selectedSections}
-        setSection={setSection}
-      />
     </SlideOver>
   );
 };

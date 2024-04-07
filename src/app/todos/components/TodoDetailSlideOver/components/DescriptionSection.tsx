@@ -30,25 +30,19 @@ export const DescriptionSection = ({
 
   return (
     <div className="mb-3">
-      <label
-        htmlFor="description"
-        className="block text-sm font-medium leading-6 text-gray-900"
-      >
-        Description
-        <textarea
-          id="description"
-          ref={textareaRef}
-          value={description}
-          placeholder="Set a description"
-          className="relative z-10 mb-4 block w-full resize-none overflow-hidden
-           rounded-md border-2 bg-transparent px-2 pb-2 pt-1 text-base outline-0 focus:outline-none"
-          onChange={handleChange}
-          onBlur={updateTodoData({
-            ...todoData,
-            description,
-          })}
-        />
-      </label>
+      <textarea
+        id="description"
+        ref={textareaRef}
+        value={description}
+        placeholder="Write about it..."
+        className="relative z-10 mb-4 block w-full resize-none overflow-hidden
+           rounded-md bg-transparent px-2 pb-2 pt-1 text-base outline-0 focus:outline-none"
+        onChange={handleChange}
+        onBlur={updateTodoData({
+          ...todoData,
+          description,
+        })}
+      />
     </div>
   );
 };
