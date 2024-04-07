@@ -19,9 +19,8 @@ export default async function TodosPage({ searchParams }: TodosPageProps) {
 
   return (
     <TodosProvider listDb={json(list)} todosDb={json(todos)}>
-      <main className="mx-auto my-0 h-full max-w-xl">
-        <Header />
-
+      <Header />
+      <main className="mx-auto h-full max-w-xl">
         <Todos />
 
         <CompleteTodos />

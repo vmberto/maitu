@@ -55,7 +55,7 @@ const SlideOver = ({ title, open, onClose, children }: ModalProps) => {
                 <Dialog.Panel className="pointer-events-auto relative w-screen max-w-2xl">
                   <div className="mt-20 flex h-full flex-col overflow-y-scroll bg-white pb-6 shadow-xl">
                     <div
-                      className="z-10 mb-5 flex w-full flex-row-reverse border-b-2 bg-white px-4 pb-3 pt-4 align-baseline sm:px-6"
+                      className="sticky top-0 z-20 mb-5 flex w-full flex-row-reverse border-b-2 bg-white px-4 pb-3 pt-4 align-baseline sm:px-6"
                       {...swipeActions}
                     >
                       <button

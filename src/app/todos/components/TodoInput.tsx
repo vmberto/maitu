@@ -48,7 +48,7 @@ const TodoInputComponent = (
   };
 
   return (
-    <div className="flex items-center border-t-2 border-gray-100 py-3">
+    <div className="flex items-center border-b-2 border-gray-100 py-3">
       <div
         onClick={handleClickCompleteTodo}
         className="relative mr-2 cursor-pointer

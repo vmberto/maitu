@@ -13,20 +13,21 @@ type TodoDetailTitleProps = {
 export const TodoDetailTitle = ({ currentTodo }: TodoDetailTitleProps) => {
   return (
     <>
-      {currentTodo?.completeDisabled ? (
-        <CheckCircleIcon className="mb-1 mr-1 inline size-6" color="#5aee5c" />
-      ) : (
-        <PlayCircleIcon
-          className="mb-1 mr-1 inline size-6"
-          color={HexColors.get('primary')}
-        />
-      )}
+      <PlayCircleIcon
+        className="mb-1 mr-1 inline size-6"
+        color={HexColors.get('primary')}
+      />
+
       <div className="inline">{currentTodo?.title}</div>
-      {currentTodo?.createdAt && (
-        <div className="mt-2 flex flex-col gap-2.5 text-sm text-gray-500">
-          {formatDate(currentTodo?.createdAt)}
-        </div>
-      )}
+      <div className="mt-2 flex flex-row items-center gap-2 text-sm text-gray-500">
+        {formatDate(currentTodo?.createdAt)}
+        {currentTodo?.completeDisabled && (
+          <>
+            <CheckCircleIcon className="inline size-5" color="#5aee5c" />
+            {formatDate(currentTodo?.completedAt)}
+          </>
+        )}
+      </div>
     </>
   );
 };

@@ -1,6 +1,10 @@
 import { type GenericEvent } from '../../types/events';
 
-export const formatDate = (dateString: string) => {
+export const formatDate = (dateString?: string) => {
+  if (!dateString) {
+    return '';
+  }
+
   const date = new Date(dateString);
   const day = date.getDate();
   const month = date.getMonth() + 1;
