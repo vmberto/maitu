@@ -53,7 +53,7 @@ const SlideOver = ({ title, open, onClose, children }: ModalProps) => {
                 leaveTo="translate-y-full"
               >
                 <Dialog.Panel className="pointer-events-auto relative w-screen max-w-2xl">
-                  <div className="mt-20 flex h-full flex-col overflow-y-scroll bg-white pb-6 shadow-xl">
+                  <div className="mt-20 flex h-full flex-col overflow-y-scroll rounded-2xl bg-white pb-6 shadow-2xl">
                     <div
                       className="sticky top-0 z-20 mb-5 flex w-full flex-row-reverse border-b-2 bg-white px-4 pb-3 pt-4 align-baseline sm:px-6"
                       {...swipeActions}

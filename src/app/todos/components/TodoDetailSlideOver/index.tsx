@@ -3,16 +3,15 @@
 import React, { useEffect, useState } from 'react';
 
 import { DescriptionSection } from '@/src/app/todos/components/TodoDetailSlideOver/components/DescriptionSection';
-import { InputSection } from '@/src/app/todos/components/TodoDetailSlideOver/components/InputSection';
 import { Section } from '@/src/app/todos/components/TodoDetailSlideOver/components/SectionSelect';
 import { TodoDetailTitle } from '@/src/app/todos/components/TodoDetailSlideOver/components/TodoDetailTitle';
-import { useTodos } from '@/src/app/todos/state/provider';
+import { useTodosStore } from '@/src/app/todos/state/store';
 import SlideOver from '@/src/components/SlideOver';
 import { useModals } from '@/src/providers/slideover.provider';
 import type { Todo } from '@/types/main';
 
 export const TodoDetailSlideOver = () => {
-  const { handleUpdateTodo } = useTodos();
+  const { handleUpdateTodo } = useTodosStore();
   const {
     modalData: currentTodo,
     isOpen,
@@ -43,15 +42,6 @@ export const TodoDetailSlideOver = () => {
         <DescriptionSection
           todoData={currentTodo}
           updateTodoData={handleUpdateTodo}
-        />
-      )}
-
-      {currentTodo && selectedSections.includes(Section.LOCATION) && (
-        <InputSection
-          todoData={currentTodo}
-          updateTodoData={handleUpdateTodo}
-          label="Location"
-          propertyName="location"
         />
       )}
     </SlideOver>
