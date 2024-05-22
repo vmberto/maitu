@@ -41,9 +41,9 @@ export const Todos = () => {
     <div className="mb-28 px-5 pb-5">
       {todosToComplete.map((todo) => (
         <TodoInput
+          key={todo.createdAt}
           todoData={todo}
           value={todo.title}
-          key={todo.createdAt}
           onClick={stopPropagationFn}
           onFocus={() => handleInputFocus(todo)}
           handleCompleteTodo={() => handleCompleteTodo(todo, executionTimeout)}

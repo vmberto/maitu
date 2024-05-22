@@ -1,3 +1,5 @@
+import { produce } from 'immer';
+
 import { add, remove, update } from '@/src/actions/todos.service';
 import type { TodosState } from '@/src/app/todos/state/store';
 import type { TextareaChangeEventHandler } from '@/types/events';
@@ -35,10 +37,9 @@ export const handleCompleteTodo = async (
   t: Todo,
   executionTimeout: any,
   get: GetAction<TodosState>,
-  set: SetAction<TodosState>,
+  set: any,
 ) => {
   const { setExecutionTimeout, clearTimeoutById } = executionTimeout;
-  const { todos } = get();
 
   if (!t._id) {
     return;
@@ -46,11 +47,14 @@ export const handleCompleteTodo = async (
 
   const todoId = t._id.toString();
 
-  set({
-    todos: todos.map((todo: Todo) =>
-      todo._id === todoId ? { ...todo, complete: !todo.complete } : todo,
-    ),
-  });
+  set(
+    produce((state: TodosState) => {
+      const todo = state.todos.find((el) => el._id === todoId);
+      if (todo) {
+        Object.assign(todo, { complete: !todo.complete });
+      }
+    }),
+  );
 
   if (!t.complete) {
     const dataToUpdate = {
@@ -60,11 +64,15 @@ export const handleCompleteTodo = async (
 
     setExecutionTimeout(todoId, async () => {
       if (t._id) {
-        set({
-          todos: todos.map((todo: Todo) =>
-            todo._id === todoId ? { ...todo, ...dataToUpdate } : todo,
-          ),
-        });
+        set(
+          produce((state: TodosState) => {
+            console.log(state.todos);
+            const todo = state.todos.find((el) => el._id === todoId);
+            if (todo) {
+              Object.assign(todo, dataToUpdate);
+            }
+          }),
+        );
 
         await update(t._id.toString(), {
           ...t,
