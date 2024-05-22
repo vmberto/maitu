@@ -21,7 +21,7 @@ export const TodoDetailTitle = ({ currentTodo }: TodoDetailTitleProps) => {
       <div className="inline">{currentTodo?.title}</div>
       <div className="mt-2 flex flex-row items-center gap-2 text-sm text-gray-500">
         {formatDate(currentTodo?.createdAt)}
-        {currentTodo?.completeDisabled && (
+        {currentTodo?.completedAt && (
           <>
             <CheckCircleIcon className="inline size-5" color="#5aee5c" />
             {formatDate(currentTodo?.completedAt)}

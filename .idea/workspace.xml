@@ -5,23 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/app/todos/components/TodosContainer.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/todos/state/actions.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/todos/state/store.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/types/zustand.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/globals.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/globals.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/todos/components/CompleteTodos.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/todos/components/CompleteTodos.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/todos/components/Header.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/todos/components/Header.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/todos/components/TodoDetailSlideOver/components/DescriptionSection.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/todos/components/TodoDetailSlideOver/components/DescriptionSection.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/todos/components/TodoDetailSlideOver/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/todos/components/TodoDetailSlideOver/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/todos/components/TodoDetailSlideOver/components/TodoDetailTitle.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/todos/components/TodoDetailSlideOver/components/TodoDetailTitle.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/todos/components/Todos.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/todos/components/Todos.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/todos/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/todos/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/todos/state/provider.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/todos/state/reducer.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/todos/state/actions.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/todos/state/actions.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/todos/state/store.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/todos/state/store.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/SlideOver.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/SlideOver.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/hooks/useExecutionTimeout.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useExecutionTimeout.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/types/main.ts" beforeDir="false" afterPath="$PROJECT_DIR$/types/main.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,11 +66,11 @@
       <recent name="$PROJECT_DIR$/src/api/services" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/components" />
       <recent name="$PROJECT_DIR$/src/app/todos/state" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/src/app/lists" />
       <recent name="$PROJECT_DIR$/src/app/todos" />
-      <recent name="$PROJECT_DIR$/public/icons" />
     </key>
     <key name="es6.move.members.recent.items">
       <recent name="$PROJECT_DIR$/src/app/todos/state/actions.ts" />
@@ -153,7 +145,7 @@
       <workItem from="1712961702266" duration="2921000" />
       <workItem from="1715635672924" duration="2034000" />
       <workItem from="1715860841362" duration="598000" />
-      <workItem from="1715882107055" duration="15543000" />
+      <workItem from="1715882107055" duration="24816000" />
     </task>
     <servers />
   </component>

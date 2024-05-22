@@ -15,7 +15,6 @@ export const handleAddTodo = async (
   if (title && title.length > 0) {
     const todo = {
       complete: false,
-      completeDisabled: false,
       description: '',
       createdAt: new Date().toISOString(),
       listId: selectedList._id,
@@ -47,10 +46,15 @@ export const handleCompleteTodo = async (
 
   const todoId = t._id.toString();
 
+  set({
+    todos: todos.map((todo: Todo) =>
+      todo._id === todoId ? { ...todo, complete: !todo.complete } : todo,
+    ),
+  });
+
   if (!t.complete) {
     const dataToUpdate = {
       complete: true,
-      completeDisabled: true,
       completedAt: new Date().toISOString(),
     };
 
@@ -71,13 +75,8 @@ export const handleCompleteTodo = async (
   } else {
     clearTimeoutById(todoId);
   }
-
-  set({
-    todos: todos.map((todo: Todo) =>
-      todo._id === todoId ? { ...todo, complete: !todo.complete } : todo,
-    ),
-  });
 };
+
 export const handleChangeExistingTodo = (
   e: TextareaChangeEventHandler,
   get: GetAction<TodosState>,
@@ -109,23 +108,28 @@ export const handleRemoveOrUpdateTitle = async (
   }
 
   if (t.title !== currentTodo.title && t._id) {
+    set({
+      todos: todos.map((todo: Todo) => (todo._id === t._id ? { ...t } : todo)),
+    });
     await update(t._id.toString(), t);
   }
 };
 
 export const handleUpdateTodo = async (
-  t: Todo,
+  updatedTodo: Todo,
   get: GetAction<TodosState>,
   set: SetAction<TodosState>,
 ) => {
   const { todos } = get();
 
-  if (t._id) {
+  if (updatedTodo._id) {
     set({
-      todos: todos.map((todo: Todo) => (todo._id === t._id ? { ...t } : todo)),
+      todos: todos.map((todo: Todo) =>
+        todo._id === updatedTodo._id ? { ...updatedTodo } : todo,
+      ),
     });
 
-    await update(t._id.toString(), t);
+    await update(updatedTodo._id.toString(), updatedTodo);
   }
 };
 

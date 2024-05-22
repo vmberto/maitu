@@ -24,7 +24,7 @@ export const Todos = () => {
   const executionTimeout = useExecutionTimeout();
 
   const todosToComplete = useMemo(
-    () => todos.filter((t) => !t.completeDisabled),
+    () => todos.filter((t) => !t.completedAt),
     [todos],
   );
 
