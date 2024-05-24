@@ -13,7 +13,7 @@ export const CompleteTodos = () => {
   useEffect(() => {
     setCompleteTodos(
       todos
-        .filter((t) => t.completedAt)
+        .filter((t) => t.completeDisabled)
         .sort(
           (a, b) =>
             new Date(b?.completedAt || '').getTime() -

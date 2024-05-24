@@ -30,6 +30,7 @@ export interface Todo {
   description: string;
 
   complete: boolean;
+  completeDisabled: boolean;
 
   location?: string;
 

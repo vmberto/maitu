@@ -2,10 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  scroll-padding: 0;
-}
-
 body {
   overscroll-behavior: none;
 }

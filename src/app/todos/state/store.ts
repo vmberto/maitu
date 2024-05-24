@@ -14,9 +14,9 @@ import type { List, Todo } from '@/types/main';
 export interface TodosState {
   currentTodo: Partial<Todo>;
   newTodo: Partial<Todo>;
+
   todos: Todo[];
   selectedList: List;
-
   setTodos: (todo: Todo[]) => void;
   setList: (selectedList: List) => void;
 
