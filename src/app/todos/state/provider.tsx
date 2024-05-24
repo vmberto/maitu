@@ -178,13 +178,13 @@ export const TodosProvider = ({
   );
 
   const todosToComplete = useMemo(
-    () => state.todos.filter((t) => !t.completeDisabled),
+    () => state.todos.filter((t) => !t.completedAt),
     [state.todos],
   );
   const completeTodos = useMemo(
     () =>
       state.todos
-        .filter((t) => t.completeDisabled)
+        .filter((t) => t.completedAt)
         .sort(
           (a, b) =>
             new Date(b?.completedAt || '').getTime() -

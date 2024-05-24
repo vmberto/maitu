@@ -12,7 +12,7 @@ export const CompleteTodos = () => {
 
   return (
     <div id="complete-todos" className="px-5 pb-5">
-      <div className="mt-5 flex align-middle text-lg font-semibold">
+      <div className="mt-5 flex border-b-2 border-gray-100 align-middle text-lg font-semibold">
         <h2>Complete Todos</h2>
         <span className="ml-auto text-sm font-semibold">
           {completeTodos.length}
@@ -20,13 +20,7 @@ export const CompleteTodos = () => {
       </div>
       <div id="Todos">
         {completeTodos.map((t) => (
-          <TodoInput
-            key={t._id?.toString()}
-            id={t._id?.toString()}
-            value={t.title}
-            todoData={t}
-            disabled
-          />
+          <TodoInput key={t._id?.toString()} todoData={t} disabled />
         ))}
       </div>
     </div>

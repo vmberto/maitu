@@ -1,55 +1,48 @@
 'use client';
 
-/* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable jsx-a11y/no-static-element-interactions */
 import { Menu } from '@headlessui/react';
 import { EllipsisHorizontalCircleIcon } from '@heroicons/react/24/outline';
-import React, {
-  type DetailedHTMLProps,
-  type ForwardedRef,
-  forwardRef,
-  type TextareaHTMLAttributes,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-} from 'react';
+import React, { useEffect, useRef } from 'react';
 
+import { useTodos } from '@/src/app/todos/state/provider';
+import { stopPropagationFn } from '@/src/lib/functions';
 import { useModals } from '@/src/providers/slideover.provider';
 import { type GenericEvent } from '@/types/events';
 import { type Todo } from '@/types/main';
 
-export type TodoInputComponentProps = DetailedHTMLProps<
-  TextareaHTMLAttributes<HTMLTextAreaElement>,
-  HTMLTextAreaElement
-> & {
-  todoData?: Todo;
-  handleCompleteTodo?: (t: Todo) => void;
+export type TodoInputComponentProps = {
+  todoData: Todo;
+  disabled?: boolean;
 };
 
-const TodoInputComponent = (
-  { todoData, handleCompleteTodo, ...rest }: TodoInputComponentProps,
-  ref: ForwardedRef<HTMLTextAreaElement>,
-) => {
+export const TodoInput = ({ todoData, disabled }: TodoInputComponentProps) => {
   const textareaRef = useRef({} as HTMLTextAreaElement);
   const { handleOpenSlideOver } = useModals();
-  useImperativeHandle(ref, () => textareaRef.current);
+
+  const {
+    handleRemoveOrUpdateTitle,
+    handleInputFocus,
+    handleCompleteTodo,
+    handleChangeExistingTodo,
+  } = useTodos();
 
   useEffect(() => {
     textareaRef.current.style.height = '0px';
     const { scrollHeight } = textareaRef.current;
     textareaRef.current.style.height = `${scrollHeight}px`;
-  }, [rest.value]);
+  }, [todoData.title]);
 
-  const handleClickCompleteTodo = (e: GenericEvent) => {
+  const handleClickCompleteTodo = async (e: GenericEvent) => {
     e.stopPropagation();
-    if (todoData && handleCompleteTodo) {
-      handleCompleteTodo(todoData);
+    if (todoData && !todoData.complete && handleCompleteTodo) {
+      await handleCompleteTodo(todoData);
     }
   };
 
   return (
     <div className="flex items-center border-b-2 border-gray-100 py-3">
-      <div
+      <button
+        type="button"
         onClick={handleClickCompleteTodo}
         className="relative mr-2 cursor-pointer
         items-center self-start rounded-full border-2
@@ -58,13 +51,20 @@ const TodoInputComponent = (
         {todoData?.complete && (
           <div className="absolute right-1 top-1 size-5 rounded-full bg-primary" />
         )}
-      </div>
+      </button>
+
       <textarea
         ref={textareaRef}
         className="relative z-10 block w-full resize-none overflow-hidden
                     bg-transparent px-2 text-base outline-0 focus:outline-none"
-        {...rest}
+        value={todoData.title}
+        onClick={stopPropagationFn}
+        onFocus={handleInputFocus(todoData)}
+        onBlur={handleRemoveOrUpdateTitle(todoData)}
+        onChange={handleChangeExistingTodo(todoData)}
+        disabled={disabled}
       />
+
       {todoData?._id && (
         <Menu as="div" className="relative inline-block self-start text-left">
           <Menu.Button
@@ -80,5 +80,3 @@ const TodoInputComponent = (
     </div>
   );
 };
-
-export const TodoInput = forwardRef(TodoInputComponent);
