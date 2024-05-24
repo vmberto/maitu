@@ -1,39 +1,30 @@
 'use client';
 
 import type { KeyboardEventHandler } from 'react';
-import { useMemo } from 'react';
 
 import { TodoInput } from '@/src/app/todos/components/TodoInput';
-import { useTodosStore } from '@/src/app/todos/state/store';
+import { useTodos } from '@/src/app/todos/state/provider';
 import { Typography } from '@/src/components/Typography';
-import { useExecutionTimeout } from '@/src/hooks/useExecutionTimeout';
 import { stopPropagationFn } from '@/src/lib/functions';
 
 export const Todos = () => {
   const {
     newTodo,
-    todos,
+    todosToComplete,
     handleAddTodo,
     handleRemoveOrUpdateTitle,
     handleInputFocus,
     handleChangeNewTodo,
     handleCompleteTodo,
     handleChangeExistingTodo,
-  } = useTodosStore();
-
-  const executionTimeout = useExecutionTimeout();
-
-  const todosToComplete = useMemo(
-    () => todos.filter((t) => !t.completeDisabled),
-    [todos],
-  );
+  } = useTodos();
 
   const handleKeyPressAdd: KeyboardEventHandler<HTMLTextAreaElement> = async (
     e,
   ) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      handleAddTodo();
+      await handleAddTodo();
     }
   };
 
@@ -45,10 +36,10 @@ export const Todos = () => {
           value={todo.title}
           key={todo.createdAt}
           onClick={stopPropagationFn}
-          onFocus={() => handleInputFocus(todo)}
-          handleCompleteTodo={() => handleCompleteTodo(todo, executionTimeout)}
-          onBlur={() => handleRemoveOrUpdateTitle(todo)}
-          onChange={handleChangeExistingTodo}
+          onFocus={handleInputFocus(todo)}
+          handleCompleteTodo={handleCompleteTodo}
+          onBlur={handleRemoveOrUpdateTitle(todo)}
+          onChange={handleChangeExistingTodo(todo)}
         />
       ))}
       <TodoInput
@@ -57,11 +48,12 @@ export const Todos = () => {
         value={newTodo.title}
         onKeyDown={handleKeyPressAdd}
         onChange={handleChangeNewTodo}
-        onFocus={() => handleInputFocus(newTodo)}
+        onFocus={handleInputFocus(newTodo)}
       />
       <Typography
         as="h1"
-        className="cursor-default pt-5 text-center text-sm font-light text-gray-500"
+        className="cursor-default border-t-2 border-gray-100 pt-5
+        text-center text-sm font-light text-gray-500"
       >
         Click anywhere to add Todo
       </Typography>

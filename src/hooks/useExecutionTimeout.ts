@@ -1,3 +1,4 @@
+// useTimeout.ts
 import { useState } from 'react';
 
 interface TimeoutObject {

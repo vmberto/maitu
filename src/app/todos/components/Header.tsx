@@ -3,14 +3,14 @@
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
 import Link from 'next/link';
 
-import { useTodosStore } from '@/src/app/todos/state/store';
+import { useTodos } from '@/src/app/todos/state/provider';
 import { Typography } from '@/src/components/Typography';
 import { FontColor, HexColors } from '@/src/lib/colors';
 import { stopPropagationFn } from '@/src/lib/functions';
 import { clickStyle } from '@/src/lib/style-consts';
 
 export const Header = () => {
-  const { selectedList } = useTodosStore();
+  const { selectedList } = useTodos();
 
   return (
     <header
