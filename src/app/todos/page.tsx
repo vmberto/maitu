@@ -1,10 +1,8 @@
 import React from 'react';
 
 import * as TodosService from '@/src/actions/todos.service';
-import { CompleteTodos } from '@/src/app/todos/components/CompleteTodos';
 import { Header } from '@/src/app/todos/components/Header';
-import { TodoDetailSlideOver } from '@/src/app/todos/components/TodoDetailSlideOver';
-import { Todos } from '@/src/app/todos/components/Todos';
+import { TodosWrapper } from '@/src/app/todos/components/TodosContainer/TodosWrapper';
 import { TodosProvider } from '@/src/app/todos/state/provider';
 import { json } from '@/src/lib/functions';
 
@@ -18,13 +16,9 @@ export default async function TodosPage({ searchParams }: TodosPageProps) {
   );
 
   return (
-    <TodosProvider listDb={json(list)} todosDb={json(todos)}>
+    <TodosProvider>
       <Header />
-      <section className="mx-auto h-full max-w-xl">
-        <Todos />
-        <CompleteTodos />
-        <TodoDetailSlideOver />
-      </section>
+      <TodosWrapper listDb={json(list)} todosDb={json(todos)} />
     </TodosProvider>
   );
 }

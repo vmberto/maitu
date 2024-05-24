@@ -34,7 +34,7 @@ export const TodoInput = ({ todoData, disabled }: TodoInputComponentProps) => {
 
   const handleClickCompleteTodo = async (e: GenericEvent) => {
     e.stopPropagation();
-    if (todoData && !todoData.complete && handleCompleteTodo) {
+    if (todoData && handleCompleteTodo) {
       await handleCompleteTodo(todoData);
     }
   };

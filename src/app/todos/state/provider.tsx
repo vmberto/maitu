@@ -1,12 +1,14 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { createContext, useContext, useMemo, useReducer } from 'react';
+import { createContext, useContext, useReducer } from 'react';
 
 import { add, remove, update } from '@/src/actions/todos.service';
+import type { TodosReducerState } from '@/src/app/todos/state/reducer';
 import todosReducer, {
-  initialTodosState,
+  initialState,
   setCurrentTodo,
+  setInitialState,
   setNewTodo,
   setTodos,
   updateSingleElement,
@@ -16,12 +18,8 @@ import { isEmptyString } from '@/src/lib/functions';
 import type { TextareaChangeEventHandler } from '@/types/events';
 import type { List, Todo } from '@/types/main';
 
-export interface TodosState {
-  todosToComplete: Todo[];
-  completeTodos: Todo[];
-  newTodo: Todo;
-  currentTodo: Todo;
-  selectedList: List;
+export type TodosState = TodosReducerState & {
+  handleSetInitialState: (todo: Todo[], list: List) => void;
 
   handleChangeExistingTodo: (e: TextareaChangeEventHandler) => void;
   handleCompleteTodo: (t: Todo) => Promise<void>;
@@ -31,28 +29,22 @@ export interface TodosState {
   handleAddTodo: () => Promise<void>;
   handleRemoveOrUpdateTitle: () => Promise<void>;
   handleUpdateTodo: (t: Todo) => () => Promise<void>;
-}
+};
 
 type TodosProviderProps = {
-  listDb: List;
-  todosDb: Todo[];
   children: ReactNode;
 };
 
 const TodosContext = createContext<TodosState>({} as TodosState);
 
-export const TodosProvider = ({
-  listDb,
-  todosDb,
-  children,
-}: TodosProviderProps) => {
-  const listId = listDb._id;
+export const TodosProvider = ({ children }: TodosProviderProps) => {
   const { setExecutionTimeout, clearTimeoutById } = useExecutionTimeout();
 
-  const [state, dispatch] = useReducer(
-    todosReducer,
-    initialTodosState(todosDb),
-  );
+  const [state, dispatch] = useReducer(todosReducer, initialState);
+
+  const handleSetInitialState = (todos: Todo[], list: List) => {
+    dispatch(setInitialState(todos, list));
+  };
 
   const handleChangeExistingTodo = (e: TextareaChangeEventHandler) => {
     const { currentTodo } = state;
@@ -107,7 +99,10 @@ export const TodosProvider = ({
 
   const handleAddTodo = async () => {
     const todosCopy = [...state.todos];
-    const { title } = state.newTodo;
+    const {
+      newTodo: { title },
+      selectedList: { _id: listId },
+    } = state;
 
     if (title && title.length > 0) {
       const todo = {
@@ -161,28 +156,9 @@ export const TodosProvider = ({
     );
   };
 
-  const todosToComplete = useMemo(
-    () => state.todos.filter((t) => !t.completedAt),
-    [state.todos],
-  );
-  const completeTodos = useMemo(
-    () =>
-      state.todos
-        .filter((t) => t.completedAt)
-        .sort(
-          (a, b) =>
-            new Date(b?.completedAt || '').getTime() -
-            new Date(a?.completedAt || '').getTime(),
-        ),
-    [state.todos],
-  );
-
   const contextValue = {
-    todosToComplete,
-    completeTodos,
-    newTodo: state.newTodo,
-    selectedList: listDb,
-    currentTodo: state.currentTodo,
+    ...state,
+    handleSetInitialState,
     handleAddTodo,
     handleChangeExistingTodo,
     handleChangeNewTodo,

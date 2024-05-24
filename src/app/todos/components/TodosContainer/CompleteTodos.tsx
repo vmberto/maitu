@@ -1,10 +1,24 @@
 'use client';
 
-import { TodoInput } from '@/src/app/todos/components/TodoInput';
+import { useMemo } from 'react';
+
+import { TodoInput } from '@/src/app/todos/components/TodosContainer/TodoInput';
 import { useTodos } from '@/src/app/todos/state/provider';
 
 export const CompleteTodos = () => {
-  const { completeTodos } = useTodos();
+  const { todos } = useTodos();
+
+  const completeTodos = useMemo(
+    () =>
+      todos
+        .filter((t) => t.completedAt)
+        .sort(
+          (a, b) =>
+            new Date(b?.completedAt || '').getTime() -
+            new Date(a?.completedAt || '').getTime(),
+        ),
+    [todos],
+  );
 
   if (!completeTodos.length) {
     return null;
