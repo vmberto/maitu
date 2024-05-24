@@ -123,7 +123,6 @@ export const TodosProvider = ({
     if (title && title.length > 0) {
       const todo = {
         complete: false,
-        completeDisabled: false,
         description: '',
         createdAt: new Date().toISOString(),
         listId,
@@ -151,7 +150,6 @@ export const TodosProvider = ({
       if (!t.complete) {
         const dataToUpdate = {
           complete: true,
-          completeDisabled: true,
           completedAt: new Date().toISOString(),
         };
 
