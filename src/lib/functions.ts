@@ -22,4 +22,6 @@ export const stopPropagationFn = (e: GenericEvent) => {
   e.stopPropagation();
 };
 
+export const isEmptyString = (str: string) => str.length <= 0;
+
 export const json = (data: unknown) => JSON.parse(JSON.stringify(data));

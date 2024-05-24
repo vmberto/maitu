@@ -60,8 +60,8 @@ export const TodoInput = ({ todoData, disabled }: TodoInputComponentProps) => {
         value={todoData.title}
         onClick={stopPropagationFn}
         onFocus={handleInputFocus(todoData)}
-        onBlur={handleRemoveOrUpdateTitle(todoData)}
-        onChange={handleChangeExistingTodo(todoData)}
+        onBlur={handleRemoveOrUpdateTitle}
+        onChange={handleChangeExistingTodo}
         disabled={disabled}
       />
 

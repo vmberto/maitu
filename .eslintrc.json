@@ -49,6 +49,8 @@
         ],
         // Avoid conflict rule between Prettier and Airbnb Eslint
         "import/extensions": "off",
+        //
+        "react/jsx-no-constructed-context-values": "off",
         // Avoid missing file extension errors, TypeScript already provides a similar feature
         "react/function-component-definition": "off",
         // Disable Airbnb's specific function type

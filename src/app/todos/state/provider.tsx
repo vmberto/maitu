@@ -1,13 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useMemo,
-  useReducer,
-} from 'react';
+import { createContext, useContext, useMemo, useReducer } from 'react';
 
 import { add, remove, update } from '@/src/actions/todos.service';
 import todosReducer, {
@@ -18,6 +12,7 @@ import todosReducer, {
   updateSingleElement,
 } from '@/src/app/todos/state/reducer';
 import { useExecutionTimeout } from '@/src/hooks/useExecutionTimeout';
+import { isEmptyString } from '@/src/lib/functions';
 import type { TextareaChangeEventHandler } from '@/types/events';
 import type { List, Todo } from '@/types/main';
 
@@ -28,15 +23,13 @@ export interface TodosState {
   currentTodo: Todo;
   selectedList: List;
 
-  handleChangeExistingTodo: (
-    t: Todo,
-  ) => (e: TextareaChangeEventHandler) => void;
+  handleChangeExistingTodo: (e: TextareaChangeEventHandler) => void;
   handleCompleteTodo: (t: Todo) => Promise<void>;
   handleChangeNewTodo: (e: TextareaChangeEventHandler) => void;
   handleInputFocus: (t: Todo) => () => Promise<void>;
 
   handleAddTodo: () => Promise<void>;
-  handleRemoveOrUpdateTitle: (t: Todo) => () => Promise<void>;
+  handleRemoveOrUpdateTitle: () => Promise<void>;
   handleUpdateTodo: (t: Todo) => () => Promise<void>;
 }
 
@@ -61,62 +54,58 @@ export const TodosProvider = ({
     initialTodosState(todosDb),
   );
 
-  const handleChangeExistingTodo = useCallback(
-    (todo: Todo) => (e: TextareaChangeEventHandler) => {
-      const { value } = e.target;
+  const handleChangeExistingTodo = (e: TextareaChangeEventHandler) => {
+    const { currentTodo } = state;
+    const { value } = e.target;
 
-      const updatedTodos = state.todos.map((t) =>
-        t._id === todo._id ? { ...t, title: value } : t,
-      );
+    currentTodo.title = value;
 
-      dispatch(setTodos([...updatedTodos]));
-    },
-    [state.todos],
-  );
+    const updatedTodos = state.todos.map((t) =>
+      t._id === currentTodo._id ? { ...currentTodo } : t,
+    );
 
-  const handleChangeNewTodo = useCallback(
-    (e: TextareaChangeEventHandler) => {
-      const newTodoCopy: Todo = { ...state.newTodo };
-      const { value } = e.target;
-      newTodoCopy.title = value!;
-      dispatch(setNewTodo(newTodoCopy));
-    },
-    [state.newTodo],
-  );
-
-  const handleInputFocus = (t: Todo) => async () => {
-    dispatch(setCurrentTodo({ ...t }));
+    dispatch(setTodos([...updatedTodos]));
+    dispatch(setCurrentTodo({ ...currentTodo }));
   };
 
-  const handleRemoveOrUpdateTitle = useCallback(
-    (t: Todo) => async () => {
-      if (t.title.length <= 0 && t._id) {
-        dispatch(setTodos(state.todos.filter((todo) => todo._id !== t._id)));
+  const handleChangeNewTodo = (e: TextareaChangeEventHandler) => {
+    const newTodoCopy: Todo = { ...state.newTodo };
+    const { value } = e.target;
+    newTodoCopy.title = value!;
+    dispatch(setNewTodo(newTodoCopy));
+  };
 
-        await remove(t._id.toString());
+  const handleInputFocus = (focusedTodo: Todo) => async () => {
+    dispatch(setCurrentTodo({ ...focusedTodo }));
+  };
 
-        return;
-      }
+  const handleRemoveOrUpdateTitle = async () => {
+    const { currentTodo } = state;
 
-      if (t.title !== state.currentTodo.title && t._id) {
-        await update(t._id.toString(), t);
-      }
-    },
-    [state.currentTodo.title, state.todos],
-  );
+    if (isEmptyString(currentTodo.title) && currentTodo._id) {
+      dispatch(
+        setTodos(state.todos.filter((todo) => todo._id !== currentTodo._id)),
+      );
 
-  const handleUpdateTodo = useCallback(
-    (t: Todo) => async () => {
-      if (t._id) {
-        dispatch(updateSingleElement(t._id.toString(), { ...t }));
+      await remove(currentTodo._id.toString());
 
-        await update(t._id.toString(), t);
-      }
-    },
-    [],
-  );
+      return;
+    }
 
-  const handleAddTodo = useCallback(async () => {
+    if (currentTodo._id) {
+      await update(currentTodo._id.toString().trim(), currentTodo);
+    }
+  };
+
+  const handleUpdateTodo = (t: Todo) => async () => {
+    if (t._id) {
+      dispatch(updateSingleElement(t._id.toString(), { ...t }));
+
+      await update(t._id.toString(), t);
+    }
+  };
+
+  const handleAddTodo = async () => {
     const todosCopy = [...state.todos];
     const { title } = state.newTodo;
 
@@ -137,43 +126,40 @@ export const TodosProvider = ({
 
       dispatch(setTodos([...todosCopy, response]));
     }
-  }, [listId, state.newTodo, state.todos]);
+  };
 
-  const handleCompleteTodo = useCallback(
-    async (t: Todo) => {
-      if (!t._id) {
-        return;
-      }
+  const handleCompleteTodo = async (t: Todo) => {
+    if (!t._id) {
+      return;
+    }
 
-      const todoId = t._id.toString();
+    const todoId = t._id.toString();
 
-      if (!t.complete) {
-        const dataToUpdate = {
-          complete: true,
-          completedAt: new Date().toISOString(),
-        };
+    if (!t.complete) {
+      const dataToUpdate = {
+        complete: true,
+        completedAt: new Date().toISOString(),
+      };
 
-        setExecutionTimeout(todoId, async () => {
-          if (t._id) {
-            dispatch(updateSingleElement(t._id.toString(), dataToUpdate));
-            await update(t._id.toString(), {
-              ...t,
-              ...dataToUpdate,
-            });
-          }
-        });
-      } else {
-        clearTimeoutById(todoId);
-      }
+      setExecutionTimeout(todoId, async () => {
+        if (t._id) {
+          dispatch(updateSingleElement(t._id.toString(), dataToUpdate));
+          await update(t._id.toString(), {
+            ...t,
+            ...dataToUpdate,
+          });
+        }
+      });
+    } else {
+      clearTimeoutById(todoId);
+    }
 
-      dispatch(
-        updateSingleElement(t._id.toString(), {
-          complete: !t.complete,
-        }),
-      );
-    },
-    [clearTimeoutById, setExecutionTimeout],
-  );
+    dispatch(
+      updateSingleElement(t._id.toString(), {
+        complete: !t.complete,
+      }),
+    );
+  };
 
   const todosToComplete = useMemo(
     () => state.todos.filter((t) => !t.completedAt),
@@ -191,35 +177,20 @@ export const TodosProvider = ({
     [state.todos],
   );
 
-  const contextValue = useMemo(
-    () => ({
-      todosToComplete,
-      completeTodos,
-      newTodo: state.newTodo,
-      selectedList: listDb,
-      currentTodo: state.currentTodo,
-      handleAddTodo,
-      handleChangeExistingTodo,
-      handleChangeNewTodo,
-      handleCompleteTodo,
-      handleRemoveOrUpdateTitle,
-      handleUpdateTodo,
-      handleInputFocus,
-    }),
-    [
-      handleAddTodo,
-      completeTodos,
-      state.currentTodo,
-      handleChangeExistingTodo,
-      handleChangeNewTodo,
-      handleCompleteTodo,
-      listDb,
-      state.newTodo,
-      handleRemoveOrUpdateTitle,
-      todosToComplete,
-      handleUpdateTodo,
-    ],
-  );
+  const contextValue = {
+    todosToComplete,
+    completeTodos,
+    newTodo: state.newTodo,
+    selectedList: listDb,
+    currentTodo: state.currentTodo,
+    handleAddTodo,
+    handleChangeExistingTodo,
+    handleChangeNewTodo,
+    handleCompleteTodo,
+    handleRemoveOrUpdateTitle,
+    handleUpdateTodo,
+    handleInputFocus,
+  };
 
   return (
     <TodosContext.Provider value={contextValue}>
