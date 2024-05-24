@@ -11,19 +11,14 @@
   "start_url": "./",
   "icons": [
     {
-      "src": "/icons/android-chrome-192x192.webp",
-      "sizes": "192x192",
+      "src": "/icons/android-chrome-169x168.png",
+      "sizes": "169x168",
       "type": "image/webp"
     },
     {
       "src": "/icons/icon-512x512.webp",
       "sizes": "512x512",
       "type": "image/webp"
-    },
-    {
-      "src": "/icons/icon-512x512.svg",
-      "sizes": "512x512",
-      "type": "image/svg"
     }
   ]
 }
