@@ -11,7 +11,7 @@
   "start_url": "./",
   "icons": [
     {
-      "src": "/icons/android-chrome-169x168.png",
+      "src": "/icons/android-chrome-169x168.webp",
       "sizes": "169x168",
       "type": "image/webp"
     },
