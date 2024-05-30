@@ -1,22 +1,22 @@
 import React, { useState } from 'react';
 
 import type { GenericEvent, InputChangeEventHandler } from '@/types/events';
-import type { Todo } from '@/types/main';
+import type { Task } from '@/types/main';
 
 type InputSectionProps = {
   label: string;
-  propertyName: keyof Todo;
-  updateTodoData: (todo: Todo) => (e: GenericEvent) => Promise<void>;
-  todoData: Todo;
+  propertyName: keyof Task;
+  updateTaskData: (task: Task) => (e: GenericEvent) => Promise<void>;
+  taskData: Task;
 };
 
 export const InputSection = ({
-  todoData,
-  updateTodoData,
+  taskData,
+  updateTaskData,
   label,
   propertyName,
 }: InputSectionProps) => {
-  const [value, setValue] = useState(todoData[propertyName] as string);
+  const [value, setValue] = useState(taskData[propertyName] as string);
 
   return (
     <div className="mb-3">
@@ -31,8 +31,8 @@ export const InputSection = ({
         placeholder="Latitude, Longitude"
         className="relative mb-2 block h-auto w-full resize-none overflow-auto
         rounded-md border-2 bg-transparent p-3 text-base outline-0 focus:outline-none"
-        onBlur={updateTodoData({
-          ...todoData,
+        onBlur={updateTaskData({
+          ...taskData,
           [propertyName]: value,
         })}
         onChange={(e: InputChangeEventHandler) => {

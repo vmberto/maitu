@@ -21,7 +21,7 @@ export interface List {
   createdAt: string;
 }
 
-export interface Todo {
+export interface Task {
   _id?: ObjectId | string;
   title: string;
 
@@ -39,4 +39,4 @@ export interface Todo {
   completedAt?: string;
 }
 
-export type TodosResponse = List & { todos: Todo[] };
+export type TasksResponse = List & { tasks: Task[] };

@@ -6,9 +6,9 @@ import { revalidatePath } from 'next/cache';
 import { getSessionServerSide } from '@/src/app/api/auth/[...nextauth]/auth-options';
 import { json } from '@/src/lib/functions';
 import { getMongoDb } from '@/src/lib/mongodb';
-import type { Todo, TodosResponse } from '@/types/main';
+import type { Task, TasksResponse } from '@/types/main';
 
-export const getListTodos = async (listId: string): Promise<TodosResponse> => {
+export const getListTasks = async (listId: string): Promise<TasksResponse> => {
   const authSession = await getSessionServerSide();
 
   if (!authSession) {
@@ -30,44 +30,44 @@ export const getListTodos = async (listId: string): Promise<TodosResponse> => {
           from: 'todos',
           localField: '_id',
           foreignField: 'listId',
-          as: 'todos',
+          as: 'tasks',
         },
       },
     ])
-    .next()) as Promise<TodosResponse>;
+    .next()) as Promise<TasksResponse>;
 };
 
-export const add = async (todo: Todo) => {
+export const add = async (task: Task) => {
   const mongo = await getMongoDb();
 
-  const newTodo: Todo = {
-    ...todo,
-    listId: new ObjectId(todo.listId),
+  const newTask: Task = {
+    ...task,
+    listId: new ObjectId(task.listId),
   };
 
-  const response = await mongo.collection<Todo>('todos').insertOne(newTodo);
+  const response = await mongo.collection<Task>('todos').insertOne(newTask);
 
-  revalidatePath('/todos');
-  return json({ ...newTodo, _id: response.insertedId });
+  revalidatePath('/tasks');
+  return json({ ...newTask, _id: response.insertedId });
 };
 
 export const remove = async (id: string) => {
   const mongo = await getMongoDb();
 
-  revalidatePath('/todos');
+  revalidatePath('/tasks');
   return mongo.collection('todos').deleteOne({ _id: new ObjectId(id) });
 };
 
-export const update = async (id: string, todo: Todo) => {
+export const update = async (id: string, task: Task) => {
   const mongo = await getMongoDb();
 
-  revalidatePath('/todos');
+  revalidatePath('/tasks');
   return mongo.collection('todos').updateOne(
     { _id: new ObjectId(id) },
     {
       $set: {
-        ...todo,
-        listId: new ObjectId(todo.listId),
+        ...task,
+        listId: new ObjectId(task.listId),
         _id: new ObjectId(id),
       },
     },

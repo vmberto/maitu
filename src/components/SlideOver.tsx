@@ -60,7 +60,7 @@ const SlideOver = ({ title, open, onClose, children }: ModalProps) => {
                     >
                       <button
                         type="button"
-                        className="ml-auto rounded-md text-gray-600 hover:text-gray-400 focus:outline-none focus:ring-2 focus:ring-white"
+                        className="ml-auto self-start rounded-md text-gray-600 hover:text-gray-400 focus:outline-none focus:ring-2 focus:ring-white"
                         onClick={() => {
                           onClose();
                         }}

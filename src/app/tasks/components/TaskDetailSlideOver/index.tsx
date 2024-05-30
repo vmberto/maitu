@@ -1,0 +1,34 @@
+'use client';
+
+import React from 'react';
+
+import { DescriptionSection } from '@/src/app/tasks/components/TaskDetailSlideOver/components/DescriptionSection';
+import { TaskDetailTitle } from '@/src/app/tasks/components/TaskDetailSlideOver/components/TaskDetailTitle';
+import { useTasks } from '@/src/app/tasks/state/provider';
+import SlideOver from '@/src/components/SlideOver';
+import { useModals } from '@/src/providers/slideover.provider';
+import type { Task } from '@/types/main';
+
+export const TaskDetailSlideOver = () => {
+  const { handleUpdateTask } = useTasks();
+  const {
+    modalData: taskData,
+    isOpen,
+    handleCloseSlideOver,
+  } = useModals<Task>();
+
+  return (
+    <SlideOver
+      title={<TaskDetailTitle taskData={taskData} />}
+      open={isOpen}
+      onClose={handleCloseSlideOver}
+    >
+      {taskData && (
+        <DescriptionSection
+          taskData={taskData}
+          updateTaskData={handleUpdateTask}
+        />
+      )}
+    </SlideOver>
+  );
+};

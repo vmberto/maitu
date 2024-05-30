@@ -4,26 +4,26 @@ import React from 'react';
 
 import { HexColors } from '@/src/lib/colors';
 import { formatDate } from '@/src/lib/functions';
-import type { Todo } from '@/types/main';
+import type { Task } from '@/types/main';
 
-type TodoDetailTitleProps = {
-  currentTodo?: Todo;
+type TaskDetailTitleProps = {
+  taskData?: Task;
 };
 
-export const TodoDetailTitle = ({ currentTodo }: TodoDetailTitleProps) => (
+export const TaskDetailTitle = ({ taskData }: TaskDetailTitleProps) => (
   <>
     <PlayCircleIcon
       className="mb-1 mr-1 inline size-6"
       color={HexColors.get('primary')}
     />
 
-    <div className="inline">{currentTodo?.title}</div>
+    <div className="inline">{taskData?.title}</div>
     <div className="mt-2 flex flex-row items-center gap-2 text-sm text-gray-500">
-      {formatDate(currentTodo?.createdAt)}
-      {currentTodo?.completedAt && (
+      {formatDate(taskData?.createdAt)}
+      {taskData?.completedAt && (
         <>
           <CheckCircleIcon className="inline size-5" color="#5aee5c" />
-          {formatDate(currentTodo?.completedAt)}
+          {formatDate(taskData?.completedAt)}
         </>
       )}
     </div>

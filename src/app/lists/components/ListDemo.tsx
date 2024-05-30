@@ -26,7 +26,7 @@ export const ListDemo = ({ list }: ListDemoProps) => {
     >
       <Link
         href={{
-          pathname: '/todos',
+          pathname: '/tasks',
           query: { listId: list._id },
         }}
       >

@@ -1,19 +1,19 @@
 import React, { type ChangeEvent, useEffect, useRef, useState } from 'react';
 
 import type { GenericEvent } from '@/types/events';
-import type { Todo } from '@/types/main';
+import type { Task } from '@/types/main';
 
 type DescriptionSectionProps = {
-  updateTodoData: (todo: Todo) => (e: GenericEvent) => Promise<void>;
-  todoData: Todo;
+  updateTaskData: (task: Task) => (e: GenericEvent) => Promise<void>;
+  taskData: Task;
 };
 
 export const DescriptionSection = ({
-  todoData,
-  updateTodoData,
+  taskData,
+  updateTaskData,
 }: DescriptionSectionProps) => {
   const textareaRef = useRef({} as HTMLTextAreaElement);
-  const [description, setDescription] = useState(todoData?.description || '');
+  const [description, setDescription] = useState(taskData?.description || '');
 
   useEffect(() => {
     textareaRef.current.style.height = '0px';
@@ -38,8 +38,8 @@ export const DescriptionSection = ({
         className="relative z-10 mb-4 block w-full resize-none overflow-hidden
            rounded-md bg-transparent px-2 pb-2 pt-1 text-base outline-0 focus:outline-none"
         onChange={handleChange}
-        onBlur={updateTodoData({
-          ...todoData,
+        onBlur={updateTaskData({
+          ...taskData,
           description,
         })}
       />
