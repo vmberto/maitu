@@ -28,13 +28,44 @@ export const getListTasks = async (listId: string): Promise<TasksResponse> => {
       {
         $lookup: {
           from: 'todos',
-          localField: '_id',
-          foreignField: 'listId',
+          let: { listId: '$_id' },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ['$listId', '$$listId'] },
+                    { $eq: ['$parentTaskId', null] },
+                  ],
+                },
+              },
+            },
+          ],
           as: 'tasks',
         },
       },
     ])
     .next()) as Promise<TasksResponse>;
+};
+
+export const getSubTasks = async (taskId: string): Promise<Task[]> => {
+  const authSession = await getSessionServerSide();
+
+  if (!authSession) {
+    throw Error();
+  }
+
+  const mongo = await getMongoDb();
+  return (await mongo
+    .collection<Task[]>('todos')
+    .aggregate([
+      {
+        $match: {
+          parentTaskId: new ObjectId(taskId),
+        },
+      },
+    ])
+    .toArray()) as Task[];
 };
 
 export const add = async (task: Task) => {
@@ -44,6 +75,10 @@ export const add = async (task: Task) => {
     ...task,
     listId: new ObjectId(task.listId),
   };
+
+  if (task.parentTaskId) {
+    newTask.parentTaskId = new ObjectId(task.parentTaskId);
+  }
 
   const response = await mongo.collection<Task>('todos').insertOne(newTask);
 
@@ -68,6 +103,9 @@ export const update = async (id: string, task: Task) => {
       $set: {
         ...task,
         listId: new ObjectId(task.listId),
+        parentTaskId: task.parentTaskId
+          ? new ObjectId(task.parentTaskId)
+          : undefined,
         _id: new ObjectId(id),
       },
     },

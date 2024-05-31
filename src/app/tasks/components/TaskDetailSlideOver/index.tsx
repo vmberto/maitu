@@ -1,9 +1,8 @@
 'use client';
 
-import React from 'react';
-
 import { DescriptionSection } from '@/src/app/tasks/components/TaskDetailSlideOver/components/DescriptionSection';
 import { TaskDetailTitle } from '@/src/app/tasks/components/TaskDetailSlideOver/components/TaskDetailTitle';
+import { SubTasksWrapper } from '@/src/app/tasks/components/TaskDetailSlideOver/Subtasks/SubTasksWrapper';
 import { useTasks } from '@/src/app/tasks/state/provider';
 import SlideOver from '@/src/components/SlideOver';
 import { useModals } from '@/src/providers/slideover.provider';
@@ -29,6 +28,7 @@ export const TaskDetailSlideOver = () => {
           updateTaskData={handleUpdateTask}
         />
       )}
+      <SubTasksWrapper />
     </SlideOver>
   );
 };

@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 
-import { TaskInput } from '@/src/app/tasks/components/TasksContainer/TaskInput';
+import { TaskInput } from '@/src/app/tasks/components/Tasks/TaskInput';
 import { useTasks } from '@/src/app/tasks/state/provider';
 
 export const CompleteTasks = () => {

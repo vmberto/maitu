@@ -2,8 +2,8 @@
 
 import React, { useEffect } from 'react';
 
-import { CompleteTasks } from '@/src/app/tasks/components/TasksContainer/CompleteTasks';
-import { Tasks } from '@/src/app/tasks/components/TasksContainer/Tasks';
+import { CompleteTasks } from '@/src/app/tasks/components/Tasks/CompleteTasks';
+import { Tasks } from '@/src/app/tasks/components/Tasks/Tasks';
 import { useTasks } from '@/src/app/tasks/state/provider';
 import type { List, Task } from '@/types/main';
 

@@ -1,11 +1,11 @@
 import React from 'react';
 
-import * as TasksService from '@/src/actions/tasks.service';
 import { Header } from '@/src/app/tasks/components/Header';
 import { TaskDetailSlideOver } from '@/src/app/tasks/components/TaskDetailSlideOver';
-import { TasksWrapper } from '@/src/app/tasks/components/TasksContainer/TasksWrapper';
+import { TasksWrapper } from '@/src/app/tasks/components/Tasks/TasksWrapper';
 import { TasksProvider } from '@/src/app/tasks/state/provider';
 import { json } from '@/src/lib/functions';
+import * as TasksService from '@/src/server/tasks.service';
 
 type TasksPageProps = {
   searchParams: { listId: string };

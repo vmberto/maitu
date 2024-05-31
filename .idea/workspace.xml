@@ -5,35 +5,25 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/app/tasks/components/TaskDetailSlideOver/index.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/tasks/components/TasksContainer/CompleteTasks.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/tasks/components/TasksContainer/Tasks.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/tasks/components/TasksContainer/TasksWrapper.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/tasks/page.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/tasks/state/provider.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/tasks/state/reducer.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/lib/enums.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/tasks/components/TaskDetailSlideOver/Subtasks/SubTasksWrapper.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/actions/lists.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/actions/lists.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/actions/todos.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/actions/tasks.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/lists/components/ListDemo.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/lists/components/ListDemo.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/todos/components/Header.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/tasks/components/Header.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/todos/components/TodoDetailSlideOver/components/DescriptionSection.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/tasks/components/TaskDetailSlideOver/components/DescriptionSection.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/todos/components/TodoDetailSlideOver/components/InputSection.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/tasks/components/TaskDetailSlideOver/components/InputSection.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/todos/components/TodoDetailSlideOver/components/SectionSelect.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/tasks/components/TaskDetailSlideOver/components/SectionSelect.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/todos/components/TodoDetailSlideOver/components/TodoDetailTitle.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/tasks/components/TaskDetailSlideOver/components/TaskDetailTitle.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/todos/components/TodoDetailSlideOver/index.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/todos/components/TodosContainer/CompleteTodos.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/todos/components/TodosContainer/NewTodoInput.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/tasks/components/TasksContainer/NewTaskInput.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/todos/components/TodosContainer/TodoInput.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/tasks/components/TasksContainer/TaskInput.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/todos/components/TodosContainer/Todos.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/todos/components/TodosContainer/TodosWrapper.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/todos/loading.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/tasks/loading.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/todos/page.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/todos/state/provider.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/todos/state/reducer.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/actions/lists.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/lists.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/actions/tasks.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/tasks.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/actions/users.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/users.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/lists/components/ListsContainer.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/lists/components/ListsContainer.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/lists/provider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/lists/provider.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/tasks/components/TaskDetailSlideOver/components/InputSection.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/tasks/components/TaskDetailSlideOver/components/SectionSelect.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/tasks/components/TaskDetailSlideOver/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/tasks/components/TaskDetailSlideOver/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/tasks/components/TasksContainer/CompleteTasks.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/tasks/components/Tasks/CompleteTasks.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/tasks/components/TasksContainer/NewTaskInput.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/tasks/components/Tasks/NewTaskInput.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/tasks/components/TasksContainer/TaskInput.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/tasks/components/Tasks/TaskInput.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/tasks/components/TasksContainer/Tasks.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/tasks/components/Tasks/Tasks.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/tasks/components/TasksContainer/TasksWrapper.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/tasks/components/Tasks/TasksWrapper.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/tasks/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/tasks/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/tasks/state/provider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/tasks/state/provider.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/tasks/state/reducer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/tasks/state/reducer.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/SlideOver.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/SlideOver.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/middleware.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/middleware.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/types/main.ts" beforeDir="false" afterPath="$PROJECT_DIR$/types/main.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -55,29 +45,29 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "subtasks",
-    "javascript.nodejs.core.library.configured.version": "18.18.2",
-    "javascript.nodejs.core.library.typings.version": "18.18.2",
-    "last_opened_file_path": "/Users/vmberto/Documents/maitu/public/icons",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.standard": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.standard": "",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "prettier.import.notification.dismissed": "true",
-    "prettierjs.PrettierConfiguration.Package": "/Users/vmberto/Documents/maitu/node_modules/prettier",
-    "settings.editor.selected.configurable": "actions.on.save",
-    "ts.external.directory.path": "/Users/vmberto/Documents/maitu/node_modules/typescript/lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;javascript.nodejs.core.library.configured.version&quot;: &quot;18.18.2&quot;,
+    &quot;javascript.nodejs.core.library.typings.version&quot;: &quot;18.18.2&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/vmberto/Documents/maitu/public/icons&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.standard&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.standard&quot;: &quot;&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;prettier.import.notification.dismissed&quot;: &quot;true&quot;,
+    &quot;prettierjs.PrettierConfiguration.Package&quot;: &quot;/Users/vmberto/Documents/maitu/node_modules/prettier&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;actions.on.save&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/Users/vmberto/Documents/maitu/node_modules/typescript/lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/public/icons" />
@@ -87,11 +77,11 @@
       <recent name="$PROJECT_DIR$/src" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/app/tasks/components/TaskDetailSlideOver" />
+      <recent name="$PROJECT_DIR$/src/app/tasks/components/TaskDetailSlideOver/components/Subtasks" />
       <recent name="$PROJECT_DIR$/src/app/todos/components/TodosContainer" />
       <recent name="$PROJECT_DIR$/public/icons" />
       <recent name="$PROJECT_DIR$/src/app/todos/state" />
-      <recent name="$PROJECT_DIR$" />
-      <recent name="$PROJECT_DIR$/src/app/lists" />
     </key>
     <key name="es6.move.members.recent.items">
       <recent name="$PROJECT_DIR$/src/app/lists/components/ListsContainer.tsx" />
@@ -162,6 +152,9 @@
       <workItem from="1711454552414" duration="598000" />
       <workItem from="1711504527422" duration="1000" />
       <workItem from="1712449409002" duration="12528000" />
+      <workItem from="1717115827948" duration="600000" />
+      <workItem from="1717116438455" duration="370000" />
+      <workItem from="1717116816086" duration="2338000" />
     </task>
     <servers />
   </component>

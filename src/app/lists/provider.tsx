@@ -11,7 +11,7 @@ import {
   useState,
 } from 'react';
 
-import { add, remove, update, updateOrder } from '@/src/actions/lists.service';
+import { add, remove, update, updateOrder } from '@/src/server/lists.service';
 import type { List } from '@/types/main';
 
 export type ListsState = {

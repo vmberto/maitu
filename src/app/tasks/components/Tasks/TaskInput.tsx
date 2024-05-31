@@ -65,7 +65,7 @@ export const TaskInput = ({ taskData, disabled }: TaskInputComponentProps) => {
         disabled={disabled}
       />
 
-      {taskData?._id && (
+      {taskData?._id && !taskData?.parentTaskId && (
         <Menu as="div" className="relative inline-block self-start text-left">
           <Menu.Button
             onClick={handleOpenSlideOver(taskData)}

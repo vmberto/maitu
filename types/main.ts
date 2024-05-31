@@ -26,6 +26,7 @@ export interface Task {
   title: string;
 
   listId: ObjectId | string;
+  parentTaskId?: ObjectId | string;
 
   description: string;
 
