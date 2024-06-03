@@ -18,8 +18,8 @@ export const DescriptionSection = ({
   useEffect(() => {
     textareaRef.current.style.height = '0px';
     let { scrollHeight } = textareaRef.current;
-    if (scrollHeight < 96) {
-      scrollHeight = 96;
+    if (scrollHeight < 32) {
+      scrollHeight = 32;
     }
     textareaRef.current.style.height = `${scrollHeight}px`;
   }, [textareaRef.current.value]);
@@ -29,14 +29,14 @@ export const DescriptionSection = ({
   };
 
   return (
-    <div className="mb-3">
+    <div className="h-fit rounded-2xl bg-gray-100 p-4">
       <textarea
         id="description"
         ref={textareaRef}
         value={description}
         placeholder="Write about it..."
-        className="relative z-10 mb-4 block w-full resize-none overflow-hidden
-           rounded-md bg-transparent px-2 pb-2 pt-1 text-base outline-0 focus:outline-none"
+        className="relative z-10 block w-full resize-none overflow-hidden
+           rounded-md bg-transparent p-1 pb-2 text-base outline-0 focus:outline-none"
         onChange={handleChange}
         onBlur={updateTaskData({
           ...taskData,

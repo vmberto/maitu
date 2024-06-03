@@ -22,13 +22,15 @@ export const TaskDetailSlideOver = () => {
       open={isOpen}
       onClose={handleCloseSlideOver}
     >
-      {taskData && (
-        <DescriptionSection
-          taskData={taskData}
-          updateTaskData={handleUpdateTask}
-        />
-      )}
-      <SubTasksWrapper />
+      <div className="flex flex-col gap-4">
+        {taskData && (
+          <DescriptionSection
+            taskData={taskData}
+            updateTaskData={handleUpdateTask}
+          />
+        )}
+        <SubTasksWrapper />
+      </div>
     </SlideOver>
   );
 };

@@ -5,26 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/app/tasks/components/TaskDetailSlideOver/Subtasks/SubTasksWrapper.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/actions/lists.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/lists.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/actions/tasks.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/tasks.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/actions/users.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/users.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/lists/components/ListsContainer.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/lists/components/ListsContainer.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/lists/provider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/lists/provider.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/tasks/components/TaskDetailSlideOver/components/InputSection.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/tasks/components/TaskDetailSlideOver/components/SectionSelect.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/tasks/components/TaskDetailSlideOver/Subtasks/SubTasksWrapper.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/tasks/components/TaskDetailSlideOver/Subtasks/SubTasksWrapper.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/tasks/components/TaskDetailSlideOver/components/DescriptionSection.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/tasks/components/TaskDetailSlideOver/components/DescriptionSection.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/tasks/components/TaskDetailSlideOver/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/tasks/components/TaskDetailSlideOver/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/tasks/components/TasksContainer/CompleteTasks.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/tasks/components/Tasks/CompleteTasks.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/tasks/components/TasksContainer/NewTaskInput.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/tasks/components/Tasks/NewTaskInput.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/tasks/components/TasksContainer/TaskInput.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/tasks/components/Tasks/TaskInput.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/tasks/components/TasksContainer/Tasks.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/tasks/components/Tasks/Tasks.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/tasks/components/TasksContainer/TasksWrapper.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/tasks/components/Tasks/TasksWrapper.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/tasks/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/tasks/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/tasks/state/provider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/tasks/state/provider.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/tasks/state/reducer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/tasks/state/reducer.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/SlideOver.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/SlideOver.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/types/main.ts" beforeDir="false" afterPath="$PROJECT_DIR$/types/main.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Typography.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Typography.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -154,7 +139,8 @@
       <workItem from="1712449409002" duration="12528000" />
       <workItem from="1717115827948" duration="600000" />
       <workItem from="1717116438455" duration="370000" />
-      <workItem from="1717116816086" duration="2338000" />
+      <workItem from="1717116816086" duration="3529000" />
+      <workItem from="1717370364397" duration="5748000" />
     </task>
     <servers />
   </component>

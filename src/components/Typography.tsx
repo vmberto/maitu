@@ -29,7 +29,7 @@ const TypographyComponent = (
         {
           ...rest,
           ref,
-          className,
+          className: `${className} font-semibold`,
         },
         children,
       );
@@ -85,6 +85,17 @@ const TypographyComponent = (
           ...rest,
           ref,
           className,
+        },
+        children,
+      );
+      break;
+    case 'p':
+      template = React.createElement(
+        as,
+        {
+          ...rest,
+          ref,
+          className: `${className} text-sm`,
         },
         children,
       );
