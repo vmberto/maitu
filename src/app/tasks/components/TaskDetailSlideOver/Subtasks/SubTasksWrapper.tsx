@@ -5,8 +5,6 @@ import { TaskInput } from '@/src/app/tasks/components/Tasks/TaskInput';
 import { useTasks } from '@/src/app/tasks/state/provider';
 import { Typography } from '@/src/components/Typography';
 
-const stylesWithoutSubtasks = 'flex justify-center align-middle';
-
 export const SubTasksWrapper = () => {
   const { handleGetSubtasks, subtasks } = useTasks();
 
