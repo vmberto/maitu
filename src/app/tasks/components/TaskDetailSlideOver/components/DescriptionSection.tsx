@@ -1,10 +1,9 @@
 import React, { type ChangeEvent, useEffect, useRef, useState } from 'react';
 
-import type { GenericEvent } from '@/types/events';
 import type { Task } from '@/types/main';
 
 type DescriptionSectionProps = {
-  updateTaskData: (task: Task) => (e: GenericEvent) => Promise<void>;
+  updateTaskData: (task: Task) => () => Promise<void>;
   taskData: Task;
 };
 
