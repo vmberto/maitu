@@ -5,9 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/tasks/components/TaskDetailSlideOver/Subtasks/SubTasksWrapper.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/tasks/components/TaskDetailSlideOver/Subtasks/SubTasksWrapper.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/tasks/components/TaskDetailSlideOver/components/DescriptionSection.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/tasks/components/TaskDetailSlideOver/components/DescriptionSection.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/server/lists.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/server/lists.service.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,7 +45,7 @@
     "prettier.import.notification.dismissed": "true",
     "prettierjs.PrettierConfiguration.Package": "/Users/vmberto/Documents/maitu/node_modules/prettier",
     "settings.editor.selected.configurable": "actions.on.save",
-    "ts.external.directory.path": "/Applications/WebStorm.app/Contents/plugins/javascript-impl/jsLanguageServicesImpl/external",
+    "ts.external.directory.path": "/Users/vmberto/Documents/maitu/node_modules/typescript/lib",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -138,7 +136,7 @@
       <workItem from="1717115827948" duration="600000" />
       <workItem from="1717116438455" duration="370000" />
       <workItem from="1717116816086" duration="3529000" />
-      <workItem from="1717370364397" duration="11186000" />
+      <workItem from="1717370364397" duration="11445000" />
     </task>
     <servers />
   </component>
