@@ -26,27 +26,6 @@ export const get = async () => {
     .toArray();
 };
 
-export const getById = async (id: string): Promise<List> => {
-  const authSession = await getSessionServerSide();
-
-  if (!authSession) {
-    throw Error();
-  }
-
-  const mongo = await getMongoDb();
-  return (await mongo
-    .collection('lists')
-    .aggregate([
-      {
-        $match: {
-          _id: new ObjectId(id),
-          owner: new ObjectId(authSession.user._id),
-        },
-      },
-    ])
-    .next()) as Promise<List>;
-};
-
 export const add = async (list: List): Promise<List> => {
   const authSession = await getSessionServerSide();
 

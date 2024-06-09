@@ -113,10 +113,8 @@ export const TasksProvider = ({ children }: TasksProviderProps) => {
   };
 
   const handleUpdateTask = (t: Task) => async () => {
-    const isSubtask = !!(modalData as Task | undefined);
-
     if (t._id) {
-      dispatch(updateSingleTask(t._id.toString(), { ...t }, isSubtask));
+      dispatch(updateSingleTask(t._id.toString(), { ...t }, false));
 
       await update(t._id.toString(), t);
     }
