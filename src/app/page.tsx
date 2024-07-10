@@ -10,9 +10,5 @@ export default async function Home() {
     redirect('/lists');
   }
 
-  return (
-    <main>
-      <LoginForm />
-    </main>
-  );
+  return <LoginForm />;
 }

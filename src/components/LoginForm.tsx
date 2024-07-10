@@ -2,28 +2,39 @@
 
 import { useFormState } from 'react-dom';
 
+import { Button } from '@/src/components/Button';
+import { Input } from '@/src/components/Input';
+import { Typography } from '@/src/components/Typography';
 import { login } from '@/src/lib/auth';
 
 export default function LoginForm() {
   const [state, formAction] = useFormState(login, null);
 
   return (
-    <div className="grid h-screen place-items-center">
-      <div className="rounded-lg border-t-4 border-green-400 p-5 shadow-lg">
-        <h1 className="my-4 text-xl font-bold">Login</h1>
+    <main
+      className="grid h-screen place-items-center rounded-md border-2 border-gray-200 align-middle
+      shadow-sm shadow-gray-400"
+    >
+      <div className="mx-8 rounded-lg border-8 border-gray-100 bg-gray-100 p-5 shadow-lg">
+        <Typography
+          as="h1"
+          className="mb-4 text-center text-xl font-bold text-primary"
+        >
+          maitu
+        </Typography>
 
-        <form action={formAction} className="flex flex-col gap-3">
-          <input name="email" type="text" placeholder="Email" />
-          <input name="password" type="password" placeholder="Password" />
-          <button
+        <form action={formAction} className="flex flex-col gap-4">
+          <Input name="email" type="text" placeholder="Email" />
+          <Input name="password" type="password" placeholder="Password" />
+          <Button
             type="submit"
-            className="cursor-pointer bg-green-600 px-6 py-2 font-bold text-white"
-          >
-            Login
-          </button>
+            label="Login"
+            color="primary"
+            className="cursor-pointer px-6 py-2 font-bold text-white"
+          />
         </form>
         <p>{state && state.formError ? state.formError : ''}</p>
       </div>
-    </div>
+    </main>
   );
 }

@@ -1,19 +1,28 @@
-import { type FC, type InputHTMLAttributes, type ReactElement } from 'react';
+import { type InputHTMLAttributes, type ReactElement } from 'react';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
-  label: string | ReactElement;
+  label?: string | ReactElement;
 }
 
-export const Input: FC<InputProps> = ({ label, value, onChange }) => (
-  <div className="mb-4">
-    <label
-      htmlFor="firstName"
-      className="mb-2 inline-block font-light text-gray-700"
-    >
-      {label}
-    </label>
+export const Input = ({
+  label,
+  value,
+  onChange,
+  name,
+  ...rest
+}: InputProps) => (
+  <div>
+    {label && (
+      <label
+        htmlFor={name}
+        className="mb-2 inline-block font-light text-gray-700"
+      >
+        {label}
+      </label>
+    )}
     <input
-      type="text"
+      {...rest}
+      name={name}
       className="m-0 block w-full
       rounded border border-solid border-gray-300
       bg-white bg-clip-padding px-3 py-1.5

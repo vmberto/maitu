@@ -48,7 +48,7 @@ export const DeleteList = ({ id, listTitle }: DeleteListProps) => {
         <button
           type="submit"
           disabled={listTitleInput !== listTitle}
-          className="w-full cursor-pointer rounded-full bg-danger p-3 text-white disabled:cursor-not-allowed disabled:opacity-40"
+          className="mt-4 w-full cursor-pointer rounded-full bg-danger p-3 text-white disabled:cursor-not-allowed disabled:opacity-40"
         >
           Delete
         </button>
