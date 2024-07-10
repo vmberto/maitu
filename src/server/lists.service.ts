@@ -85,7 +85,7 @@ export const updateOrder = async ({
     return mongo.collection('lists').updateOne(
       {
         _id: new ObjectId(item._id),
-        owner: new ObjectId(user.id),
+        owner: new ObjectId(user._id),
       },
       { $set: { index } },
     );
