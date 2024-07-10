@@ -65,3 +65,8 @@ export async function getSession() {
   if (!session) return redirect('/');
   return decrypt(session);
 }
+
+export async function validateSession() {
+  const session = cookies().get('session')?.value;
+  return !!session;
+}
