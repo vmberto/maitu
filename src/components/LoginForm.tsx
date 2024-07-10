@@ -2,7 +2,7 @@
 
 import { useFormState } from 'react-dom';
 
-import { login } from '@/src/lib/auth/auth';
+import { login } from '@/src/lib/auth';
 
 export default function LoginForm() {
   const [state, formAction] = useFormState(login, null);

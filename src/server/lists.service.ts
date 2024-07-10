@@ -3,7 +3,7 @@
 import { ObjectId } from 'mongodb';
 import { revalidatePath } from 'next/cache';
 
-import { getSession } from '@/src/lib/auth/auth';
+import { getSession } from '@/src/lib/auth';
 import { json } from '@/src/lib/functions';
 import { getMongoDb } from '@/src/lib/mongodb';
 import type { List } from '@/types/main';

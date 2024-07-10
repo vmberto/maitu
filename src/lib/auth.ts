@@ -7,14 +7,14 @@ import { redirect } from 'next/navigation';
 
 import { getMongoDb } from '@/src/lib/mongodb';
 
-const secretKey = 'secret';
-const key = new TextEncoder().encode(secretKey);
+const { SECRET_KEY } = process.env;
+const key = new TextEncoder().encode(SECRET_KEY);
 
 export async function encrypt(payload: any) {
   return new SignJWT(payload)
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
-    .setExpirationTime('7d')
+    .setExpirationTime('30d')
     .sign(key);
 }
 
