@@ -3,15 +3,15 @@
 import { ObjectId } from 'mongodb';
 import { revalidatePath } from 'next/cache';
 
-import { getSessionServerSide } from '@/src/app/api/auth/[...nextauth]/auth-options';
+import { validateRequest } from '@/src/lib/auth/validate-request';
 import { json } from '@/src/lib/functions';
 import { getMongoDb } from '@/src/lib/mongodb';
 import type { List } from '@/types/main';
 
 export const get = async () => {
-  const authSession = await getSessionServerSide();
+  const { user } = await validateRequest();
 
-  if (!authSession) {
+  if (!user) {
     throw Error();
   }
 
@@ -19,24 +19,21 @@ export const get = async () => {
 
   return mongo
     .collection('lists')
-    .find<List>(
-      { owner: new ObjectId(authSession.user._id) },
-      { sort: { index: 1 } },
-    )
+    .find<List>({ owner: new ObjectId(user.id) }, { sort: { index: 1 } })
     .toArray();
 };
 
 export const add = async (list: List): Promise<List> => {
-  const authSession = await getSessionServerSide();
+  const { user } = await validateRequest();
 
-  if (!authSession) {
+  if (!user) {
     throw Error();
   }
   const mongo = await getMongoDb();
 
   const response = await mongo.collection('lists').insertOne({
     ...list,
-    owner: new ObjectId(authSession.user._id),
+    owner: new ObjectId(user.id),
   });
 
   revalidatePath('/lists');
@@ -67,9 +64,9 @@ export const updateOrder = async ({
   initialIndex: number;
   destinationIndex: number;
 }) => {
-  const authSession = await getSessionServerSide();
+  const { user } = await validateRequest();
 
-  if (!authSession) {
+  if (!user) {
     throw Error();
   }
 
@@ -85,7 +82,7 @@ export const updateOrder = async ({
     return mongo.collection('lists').updateOne(
       {
         _id: new ObjectId(item._id),
-        owner: new ObjectId(authSession.user._id),
+        owner: new ObjectId(user.id),
       },
       { $set: { index } },
     );

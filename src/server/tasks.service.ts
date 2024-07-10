@@ -3,7 +3,6 @@
 import { ObjectId } from 'mongodb';
 import { revalidatePath } from 'next/cache';
 
-import { getSessionServerSide } from '@/src/app/api/auth/[...nextauth]/auth-options';
 import { json } from '@/src/lib/functions';
 import { getMongoDb } from '@/src/lib/mongodb';
 import type { Task, TasksResponse } from '@/types/main';
