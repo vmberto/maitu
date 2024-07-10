@@ -1,10 +1,10 @@
 import { redirect } from 'next/navigation';
 
 import LoginForm from '@/src/components/LoginForm';
-import { validateSession } from '@/src/lib/auth';
+import { isAuthenticated } from '@/src/lib/auth';
 
 export default async function Home() {
-  const sessionExists = await validateSession();
+  const sessionExists = await isAuthenticated();
 
   if (sessionExists) {
     redirect('/lists');

@@ -1,6 +1,6 @@
 'use server';
 
-import * as bcrypt from 'bcrypt';
+import { compare } from 'bcrypt';
 import { jwtVerify, SignJWT } from 'jose';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
@@ -20,10 +20,14 @@ export async function encrypt(payload: any) {
 
 // Decrypt function
 export async function decrypt(input: string): Promise<any> {
-  const { payload } = await jwtVerify(input, key, {
-    algorithms: ['HS256'],
-  });
-  return payload;
+  try {
+    const { payload } = await jwtVerify(input, key, {
+      algorithms: ['HS256'],
+    });
+    return payload;
+  } catch {
+    return null;
+  }
 }
 
 export async function login(_: any, formData: FormData) {
@@ -38,10 +42,7 @@ export async function login(_: any, formData: FormData) {
     };
   }
 
-  const validPassword = await bcrypt.compare(
-    password.toString(),
-    user.password,
-  );
+  const validPassword = await compare(password.toString(), user.password);
 
   if (!validPassword) {
     return {
@@ -66,7 +67,11 @@ export async function getSession() {
   return decrypt(session);
 }
 
-export async function validateSession() {
+export async function isAuthenticated() {
   const session = cookies().get('session')?.value;
-  return !!session;
+  if (session) {
+    const decryptedSession = await decrypt(session);
+    return decryptedSession ? !!decryptedSession.user : false;
+  }
+  return false;
 }
