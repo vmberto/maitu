@@ -16,7 +16,7 @@ import tasksReducer, {
 import { useExecutionTimeout } from '@/src/hooks/useExecutionTimeout';
 import { json } from '@/src/lib/functions';
 import { useModals } from '@/src/providers/slideover.provider';
-import { add, getSubTasks, remove, update } from '@/src/server/tasks.service';
+import { add, getSubTasks, remove, update } from '@/src/actions/tasks.action';
 import type { TextareaChangeEventHandler } from '@/types/events';
 import type { List, Task } from '@/types/main';
 

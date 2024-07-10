@@ -5,7 +5,7 @@ import { TaskDetailSlideOver } from '@/src/app/tasks/components/TaskDetailSlideO
 import { TasksWrapper } from '@/src/app/tasks/components/Tasks/TasksWrapper';
 import { TasksProvider } from '@/src/app/tasks/state/provider';
 import { json } from '@/src/lib/functions';
-import * as TasksService from '@/src/server/tasks.service';
+import * as TasksService from '@/src/actions/tasks.action';
 
 type TasksPageProps = {
   searchParams: { listId: string };

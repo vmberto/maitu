@@ -5,7 +5,7 @@ import { useFormState } from 'react-dom';
 import { Button } from '@/src/components/Button';
 import { Input } from '@/src/components/Input';
 import { Typography } from '@/src/components/Typography';
-import { login } from '@/src/lib/auth';
+import { login } from '@/src/actions/auth.action';
 
 export default function LoginForm() {
   const [state, formAction] = useFormState(login, null);
