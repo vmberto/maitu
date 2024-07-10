@@ -3,6 +3,7 @@
 import type { ReactNode } from 'react';
 import { createContext, useContext, useReducer } from 'react';
 
+import { add, getSubTasks, remove, update } from '@/src/actions/tasks.action';
 import type { TasksReducerState } from '@/src/app/tasks/state/reducer';
 import tasksReducer, {
   initialState,
@@ -16,7 +17,6 @@ import tasksReducer, {
 import { useExecutionTimeout } from '@/src/hooks/useExecutionTimeout';
 import { json } from '@/src/lib/functions';
 import { useModals } from '@/src/providers/slideover.provider';
-import { add, getSubTasks, remove, update } from '@/src/actions/tasks.action';
 import type { TextareaChangeEventHandler } from '@/types/events';
 import type { List, Task } from '@/types/main';
 
