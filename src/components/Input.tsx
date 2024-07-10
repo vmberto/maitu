@@ -31,7 +31,7 @@ export const Input = ({
       focus:text-gray-700 focus:outline-none"
       value={value}
       onChange={onChange}
-      id="firstName"
+      id={name}
     />
   </div>
 );

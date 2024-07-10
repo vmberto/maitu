@@ -50,10 +50,13 @@ export async function login(_: any, formData: FormData) {
     };
   }
 
-  const expires = new Date(Date.now() + 60 * 60 * 24 * 7);
+  const expires = new Date(Date.now() + 60 * 60 * 24 * 30 * 1000).toISOString();
   const session = await encrypt({ user, expires });
 
-  cookies().set('session', session, { expires, httpOnly: true });
+  cookies().set('session', session, {
+    expires: new Date(expires),
+    httpOnly: true,
+  });
   return redirect('/lists');
 }
 
