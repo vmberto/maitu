@@ -3,13 +3,13 @@
 import { ObjectId } from 'mongodb';
 import { revalidatePath } from 'next/cache';
 
-import { validateRequest } from '@/src/lib/auth/validate-request';
+import { getSession } from '@/src/lib/auth/auth';
 import { json } from '@/src/lib/functions';
 import { getMongoDb } from '@/src/lib/mongodb';
 import type { List } from '@/types/main';
 
 export const get = async () => {
-  const { user } = await validateRequest();
+  const { user } = await getSession();
 
   if (!user) {
     throw Error();
@@ -19,12 +19,15 @@ export const get = async () => {
 
   return mongo
     .collection('lists')
-    .find<List>({ owner: new ObjectId(user.id) }, { sort: { index: 1 } })
+    .find<List>(
+      { owner: new ObjectId(user._id.toString()) },
+      { sort: { index: 1 } },
+    )
     .toArray();
 };
 
 export const add = async (list: List): Promise<List> => {
-  const { user } = await validateRequest();
+  const { user } = await getSession();
 
   if (!user) {
     throw Error();
@@ -33,7 +36,7 @@ export const add = async (list: List): Promise<List> => {
 
   const response = await mongo.collection('lists').insertOne({
     ...list,
-    owner: new ObjectId(user.id),
+    owner: new ObjectId(user._id),
   });
 
   revalidatePath('/lists');
@@ -64,7 +67,7 @@ export const updateOrder = async ({
   initialIndex: number;
   destinationIndex: number;
 }) => {
-  const { user } = await validateRequest();
+  const { user } = await getSession();
 
   if (!user) {
     throw Error();

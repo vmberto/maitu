@@ -1,9 +1,9 @@
 'use client';
 
 import BarsIcon from '@heroicons/react/16/solid/Bars4Icon';
-import { signOut } from 'next-auth/react';
 
 import { Typography } from '@/src/components/Typography';
+import { logout } from '@/src/lib/auth/auth';
 
 export const MaituHeader = () => (
   <header className="bg-gray-100">
@@ -15,7 +15,7 @@ export const MaituHeader = () => (
         type="button"
         className="ml-auto rounded-full px-3 py-0.5 text-base
         text-primary transition hover:bg-gray-200"
-        onClick={() => signOut({ callbackUrl: '/' })}
+        onClick={() => logout()}
       >
         <BarsIcon aria-label="bars" className="size-6" />
       </button>

@@ -2,7 +2,7 @@
 
 import { useFormState } from 'react-dom';
 
-import { login } from '@/src/lib/auth/actions';
+import { login } from '@/src/lib/auth/auth';
 
 export default function LoginForm() {
   const [state, formAction] = useFormState(login, null);
@@ -22,6 +22,7 @@ export default function LoginForm() {
             Login
           </button>
         </form>
+        <p>{state && state.formError ? state.formError : ''}</p>
       </div>
     </div>
   );

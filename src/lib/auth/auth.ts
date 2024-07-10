@@ -1,47 +1,67 @@
-import { MongodbAdapter } from '@lucia-auth/adapter-mongodb';
-import { Lucia } from 'lucia';
+'use server';
+
+import * as bcrypt from 'bcrypt';
+import { jwtVerify, SignJWT } from 'jose';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 
 import { getMongoDb } from '@/src/lib/mongodb';
 
-export const getLuciaAuthAdapter = async () => {
-  const db = await getMongoDb();
-  return new MongodbAdapter(db.collection('sessions'), db.collection('users'));
-};
+const secretKey = 'secret';
+const key = new TextEncoder().encode(secretKey);
 
-export const getLucia = async () => {
-  const adapter = await getLuciaAuthAdapter();
-  return new Lucia(adapter, {
-    sessionCookie: {
-      attributes: {
-        secure: process.env.NODE_ENV === 'production',
-      },
-    },
-    getUserAttributes: (attributes: Record<string, string>) => {
-      return {
-        _id: attributes._id,
-        username: attributes.username,
-        email: attributes.email,
-      };
-    },
+export async function encrypt(payload: any) {
+  return new SignJWT(payload)
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime('7d')
+    .sign(key);
+}
+
+// Decrypt function
+export async function decrypt(input: string): Promise<any> {
+  const { payload } = await jwtVerify(input, key, {
+    algorithms: ['HS256'],
   });
-};
+  return payload;
+}
 
-// IMPORTANT!
-declare module 'lucia' {
-  interface Register {
-    Lucia: typeof getLucia;
+export async function login(_: any, formData: FormData) {
+  const db = await getMongoDb();
+  const { email, password } = Object.fromEntries(formData.entries());
+
+  const user = await db.collection('users').findOne({ email });
+
+  if (!user || !user.password) {
+    return {
+      formError: 'Incorrect email or password',
+    };
   }
 
-  interface UserDoc {
-    _id: string;
-    username: string;
-    email: string;
-    password: string;
+  const validPassword = await bcrypt.compare(
+    password.toString(),
+    user.password,
+  );
+
+  if (!validPassword) {
+    return {
+      formError: 'Incorrect email or password',
+    };
   }
 
-  interface SessionDoc {
-    _id: string;
-    expiresAt: Date;
-    userId: string;
-  }
+  const expires = new Date(Date.now() + 60 * 60 * 24 * 7);
+  const session = await encrypt({ user, expires });
+
+  cookies().set('session', session, { expires, httpOnly: true });
+  return redirect('/lists');
+}
+
+export async function logout() {
+  cookies().set('session', '', { expires: new Date(0) });
+}
+
+export async function getSession() {
+  const session = cookies().get('session')?.value;
+  if (!session) return redirect('/');
+  return decrypt(session);
 }

@@ -3,14 +3,15 @@
 import { ObjectId } from 'mongodb';
 import { revalidatePath } from 'next/cache';
 
+import { getSession } from '@/src/lib/auth/auth';
 import { json } from '@/src/lib/functions';
 import { getMongoDb } from '@/src/lib/mongodb';
 import type { Task, TasksResponse } from '@/types/main';
 
 export const getListTasks = async (listId: string): Promise<TasksResponse> => {
-  const authSession = await getSessionServerSide();
+  const { user } = await getSession();
 
-  if (!authSession) {
+  if (!user) {
     throw Error();
   }
 
@@ -21,7 +22,7 @@ export const getListTasks = async (listId: string): Promise<TasksResponse> => {
       {
         $match: {
           _id: new ObjectId(listId),
-          owner: new ObjectId(authSession.user._id),
+          owner: new ObjectId(user._id),
         },
       },
       {
@@ -48,9 +49,9 @@ export const getListTasks = async (listId: string): Promise<TasksResponse> => {
 };
 
 export const getSubTasks = async (taskId: string): Promise<Task[]> => {
-  const authSession = await getSessionServerSide();
+  const { user } = await getSession();
 
-  if (!authSession) {
+  if (!user) {
     throw Error();
   }
 
