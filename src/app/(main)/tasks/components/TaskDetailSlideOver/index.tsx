@@ -1,11 +1,11 @@
 'use client';
 
-import { DescriptionSection } from '@/src/app/tasks/components/TaskDetailSlideOver/components/DescriptionSection';
-import { TaskDetailTitle } from '@/src/app/tasks/components/TaskDetailSlideOver/components/TaskDetailTitle';
-import { SubTasksWrapper } from '@/src/app/tasks/components/TaskDetailSlideOver/Subtasks/SubTasksWrapper';
-import { useTasks } from '@/src/app/tasks/state/provider';
+import { DescriptionSection } from '@/src/app/(main)/tasks/components/TaskDetailSlideOver/components/DescriptionSection';
+import { TaskDetailTitle } from '@/src/app/(main)/tasks/components/TaskDetailSlideOver/components/TaskDetailTitle';
+import { SubTasksWrapper } from '@/src/app/(main)/tasks/components/TaskDetailSlideOver/Subtasks/SubTasksWrapper';
+import { useTasks } from '@/src/app/(main)/tasks/state/provider';
 import SlideOver from '@/src/components/SlideOver';
-import { useModals } from '@/src/providers/slideover.provider';
+import { useSlideOver } from '@/src/providers/slideover.provider';
 import type { Task } from '@/types/main';
 
 export const TaskDetailSlideOver = () => {
@@ -14,7 +14,7 @@ export const TaskDetailSlideOver = () => {
     modalData: taskData,
     isOpen,
     handleCloseSlideOver,
-  } = useModals<Task>();
+  } = useSlideOver<Task>();
 
   return (
     <SlideOver

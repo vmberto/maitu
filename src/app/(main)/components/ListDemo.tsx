@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { DraggableWrapper } from '@/src/components/dnd/DraggableWrapper';
 import { Typography } from '@/src/components/Typography';
 import { clickStyle } from '@/src/lib/style-consts';
-import { useModals } from '@/src/providers/slideover.provider';
+import { useSlideOver } from '@/src/providers/slideover.provider';
 import { type List } from '@/types/main';
 
 type ListDemoProps = {
@@ -15,7 +15,7 @@ type ListDemoProps = {
 };
 
 export const ListDemo = ({ list }: ListDemoProps) => {
-  const { handleOpenSlideOver } = useModals();
+  const { handleOpenSlideOver } = useSlideOver();
 
   return (
     <DraggableWrapper

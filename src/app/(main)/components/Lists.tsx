@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 
-import { AddListSlideOver } from '@/src/app/components/AddListSlideOver';
-import { ListDemo } from '@/src/app/components/ListDemo';
-import { ListDetailSlideOver } from '@/src/app/components/ListDetailSlideOver';
-import { NewListButton } from '@/src/app/components/NewListButton';
+import { AddListSlideOver } from '@/src/app/(main)/components/AddListSlideOver';
+import { ListDemo } from '@/src/app/(main)/components/ListDemo';
+import { ListDetailSlideOver } from '@/src/app/(main)/components/ListDetailSlideOver';
+import { NewListButton } from '@/src/app/(main)/components/NewListButton';
 import { useLists } from '@/src/app/provider';
 import { DragAndDropWrapper } from '@/src/components/dnd/DragAndDropWrapper';
 

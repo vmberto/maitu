@@ -11,37 +11,39 @@ import {
 
 import type { GenericEvent } from '@/types/events';
 
-export type ModalsState<T> = {
+export type SlideOverState<T> = {
   modalData: T | undefined;
   isOpen: boolean;
   handleOpenSlideOver: (modalData: T) => (e: GenericEvent) => void;
-  handleClearModalData: () => void;
+  handleClearSlideOverData: () => void;
   handleCloseSlideOver: () => void;
 };
 
-const ModalContext = createContext<ModalsState<any>>({} as ModalsState<any>);
+const SlideOverContext = createContext<SlideOverState<any>>(
+  {} as SlideOverState<any>,
+);
 
 type ModalProviderProps = {
   children: ReactNode;
 };
 
-export const ModalsProvider = <T extends unknown>({
+export const SlideOverProvider = <T extends unknown>({
   children,
 }: ModalProviderProps) => {
   const [isOpen, setOpen] = useState<boolean>(false);
-  const [modalData, setModalData] = useState<T>();
+  const [slideOverData, setSlideOverData] = useState<T>();
 
   const handleOpenSlideOver = useCallback(
     (data: T) => (e: GenericEvent) => {
       e.stopPropagation();
-      setModalData(data);
+      setSlideOverData(data);
       setOpen(true);
     },
     [],
   );
 
-  const handleClearModalData = () => {
-    setModalData(undefined);
+  const handleClearSlideOverData = () => {
+    setSlideOverData(undefined);
   };
 
   const handleCloseSlideOver = () => {
@@ -50,21 +52,21 @@ export const ModalsProvider = <T extends unknown>({
 
   const contextValue = useMemo(
     () => ({
-      modalData,
+      modalData: slideOverData,
       isOpen,
       handleOpenSlideOver,
       handleCloseSlideOver,
-      handleClearModalData,
+      handleClearSlideOverData,
     }),
-    [handleOpenSlideOver, isOpen, modalData],
+    [handleOpenSlideOver, isOpen, slideOverData],
   );
 
   return (
-    <ModalContext.Provider value={contextValue}>
+    <SlideOverContext.Provider value={contextValue}>
       {children}
-    </ModalContext.Provider>
+    </SlideOverContext.Provider>
   );
 };
 
-export const useModals = <T extends unknown>(): ModalsState<T> =>
-  useContext(ModalContext);
+export const useSlideOver = <T extends unknown>(): SlideOverState<T> =>
+  useContext(SlideOverContext);

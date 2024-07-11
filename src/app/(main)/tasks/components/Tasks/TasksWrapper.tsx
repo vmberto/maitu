@@ -2,9 +2,9 @@
 
 import React, { useEffect } from 'react';
 
-import { CompleteTasks } from '@/src/app/tasks/components/Tasks/CompleteTasks';
-import { Tasks } from '@/src/app/tasks/components/Tasks/Tasks';
-import { useTasks } from '@/src/app/tasks/state/provider';
+import { CompleteTasks } from '@/src/app/(main)/tasks/components/Tasks/CompleteTasks';
+import { Tasks } from '@/src/app/(main)/tasks/components/Tasks/Tasks';
+import { useTasks } from '@/src/app/(main)/tasks/state/provider';
 import type { List, Task } from '@/types/main';
 
 export type TasksWrapperProps = {

@@ -3,7 +3,7 @@
 import type { KeyboardEventHandler } from 'react';
 import React, { useEffect, useRef } from 'react';
 
-import { useTasks } from '@/src/app/tasks/state/provider';
+import { useTasks } from '@/src/app/(main)/tasks/state/provider';
 import { stopPropagationFn } from '@/src/lib/functions';
 import { type Task } from '@/types/main';
 

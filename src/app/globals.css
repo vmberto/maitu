@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 body {
+  scroll-padding: 0;
   overscroll-behavior: none;
 }
 

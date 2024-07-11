@@ -1,16 +1,20 @@
 import { useEffect, useState } from 'react';
 
-import { DeleteList } from '@/src/app/components/ListDetailSlideOver/DeleteList';
+import { DeleteList } from '@/src/app/(main)/components/ListDetailSlideOver/DeleteList';
 import { useLists } from '@/src/app/provider';
 import { EmojiPickerComponent } from '@/src/components/EmojiPicker';
 import SlideOver from '@/src/components/SlideOver';
-import { useModals } from '@/src/providers/slideover.provider';
+import { useSlideOver } from '@/src/providers/slideover.provider';
 import type { InputChangeEventHandler } from '@/types/events';
 import type { List } from '@/types/main';
 
 export const ListDetailSlideOver = () => {
   const { handleUpdateList } = useLists();
-  const { modalData: list, isOpen, handleCloseSlideOver } = useModals<List>();
+  const {
+    modalData: list,
+    isOpen,
+    handleCloseSlideOver,
+  } = useSlideOver<List>();
 
   const [emoji, setEmoji] = useState(list?.emoji);
   const [listTitle, setListTitle] = useState(list?.title);

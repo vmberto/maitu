@@ -1,8 +1,8 @@
 import * as TasksService from '@/src/actions/tasks.action';
-import { Header } from '@/src/app/tasks/components/Header';
-import { TaskDetailSlideOver } from '@/src/app/tasks/components/TaskDetailSlideOver';
-import { TasksWrapper } from '@/src/app/tasks/components/Tasks/TasksWrapper';
-import { TasksProvider } from '@/src/app/tasks/state/provider';
+import { Header } from '@/src/app/(main)/tasks/components/Header';
+import { TaskDetailSlideOver } from '@/src/app/(main)/tasks/components/TaskDetailSlideOver';
+import { TasksWrapper } from '@/src/app/(main)/tasks/components/Tasks/TasksWrapper';
+import { TasksProvider } from '@/src/app/(main)/tasks/state/provider';
 import { json } from '@/src/lib/functions';
 
 type TasksPageProps = {

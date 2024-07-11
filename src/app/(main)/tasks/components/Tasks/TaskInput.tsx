@@ -4,9 +4,9 @@ import { Menu } from '@headlessui/react';
 import { EllipsisHorizontalCircleIcon } from '@heroicons/react/24/outline';
 import React, { useEffect, useRef } from 'react';
 
-import { useTasks } from '@/src/app/tasks/state/provider';
+import { useTasks } from '@/src/app/(main)/tasks/state/provider';
 import { stopPropagationFn } from '@/src/lib/functions';
-import { useModals } from '@/src/providers/slideover.provider';
+import { useSlideOver } from '@/src/providers/slideover.provider';
 import { type GenericEvent } from '@/types/events';
 import { type Task } from '@/types/main';
 
@@ -17,7 +17,7 @@ export type TaskInputComponentProps = {
 
 export const TaskInput = ({ taskData, disabled }: TaskInputComponentProps) => {
   const textareaRef = useRef({} as HTMLTextAreaElement);
-  const { handleOpenSlideOver } = useModals();
+  const { handleOpenSlideOver } = useSlideOver();
 
   const {
     handleRemoveOrUpdateTitle,

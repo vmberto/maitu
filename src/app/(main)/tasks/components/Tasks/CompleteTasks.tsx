@@ -2,8 +2,8 @@
 
 import { useMemo } from 'react';
 
-import { TaskInput } from '@/src/app/tasks/components/Tasks/TaskInput';
-import { useTasks } from '@/src/app/tasks/state/provider';
+import { TaskInput } from '@/src/app/(main)/tasks/components/Tasks/TaskInput';
+import { useTasks } from '@/src/app/(main)/tasks/state/provider';
 
 export const CompleteTasks = () => {
   const { tasks } = useTasks();

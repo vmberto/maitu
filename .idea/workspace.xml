@@ -56,9 +56,9 @@
       <recent name="$PROJECT_DIR$/src" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/app/(main)" />
       <recent name="$PROJECT_DIR$/src/app" />
       <recent name="$PROJECT_DIR$/src/app/(auth)/login" />
-      <recent name="$PROJECT_DIR$/src/app/(main)" />
       <recent name="$PROJECT_DIR$/src/actions" />
       <recent name="$PROJECT_DIR$/src/lib" />
     </key>
@@ -136,7 +136,7 @@
       <workItem from="1717116816086" duration="3529000" />
       <workItem from="1717370364397" duration="24695000" />
       <workItem from="1720317941239" duration="2597000" />
-      <workItem from="1720633773700" duration="12539000" />
+      <workItem from="1720633773700" duration="14500000" />
     </task>
     <servers />
   </component>
