@@ -17,11 +17,7 @@ export const Header = () => {
       className={`${clickStyle} sticky top-0 z-20 border-b-2 border-gray-100 bg-white align-middle`}
     >
       <div className="mx-auto flex h-full max-w-xl items-center">
-        <Link
-          className="flex h-12 pl-5"
-          onClick={stopPropagationFn}
-          href="/lists"
-        >
+        <Link className="flex h-12 pl-5" onClick={stopPropagationFn} href="/">
           <ArrowLeftIcon
             className="relative mr-3 size-5 cursor-pointer self-center"
             color={HexColors.get(selectedList.color)}

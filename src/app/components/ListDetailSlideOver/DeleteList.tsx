@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { useLists } from '@/src/app/lists/provider';
+import { useLists } from '@/src/app/provider';
 import { Input } from '@/src/components/Input';
 import { useModals } from '@/src/providers/slideover.provider';
 import type { FormEventHandler, InputChangeEventHandler } from '@/types/events';

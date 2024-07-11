@@ -2,11 +2,11 @@
 
 import { useState } from 'react';
 
-import { AddListSlideOver } from '@/src/app/lists/components/AddListSlideOver';
-import { ListDemo } from '@/src/app/lists/components/ListDemo';
-import { ListDetailSlideOver } from '@/src/app/lists/components/ListDetailSlideOver';
-import { NewListButton } from '@/src/app/lists/components/NewListButton';
-import { useLists } from '@/src/app/lists/provider';
+import { AddListSlideOver } from '@/src/app/components/AddListSlideOver';
+import { ListDemo } from '@/src/app/components/ListDemo';
+import { ListDetailSlideOver } from '@/src/app/components/ListDetailSlideOver';
+import { NewListButton } from '@/src/app/components/NewListButton';
+import { useLists } from '@/src/app/provider';
 import { DragAndDropWrapper } from '@/src/components/dnd/DragAndDropWrapper';
 
 export const Lists = () => {

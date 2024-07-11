@@ -1,14 +1,16 @@
-import { redirect } from 'next/navigation';
+import { Suspense } from 'react';
 
-import { isAuthenticated } from '@/src/actions/auth.action';
-import LoginForm from '@/src/components/LoginForm';
+import { ListsContainer } from '@/src/app/components/ListsContainer';
+import ListsLoading from '@/src/app/components/Loading/ListsLoading';
+import { MaituHeader } from '@/src/app/components/MaituHeader';
 
-export default async function Home() {
-  const sessionExists = await isAuthenticated();
-
-  if (sessionExists) {
-    redirect('/lists');
-  }
-
-  return <LoginForm />;
+export default async function ListsPage() {
+  return (
+    <>
+      <MaituHeader />
+      <Suspense fallback={<ListsLoading />}>
+        <ListsContainer />
+      </Suspense>
+    </>
+  );
 }

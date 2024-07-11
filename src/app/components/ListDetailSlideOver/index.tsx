@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
-import { DeleteList } from '@/src/app/lists/components/ListDetailSlideOver/DeleteList';
-import { useLists } from '@/src/app/lists/provider';
+import { DeleteList } from '@/src/app/components/ListDetailSlideOver/DeleteList';
+import { useLists } from '@/src/app/provider';
 import { EmojiPickerComponent } from '@/src/components/EmojiPicker';
 import SlideOver from '@/src/components/SlideOver';
 import { useModals } from '@/src/providers/slideover.provider';

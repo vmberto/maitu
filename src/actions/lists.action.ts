@@ -39,14 +39,14 @@ export const add = async (list: List): Promise<List> => {
     owner: new ObjectId(user._id),
   });
 
-  revalidatePath('/lists');
+  revalidatePath('/');
   return json({ ...list, _id: response.insertedId });
 };
 
 export const update = async (listId: string, updatedData: Partial<List>) => {
   const mongo = await getMongoDb();
 
-  revalidatePath('/lists');
+  revalidatePath('/');
   return mongo
     .collection('lists')
     .updateOne({ _id: new ObjectId(listId) }, { $set: updatedData });
@@ -55,7 +55,7 @@ export const update = async (listId: string, updatedData: Partial<List>) => {
 export const remove = async (listId: string) => {
   const mongo = await getMongoDb();
 
-  revalidatePath('/lists');
+  revalidatePath('/');
   await mongo.collection('todos').deleteMany({ listId });
   return mongo.collection('lists').deleteOne({ _id: new ObjectId(listId) });
 };
@@ -91,6 +91,6 @@ export const updateOrder = async ({
     );
   });
 
-  revalidatePath('/lists');
+  revalidatePath('/');
   await Promise.all(items);
 };

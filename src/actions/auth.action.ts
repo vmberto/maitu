@@ -57,7 +57,7 @@ export async function login(_: any, formData: FormData) {
     expires: new Date(expires),
     httpOnly: true,
   });
-  return redirect('/lists');
+  return redirect('/');
 }
 
 export async function logout() {
@@ -66,7 +66,7 @@ export async function logout() {
 
 export async function getSession() {
   const session = cookies().get('session')?.value;
-  if (!session) return redirect('/');
+  if (!session) return redirect('/login');
   return decrypt(session);
 }
 
