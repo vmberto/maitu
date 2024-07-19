@@ -14,7 +14,7 @@ type ModalProps = {
   children: ReactNode;
 };
 
-const SlideOver = ({ title, open, onClose, children }: ModalProps) => {
+export const SlideOver = ({ title, open, onClose, children }: ModalProps) => {
   const { handleClearSlideOverData } = useSlideOver();
 
   const swipeActions = useSwipeEvents({
@@ -87,5 +87,3 @@ const SlideOver = ({ title, open, onClose, children }: ModalProps) => {
     </Transition.Root>
   );
 };
-
-export default SlideOver;

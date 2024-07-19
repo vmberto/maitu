@@ -11,10 +11,6 @@ import type { List } from '@/types/main';
 export const get = async () => {
   const { user } = await getSession();
 
-  if (!user) {
-    throw Error();
-  }
-
   const mongo = await getMongoDb();
 
   return mongo

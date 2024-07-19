@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { DeleteList } from '@/src/app/(main)/components/ListDetailSlideOver/DeleteList';
 import { useLists } from '@/src/app/provider';
 import { EmojiPickerComponent } from '@/src/components/EmojiPicker';
-import SlideOver from '@/src/components/SlideOver';
+import { SlideOver } from '@/src/components/SlideOver/SlideOver';
 import { useSlideOver } from '@/src/providers/slideover.provider';
 import type { InputChangeEventHandler } from '@/types/events';
 import type { List } from '@/types/main';

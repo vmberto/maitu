@@ -4,8 +4,8 @@ import { Menu } from '@headlessui/react';
 import { EllipsisVerticalIcon } from '@heroicons/react/24/solid';
 import Link from 'next/link';
 
-import { DraggableWrapper } from '@/src/components/dnd/DraggableWrapper';
-import { Typography } from '@/src/components/Typography';
+import { DraggableWrapper } from '@/src/components/DragAndDrop/DraggableWrapper';
+import { Typography } from '@/src/components/Typography/Typography';
 import { clickStyle } from '@/src/lib/style-consts';
 import { useSlideOver } from '@/src/providers/slideover.provider';
 import { type List } from '@/types/main';

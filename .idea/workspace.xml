@@ -4,7 +4,40 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="" />
+    <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/lib/errors/UnauthenticatedError.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/actions/auth.action.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/actions/auth.action.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/actions/lists.action.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/actions/lists.action.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(auth)/login/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(auth)/login/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(main)/components/AddListSlideOver/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/components/AddListSlideOver/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(main)/components/ListDemo.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/components/ListDemo.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(main)/components/ListDetailSlideOver/DeleteList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/components/ListDetailSlideOver/DeleteList.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(main)/components/ListDetailSlideOver/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/components/ListDetailSlideOver/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(main)/components/Lists.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/components/Lists.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(main)/components/MaituHeader.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/components/MaituHeader.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(main)/tasks/components/Header.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/tasks/components/Header.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(main)/tasks/components/TaskDetailSlideOver/Subtasks/SubTasksWrapper.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/tasks/components/TaskDetailSlideOver/Subtasks/SubTasksWrapper.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(main)/tasks/components/TaskDetailSlideOver/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/tasks/components/TaskDetailSlideOver/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(main)/tasks/components/Tasks/CompleteTasks.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/tasks/components/Tasks/CompleteTasks.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(main)/tasks/state/provider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/tasks/state/provider.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Button.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/ColorPicker.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/EmojiPicker.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/EmojiPicker.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Input.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/LoginForm.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/SlideOver.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Typography.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/dnd/DragAndDropWrapper.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/dnd/DraggableWrapper.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/enums.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/functions.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/functions.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/types/main.ts" beforeDir="false" afterPath="$PROJECT_DIR$/types/main.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/types/next-auth.d.ts" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -32,7 +65,7 @@
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;javascript.nodejs.core.library.configured.version&quot;: &quot;18.18.2&quot;,
     &quot;javascript.nodejs.core.library.typings.version&quot;: &quot;18.18.2&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/vmberto/Documents/maitu/public/icons&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/vmberto/Documents/maitu/src/components/SlideOver&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.standard&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
@@ -49,18 +82,18 @@
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/components/SlideOver" />
+      <recent name="$PROJECT_DIR$/src/components/Typography" />
+      <recent name="$PROJECT_DIR$/src/components/ColorPicker" />
       <recent name="$PROJECT_DIR$/public/icons" />
       <recent name="$PROJECT_DIR$/src/app/todos/components" />
-      <recent name="$PROJECT_DIR$/src/app/api" />
-      <recent name="$PROJECT_DIR$/src/app/api/lists" />
-      <recent name="$PROJECT_DIR$/src" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/src/app/(main)" />
-      <recent name="$PROJECT_DIR$/src/app" />
-      <recent name="$PROJECT_DIR$/src/app/(auth)/login" />
-      <recent name="$PROJECT_DIR$/src/actions" />
-      <recent name="$PROJECT_DIR$/src/lib" />
+      <recent name="$PROJECT_DIR$/src/components/SlideOver" />
+      <recent name="$PROJECT_DIR$/src/components/Typography" />
+      <recent name="$PROJECT_DIR$/src/app/(auth)/login/components" />
+      <recent name="$PROJECT_DIR$/src/components/ColorPicker" />
+      <recent name="$PROJECT_DIR$/src/components/Input" />
     </key>
     <key name="es6.move.members.recent.items">
       <recent name="$PROJECT_DIR$/src/app/lists/components/ListsContainer.tsx" />
@@ -136,7 +169,8 @@
       <workItem from="1717116816086" duration="3529000" />
       <workItem from="1717370364397" duration="24695000" />
       <workItem from="1720317941239" duration="2597000" />
-      <workItem from="1720633773700" duration="14500000" />
+      <workItem from="1720633773700" duration="27349000" />
+      <workItem from="1721172066136" duration="2480000" />
     </task>
     <servers />
   </component>

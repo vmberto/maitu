@@ -7,7 +7,7 @@ import { ListDemo } from '@/src/app/(main)/components/ListDemo';
 import { ListDetailSlideOver } from '@/src/app/(main)/components/ListDetailSlideOver';
 import { NewListButton } from '@/src/app/(main)/components/NewListButton';
 import { useLists } from '@/src/app/provider';
-import { DragAndDropWrapper } from '@/src/components/dnd/DragAndDropWrapper';
+import { DragAndDropWrapper } from '@/src/components/DragAndDrop/DragAndDropWrapper';
 
 export const Lists = () => {
   const [open, setOpen] = useState(false);

@@ -7,11 +7,9 @@ type BaseTypographyProps = Props<'p'> &
   Props<'h1'> &
   Props<'h2'> &
   Props<'h3'> &
-  Props<'h4'> &
-  Props<'h5'> &
-  Props<'h6'>;
+  Props<'h4'>;
 export type TypographyProps = BaseTypographyProps & {
-  as: 'p' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+  as: 'p' | 'h1' | 'h2' | 'h3' | 'h4';
   className?: string;
   children: ReactNode;
 };
@@ -57,28 +55,6 @@ const TypographyComponent = (
       );
       break;
     case 'h4':
-      template = React.createElement(
-        as,
-        {
-          ...rest,
-          ref,
-          className,
-        },
-        children,
-      );
-      break;
-    case 'h5':
-      template = React.createElement(
-        as,
-        {
-          ...rest,
-          ref,
-          className,
-        },
-        children,
-      );
-      break;
-    case 'h6':
       template = React.createElement(
         as,
         {

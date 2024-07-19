@@ -1,14 +1,15 @@
 /* eslint-disable tailwindcss/no-custom-classname */
 /* eslint-disable tailwindcss/classnames-order */
 /* eslint-disable react/button-has-type */
-import React, { type HTMLProps } from 'react';
+import type { HTMLProps, ReactNode } from 'react';
 
 type ButtonProps = HTMLProps<HTMLButtonElement> & {
-  type: 'button' | 'submit' | 'reset';
+  type?: 'button' | 'submit' | 'reset';
   color: string;
+  children?: ReactNode;
 };
 
-export const Button = ({ color, label, ...props }: ButtonProps) => {
+export const Button = ({ color, children, label, ...props }: ButtonProps) => {
   return (
     <button
       {...props}
@@ -21,7 +22,7 @@ export const Button = ({ color, label, ...props }: ButtonProps) => {
         active:bg-${color}-800 active:shadow-lg transition duration-150
         ease-in-out`}
     >
-      {label}
+      {children ?? label}
     </button>
   );
 };

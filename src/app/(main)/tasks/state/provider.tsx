@@ -22,7 +22,7 @@ import type { List, Task } from '@/types/main';
 
 export type TasksState = TasksReducerState & {
   handleSetInitialState: (list: List, Task: Task[]) => void;
-  handleGetSubtasks: () => void;
+  fetchSubtasks: () => void;
 
   handleChangeExistingTask: (e: TextareaChangeEventHandler) => void;
   handleCompleteTask: (t: Task) => Promise<void>;
@@ -50,7 +50,7 @@ export const TasksProvider = ({ children }: TasksProviderProps) => {
     dispatch(setInitialState(json(tasks), json(list)));
   };
 
-  const handleGetSubtasks = async () => {
+  const fetchSubtasks = async () => {
     const selectedTask = modalData as Task;
     const subtasks = await getSubTasks(selectedTask._id?.toString() || '');
 
@@ -208,7 +208,7 @@ export const TasksProvider = ({ children }: TasksProviderProps) => {
   const contextValue = {
     ...state,
     handleSetInitialState,
-    handleGetSubtasks,
+    fetchSubtasks,
 
     handleAddTask,
     handleChangeExistingTask,

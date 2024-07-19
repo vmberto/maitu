@@ -1,7 +1,7 @@
 import EmojiPicker, { Categories } from 'emoji-picker-react';
 import React from 'react';
 
-import { Typography } from '@/src/components/Typography';
+import { Typography } from '@/src/components/Typography/Typography';
 
 type EmojiPickerProps = {
   emoji: string;

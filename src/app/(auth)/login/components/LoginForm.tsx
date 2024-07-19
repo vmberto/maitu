@@ -3,11 +3,11 @@
 import { useFormState } from 'react-dom';
 
 import { login } from '@/src/actions/auth.action';
-import { Button } from '@/src/components/Button';
-import { Input } from '@/src/components/Input';
-import { Typography } from '@/src/components/Typography';
+import { Button } from '@/src/components/Button/Button';
+import { Input } from '@/src/components/Input/Input';
+import { Typography } from '@/src/components/Typography/Typography';
 
-export default function LoginForm() {
+export const LoginForm = () => {
   const [state, formAction] = useFormState(login, null);
 
   return (
@@ -33,8 +33,10 @@ export default function LoginForm() {
             className="cursor-pointer px-6 py-2 font-bold text-white"
           />
         </form>
-        <p>{state && state.formError ? state.formError : ''}</p>
+        <Typography as="p">
+          {state && state.formError ? state.formError : ''}
+        </Typography>
       </div>
     </main>
   );
-}
+};

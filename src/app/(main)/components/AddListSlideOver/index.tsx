@@ -1,9 +1,9 @@
 import { useState } from 'react';
 
-import { Button } from '@/src/components/Button';
+import { Button } from '@/src/components/Button/Button';
 import { EmojiPickerComponent } from '@/src/components/EmojiPicker';
-import { Input } from '@/src/components/Input';
-import SlideOver from '@/src/components/SlideOver';
+import { Input } from '@/src/components/Input/Input';
+import { SlideOver } from '@/src/components/SlideOver/SlideOver';
 import type { GenericEvent, InputChangeEventHandler } from '@/types/events';
 import { type List } from '@/types/main';
 

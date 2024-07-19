@@ -3,7 +3,7 @@
 import BarsIcon from '@heroicons/react/16/solid/Bars4Icon';
 
 import { logout } from '@/src/actions/auth.action';
-import { Typography } from '@/src/components/Typography';
+import { Typography } from '@/src/components/Typography/Typography';
 
 export const MaituHeader = () => (
   <header className="bg-gray-100">

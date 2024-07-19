@@ -42,3 +42,5 @@ next-env.d.ts
 
 # pwa
 /public/sw.js
+
+*storybook.log

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 import { useLists } from '@/src/app/provider';
-import { Input } from '@/src/components/Input';
+import { Input } from '@/src/components/Input/Input';
 import { useSlideOver } from '@/src/providers/slideover.provider';
 import type { FormEventHandler, InputChangeEventHandler } from '@/types/events';
 

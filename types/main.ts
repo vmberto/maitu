@@ -1,6 +1,6 @@
 import type { ObjectId } from 'mongodb';
 
-import type { Colors } from '@/src/components/ColorPicker';
+import type { Colors } from '@/src/components/ColorPicker/ColorPicker';
 
 export interface UserObject {
   _id?: ObjectId;

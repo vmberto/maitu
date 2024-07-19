@@ -6,6 +6,8 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 import { getMongoDb } from '@/src/lib/mongodb';
+import { UnauthenticatedError } from '@/src/lib/errors/UnauthenticatedError';
+import { isA } from '@vitest/expect';
 
 const { SECRET_KEY } = process.env;
 const key = new TextEncoder().encode(SECRET_KEY);
@@ -14,7 +16,7 @@ export async function encrypt(payload: any) {
   return new SignJWT(payload)
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
-    .setExpirationTime('7d')
+    .setExpirationTime('30d')
     .sign(key);
 }
 
@@ -64,17 +66,20 @@ export async function logout() {
   cookies().set('session', '', { expires: new Date(0) });
 }
 
-export async function getSession() {
-  const session = cookies().get('session')?.value;
-  if (!session) return redirect('/login');
-  return decrypt(session);
-}
-
 export async function isAuthenticated() {
   const session = cookies().get('session')?.value;
   if (session) {
     const decryptedSession = await decrypt(session);
-    return decryptedSession ? !!decryptedSession.user : false;
+    return decryptedSession ? decryptedSession.user : null;
   }
-  return false;
+  return null;
 }
+
+export async function getSession() {
+  const user = await isAuthenticated();
+  if (user) {
+    return user;
+  }
+  return redirect('/login');
+}
+
