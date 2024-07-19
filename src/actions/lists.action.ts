@@ -9,7 +9,7 @@ import { getMongoDb } from '@/src/lib/mongodb';
 import type { List } from '@/types/main';
 
 export const get = async () => {
-  const { user } = await getSession();
+  const user = await getSession();
 
   const mongo = await getMongoDb();
 
@@ -23,7 +23,7 @@ export const get = async () => {
 };
 
 export const add = async (list: List): Promise<List> => {
-  const { user } = await getSession();
+  const user = await getSession();
 
   if (!user) {
     throw Error();
@@ -63,7 +63,7 @@ export const updateOrder = async ({
   initialIndex: number;
   destinationIndex: number;
 }) => {
-  const { user } = await getSession();
+  const user = await getSession();
 
   if (!user) {
     throw Error();

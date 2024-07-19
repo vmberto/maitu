@@ -9,7 +9,7 @@ import { getMongoDb } from '@/src/lib/mongodb';
 import type { Task, TasksResponse } from '@/types/main';
 
 export const getListTasks = async (listId: string): Promise<TasksResponse> => {
-  const { user } = await getSession();
+  const user = await getSession();
 
   if (!user) {
     throw Error();
@@ -49,7 +49,7 @@ export const getListTasks = async (listId: string): Promise<TasksResponse> => {
 };
 
 export const getSubTasks = async (taskId: string): Promise<Task[]> => {
-  const { user } = await getSession();
+  const user = await getSession();
 
   if (!user) {
     throw Error();
