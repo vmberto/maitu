@@ -1,6 +1,7 @@
 'use client';
 
-import { useFormState } from 'react-dom';
+import type { FormEvent } from 'react';
+import { useState } from 'react';
 
 import { login } from '@/src/actions/auth.action';
 import { Button } from '@/src/components/Button/Button';
@@ -8,7 +9,18 @@ import { Input } from '@/src/components/Input/Input';
 import { Typography } from '@/src/components/Typography/Typography';
 
 export const LoginForm = () => {
-  const [state, formAction] = useFormState(login, null);
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setLoading(true);
+
+    const formData = new FormData(event.currentTarget);
+
+    await login(null, formData);
+
+    setLoading(false);
+  };
 
   return (
     <main
@@ -23,19 +35,17 @@ export const LoginForm = () => {
           maitu
         </Typography>
 
-        <form action={formAction} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <Input name="email" type="text" placeholder="Email" />
           <Input name="password" type="password" placeholder="Password" />
           <Button
             type="submit"
             label="Login"
             color="primary"
+            loading={loading}
             className="cursor-pointer px-6 py-2 font-bold text-white"
           />
         </form>
-        <Typography as="p">
-          {state && state.formError ? state.formError : ''}
-        </Typography>
       </div>
     </main>
   );
