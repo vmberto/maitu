@@ -6,8 +6,6 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 import { getMongoDb } from '@/src/lib/mongodb';
-import { UnauthenticatedError } from '@/src/lib/errors/UnauthenticatedError';
-import { isA } from '@vitest/expect';
 
 const { SECRET_KEY } = process.env;
 const key = new TextEncoder().encode(SECRET_KEY);
@@ -82,4 +80,3 @@ export async function getSession() {
   }
   return redirect('/login');
 }
-
