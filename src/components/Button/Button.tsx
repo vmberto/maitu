@@ -35,8 +35,7 @@ export const Button = ({
   >
     {loading ? (
       <div className="flex items-center justify-center">
-        <ArrowPathIcon className="animate-spin size-5 mr-3" />{' '}
-        Loading...
+        <ArrowPathIcon className="animate-spin size-5 mr-3" /> Loading...
       </div>
     ) : (
       children ?? label
