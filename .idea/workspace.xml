@@ -5,10 +5,24 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/lib/validators/login.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jest.config.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jest.setup.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/Button/Button.test.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(auth)/login/components/LoginForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(auth)/login/components/LoginForm.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(main)/components/AddListSlideOver/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/components/AddListSlideOver/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(main)/components/ListDetailSlideOver/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/components/ListDetailSlideOver/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(main)/tasks/state/provider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/tasks/state/provider.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Button/Button.spec.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Input/Input.test.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/Button/Button.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Button/Button.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/EmojiPicker.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/EmojiPicker/EmojiPicker.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Input/Input.spec.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/SlideOver/SlideOver.test.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/hooks/useExecutionTimeout.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useExecutionTimeout.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/validators/login.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Typography/Typography.test.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/e2e/app.spec.ts" beforeDir="false" afterPath="$PROJECT_DIR$/e2e/app.spec.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/tsconfig.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,13 +51,14 @@
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;javascript.nodejs.core.library.configured.version&quot;: &quot;18.18.2&quot;,
     &quot;javascript.nodejs.core.library.typings.version&quot;: &quot;18.18.2&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/vmberto/Documents/maitu/src/components/SlideOver&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/vmberto/Documents/maitu&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.standard&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.standard&quot;: &quot;&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs.jest.jest_package&quot;: &quot;/Users/vmberto/Documents/maitu/node_modules/jest&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;prettier.import.notification.dismissed&quot;: &quot;true&quot;,
     &quot;prettierjs.PrettierConfiguration.Package&quot;: &quot;/Users/vmberto/Documents/maitu/node_modules/prettier&quot;,
@@ -54,25 +69,74 @@
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/src/components/SlideOver" />
       <recent name="$PROJECT_DIR$/src/components/Typography" />
       <recent name="$PROJECT_DIR$/src/components/ColorPicker" />
       <recent name="$PROJECT_DIR$/public/icons" />
-      <recent name="$PROJECT_DIR$/src/app/todos/components" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/components/EmojiPicker" />
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/public" />
       <recent name="$PROJECT_DIR$/src/components/SlideOver" />
       <recent name="$PROJECT_DIR$/src/components/Typography" />
-      <recent name="$PROJECT_DIR$/src/app/(auth)/login/components" />
-      <recent name="$PROJECT_DIR$/src/components/ColorPicker" />
-      <recent name="$PROJECT_DIR$/src/components/Input" />
     </key>
     <key name="es6.move.members.recent.items">
       <recent name="$PROJECT_DIR$/src/app/lists/components/ListsContainer.tsx" />
       <recent name="$PROJECT_DIR$/src/hooks/useTodos.ts" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Jest.Typography Component">
+    <configuration name="Button Component" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
+      <node-interpreter value="project" />
+      <jest-package value="$PROJECT_DIR$/node_modules/jest" />
+      <working-dir value="$PROJECT_DIR$" />
+      <envs />
+      <scope-kind value="SUITE" />
+      <test-file value="$PROJECT_DIR$/src/components/Button/Button.spec.tsx" />
+      <test-names>
+        <test-name value="Button Component" />
+      </test-names>
+      <method v="2" />
+    </configuration>
+    <configuration name="SlideOver Component" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
+      <node-interpreter value="project" />
+      <jest-package value="$PROJECT_DIR$/node_modules/jest" />
+      <working-dir value="$PROJECT_DIR$" />
+      <envs />
+      <scope-kind value="SUITE" />
+      <test-file value="$PROJECT_DIR$/src/components/SlideOver/SlideOver.test.tsx" />
+      <test-names>
+        <test-name value="SlideOver Component" />
+      </test-names>
+      <method v="2" />
+    </configuration>
+    <configuration name="SlideOver Component.calls handleClearSlideOverData after closing" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
+      <node-interpreter value="project" />
+      <jest-package value="$PROJECT_DIR$/node_modules/jest" />
+      <working-dir value="$PROJECT_DIR$" />
+      <envs />
+      <scope-kind value="TEST" />
+      <test-file value="$PROJECT_DIR$/src/components/SlideOver/SlideOver.test.tsx" />
+      <test-names>
+        <test-name value="SlideOver Component" />
+        <test-name value="calls handleClearSlideOverData after closing" />
+      </test-names>
+      <method v="2" />
+    </configuration>
+    <configuration name="Typography Component" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
+      <node-interpreter value="project" />
+      <jest-package value="$PROJECT_DIR$/node_modules/jest" />
+      <working-dir value="$PROJECT_DIR$" />
+      <envs />
+      <scope-kind value="SUITE" />
+      <test-file value="$PROJECT_DIR$/src/components/Typography/Typography.test.tsx" />
+      <test-names>
+        <test-name value="Typography Component" />
+      </test-names>
+      <method v="2" />
+    </configuration>
     <configuration name="dev" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
       <package-json value="$PROJECT_DIR$/package.json" />
       <command value="run" />
@@ -85,6 +149,10 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Jest.Typography Component" />
+        <item itemvalue="Jest.SlideOver Component" />
+        <item itemvalue="Jest.SlideOver Component.calls handleClearSlideOverData after closing" />
+        <item itemvalue="Jest.Button Component" />
         <item itemvalue="npm.dev" />
       </list>
     </recent_temporary>
@@ -142,7 +210,13 @@
       <workItem from="1717370364397" duration="24695000" />
       <workItem from="1720317941239" duration="2597000" />
       <workItem from="1720633773700" duration="27349000" />
-      <workItem from="1721172066136" duration="4887000" />
+      <workItem from="1721172066136" duration="13295000" />
+      <workItem from="1724680037889" duration="3140000" />
+      <workItem from="1724709168408" duration="639000" />
+      <workItem from="1724709816143" duration="111000" />
+      <workItem from="1724709935483" duration="377000" />
+      <workItem from="1724710317576" duration="42000" />
+      <workItem from="1724710364726" duration="8254000" />
     </task>
     <servers />
   </component>

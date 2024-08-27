@@ -51,6 +51,8 @@ export const TasksProvider = ({ children }: TasksProviderProps) => {
   };
 
   const fetchSubtasks = async () => {
+    dispatch(setSubTasks([]));
+
     const selectedTask = modalData as Task;
     const subtasks = await getSubTasks(selectedTask._id?.toString() || '');
 

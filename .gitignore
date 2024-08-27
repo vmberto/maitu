@@ -23,6 +23,7 @@
 .DS_Store
 *.pem
 .gitignore
+.swc/
 
 # debug
 npm-debug.log*

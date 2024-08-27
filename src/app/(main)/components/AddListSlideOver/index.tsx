@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 import { Button } from '@/src/components/Button/Button';
-import { EmojiPickerComponent } from '@/src/components/EmojiPicker';
+import { EmojiPickerComponent } from '@/src/components/EmojiPicker/EmojiPicker';
 import { Input } from '@/src/components/Input/Input';
 import { SlideOver } from '@/src/components/SlideOver/SlideOver';
 import type { GenericEvent, InputChangeEventHandler } from '@/types/events';
@@ -21,6 +21,12 @@ export const AddListSlideOver = ({
   const [listTitle, setListTitle] = useState('');
   const [emoji, setEmoji] = useState('');
 
+  const resetSlideOverData = () => {
+    setOpen(false);
+    setListTitle('');
+    setEmoji('');
+  };
+
   const handleInputChange = (e: InputChangeEventHandler) => {
     const { value } = e.target;
     setListTitle(value);
@@ -35,13 +41,17 @@ export const AddListSlideOver = ({
         createdAt: new Date().toISOString(),
       } as List;
       handleAddList(newList);
-      setOpen(false);
+      resetSlideOverData();
     }
   };
 
   return (
-    <SlideOver title="Add List" open={open} onClose={() => setOpen(false)}>
-      <form id="addData-form" onSubmit={handleSubmit}>
+    <SlideOver title="Add List" open={open} onClose={resetSlideOverData}>
+      <form
+        id="addData-form"
+        onSubmit={handleSubmit}
+        className="flex flex-col gap-3"
+      >
         <Input
           value={listTitle}
           maxLength={30}

@@ -10,11 +10,7 @@ type EmojiPickerProps = {
 
 export const EmojiPickerComponent = ({ emoji, setEmoji }: EmojiPickerProps) => {
   return (
-    <>
-      <Typography as="h4" className="mb-2 font-light">
-        Select a Emoji
-      </Typography>
-
+    <div>
       {emoji && (
         <button
           onClick={() => setEmoji('')}
@@ -69,6 +65,6 @@ export const EmojiPickerComponent = ({ emoji, setEmoji }: EmojiPickerProps) => {
           },
         ]}
       />
-    </>
+    </div>
   );
 };
