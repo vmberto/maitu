@@ -5,7 +5,7 @@
 
 # maitu
 
-an application designed to help you save, track, and achieve your goals. Whether you're setting personal milestones or professional targets, this app provides a simple and intuitive interface to keep you on track. You can also register the locations of your tasks and visualize them on a map, making it easier to organize and manage your goals geographically.
+an application designed to help you save, track, and achieve your goals. Whether you're setting personal milestones or professional targets, this app provides a simple and intuitive interface to keep you on track.
 
 ## Features
 
