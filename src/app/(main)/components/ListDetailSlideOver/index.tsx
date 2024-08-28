@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { DeleteList } from '@/src/app/(main)/components/ListDetailSlideOver/DeleteList';
 import { useLists } from '@/src/app/provider';
+import { ColorPicker } from '@/src/components/ColorPicker/ColorPicker';
 import { EmojiPickerComponent } from '@/src/components/EmojiPicker/EmojiPicker';
 import { SlideOver } from '@/src/components/SlideOver/SlideOver';
 import { useSlideOver } from '@/src/providers/slideover.provider';
@@ -17,11 +18,13 @@ export const ListDetailSlideOver = () => {
   } = useSlideOver<List>();
 
   const [emoji, setEmoji] = useState(list?.emoji);
+  const [color, setColor] = useState(list?.color);
   const [listTitle, setListTitle] = useState(list?.title);
 
   useEffect(() => {
     setListTitle(list?.title);
     setEmoji(list?.emoji);
+    setColor(list?.color);
   }, [list]);
 
   const handleInputChange = (e: InputChangeEventHandler) => {
@@ -53,15 +56,25 @@ export const ListDetailSlideOver = () => {
       open={isOpen}
       onClose={handleCloseSlideOver}
     >
-      <EmojiPickerComponent
-        emoji={emoji || ''}
-        setEmoji={async (e) => {
-          setEmoji(e);
-          await updateList({ emoji: e });
-        }}
-      />
+      <div className="flex flex-col gap-3">
+        <ColorPicker
+          color={color}
+          setColor={async (newColor) => {
+            setColor(newColor);
+            await updateList({ color: newColor });
+          }}
+        />
 
-      <DeleteList listTitle={list?.title || ''} id={list?._id} />
+        <EmojiPickerComponent
+          emoji={emoji || ''}
+          setEmoji={async (e) => {
+            setEmoji(e);
+            await updateList({ emoji: e });
+          }}
+        />
+
+        <DeleteList listTitle={list?.title || ''} id={list?._id} />
+      </div>
     </SlideOver>
   );
 };

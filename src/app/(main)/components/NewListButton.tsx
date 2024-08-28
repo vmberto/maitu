@@ -12,7 +12,7 @@ export const NewListButton = ({ onClick }: NewListButtonProps) => {
          opacity-100 transition-all betterhover:hover:border-primary betterhover:hover:bg-white
          betterhover:hover:text-primary"
     >
-      Add New List
+      New List
     </button>
   );
 };

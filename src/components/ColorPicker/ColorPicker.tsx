@@ -4,14 +4,14 @@ import { BackgroundColors, BorderColors } from '@/src/lib/colors';
 
 export enum Colors {
   PRIMARY = 'primary',
-  PaletteOne = 'palette_one',
-  PaletteTwo = 'palette_two',
-  PaletteThree = 'palette_three',
-  PaletteFour = 'palette_four',
+  RedColor = 'redColor',
+  GreenColor = 'greenColor',
+  PinkColor = 'pinkColor',
+  YellowColor = 'yellowColor',
 }
 
 type ColorPickerProps = {
-  color: string;
+  color?: Colors;
   setColor: (color: Colors) => void;
 };
 
@@ -26,18 +26,21 @@ export const ColorPicker = ({ color, setColor }: ColorPickerProps) => {
         Select List Color
       </span>
       <div className="flex gap-5">
-        {Object.values(Colors).map((c) => (
-          <button
-            type="button"
-            aria-label={c}
-            key={c}
-            onClick={changeColor(c)}
-            className={`${color === c ? 'border-gray-900' : BorderColors.get(c)}
-        relative cursor-pointer border-4 transition-all ${BackgroundColors.get(
-          c,
-        )} items-center rounded-full p-4`}
-          />
-        ))}
+        {Object.values(Colors).map((c) => {
+          console.log(color);
+          return (
+            <button
+              type="button"
+              aria-label={c}
+              key={c}
+              onClick={changeColor(c)}
+              className={`${color === c ? 'border-gray-900' : BorderColors.get(c)}
+          relative cursor-pointer border-4 transition-all ${BackgroundColors.get(
+            c,
+          )} items-center rounded-full p-4`}
+            />
+          );
+        })}
       </div>
     </div>
   );

@@ -11,6 +11,7 @@ type EmojiPickerProps = {
 export const EmojiPickerComponent = ({ emoji, setEmoji }: EmojiPickerProps) => {
   return (
     <div>
+      <span className="mb-2 block font-light text-gray-700">List Emoji</span>
       {emoji && (
         <button
           onClick={() => setEmoji('')}

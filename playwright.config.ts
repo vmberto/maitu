@@ -11,7 +11,7 @@ const baseURL = `http://localhost:${PORT}`;
 export default defineConfig({
   // Timeout per test
   timeout: 30 * 1000,
-  testDir: path.join(__dirname, 'tests/e2e'),
+  testDir: path.join(__dirname, 'e2e'),
   retries: 2,
   outputDir: 'test-results/',
   webServer: {

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { Button } from '@/src/components/Button/Button';
+import { ColorPicker, Colors } from '@/src/components/ColorPicker/ColorPicker';
 import { EmojiPickerComponent } from '@/src/components/EmojiPicker/EmojiPicker';
 import { Input } from '@/src/components/Input/Input';
 import { SlideOver } from '@/src/components/SlideOver/SlideOver';
@@ -19,12 +20,14 @@ export const AddListSlideOver = ({
   open,
 }: AddListSlideOverProps) => {
   const [listTitle, setListTitle] = useState('');
+  const [color, setColor] = useState<Colors>(Colors.PRIMARY);
   const [emoji, setEmoji] = useState('');
 
   const resetSlideOverData = () => {
     setOpen(false);
     setListTitle('');
     setEmoji('');
+    setColor(Colors.PRIMARY);
   };
 
   const handleInputChange = (e: InputChangeEventHandler) => {
@@ -38,6 +41,7 @@ export const AddListSlideOver = ({
       const newList = {
         title: listTitle,
         emoji,
+        color,
         createdAt: new Date().toISOString(),
       } as List;
       handleAddList(newList);
@@ -46,7 +50,7 @@ export const AddListSlideOver = ({
   };
 
   return (
-    <SlideOver title="Add List" open={open} onClose={resetSlideOverData}>
+    <SlideOver title="New List" open={open} onClose={resetSlideOverData}>
       <form
         id="addData-form"
         onSubmit={handleSubmit}
@@ -58,6 +62,8 @@ export const AddListSlideOver = ({
           onChange={handleInputChange}
           label="List Name"
         />
+
+        <ColorPicker color={color} setColor={setColor} />
 
         <EmojiPickerComponent emoji={emoji} setEmoji={setEmoji} />
 

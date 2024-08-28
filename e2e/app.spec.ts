@@ -6,5 +6,5 @@ test('should navigate to the about page', async ({ page }) => {
   // Find an element with the text 'About' and click on it
   await expect(page).toHaveURL('/');
   // The new page should contain a h1 with "About"
-  await expect(page.locator('h1')).toContainText('Maitu');
+  await expect(page.locator('h1')).toContainText('maitu');
 });
