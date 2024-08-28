@@ -5,17 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/components/ColorPicker/ColorPicker.test.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/e2e/app.spec.ts" beforeDir="false" afterPath="$PROJECT_DIR$/e2e/app.spec.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/playwright.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/playwright.config.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(main)/components/AddListSlideOver/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/components/AddListSlideOver/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(main)/components/ListDetailSlideOver/DeleteList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/components/ListDetailSlideOver/DeleteList.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(main)/components/ListDetailSlideOver/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/components/ListDetailSlideOver/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(main)/components/NewListButton.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/components/NewListButton.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/ColorPicker/ColorPicker.stories.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ColorPicker/ColorPicker.stories.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/ColorPicker/ColorPicker.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ColorPicker/ColorPicker.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/EmojiPicker/EmojiPicker.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/EmojiPicker/EmojiPicker.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/colors.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/colors.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tailwind.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/tailwind.config.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -80,7 +73,19 @@
       <recent name="$PROJECT_DIR$/src/hooks/useTodos.ts" />
     </key>
   </component>
-  <component name="RunManager" selected="npm.test:e2e">
+  <component name="RunManager" selected="Jest.ColorPicker Component">
+    <configuration name="ColorPicker Component" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
+      <node-interpreter value="project" />
+      <jest-package value="$PROJECT_DIR$/node_modules/jest" />
+      <working-dir value="$PROJECT_DIR$" />
+      <envs />
+      <scope-kind value="SUITE" />
+      <test-file value="$PROJECT_DIR$/src/components/ColorPicker/ColorPicker.test.tsx" />
+      <test-names>
+        <test-name value="ColorPicker Component" />
+      </test-names>
+      <method v="2" />
+    </configuration>
     <configuration name="SlideOver Component" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
       <node-interpreter value="project" />
       <jest-package value="$PROJECT_DIR$/node_modules/jest" />
@@ -90,19 +95,6 @@
       <test-file value="$PROJECT_DIR$/src/components/SlideOver/SlideOver.test.tsx" />
       <test-names>
         <test-name value="SlideOver Component" />
-      </test-names>
-      <method v="2" />
-    </configuration>
-    <configuration name="SlideOver Component.calls handleClearSlideOverData after closing" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
-      <node-interpreter value="project" />
-      <jest-package value="$PROJECT_DIR$/node_modules/jest" />
-      <working-dir value="$PROJECT_DIR$" />
-      <envs />
-      <scope-kind value="TEST" />
-      <test-file value="$PROJECT_DIR$/src/components/SlideOver/SlideOver.test.tsx" />
-      <test-names>
-        <test-name value="SlideOver Component" />
-        <test-name value="calls handleClearSlideOverData after closing" />
       </test-names>
       <method v="2" />
     </configuration>
@@ -142,11 +134,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Jest.ColorPicker Component" />
         <item itemvalue="npm.test:e2e" />
         <item itemvalue="Jest.should navigate to the about page" />
         <item itemvalue="Jest.Typography Component" />
         <item itemvalue="Jest.SlideOver Component" />
-        <item itemvalue="Jest.SlideOver Component.calls handleClearSlideOverData after closing" />
       </list>
     </recent_temporary>
   </component>
@@ -209,7 +201,7 @@
       <workItem from="1724709816143" duration="111000" />
       <workItem from="1724709935483" duration="377000" />
       <workItem from="1724710317576" duration="42000" />
-      <workItem from="1724710364726" duration="12603000" />
+      <workItem from="1724710364726" duration="13885000" />
     </task>
     <servers />
   </component>

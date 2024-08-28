@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { ColorPicker } from '@/src/components/ColorPicker/ColorPicker';
+import { ColorPicker, Colors } from '@/src/components/ColorPicker/ColorPicker';
 
 const meta = {
   title: 'ColorPicker',
@@ -19,7 +19,7 @@ type Story = StoryObj<typeof meta>;
 // More on writing stories with args: https://storybook.js.org/docs/writing-stories/args
 export const Primary: Story = {
   args: {
-    color: 'primary',
+    color: Colors.PRIMARY,
     setColor: () => {},
   },
 };
