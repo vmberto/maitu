@@ -1,23 +1,26 @@
-# Progressive Web App Example
+# maitu
 
-This example uses [`next-pwa`](https://github.com/shadowwalker/next-pwa) to create a progressive web app (PWA) powered by [Workbox](https://developers.google.com/web/tools/workbox/).
+<p align="left">
+  <img src="https://raw.githubusercontent.com/vmberto/maitu/main/public/icons/apple-touch-icon.png" alt="MAITU Logo" width="100" style="float: left; margin-right: 20px;" />
+  an application designed to help you save, track, and achieve your goals. Whether you're setting personal milestones or professional targets, this app provides a simple and intuitive interface to keep you on track. You can also register the locations of your tasks and visualize them on a map, making it easier to organize and manage your goals geographically.
+</p>
 
-## Deploy your own
+## Features
 
-Deploy the example using [Vercel](https://vercel.com?utm_source=github&utm_medium=readme&utm_campaign=next-example):
+- **Goal Tracking**: Create, manage, and track your progress on multiple goals.
+- **Progress Visualization**: Get a clear view of your progress with visual graphs and statistics.
+- **Reminders**: Set reminders to keep yourself motivated and on schedule.
+- **Flexible Categorization**: Organize your goals by categories and priorities.
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/git/external?repository-url=https://github.com/vercel/next.js/tree/canary/examples/progressive-web-app&project-name=progressive-web-app&repository-name=progressive-web-app)
+## Tech Stack
 
-## How to use
+MAITU is built using modern web technologies to ensure a robust and scalable application.
 
-Execute [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app) with [npm](https://docs.npmjs.com/cli/init), [Yarn](https://yarnpkg.com/lang/en/docs/cli/create/), or [pnpm](https://pnpm.io) to bootstrap the example:
-
-```bash
-npx create-next-app --example progressive-web-app progressive-web-app
-# or
-yarn create next-app --example progressive-web-app progressive-web-app
-# or
-pnpm create next-app --example progressive-web-app progressive-web-app
-```
-
-Deploy it to the cloud with [Vercel](https://vercel.com/new?utm_source=github&utm_medium=readme&utm_campaign=next-example) ([Documentation](https://nextjs.org/docs/deployment)).
+<p align="center">
+  <img src="https://www.hacksoft.io/_next/image?url=https%3A%2F%2Fwww.datocms-assets.com%2F98835%2F1684410508-image-7.png&w=640&q=75" alt="Next.js" width="60" />
+  <img src="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" alt="Next.js" width="60" />
+  <img src="https://upload.wikimedia.org/wikipedia/commons/4/4c/Typescript_logo_2020.svg" alt="TypeScript" width="60" />
+  <img src="https://cdn.icon-icons.com/icons2/3053/PNG/512/mongodb_compass_macos_bigsur_icon_189933.png" alt="MongoDB" width="60" />
+  <img src="https://cdn.freebiesupply.com/logos/large/2x/jest-logo-png-transparent.png" alt="Jest" width="60" />
+  <img src="https://playwright.dev/img/playwright-logo.svg" alt="Playwright" width="60" />
+</p>
