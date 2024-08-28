@@ -5,10 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/components/ColorPicker/ColorPicker.test.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/ColorPicker/ColorPicker.stories.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ColorPicker/ColorPicker.stories.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/ColorPicker/ColorPicker.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ColorPicker/ColorPicker.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -201,7 +199,7 @@
       <workItem from="1724709816143" duration="111000" />
       <workItem from="1724709935483" duration="377000" />
       <workItem from="1724710317576" duration="42000" />
-      <workItem from="1724710364726" duration="13885000" />
+      <workItem from="1724710364726" duration="16079000" />
     </task>
     <servers />
   </component>

@@ -1,9 +1,11 @@
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/vmberto/maitu/main/public/icons/apple-touch-icon.png" alt="MAITU Logo" width="100" style="box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);" />
+</p>
+
 # maitu
 
-<p align="left">
-  <img src="https://raw.githubusercontent.com/vmberto/maitu/main/public/icons/apple-touch-icon.png" alt="MAITU Logo" width="100" style="float: left; margin-right: 20px;" />
-  an application designed to help you save, track, and achieve your goals. Whether you're setting personal milestones or professional targets, this app provides a simple and intuitive interface to keep you on track. You can also register the locations of your tasks and visualize them on a map, making it easier to organize and manage your goals geographically.
-</p>
+an application designed to help you save, track, and achieve your goals. Whether you're setting personal milestones or professional targets, this app provides a simple and intuitive interface to keep you on track. You can also register the locations of your tasks and visualize them on a map, making it easier to organize and manage your goals geographically.
 
 ## Features
 
