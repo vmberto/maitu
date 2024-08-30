@@ -57,7 +57,7 @@ export const TaskInput = ({ taskData, disabled }: TaskInputComponentProps) => {
         )}
       </button>
 
-      <div className="relative z-10 flex h-fit w-full flex-col gap-2 overflow-hidden px-2">
+      <div className="relative z-10 flex h-fit w-full flex-col gap-1 overflow-hidden px-2">
         <textarea
           ref={textareaRef}
           className="w-full resize-none bg-transparent text-base outline-0 focus:outline-none"
