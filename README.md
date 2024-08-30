@@ -16,7 +16,7 @@ an full-stack application designed to help you save, track, and achieve your goa
 
 ## Tech Stack
 
-_maitu_ is built using modern web technologies: TypeScript, Next.js 14 and Tailwind CSS
+_maitu_ is built using modern web technologies: TypeScript, Next.js 14, Tailwind CSS and MongoDB.
 
 <p align="center">
   <img src="https://upload.wikimedia.org/wikipedia/commons/4/4c/Typescript_logo_2020.svg" alt="TypeScript" width="60" />
