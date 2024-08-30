@@ -33,7 +33,9 @@ export const TaskDetailSlideOver = () => {
           />
         )}
         <SubTasksWrapper />
-        <TagsWrapper listColor={selectedList?.color} taskData={taskData} />
+        {taskData && (
+          <TagsWrapper listColor={selectedList?.color} taskData={taskData} />
+        )}
       </div>
     </SlideOver>
   );

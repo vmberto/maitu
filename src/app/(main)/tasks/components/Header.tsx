@@ -34,7 +34,7 @@ export const Header = () => {
 
         <button
           type="button"
-          className={`center ml-auto flex items-center rounded-full px-2 py-0.5 align-middle
+          className={`ml-auto flex items-center rounded-full px-2 py-0.5 align-middle
           text-base ${FontColor.get(selectedList?.color)} transition hover:bg-gray-200`}
         >
           <Typography as="h2" className="ml-auto text-2xl">
