@@ -1,6 +1,6 @@
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/vmberto/maitu/main/public/icons/apple-touch-icon.png" alt="MAITU Logo" width="100" style="box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);" />
+  <img src="https://raw.githubusercontent.com/vmberto/maitu/main/public/icons/apple-touch-icon.png" alt="MAITU Logo" width="100" />
 </p>
 
 # maitu
@@ -9,10 +9,10 @@ an full-stack application designed to help you save, track, and achieve your goa
 
 ## Features
 
-- **Goal Tracking**: Create, manage, and track your progress on multiple goals.
-- **Progress Visualization**: Get a clear view of your progress with visual graphs and statistics.
-- **Reminders**: Set reminders to keep yourself motivated and on schedule.
-- **Flexible Categorization**: Organize your goals by categories and priorities.
+- **Flexible Categorization**: Organize your tasks by lists.
+- **Tasks Tracking**: Create, manage, and track your progress on multiple tasks and subtasks.
+- **(TODO) Reminders**: Set reminders to keep yourself motivated and on schedule.
+- **(TODO) Progress Visualization**: Get a clear view of your progress with visual graphs and statistics.
 
 ## Tech Stack
 
@@ -31,5 +31,5 @@ _maitu_ is built using modern web technologies: TypeScript, Next.js 14 and Tailw
 ## Database
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/vmberto/maitu/main/docs/mongodb-database.png" alt="MAITU Logo" width="100" style="box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);" />
+  <img src="https://raw.githubusercontent.com/vmberto/maitu/main/docs/mongodb-database.png" alt="maitu-db" width="60%" />
 </p>
