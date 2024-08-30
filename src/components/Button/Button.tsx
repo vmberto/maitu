@@ -23,10 +23,8 @@ export const Button = ({
     type={props.type || 'button'}
     disabled={loading} // Disable button when loading
     className={
-      `
-    ${props.className}
-    px-6 py-2.5 bg-${color} text-white font-medium text-sm leading-tight
-    uppercase rounded shadow-md hover:bg-${color}-700 hover:shadow-lg
+      `${props.className}px-6 py-2.5 bg-${color} text-white font-medium text-sm 
+    leading-tight uppercase rounded shadow-md hover:bg-${color}-700 hover:shadow-lg
     focus:bg-${color}-700 focus:shadow-lg focus:outline-none focus:ring-0
     active:bg-${color}-800 active:shadow-lg transition duration-150
     ease-in-out
