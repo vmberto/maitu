@@ -5,6 +5,7 @@ import { EllipsisHorizontalCircleIcon } from '@heroicons/react/24/outline';
 import React, { useEffect, useRef } from 'react';
 
 import { useTasks } from '@/src/app/(main)/tasks/state/provider';
+import { BackgroundColors, BorderColors } from '@/src/lib/colors';
 import { stopPropagationFn } from '@/src/lib/functions';
 import { useSlideOver } from '@/src/providers/slideover.provider';
 import { type GenericEvent } from '@/types/events';
@@ -24,6 +25,7 @@ export const TaskInput = ({ taskData, disabled }: TaskInputComponentProps) => {
     handleInputFocus,
     handleCompleteTask,
     handleChangeExistingTask,
+    selectedList,
   } = useTasks();
 
   useEffect(() => {
@@ -34,7 +36,7 @@ export const TaskInput = ({ taskData, disabled }: TaskInputComponentProps) => {
 
   const handleClickCompleteTask = async (e: GenericEvent) => {
     e.stopPropagation();
-    if (taskData && handleCompleteTask) {
+    if (taskData && !taskData.completedAt && handleCompleteTask) {
       await handleCompleteTask(taskData);
     }
   };
@@ -44,12 +46,14 @@ export const TaskInput = ({ taskData, disabled }: TaskInputComponentProps) => {
       <button
         type="button"
         onClick={handleClickCompleteTask}
-        className="relative mr-2 cursor-pointer
-        items-center self-start rounded-full border-2
-          border-primary p-3.5 font-semibold transition-all"
+        className={`${BorderColors.get(selectedList.color)} relative mr-2
+        cursor-pointer items-center self-start rounded-full
+          border-2 p-3.5 font-semibold transition-all`}
       >
         {taskData?.complete && (
-          <div className="absolute right-1 top-1 size-5 rounded-full bg-primary" />
+          <div
+            className={`${BackgroundColors.get(selectedList.color)} absolute right-1 top-1 size-5 rounded-full`}
+          />
         )}
       </button>
 

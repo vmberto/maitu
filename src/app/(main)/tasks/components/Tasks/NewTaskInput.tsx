@@ -4,14 +4,20 @@ import type { KeyboardEventHandler } from 'react';
 import React, { useEffect, useRef } from 'react';
 
 import { useTasks } from '@/src/app/(main)/tasks/state/provider';
+import { BorderColors } from '@/src/lib/colors';
 import { stopPropagationFn } from '@/src/lib/functions';
 import { type Task } from '@/types/main';
 
 export const NewTaskInput = () => {
   const textareaRef = useRef({} as HTMLTextAreaElement);
 
-  const { newTask, handleAddTask, handleChangeNewTask, handleInputFocus } =
-    useTasks();
+  const {
+    newTask,
+    selectedList,
+    handleAddTask,
+    handleChangeNewTask,
+    handleInputFocus,
+  } = useTasks();
 
   useEffect(() => {
     textareaRef.current.style.height = '0px';
@@ -33,9 +39,9 @@ export const NewTaskInput = () => {
       <button
         type="button"
         aria-label="complete-task-disabled"
-        className="relative mr-2 cursor-pointer
+        className={`relative mr-2 cursor-pointer
         items-center self-start rounded-full border-2
-          border-primary p-3.5 font-semibold transition-all"
+          ${BorderColors.get(selectedList.color)} p-3.5 font-semibold transition-all`}
       />
 
       <textarea

@@ -16,8 +16,8 @@ export const Header = () => {
     <header
       className={`${clickStyle} sticky top-0 z-20 border-b-2 border-gray-100 bg-white align-middle`}
     >
-      <div className="mx-auto flex h-full max-w-xl items-center">
-        <Link className="flex h-12 pl-5" onClick={stopPropagationFn} href="/">
+      <div className="mx-auto flex h-full max-w-xl items-center px-5">
+        <Link className="flex h-12" onClick={stopPropagationFn} href="/">
           <ArrowLeftIcon
             className="relative mr-3 size-5 cursor-pointer self-center"
             color={HexColors.get(selectedList.color)}
@@ -31,6 +31,16 @@ export const Header = () => {
         >
           {selectedList?.title}
         </Typography>
+
+        <button
+          type="button"
+          className={`center ml-auto flex items-center rounded-full px-2 py-0.5 align-middle
+          text-base ${FontColor.get(selectedList?.color)} transition hover:bg-gray-200`}
+        >
+          <Typography as="h2" className="ml-auto text-2xl">
+            {selectedList?.emoji}
+          </Typography>
+        </button>
       </div>
     </header>
   );

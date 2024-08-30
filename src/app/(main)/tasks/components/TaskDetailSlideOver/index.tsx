@@ -11,7 +11,7 @@ import { useSlideOver } from '@/src/providers/slideover.provider';
 import type { Task } from '@/types/main';
 
 export const TaskDetailSlideOver = () => {
-  const { handleUpdateTask } = useTasks();
+  const { handleUpdateTask, selectedList } = useTasks();
   const {
     modalData: taskData,
     isOpen,
@@ -20,7 +20,9 @@ export const TaskDetailSlideOver = () => {
 
   return (
     <SlideOver
-      title={<TaskDetailTitle taskData={taskData} />}
+      title={
+        <TaskDetailTitle taskData={taskData} listColor={selectedList?.color} />
+      }
       open={isOpen}
       onClose={handleCloseSlideOver}
     >

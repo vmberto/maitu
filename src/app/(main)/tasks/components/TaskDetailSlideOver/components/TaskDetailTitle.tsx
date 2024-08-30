@@ -8,13 +8,17 @@ import type { Task } from '@/types/main';
 
 type TaskDetailTitleProps = {
   taskData?: Task;
+  listColor: string;
 };
 
-export const TaskDetailTitle = ({ taskData }: TaskDetailTitleProps) => (
+export const TaskDetailTitle = ({
+  taskData,
+  listColor,
+}: TaskDetailTitleProps) => (
   <>
     <PlayCircleIcon
       className="mb-1 mr-1 inline size-6"
-      color={HexColors.get('primary')}
+      color={HexColors.get(listColor)}
     />
 
     <div className="inline">{taskData?.title}</div>

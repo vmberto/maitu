@@ -6,7 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -27,30 +26,31 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;javascript.nodejs.core.library.configured.version&quot;: &quot;18.18.2&quot;,
-    &quot;javascript.nodejs.core.library.typings.version&quot;: &quot;18.18.2&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/vmberto/Documents/maitu&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.standard&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.standard&quot;: &quot;&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs.jest.jest_package&quot;: &quot;/Users/vmberto/Documents/maitu/node_modules/jest&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;prettier.import.notification.dismissed&quot;: &quot;true&quot;,
-    &quot;prettierjs.PrettierConfiguration.Package&quot;: &quot;/Users/vmberto/Documents/maitu/node_modules/prettier&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;actions.on.save&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;/Users/vmberto/Documents/maitu/node_modules/typescript/lib&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_MARK_IGNORED_FILES_AS_EXCLUDED": "true",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "main",
+    "javascript.nodejs.core.library.configured.version": "18.18.2",
+    "javascript.nodejs.core.library.typings.version": "18.18.2",
+    "last_opened_file_path": "/Users/vmberto/Documents/maitu",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.standard": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.standard": "",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs.jest.jest_package": "/Users/vmberto/Documents/maitu/node_modules/jest",
+    "nodejs_package_manager_path": "npm",
+    "prettier.import.notification.dismissed": "true",
+    "prettierjs.PrettierConfiguration.Package": "/Users/vmberto/Documents/maitu/node_modules/prettier",
+    "settings.editor.selected.configurable": "actions.on.save",
+    "ts.external.directory.path": "/Users/vmberto/Documents/maitu/node_modules/typescript/lib",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
@@ -71,7 +71,7 @@
       <recent name="$PROJECT_DIR$/src/hooks/useTodos.ts" />
     </key>
   </component>
-  <component name="RunManager" selected="Jest.ColorPicker Component">
+  <component name="RunManager" selected="Jest.EmojiPickerComponent">
     <configuration name="ColorPicker Component" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
       <node-interpreter value="project" />
       <jest-package value="$PROJECT_DIR$/node_modules/jest" />
@@ -84,27 +84,28 @@
       </test-names>
       <method v="2" />
     </configuration>
-    <configuration name="SlideOver Component" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
+    <configuration name="EmojiPickerComponent" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
       <node-interpreter value="project" />
       <jest-package value="$PROJECT_DIR$/node_modules/jest" />
       <working-dir value="$PROJECT_DIR$" />
       <envs />
       <scope-kind value="SUITE" />
-      <test-file value="$PROJECT_DIR$/src/components/SlideOver/SlideOver.test.tsx" />
+      <test-file value="$PROJECT_DIR$/src/components/EmojiPicker/EmojiPicker.test.tsx" />
       <test-names>
-        <test-name value="SlideOver Component" />
+        <test-name value="EmojiPickerComponent" />
       </test-names>
       <method v="2" />
     </configuration>
-    <configuration name="Typography Component" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
+    <configuration name="EmojiPickerComponent.calls setEmoji with the selected emoji when an emoji is clicked" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
       <node-interpreter value="project" />
       <jest-package value="$PROJECT_DIR$/node_modules/jest" />
       <working-dir value="$PROJECT_DIR$" />
       <envs />
-      <scope-kind value="SUITE" />
-      <test-file value="$PROJECT_DIR$/src/components/Typography/Typography.test.tsx" />
+      <scope-kind value="TEST" />
+      <test-file value="$PROJECT_DIR$/src/components/EmojiPicker/EmojiPicker.test.tsx" />
       <test-names>
-        <test-name value="Typography Component" />
+        <test-name value="EmojiPickerComponent" />
+        <test-name value="calls setEmoji with the selected emoji when an emoji is clicked" />
       </test-names>
       <method v="2" />
     </configuration>
@@ -132,11 +133,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Jest.EmojiPickerComponent" />
+        <item itemvalue="Jest.EmojiPickerComponent.calls setEmoji with the selected emoji when an emoji is clicked" />
         <item itemvalue="Jest.ColorPicker Component" />
         <item itemvalue="npm.test:e2e" />
         <item itemvalue="Jest.should navigate to the about page" />
-        <item itemvalue="Jest.Typography Component" />
-        <item itemvalue="Jest.SlideOver Component" />
       </list>
     </recent_temporary>
   </component>
@@ -199,7 +200,7 @@
       <workItem from="1724709816143" duration="111000" />
       <workItem from="1724709935483" duration="377000" />
       <workItem from="1724710317576" duration="42000" />
-      <workItem from="1724710364726" duration="16079000" />
+      <workItem from="1724710364726" duration="28751000" />
     </task>
     <servers />
   </component>

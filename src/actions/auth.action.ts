@@ -18,7 +18,6 @@ export async function encrypt(payload: any) {
     .sign(key);
 }
 
-// Decrypt function
 export async function decrypt(input: string): Promise<any> {
   try {
     const { payload } = await jwtVerify(input, key, {

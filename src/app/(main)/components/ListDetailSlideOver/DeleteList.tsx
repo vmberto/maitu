@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { useLists } from '@/src/app/provider';
+import { Button } from '@/src/components/Button/Button';
 import { Input } from '@/src/components/Input/Input';
 import { useSlideOver } from '@/src/providers/slideover.provider';
 import type { FormEventHandler, InputChangeEventHandler } from '@/types/events';
@@ -44,13 +45,14 @@ export const DeleteList = ({ id, listTitle }: DeleteListProps) => {
           value={listTitleInput}
           onChange={handleInputChange}
         />
-        <button
+        <Button
           type="submit"
           disabled={listTitleInput !== listTitle}
-          className="mt-4 w-full cursor-pointer rounded-full bg-danger p-3 text-white disabled:cursor-not-allowed disabled:opacity-40"
+          color="danger"
+          className="mt-4 w-full cursor-pointer rounded-full p-3 text-white disabled:cursor-not-allowed disabled:opacity-40"
         >
           Delete
-        </button>
+        </Button>
       </form>
     </div>
   );
