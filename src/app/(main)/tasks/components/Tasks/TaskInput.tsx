@@ -2,7 +2,7 @@
 
 import { Menu } from '@headlessui/react';
 import { EllipsisHorizontalCircleIcon } from '@heroicons/react/24/outline';
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { useTasks } from '@/src/app/(main)/tasks/state/provider';
 import { BackgroundColors, BorderColors } from '@/src/lib/colors';
@@ -57,17 +57,31 @@ export const TaskInput = ({ taskData, disabled }: TaskInputComponentProps) => {
         )}
       </button>
 
-      <textarea
-        ref={textareaRef}
-        className="relative z-10 block w-full resize-none overflow-hidden
-                    bg-transparent px-2 text-base outline-0 focus:outline-none"
-        value={taskData.title}
-        onClick={stopPropagationFn}
-        onFocus={handleInputFocus(taskData)}
-        onBlur={handleRemoveOrUpdateTitle}
-        onChange={handleChangeExistingTask}
-        disabled={disabled}
-      />
+      <div className="relative z-10 flex h-fit w-full flex-col gap-2 overflow-hidden px-2">
+        <textarea
+          ref={textareaRef}
+          className="w-full resize-none bg-transparent text-base outline-0 focus:outline-none"
+          value={taskData.title}
+          onClick={stopPropagationFn}
+          onFocus={handleInputFocus(taskData)}
+          onBlur={handleRemoveOrUpdateTitle}
+          onChange={handleChangeExistingTask}
+          disabled={disabled}
+        />
+        {taskData.tags && (
+          <div className="flex flex-wrap gap-1">
+            {taskData.tags.map((tag) => (
+              <div
+                key={tag}
+                className={`rounded-md ${BackgroundColors.get(selectedList.color)} flex items-center 
+          justify-center px-2 align-middle text-sm text-white`}
+              >
+                {tag}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
       {taskData?._id && !taskData?.parentTaskId && (
         <Menu as="div" className="relative inline-block self-start text-left">

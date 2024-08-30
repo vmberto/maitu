@@ -1,10 +1,9 @@
 'use client';
 
-import { Suspense } from 'react';
-
 import { DescriptionSection } from '@/src/app/(main)/tasks/components/TaskDetailSlideOver/components/DescriptionSection';
 import { TaskDetailTitle } from '@/src/app/(main)/tasks/components/TaskDetailSlideOver/components/TaskDetailTitle';
 import { SubTasksWrapper } from '@/src/app/(main)/tasks/components/TaskDetailSlideOver/Subtasks/SubTasksWrapper';
+import { TagsWrapper } from '@/src/app/(main)/tasks/components/TaskDetailSlideOver/Tags/TagsWrapper';
 import { useTasks } from '@/src/app/(main)/tasks/state/provider';
 import { SlideOver } from '@/src/components/SlideOver/SlideOver';
 import { useSlideOver } from '@/src/providers/slideover.provider';
@@ -33,9 +32,8 @@ export const TaskDetailSlideOver = () => {
             updateTaskData={handleUpdateTask}
           />
         )}
-        <Suspense fallback="blablbal">
-          <SubTasksWrapper />
-        </Suspense>
+        <SubTasksWrapper />
+        <TagsWrapper listColor={selectedList?.color} taskData={taskData} />
       </div>
     </SlideOver>
   );

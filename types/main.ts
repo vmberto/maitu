@@ -38,6 +38,8 @@ export interface Task {
 
   createdAt: string;
   completedAt?: string;
+
+  tags?: string[];
 }
 
 export type TasksResponse = List & { tasks: Task[] };
