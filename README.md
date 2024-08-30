@@ -27,3 +27,9 @@ _maitu_ is built using modern web technologies: TypeScript, Next.js 14 and Tailw
   <img src="https://cdn.freebiesupply.com/logos/large/2x/jest-logo-png-transparent.png" alt="Jest" width="60" />
   <img src="https://playwright.dev/img/playwright-logo.svg" alt="Playwright" width="60" />
 </p>
+
+## Database
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/vmberto/maitu/main/docs/mongodb-database.png" alt="MAITU Logo" width="100" style="box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);" />
+</p>
