@@ -16,19 +16,25 @@ export const TagsWrapper = ({ listColor, taskData }: TagsProps) => {
   const [tagList, setTagList] = useState<string[]>(taskData?.tags || []);
   const [tagInput, setTagInput] = useState<string>('');
 
+  const addTag = async () => {
+    const newTag = tagInput.trim();
+    if (newTag !== '' && !tagList?.includes(newTag)) {
+      const newTagList = [...tagList, newTag];
+      setTagList([...tagList, newTag]);
+      setTagInput('');
+      await handleUpdateTask({ ...taskData, tags: newTagList })();
+    }
+  };
+
   const handleDeleteTag = async (tagToDelete: string) => {
     const newTagList = tagList.filter((tag) => tag !== tagToDelete);
     setTagList(newTagList);
     await handleUpdateTask({ ...taskData, tags: newTagList })();
   };
 
-  const handleAddTag = async (event: KeyboardEvent<HTMLInputElement>) => {
-    const newTag = tagInput.trim();
-    if (event.key === 'Enter' && newTag !== '' && !tagList?.includes(newTag)) {
-      const newTagList = [...tagList, newTag];
-      setTagList([...tagList, newTag]);
-      setTagInput('');
-      await handleUpdateTask({ ...taskData, tags: newTagList })();
+  const pressEnterToAddTag = async (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      await addTag();
     }
   };
 
@@ -59,7 +65,8 @@ export const TagsWrapper = ({ listColor, taskData }: TagsProps) => {
                     bg-transparent px-2 text-base outline-0 focus:outline-none"
         onChange={(e) => setTagInput(e.target.value)}
         value={tagInput}
-        onKeyDown={handleAddTag}
+        onKeyDown={pressEnterToAddTag}
+        onBlur={addTag}
       />
     </section>
   );
