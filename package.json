@@ -16,9 +16,8 @@
     "@headlessui/react": "^1.7.10",
     "@hello-pangea/dnd": "^16.5.0",
     "@heroicons/react": "^2.0.15",
-    "@serwist/next": "^8.4.4",
+    "@serwist/next": "^9.0.10",
     "@serwist/precaching": "^8.4.4",
-    "@serwist/sw": "^8.4.4",
     "@tailwindcss/forms": "^0.5.7",
     "@vercel/speed-insights": "^1.0.9",
     "bcrypt": "^5.1.1",
@@ -27,7 +26,9 @@
     "mongodb": "^6.3.0",
     "next": "^14.0.4",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "serwist": "^9.0.10",
+    "web-push": "^3.6.7"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^1.7.0",

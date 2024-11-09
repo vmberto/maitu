@@ -16,6 +16,7 @@
 /.next/
 /out/
 
+
 # production
 /build
 
@@ -43,7 +44,8 @@ next-env.d.ts
 
 # pwa
 /public/sw.js
-
+public/sw*
+public/swe-worker*
 
 # storybook
 /storybook-static
