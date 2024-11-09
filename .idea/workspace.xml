@@ -4,19 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/next.config.mjs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/SendNotification.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/notification/route.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/jest.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/jest.config.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/next.config.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/sw.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/sw.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(main)/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/page.tsx" afterDir="false" />
-    </list>
+    <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -220,7 +208,7 @@
       <workItem from="1724710364726" duration="28751000" />
       <workItem from="1726062395058" duration="2393000" />
       <workItem from="1726078349590" duration="1716000" />
-      <workItem from="1731120469841" duration="2419000" />
+      <workItem from="1731120469841" duration="3079000" />
     </task>
     <servers />
   </component>
