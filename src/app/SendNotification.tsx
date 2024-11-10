@@ -3,6 +3,8 @@
 import type { MouseEventHandler } from 'react';
 import { useEffect, useState } from 'react';
 
+import { Button } from '@/src/components/Button/Button';
+
 const base64ToUint8Array = (base64: string) => {
   const padding = '='.repeat((4 - (base64.length % 4)) % 4);
   const b64 = (base64 + padding).replace(/-/g, '+').replace(/_/g, '/');
@@ -93,7 +95,7 @@ export default function SendNotification() {
     }
 
     try {
-      await fetch('/notification', {
+      await fetch('/api/notification', {
         method: 'POST',
         headers: {
           'Content-type': 'application/json',
@@ -109,28 +111,28 @@ export default function SendNotification() {
   };
 
   return (
-    <>
-      <button
+    <div className="my-10">
+      <Button
         type="button"
         onClick={subscribeButtonOnClick}
         disabled={isSubscribed}
       >
         Subscribe
-      </button>
-      <button
+      </Button>
+      <Button
         type="button"
         onClick={unsubscribeButtonOnClick}
         disabled={!isSubscribed}
       >
         Unsubscribe
-      </button>
-      <button
+      </Button>
+      <Button
         type="button"
         onClick={sendNotificationButtonOnClick}
         disabled={!isSubscribed}
       >
         Send Notification
-      </button>
-    </>
+      </Button>
+    </div>
   );
 }

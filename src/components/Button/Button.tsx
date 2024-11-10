@@ -6,13 +6,13 @@ import type { HTMLProps, ReactNode } from 'react';
 
 type ButtonProps = HTMLProps<HTMLButtonElement> & {
   type?: 'button' | 'submit' | 'reset';
-  color: string;
+  color?: string;
   children?: ReactNode;
   loading?: boolean;
 };
 
 export const Button = ({
-  color,
+  color = 'primary',
   children,
   label,
   loading,
