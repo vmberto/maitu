@@ -21,8 +21,10 @@ export const TimelineWrapper = ({ list, tasks }: TimelineWrapperProps) => {
 
   return (
     <section className="mx-auto h-full max-w-xl">
-      <NewTextInput />
-      <Texts />
+      <div className="px-5 pb-5">
+        <NewTextInput />
+        <Texts />
+      </div>
     </section>
   );
 };
