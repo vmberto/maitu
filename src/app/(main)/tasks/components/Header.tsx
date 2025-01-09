@@ -3,7 +3,7 @@
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
 import Link from 'next/link';
 
-import { useTasks } from '@/src/app/(main)/timeline/state/provider';
+import { useTasks } from '@/src/app/(main)/tasks/state/provider';
 import { Typography } from '@/src/components/Typography/Typography';
 import { FontColor, HexColors } from '@/src/lib/colors';
 import { stopPropagationFn } from '@/src/lib/functions';
