@@ -13,7 +13,7 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
-    "@headlessui/react": "^1.7.10",
+    "@headlessui/react": "^2.2.0",
     "@hello-pangea/dnd": "^16.5.0",
     "@heroicons/react": "^2.0.15",
     "@serwist/next": "^9.0.10",

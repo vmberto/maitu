@@ -2,6 +2,11 @@ import type { ObjectId } from 'mongodb';
 
 import type { Colors } from '@/src/components/ColorPicker/ColorPicker';
 
+export enum ListType {
+  tasks = 'tasks',
+  timeline = 'timeline',
+}
+
 export interface UserObject {
   _id?: ObjectId;
   username: string;
@@ -19,6 +24,8 @@ export interface List {
   index: number;
 
   createdAt: string;
+
+  type: ListType;
 }
 
 export interface Task {

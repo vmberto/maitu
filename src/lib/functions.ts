@@ -1,6 +1,6 @@
 import { type GenericEvent } from '../../types/events';
 
-export const formatDate = (dateString?: string) => {
+export const formatDate = (dateString?: string, onlyDate = false) => {
   if (!dateString) {
     return '';
   }
@@ -11,6 +11,12 @@ export const formatDate = (dateString?: string) => {
   const year = date.getFullYear();
   const hours = date.getHours();
   const minutes = date.getMinutes();
+  if (onlyDate) {
+    return `${day.toString().padStart(2, '0')}/${month
+      .toString()
+      .padStart(2, '0')}/${year}`;
+  }
+
   return `${day.toString().padStart(2, '0')}/${month
     .toString()
     .padStart(2, '0')}/${year} ${hours.toString().padStart(2, '0')}:${minutes

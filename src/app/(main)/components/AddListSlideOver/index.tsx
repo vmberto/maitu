@@ -4,15 +4,29 @@ import { Button } from '@/src/components/Button/Button';
 import { ColorPicker, Colors } from '@/src/components/ColorPicker/ColorPicker';
 import { EmojiPickerComponent } from '@/src/components/EmojiPicker/EmojiPicker';
 import { Input } from '@/src/components/Input/Input';
+import { Select } from '@/src/components/Select';
 import { SlideOver } from '@/src/components/SlideOver/SlideOver';
 import type { GenericEvent, InputChangeEventHandler } from '@/types/events';
-import { type List } from '@/types/main';
+import { type List, ListType } from '@/types/main';
 
 type AddListSlideOverProps = {
   open: boolean;
   setOpen: (open: boolean) => void;
   handleAddList: (newList: List) => void;
 };
+
+const listTypeOptions = [
+  {
+    id: 1,
+    name: 'Tasks',
+    value: ListType.tasks,
+  },
+  {
+    id: 2,
+    name: 'Timeline',
+    value: ListType.timeline,
+  },
+];
 
 export const AddListSlideOver = ({
   setOpen,
@@ -22,6 +36,7 @@ export const AddListSlideOver = ({
   const [listTitle, setListTitle] = useState('');
   const [color, setColor] = useState<Colors>(Colors.PRIMARY);
   const [emoji, setEmoji] = useState('');
+  const [listType, setListType] = useState(listTypeOptions[0]);
 
   const resetSlideOverData = () => {
     setOpen(false);
@@ -43,6 +58,7 @@ export const AddListSlideOver = ({
         emoji,
         color,
         createdAt: new Date().toISOString(),
+        type: listType.value,
       } as List;
       handleAddList(newList);
       resetSlideOverData();
@@ -54,13 +70,20 @@ export const AddListSlideOver = ({
       <form
         id="addData-form"
         onSubmit={handleSubmit}
-        className="flex flex-col gap-3"
+        className="flex flex-col gap-4"
       >
         <Input
           value={listTitle}
           maxLength={30}
           onChange={handleInputChange}
           label="List Name"
+        />
+
+        <Select
+          label="Select List Type"
+          options={listTypeOptions}
+          selectedValue={listType}
+          setSelectedValue={setListType}
         />
 
         <ColorPicker color={color} setColor={setColor} />

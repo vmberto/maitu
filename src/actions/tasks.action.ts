@@ -90,6 +90,11 @@ export const remove = async (id: string) => {
   const mongo = await getMongoDb();
 
   revalidatePath('/tasks');
+
+  await mongo
+    .collection('todos')
+    .deleteMany({ parentTaskId: new ObjectId(id) });
+
   return mongo.collection('todos').deleteOne({ _id: new ObjectId(id) });
 };
 

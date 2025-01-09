@@ -5,13 +5,24 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/app/api/notification/route.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/(main)/timeline/components/Header.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/(main)/timeline/components/NewTextInput.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/(main)/timeline/components/Texts.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/(main)/timeline/components/TimelineWrapper.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/(main)/timeline/loading.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/(main)/timeline/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/(main)/timeline/state/provider.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/(main)/timeline/state/reducer.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/Select.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(main)/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/SendNotification.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/SendNotification.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/notification/route.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/sw.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/sw.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/Button/Button.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Button/Button.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/actions/tasks.action.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/actions/tasks.action.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(main)/components/AddListSlideOver/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/components/AddListSlideOver/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(main)/components/ListDemo.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/components/ListDemo.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(main)/tasks/components/Header.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/tasks/components/Header.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/functions.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/functions.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/types/main.ts" beforeDir="false" afterPath="$PROJECT_DIR$/types/main.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,45 +43,45 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_MARK_IGNORED_FILES_AS_EXCLUDED&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;javascript.nodejs.core.library.configured.version&quot;: &quot;18.18.2&quot;,
-    &quot;javascript.nodejs.core.library.typings.version&quot;: &quot;18.18.14&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/vmberto/Documents/maitu&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.standard&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.standard&quot;: &quot;&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs.jest.jest_package&quot;: &quot;/Users/vmberto/Documents/maitu/node_modules/jest&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;prettier.import.notification.dismissed&quot;: &quot;true&quot;,
-    &quot;prettierjs.PrettierConfiguration.Package&quot;: &quot;/Users/vmberto/Documents/maitu/node_modules/prettier&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;actions.on.save&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;/Users/vmberto/WebstormProjects/maitu/node_modules/typescript/lib&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_MARK_IGNORED_FILES_AS_EXCLUDED": "true",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "main",
+    "javascript.nodejs.core.library.configured.version": "18.18.2",
+    "javascript.nodejs.core.library.typings.version": "18.18.14",
+    "last_opened_file_path": "/Users/vmberto/WebstormProjects/maitu/src/app/(main)/timeline/components",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.standard": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.standard": "",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs.jest.jest_package": "/Users/vmberto/Documents/maitu/node_modules/jest",
+    "nodejs_package_manager_path": "npm",
+    "prettier.import.notification.dismissed": "true",
+    "prettierjs.PrettierConfiguration.Package": "/Users/vmberto/Documents/maitu/node_modules/prettier",
+    "settings.editor.selected.configurable": "actions.on.save",
+    "ts.external.directory.path": "/Users/vmberto/WebstormProjects/maitu/node_modules/typescript/lib",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/app/(main)/timeline/components" />
+      <recent name="$PROJECT_DIR$/src/app/(main)/timeline" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/src/components/SlideOver" />
       <recent name="$PROJECT_DIR$/src/components/Typography" />
-      <recent name="$PROJECT_DIR$/src/components/ColorPicker" />
-      <recent name="$PROJECT_DIR$/public/icons" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/components" />
       <recent name="$PROJECT_DIR$/src/app/api" />
       <recent name="$PROJECT_DIR$/src/app" />
       <recent name="$PROJECT_DIR$/docs" />
       <recent name="$PROJECT_DIR$/src/app/(main)/tasks/components/TaskDetailSlideOver/Tags" />
-      <recent name="$PROJECT_DIR$/src/components/EmojiPicker" />
     </key>
     <key name="es6.move.members.recent.items">
       <recent name="$PROJECT_DIR$/src/app/lists/components/ListsContainer.tsx" />
@@ -217,6 +228,12 @@
       <workItem from="1726062395058" duration="2393000" />
       <workItem from="1726078349590" duration="1716000" />
       <workItem from="1731120469841" duration="9384000" />
+      <workItem from="1734713837821" duration="3979000" />
+      <workItem from="1735818434287" duration="598000" />
+      <workItem from="1736240468103" duration="606000" />
+      <workItem from="1736360597879" duration="5000" />
+      <workItem from="1736364154995" duration="661000" />
+      <workItem from="1736423603156" duration="7594000" />
     </task>
     <servers />
   </component>

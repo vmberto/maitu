@@ -8,7 +8,7 @@ import { DraggableWrapper } from '@/src/components/DragAndDrop/DraggableWrapper'
 import { Typography } from '@/src/components/Typography/Typography';
 import { clickStyle } from '@/src/lib/style-consts';
 import { useSlideOver } from '@/src/providers/slideover.provider';
-import { type List } from '@/types/main';
+import { type List, ListType } from '@/types/main';
 
 type ListDemoProps = {
   list: List;
@@ -26,7 +26,7 @@ export const ListDemo = ({ list }: ListDemoProps) => {
     >
       <Link
         href={{
-          pathname: '/tasks',
+          pathname: list.type === ListType.tasks ? '/tasks' : '/timeline',
           query: { listId: list._id },
         }}
       >
