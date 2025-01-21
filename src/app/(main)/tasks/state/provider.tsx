@@ -51,12 +51,12 @@ export const TasksProvider = ({ children }: TasksProviderProps) => {
   };
 
   const fetchSubtasks = async () => {
-    dispatch(setSubTasks([]));
+    dispatch(setSubTasks([], true));
 
     const selectedTask = modalData as Task;
     const subtasks = await getSubTasks(selectedTask._id?.toString() || '');
 
-    dispatch(setSubTasks(json(subtasks)));
+    dispatch(setSubTasks(json(subtasks), false));
   };
 
   const handleChangeExistingTask = (e: TextareaChangeEventHandler) => {
@@ -96,6 +96,7 @@ export const TasksProvider = ({ children }: TasksProviderProps) => {
         dispatch(
           setSubTasks(
             state.subtasks.filter((task) => task._id !== currentTask._id),
+            false,
           ),
         );
       } else {
@@ -143,9 +144,9 @@ export const TasksProvider = ({ children }: TasksProviderProps) => {
 
       if (selectedTask?._id) {
         const subtasksCopy = [...state.subtasks];
-        dispatch(setSubTasks([...subtasksCopy, task]));
+        dispatch(setSubTasks([...subtasksCopy, task], false));
         const response = await add(task);
-        dispatch(setSubTasks([...subtasksCopy, response]));
+        dispatch(setSubTasks([...subtasksCopy, response], false));
 
         return;
       }

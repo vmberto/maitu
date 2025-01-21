@@ -2,11 +2,12 @@ import { useEffect } from 'react';
 
 import { NewTaskInput } from '@/src/app/(main)/tasks/components/Tasks/NewTaskInput';
 import { TaskInput } from '@/src/app/(main)/tasks/components/Tasks/TaskInput';
+import { TaskSkeleton } from '@/src/app/(main)/tasks/loading';
 import { useTasks } from '@/src/app/(main)/tasks/state/provider';
 import { Typography } from '@/src/components/Typography/Typography';
 
 export const SubTasksWrapper = () => {
-  const { fetchSubtasks, subtasks } = useTasks();
+  const { fetchSubtasks, subtasks, fetchingSubtasks } = useTasks();
 
   useEffect(() => {
     fetchSubtasks();
@@ -27,7 +28,10 @@ export const SubTasksWrapper = () => {
         <TaskInput key={task.createdAt} taskData={task} />
       ))}
 
-      <NewTaskInput />
+      {fetchingSubtasks &&
+        [1, 2, 3, 4].map((skeleton) => <TaskSkeleton key={skeleton} />)}
+
+      {!fetchingSubtasks && <NewTaskInput />}
     </section>
   );
 };

@@ -11,6 +11,7 @@ export const UPDATE_SINGLE_SUBTASK = 'UPDATE_SINGLE_SUBTASK';
 export type TasksReducerState = {
   tasks: Task[];
   subtasks: Task[];
+  fetchingSubtasks: boolean;
   selectedList: List;
   currentTask: Task;
   newTask: Task;
@@ -19,6 +20,7 @@ export type TasksReducerState = {
 export const initialState = {
   tasks: [],
   subtasks: [],
+  fetchingSubtasks: false,
   selectedList: {} as List,
   currentTask: {} as Task,
   newTask: {} as Task,
@@ -31,7 +33,7 @@ type TasksAction =
     }
   | {
       type: typeof SET_SUBTASKS;
-      payload: Task[];
+      payload: { subtasks: Task[]; fetchingSubtasks: boolean };
     }
   | { type: typeof SET_TASKS; payload: Task[] }
   | { type: typeof SET_CURRENT_TASK; payload: Task }
@@ -56,7 +58,7 @@ const tasksReducer = (
       return { ...state, tasks: action.payload };
 
     case SET_SUBTASKS:
-      return { ...state, subtasks: action.payload };
+      return { ...state, ...action.payload };
 
     case SET_CURRENT_TASK:
       return { ...state, currentTask: action.payload };
@@ -102,9 +104,12 @@ export const setTasks = (tasks: Task[]): TasksAction => ({
   payload: tasks,
 });
 
-export const setSubTasks = (subtasks: Task[]): TasksAction => ({
+export const setSubTasks = (
+  subtasks: Task[],
+  fetchingSubtasks: boolean,
+): TasksAction => ({
   type: SET_SUBTASKS,
-  payload: subtasks,
+  payload: { subtasks, fetchingSubtasks },
 });
 
 export const setCurrentTask = (currentTask: Task): TasksAction => ({
