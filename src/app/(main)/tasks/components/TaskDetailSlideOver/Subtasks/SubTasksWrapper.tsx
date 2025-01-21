@@ -14,7 +14,14 @@ export const SubTasksWrapper = () => {
 
   return (
     <section className="relative h-fit rounded-2xl bg-gray-100 p-4">
-      <Typography as="h1">Subtasks</Typography>
+      <div className="flex items-center">
+        <Typography as="h1">Subtasks</Typography>
+        {subtasks.length > 0 && (
+          <Typography as="h4" className="ml-auto text-sm font-semibold">
+            {subtasks.filter((st) => st.complete).length} / {subtasks.length}
+          </Typography>
+        )}
+      </div>
 
       {subtasks.map((task) => (
         <TaskInput key={task.createdAt} taskData={task} />
