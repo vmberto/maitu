@@ -52,7 +52,7 @@ export const remove = async (listId: string) => {
   const mongo = await getMongoDb();
 
   revalidatePath('/');
-  await mongo.collection('todos').deleteMany({ listId });
+  await mongo.collection('todos').deleteMany({ listId: new ObjectId(listId) });
   return mongo.collection('lists').deleteOne({ _id: new ObjectId(listId) });
 };
 
