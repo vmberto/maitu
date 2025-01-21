@@ -33,7 +33,7 @@ export interface Task {
   title: string;
 
   listId: ObjectId | string;
-  parentTaskId?: ObjectId | string;
+  parentTaskId?: ObjectId | string | null;
 
   description: string;
 
