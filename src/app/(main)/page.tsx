@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 
-import { ListsContainer } from '@/src/app/(main)/components/ListsContainer';
+import { ListsContainer } from '@/src/app/(main)/components/Lists/ListsContainer';
 import ListsLoading from '@/src/app/(main)/components/Loading/ListsLoading';
 import { MaituHeader } from '@/src/app/(main)/components/MaituHeader';
 

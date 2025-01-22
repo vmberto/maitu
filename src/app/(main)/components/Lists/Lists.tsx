@@ -3,8 +3,8 @@
 import { useState } from 'react';
 
 import { AddListSlideOver } from '@/src/app/(main)/components/AddListSlideOver';
-import { ListDemo } from '@/src/app/(main)/components/ListDemo';
 import { ListDetailSlideOver } from '@/src/app/(main)/components/ListDetailSlideOver';
+import { ListDemo } from '@/src/app/(main)/components/Lists/ListDemo';
 import { NewListButton } from '@/src/app/(main)/components/NewListButton';
 import { useLists } from '@/src/app/provider';
 import { DragAndDropWrapper } from '@/src/components/DragAndDrop/DragAndDropWrapper';

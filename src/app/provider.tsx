@@ -44,7 +44,7 @@ export const ListsProvider = ({ listsDb, children }: ListsProviderProps) => {
     async (newList: List) => {
       const newListResponse = await add({
         ...newList,
-        index: lists.length - 1,
+        index: lists.length,
       });
 
       setLists([...lists, newListResponse]);

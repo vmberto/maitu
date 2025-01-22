@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 import { createContext, useContext, useReducer } from 'react';
 
 import { add, remove, update } from '@/src/actions/tasks.action';
-import type { TasksReducerState } from '@/src/app/(main)/tasks/state/reducer';
+import type { TasksReducerState } from '@/src/app/(main)/timeline/state/reducer';
 import tasksReducer, {
   initialState,
   setCurrentTask,
@@ -12,7 +12,7 @@ import tasksReducer, {
   setNewTask,
   setTasks,
   updateSingleTask,
-} from '@/src/app/(main)/tasks/state/reducer';
+} from '@/src/app/(main)/timeline/state/reducer';
 import { useExecutionTimeout } from '@/src/hooks/useExecutionTimeout';
 import { json } from '@/src/lib/functions';
 import type { TextareaChangeEventHandler } from '@/types/events';
@@ -53,11 +53,9 @@ export const TasksProvider = ({ children }: TasksProviderProps) => {
     currentTaskCopy.title = value;
 
     dispatch(
-      updateSingleTask(
-        currentTaskCopy._id?.toString() || '',
-        { ...currentTaskCopy },
-        false,
-      ),
+      updateSingleTask(currentTaskCopy._id?.toString() || '', {
+        ...currentTaskCopy,
+      }),
     );
     dispatch(setCurrentTask({ ...currentTaskCopy }));
   };
@@ -93,7 +91,7 @@ export const TasksProvider = ({ children }: TasksProviderProps) => {
 
   const handleUpdateTask = (t: Task) => async () => {
     if (t._id) {
-      dispatch(updateSingleTask(t._id.toString(), { ...t }, false));
+      dispatch(updateSingleTask(t._id.toString(), { ...t }));
 
       await update(t._id.toString(), t);
     }
@@ -139,7 +137,7 @@ export const TasksProvider = ({ children }: TasksProviderProps) => {
 
       setExecutionTimeout(taskId, async () => {
         if (t._id) {
-          dispatch(updateSingleTask(t._id.toString(), dataToUpdate, false));
+          dispatch(updateSingleTask(t._id.toString(), dataToUpdate));
           await update(t._id.toString(), {
             ...t,
             ...dataToUpdate,
@@ -151,14 +149,10 @@ export const TasksProvider = ({ children }: TasksProviderProps) => {
     }
 
     dispatch(
-      updateSingleTask(
-        t._id.toString(),
-        {
-          complete: !t.complete,
-          completedAt: undefined,
-        },
-        false,
-      ),
+      updateSingleTask(t._id.toString(), {
+        complete: !t.complete,
+        completedAt: undefined,
+      }),
     );
   };
 

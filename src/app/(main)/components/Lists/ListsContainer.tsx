@@ -1,7 +1,7 @@
 'use server';
 
 import * as ListsService from '@/src/actions/lists.action';
-import { Lists } from '@/src/app/(main)/components/Lists';
+import { Lists } from '@/src/app/(main)/components/Lists/Lists';
 import { ListsProvider } from '@/src/app/provider';
 import { json } from '@/src/lib/functions';
 
