@@ -25,7 +25,7 @@ export const SubTasksWrapper = () => {
       </div>
 
       {subtasks.map((task) => (
-        <TaskInput key={task.createdAt} taskData={task} />
+        <TaskInput key={`${task._id}-${task.createdAt}`} taskData={task} />
       ))}
 
       {fetchingSubtasks &&

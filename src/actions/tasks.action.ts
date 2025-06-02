@@ -68,7 +68,7 @@ export const getSubTasks = async (taskId: string): Promise<Task[]> => {
     .toArray()) as Task[];
 };
 
-export const add = async (task: Task) => {
+export const add = async (task: Task): Promise<Task> => {
   const mongo = await getMongoDb();
 
   const newTask: Task = {

@@ -29,6 +29,8 @@ export type TasksState = TasksReducerState & {
   handleChangeNewTask: (e: TextareaChangeEventHandler) => void;
   handleInputFocus: (t: Task) => () => Promise<void>;
 
+  handleCloneTask: any;
+
   handleAddTask: () => Promise<void>;
   handleRemoveOrUpdateTitle: () => Promise<void>;
   handleUpdateTask: (t: Task) => () => Promise<void>;
@@ -158,6 +160,38 @@ export const TasksProvider = ({ children }: TasksProviderProps) => {
     }
   };
 
+  const handleCloneTask = async () => {
+    const selectedTask = modalData as Task | undefined;
+
+    const task = {
+      complete: false,
+      description: selectedTask?.description,
+      createdAt: new Date().toISOString(),
+      listId: selectedTask?.listId,
+      title: `${selectedTask?.title} (Clone)`,
+    } as Task;
+
+    const tasksCopy = [...state.tasks];
+    dispatch(setTasks([...tasksCopy, task]));
+    const response = await add(task);
+    dispatch(setTasks([...tasksCopy, response]));
+
+    const batch = []
+    for (const subtask of state.subtasks) {
+      const clonedSubtask = {
+        complete: false,
+        createdAt: new Date().toISOString(),
+        listId: subtask?.listId,
+        title: subtask.title,
+        parentTaskId: response._id,
+      } as Task;
+
+      batch.push(add(clonedSubtask));
+    }
+
+    Promise.all(batch).catch(console.error);
+  };
+
   const handleCompleteTask = async (t: Task) => {
     const isSubtask = !!(modalData as Task | undefined);
 
@@ -214,6 +248,7 @@ export const TasksProvider = ({ children }: TasksProviderProps) => {
     fetchSubtasks,
 
     handleAddTask,
+    handleCloneTask,
     handleChangeExistingTask,
     handleChangeNewTask,
     handleCompleteTask,

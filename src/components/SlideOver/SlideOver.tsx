@@ -113,7 +113,7 @@ export const SlideOver = ({
                         {title}
                       </Dialog.Title>
                     </div>
-                    <div className="relative mb-40 flex-1 px-4 sm:px-6">
+                    <div className="relative mb-20 flex-1 px-4 sm:px-6">
                       {children}
                     </div>
                   </div>
