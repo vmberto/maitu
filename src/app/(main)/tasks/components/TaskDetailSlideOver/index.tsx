@@ -1,5 +1,6 @@
 'use client';
 
+import { ArrowPathIcon } from '@heroicons/react/24/outline';
 import { ChevronDownIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
 import React, { useState } from 'react';
 
@@ -12,7 +13,6 @@ import { SlideOver } from '@/src/components/SlideOver/SlideOver';
 import { HexColors } from '@/src/lib/colors';
 import { useSlideOver } from '@/src/providers/slideover.provider';
 import type { Task } from '@/types/main';
-import { ArrowPathIcon } from '@heroicons/react/24/outline';
 
 export const TaskDetailSlideOver = () => {
   const { handleUpdateTask, handleCloneTask, selectedList, loadingAction } =
