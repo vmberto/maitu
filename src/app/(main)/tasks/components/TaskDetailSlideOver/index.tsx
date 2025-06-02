@@ -12,9 +12,11 @@ import { SlideOver } from '@/src/components/SlideOver/SlideOver';
 import { HexColors } from '@/src/lib/colors';
 import { useSlideOver } from '@/src/providers/slideover.provider';
 import type { Task } from '@/types/main';
+import { ArrowPathIcon } from '@heroicons/react/24/outline';
 
 export const TaskDetailSlideOver = () => {
-  const { handleUpdateTask, handleCloneTask, selectedList } = useTasks();
+  const { handleUpdateTask, handleCloneTask, selectedList, loadingAction } =
+    useTasks();
   const [showTaskSettings, setShowTaskSettings] = useState(false);
   const {
     modalData: taskData,
@@ -63,10 +65,18 @@ export const TaskDetailSlideOver = () => {
                 >
                   Clone Task
                   <span className="ml-auto">
-                    <ChevronRightIcon
-                      className="mb-1 mr-1 inline size-6"
-                      color={HexColors.get(selectedList?.color)}
-                    />
+                    {!loadingAction && (
+                      <ChevronRightIcon
+                        className="mb-1 mr-1 inline size-6"
+                        color={HexColors.get(selectedList?.color)}
+                      />
+                    )}
+                    {loadingAction && (
+                      <ArrowPathIcon
+                        className="mr-3 size-7 animate-spin"
+                        color={HexColors.get(selectedList?.color)}
+                      />
+                    )}
                   </span>
                 </button>
               </li>

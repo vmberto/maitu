@@ -9,6 +9,7 @@ import tasksReducer, {
   initialState,
   setCurrentTask,
   setInitialState,
+  setLoadingAction,
   setNewTask,
   setSubTasks,
   setTasks,
@@ -29,7 +30,7 @@ export type TasksState = TasksReducerState & {
   handleChangeNewTask: (e: TextareaChangeEventHandler) => void;
   handleInputFocus: (t: Task) => () => Promise<void>;
 
-  handleCloneTask: any;
+  handleCloneTask: () => Promise<void>;
 
   handleAddTask: () => Promise<void>;
   handleRemoveOrUpdateTitle: () => Promise<void>;
@@ -161,6 +162,7 @@ export const TasksProvider = ({ children }: TasksProviderProps) => {
   };
 
   const handleCloneTask = async () => {
+    dispatch(setLoadingAction(true));
     const selectedTask = modalData as Task | undefined;
 
     const task = {
@@ -189,7 +191,7 @@ export const TasksProvider = ({ children }: TasksProviderProps) => {
       batch.push(add(clonedSubtask));
     }
 
-    Promise.all(batch).catch(console.error);
+    Promise.all(batch).finally(() => dispatch(setLoadingAction(false)));
   };
 
   const handleCompleteTask = async (t: Task) => {

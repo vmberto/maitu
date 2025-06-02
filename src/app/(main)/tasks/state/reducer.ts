@@ -1,5 +1,6 @@
 import type { List, Task } from '@/types/main';
 
+// Action Types
 export const SET_INITIAL_STATE = 'SET_INITIAL_STATE';
 export const SET_TASKS = 'SET_TASKS';
 export const SET_SUBTASKS = 'SET_SUBTASKS';
@@ -7,7 +8,9 @@ export const SET_CURRENT_TASK = 'SET_CURRENT_TASK';
 export const SET_NEW_TASK = 'SET_NEW_TASK';
 export const UPDATE_SINGLE_TASK = 'UPDATE_SINGLE_TASK';
 export const UPDATE_SINGLE_SUBTASK = 'UPDATE_SINGLE_SUBTASK';
+export const SET_LOADING_ACTION = 'SET_LOADING_ACTION';
 
+// State Type
 export type TasksReducerState = {
   tasks: Task[];
   subtasks: Task[];
@@ -15,17 +18,21 @@ export type TasksReducerState = {
   selectedList: List;
   currentTask: Task;
   newTask: Task;
+  loadingAction: boolean;
 };
 
-export const initialState = {
+// Initial State
+export const initialState: TasksReducerState = {
   tasks: [],
   subtasks: [],
   fetchingSubtasks: false,
   selectedList: {} as List,
   currentTask: {} as Task,
   newTask: {} as Task,
+  loadingAction: false,
 };
 
+// Action Types
 type TasksAction =
   | {
       type: typeof SET_INITIAL_STATE;
@@ -41,7 +48,8 @@ type TasksAction =
   | {
       type: typeof UPDATE_SINGLE_TASK | typeof UPDATE_SINGLE_SUBTASK;
       payload: { taskId: string; fieldsToUpdate: Partial<Task> };
-    };
+    }
+  | { type: typeof SET_LOADING_ACTION; payload: boolean };
 
 const tasksReducer = (
   state: TasksReducerState,
@@ -85,6 +93,9 @@ const tasksReducer = (
             : task,
         ),
       };
+
+    case SET_LOADING_ACTION:
+      return { ...state, loadingAction: action.payload };
 
     default:
       return state;
@@ -132,6 +143,11 @@ export const updateSingleTask = (
     taskId,
     fieldsToUpdate,
   },
+});
+
+export const setLoadingAction = (loadingAction: boolean): TasksAction => ({
+  type: SET_LOADING_ACTION,
+  payload: loadingAction,
 });
 
 export default tasksReducer;
