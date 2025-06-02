@@ -176,7 +176,7 @@ export const TasksProvider = ({ children }: TasksProviderProps) => {
     const response = await add(task);
     dispatch(setTasks([...tasksCopy, response]));
 
-    const batch = []
+    const batch = [];
     for (const subtask of state.subtasks) {
       const clonedSubtask = {
         complete: false,
