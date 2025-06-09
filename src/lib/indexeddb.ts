@@ -1,6 +1,7 @@
 import type { DBSchema, IDBPDatabase } from 'idb';
 import { openDB } from 'idb';
-import type { Task, List } from '@/types/main';
+
+import type { List, Task } from '@/types/main';
 
 interface AppDB extends DBSchema {
   tasks: {
