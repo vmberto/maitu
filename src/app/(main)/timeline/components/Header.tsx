@@ -3,14 +3,14 @@
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
 import Link from 'next/link';
 
-import { useTasks } from '@/src/app/(main)/timeline/state/provider';
+import { useTimeline } from '@/src/app/(main)/timeline/state/provider';
 import { Typography } from '@/src/components/Typography/Typography';
 import { FontColor, HexColors } from '@/src/lib/colors';
 import { stopPropagationFn } from '@/src/lib/functions';
 import { clickStyle } from '@/src/lib/style-consts';
 
 export const Header = () => {
-  const { selectedList } = useTasks();
+  const { selectedList } = useTimeline();
 
   return (
     <header

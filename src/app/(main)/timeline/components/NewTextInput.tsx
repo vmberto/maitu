@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 
-import { useTasks } from '@/src/app/(main)/timeline/state/provider';
+import { useTimeline } from '@/src/app/(main)/timeline/state/provider';
 import { Button } from '@/src/components/Button/Button';
 import { stopPropagationFn } from '@/src/lib/functions';
 import type { Task } from '@/types/main';
@@ -11,7 +11,7 @@ export const NewTextInput = () => {
   const textareaRef = useRef({} as HTMLTextAreaElement);
 
   const { newTask, handleAddTask, handleChangeNewTask, handleInputFocus } =
-    useTasks();
+    useTimeline();
 
   useEffect(() => {
     textareaRef.current.style.height = '0px';

@@ -15,11 +15,12 @@ import tasksReducer, {
 } from '@/src/app/(main)/timeline/state/reducer';
 import { useExecutionTimeout } from '@/src/hooks/useExecutionTimeout';
 import { json } from '@/src/lib/functions';
+import { getAllTasks, saveTasks } from '@/src/lib/indexeddb_func';
 import type { TextareaChangeEventHandler } from '@/types/events';
 import type { List, Task } from '@/types/main';
 
-export type TasksState = TasksReducerState & {
-  handleSetInitialState: (list: List, Task: Task[]) => void;
+export type TimelineState = TasksReducerState & {
+  handleSetInitialState: (list: List, tasks: Task[]) => void;
 
   handleChangeExistingTask: (e: TextareaChangeEventHandler) => void;
   handleCompleteTask: (t: Task) => Promise<void>;
@@ -31,25 +32,29 @@ export type TasksState = TasksReducerState & {
   handleUpdateTask: (t: Task) => () => Promise<void>;
 };
 
-type TasksProviderProps = {
+type TimelineProviderProps = {
   children: ReactNode;
 };
 
-const TasksContext = createContext<TasksState>({} as TasksState);
+const TimelineContext = createContext<TimelineState>({} as TimelineState);
 
-export const TasksProvider = ({ children }: TasksProviderProps) => {
+export const TimelineProvider = ({ children }: TimelineProviderProps) => {
   const { setExecutionTimeout, clearTimeoutById } = useExecutionTimeout();
-
   const [state, dispatch] = useReducer(tasksReducer, initialState);
 
   const handleSetInitialState = async (list: List, tasks: Task[]) => {
-    dispatch(setInitialState(json(tasks), json(list)));
+    if (tasks.length === 0) {
+      const localTasks = await getAllTasks();
+      dispatch(setInitialState(json(localTasks), json(list)));
+    } else {
+      dispatch(setInitialState(json(tasks), json(list)));
+      await saveTasks(tasks);
+    }
   };
 
   const handleChangeExistingTask = (e: TextareaChangeEventHandler) => {
     const currentTaskCopy = { ...state.currentTask };
     const { value } = e.target;
-
     currentTaskCopy.title = value;
 
     dispatch(
@@ -75,12 +80,12 @@ export const TasksProvider = ({ children }: TasksProviderProps) => {
     const { currentTask } = state;
 
     if (!currentTask.title && currentTask._id) {
-      dispatch(
-        setTasks(state.tasks.filter((task) => task._id !== currentTask._id)),
+      const filtered = state.tasks.filter(
+        (task) => task._id !== currentTask._id,
       );
-
+      dispatch(setTasks(filtered));
+      await saveTasks(filtered);
       await remove(currentTask._id.toString());
-
       return;
     }
 
@@ -92,8 +97,11 @@ export const TasksProvider = ({ children }: TasksProviderProps) => {
   const handleUpdateTask = (t: Task) => async () => {
     if (t._id) {
       dispatch(updateSingleTask(t._id.toString(), { ...t }));
-
+      const updated = state.tasks.map((task) =>
+        task._id === t._id ? t : task,
+      );
       await update(t._id.toString(), t);
+      await saveTasks(updated);
     }
   };
 
@@ -104,28 +112,29 @@ export const TasksProvider = ({ children }: TasksProviderProps) => {
     } = state;
 
     if (title && title.length > 0) {
-      const task = {
+      const task: Task = {
         complete: false,
         description: '',
         createdAt: new Date().toISOString(),
         listId,
         title,
         parentTaskId: null,
-      } as Task;
+      };
 
       dispatch(setNewTask({ title: '' } as Task));
+      const tasksCopy = [...state.tasks, task];
 
-      const tasksCopy = [...state.tasks];
-      dispatch(setTasks([...tasksCopy, task]));
+      dispatch(setTasks(tasksCopy));
+
       const response = await add(task);
-      dispatch(setTasks([...tasksCopy, response]));
+      const updated = [...state.tasks, response];
+      dispatch(setTasks(updated));
+      await saveTasks(updated);
     }
   };
 
   const handleCompleteTask = async (t: Task) => {
-    if (!t._id) {
-      return;
-    }
+    if (!t._id) return;
 
     const taskId = t._id.toString();
 
@@ -136,30 +145,30 @@ export const TasksProvider = ({ children }: TasksProviderProps) => {
       };
 
       setExecutionTimeout(taskId, async () => {
-        if (t._id) {
-          dispatch(updateSingleTask(t._id.toString(), dataToUpdate));
-          await update(t._id.toString(), {
-            ...t,
-            ...dataToUpdate,
-          });
-        }
+        dispatch(updateSingleTask(taskId, dataToUpdate));
+        await update(taskId, { ...t, ...dataToUpdate });
+
+        const updated = state.tasks.map((task) =>
+          task._id === taskId ? { ...task, ...dataToUpdate } : task,
+        );
+        await saveTasks(updated);
       });
     } else {
       clearTimeoutById(taskId);
     }
 
-    dispatch(
-      updateSingleTask(t._id.toString(), {
-        complete: !t.complete,
-        completedAt: undefined,
-      }),
-    );
+    const toggled = {
+      ...t,
+      complete: !t.complete,
+      completedAt: undefined,
+    };
+
+    dispatch(updateSingleTask(taskId, toggled));
   };
 
-  const contextValue = {
+  const contextValue: TimelineState = {
     ...state,
     handleSetInitialState,
-
     handleAddTask,
     handleChangeExistingTask,
     handleChangeNewTask,
@@ -170,10 +179,10 @@ export const TasksProvider = ({ children }: TasksProviderProps) => {
   };
 
   return (
-    <TasksContext.Provider value={contextValue}>
+    <TimelineContext.Provider value={contextValue}>
       {children}
-    </TasksContext.Provider>
+    </TimelineContext.Provider>
   );
 };
 
-export const useTasks = (): TasksState => useContext(TasksContext);
+export const useTimeline = (): TimelineState => useContext(TimelineContext);

@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 
 import { NewTextInput } from '@/src/app/(main)/timeline/components/NewTextInput';
 import { Texts } from '@/src/app/(main)/timeline/components/Texts';
-import { useTasks } from '@/src/app/(main)/timeline/state/provider';
+import { useTimeline } from '@/src/app/(main)/timeline/state/provider';
 import type { List, Task } from '@/types/main';
 
 export type TimelineWrapperProps = {
@@ -13,7 +13,7 @@ export type TimelineWrapperProps = {
 };
 
 export const TimelineWrapper = ({ list, tasks }: TimelineWrapperProps) => {
-  const { handleSetInitialState } = useTasks();
+  const { handleSetInitialState } = useTimeline();
 
   useEffect(() => {
     handleSetInitialState(list, tasks);

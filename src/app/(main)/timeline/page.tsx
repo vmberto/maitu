@@ -1,7 +1,7 @@
 import * as TasksService from '@/src/actions/tasks.action';
 import { Header } from '@/src/app/(main)/timeline/components/Header';
 import { TimelineWrapper } from '@/src/app/(main)/timeline/components/TimelineWrapper';
-import { TasksProvider } from '@/src/app/(main)/timeline/state/provider';
+import { TimelineProvider } from '@/src/app/(main)/timeline/state/provider';
 import { json } from '@/src/lib/functions';
 
 type TasksPageProps = {
@@ -14,9 +14,9 @@ export default async function TasksPage({ searchParams }: TasksPageProps) {
   );
 
   return (
-    <TasksProvider>
+    <TimelineProvider>
       <Header />
       <TimelineWrapper list={json(list)} tasks={json(tasks)} />
-    </TasksProvider>
+    </TimelineProvider>
   );
 }
