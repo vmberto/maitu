@@ -1,5 +1,5 @@
-// src/db/indexedDb.ts
-import { openDB, DBSchema, IDBPDatabase } from 'idb';
+import type { DBSchema, IDBPDatabase } from 'idb';
+import { openDB } from 'idb';
 import type { Task, List } from '@/types/main';
 
 interface AppDB extends DBSchema {
