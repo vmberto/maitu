@@ -1,6 +1,6 @@
 'use client';
 
-import { type DropResult } from '@hello-pangea/dnd';
+import type { DropResult } from '@hello-pangea/dnd';
 import type { ReactNode } from 'react';
 import {
   createContext,
@@ -12,6 +12,7 @@ import {
 } from 'react';
 
 import { add, remove, update, updateOrder } from '@/src/actions/lists.action';
+import { getAllLists, saveLists } from '@/src/lib/indexeddb_func';
 import type { List } from '@/types/main';
 
 export type ListsState = {
@@ -27,17 +28,25 @@ export type ListsState = {
 };
 
 type ListsProviderProps = {
-  listsDb: List[];
+  listsDb?: List[];
   children: ReactNode;
 };
 
 const ListsContext = createContext<ListsState>({} as ListsState);
 
-export const ListsProvider = ({ listsDb, children }: ListsProviderProps) => {
+export const ListsProvider = ({
+  listsDb = [],
+  children,
+}: ListsProviderProps) => {
   const [lists, setLists] = useState<List[]>([]);
 
   useEffect(() => {
-    setLists(listsDb);
+    if (listsDb.length > 0) {
+      setLists(listsDb);
+      saveLists(listsDb); // cache lists on load
+    } else {
+      getAllLists().then(setLists); // fallback to IndexedDB
+    }
   }, [listsDb]);
 
   const handleAddList = useCallback(
@@ -47,13 +56,20 @@ export const ListsProvider = ({ listsDb, children }: ListsProviderProps) => {
         index: lists.length,
       });
 
-      setLists([...lists, newListResponse]);
+      const updated = [...lists, newListResponse];
+      setLists(updated);
+      await saveLists(updated);
     },
     [lists],
   );
 
   const handleUpdateList = async (id: string, updatedData: Partial<List>) => {
     await update(id, updatedData);
+    const updated = lists.map((list) =>
+      list._id === id ? { ...list, ...updatedData } : list,
+    );
+    setLists(updated);
+    await saveLists(updated);
   };
 
   const updateListsOrder = useCallback(
@@ -62,15 +78,17 @@ export const ListsProvider = ({ listsDb, children }: ListsProviderProps) => {
 
       if (!destination) return;
 
-      let listsCopy = [...lists];
+      const listsCopy = [...lists];
       const [movedElement] = listsCopy.splice(source.index, 1);
       listsCopy.splice(destination.index, 0, movedElement);
-      listsCopy = listsCopy.map((list, index) => ({
+
+      const reordered = listsCopy.map((list, index) => ({
         ...list,
         index,
       }));
 
-      setLists(listsCopy);
+      setLists(reordered);
+      await saveLists(reordered);
 
       await updateOrder({
         initialIndex: source.index,
@@ -82,7 +100,9 @@ export const ListsProvider = ({ listsDb, children }: ListsProviderProps) => {
 
   const handleDeleteList = useCallback(
     async (listId: string) => {
-      setLists(lists.filter((list) => list._id !== listId));
+      const filtered = lists.filter((list) => list._id !== listId);
+      setLists(filtered);
+      await saveLists(filtered);
       await remove(listId);
     },
     [lists],
@@ -96,7 +116,7 @@ export const ListsProvider = ({ listsDb, children }: ListsProviderProps) => {
       updateListsOrder,
       handleUpdateList,
     }),
-    [handleAddList, handleDeleteList, lists, updateListsOrder],
+    [lists, handleAddList, handleDeleteList, updateListsOrder],
   );
 
   return (

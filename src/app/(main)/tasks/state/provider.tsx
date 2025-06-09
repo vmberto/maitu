@@ -17,12 +17,13 @@ import tasksReducer, {
 } from '@/src/app/(main)/tasks/state/reducer';
 import { useExecutionTimeout } from '@/src/hooks/useExecutionTimeout';
 import { json } from '@/src/lib/functions';
+import { getAllTasks, saveTasks } from '@/src/lib/indexeddb_func';
 import { useSlideOver } from '@/src/providers/slideover.provider';
 import type { TextareaChangeEventHandler } from '@/types/events';
 import type { List, Task } from '@/types/main';
 
 export type TasksState = TasksReducerState & {
-  handleSetInitialState: (list: List, Task: Task[]) => void;
+  handleSetInitialState: (list: List, tasks: Task[]) => void;
   fetchSubtasks: () => void;
 
   handleChangeExistingTask: (e: TextareaChangeEventHandler) => void;
@@ -50,7 +51,13 @@ export const TasksProvider = ({ children }: TasksProviderProps) => {
   const [state, dispatch] = useReducer(tasksReducer, initialState);
 
   const handleSetInitialState = async (list: List, tasks: Task[]) => {
-    dispatch(setInitialState(json(tasks), json(list)));
+    if (tasks.length === 0) {
+      const localTasks = await getAllTasks();
+      dispatch(setInitialState(json(localTasks), json(list)));
+    } else {
+      dispatch(setInitialState(json(tasks), json(list)));
+      await saveTasks(tasks);
+    }
   };
 
   const fetchSubtasks = async () => {
@@ -103,13 +110,13 @@ export const TasksProvider = ({ children }: TasksProviderProps) => {
           ),
         );
       } else {
-        dispatch(
-          setTasks(state.tasks.filter((task) => task._id !== currentTask._id)),
+        const filtered = state.tasks.filter(
+          (task) => task._id !== currentTask._id,
         );
+        dispatch(setTasks(filtered));
+        await saveTasks(filtered);
       }
-
       await remove(currentTask._id.toString());
-
       return;
     }
 
@@ -121,8 +128,11 @@ export const TasksProvider = ({ children }: TasksProviderProps) => {
   const handleUpdateTask = (t: Task) => async () => {
     if (t._id) {
       dispatch(updateSingleTask(t._id.toString(), { ...t }, false));
-
+      const updated = state.tasks.map((task) =>
+        task._id === t._id ? t : task,
+      );
       await update(t._id.toString(), t);
+      await saveTasks(updated);
     }
   };
 
@@ -134,14 +144,14 @@ export const TasksProvider = ({ children }: TasksProviderProps) => {
     } = state;
 
     if (title && title.length > 0) {
-      const task = {
+      const task: Task = {
         complete: false,
         description: '',
         createdAt: new Date().toISOString(),
         listId,
         title,
         parentTaskId: selectedTask?._id || null,
-      } as Task;
+      };
 
       dispatch(setNewTask({ title: '' } as Task));
 
@@ -150,14 +160,15 @@ export const TasksProvider = ({ children }: TasksProviderProps) => {
         dispatch(setSubTasks([...subtasksCopy, task], false));
         const response = await add(task);
         dispatch(setSubTasks([...subtasksCopy, response], false));
-
         return;
       }
 
-      const tasksCopy = [...state.tasks];
-      dispatch(setTasks([...tasksCopy, task]));
+      const tasksCopy = [...state.tasks, task];
+      dispatch(setTasks(tasksCopy));
       const response = await add(task);
-      dispatch(setTasks([...tasksCopy, response]));
+      const updated = [...state.tasks, response];
+      dispatch(setTasks(updated));
+      await saveTasks(updated);
     }
   };
 
@@ -165,41 +176,41 @@ export const TasksProvider = ({ children }: TasksProviderProps) => {
     dispatch(setLoadingAction(true));
     const selectedTask = modalData as Task | undefined;
 
-    const task = {
+    const task: Task = {
       complete: false,
-      description: selectedTask?.description,
+      description: selectedTask?.description ?? '',
       createdAt: new Date().toISOString(),
-      listId: selectedTask?.listId,
+      listId: selectedTask?.listId ?? '',
       title: `${selectedTask?.title} (Clone)`,
-    } as Task;
+    };
 
-    const tasksCopy = [...state.tasks];
-    dispatch(setTasks([...tasksCopy, task]));
+    const tasksCopy = [...state.tasks, task];
+    dispatch(setTasks(tasksCopy));
+
     const response = await add(task);
-    dispatch(setTasks([...tasksCopy, response]));
+    const updatedTasks = [...state.tasks, response];
+    dispatch(setTasks(updatedTasks));
 
-    const batch = [];
-    for (const subtask of state.subtasks) {
-      const clonedSubtask = {
+    const batch: Promise<Task>[] = state.subtasks.map((subtask) => {
+      const cloned: Task = {
         complete: false,
+        description: '',
         createdAt: new Date().toISOString(),
-        listId: subtask?.listId,
+        listId: subtask.listId,
         title: subtask.title,
         parentTaskId: response._id,
-      } as Task;
+      };
+      return add(cloned);
+    });
 
-      batch.push(add(clonedSubtask));
-    }
-
-    Promise.all(batch).finally(() => dispatch(setLoadingAction(false)));
+    await Promise.all(batch);
+    await saveTasks([...updatedTasks, ...(await Promise.all(batch))]);
+    dispatch(setLoadingAction(false));
   };
 
   const handleCompleteTask = async (t: Task) => {
     const isSubtask = !!(modalData as Task | undefined);
-
-    if (!t._id) {
-      return;
-    }
+    if (!t._id) return;
 
     const taskId = t._id.toString();
 
@@ -210,45 +221,32 @@ export const TasksProvider = ({ children }: TasksProviderProps) => {
       };
 
       setExecutionTimeout(taskId, async () => {
-        if (t._id) {
-          dispatch(updateSingleTask(t._id.toString(), dataToUpdate, isSubtask));
-          await update(t._id.toString(), {
-            ...t,
-            ...dataToUpdate,
-          });
-        }
+        dispatch(updateSingleTask(taskId, dataToUpdate, isSubtask));
+        await update(taskId, { ...t, ...dataToUpdate });
+
+        const updated = state.tasks.map((task) =>
+          task._id === taskId ? { ...task, ...dataToUpdate } : task,
+        );
+        await saveTasks(updated);
       });
     } else {
       clearTimeoutById(taskId);
     }
 
-    dispatch(
-      updateSingleTask(
-        t._id.toString(),
-        {
-          complete: !t.complete,
-          completedAt: undefined,
-        },
-        isSubtask,
-      ),
-    );
+    const toggledTask = {
+      ...t,
+      complete: !t.complete,
+      completedAt: undefined,
+    };
 
-    if (isSubtask) {
-      await update(t._id.toString(), {
-        ...t,
-        ...{
-          complete: !t.complete,
-          completedAt: undefined,
-        },
-      });
-    }
+    dispatch(updateSingleTask(taskId, toggledTask, isSubtask));
+    if (isSubtask) await update(taskId, toggledTask);
   };
 
-  const contextValue = {
+  const contextValue: TasksState = {
     ...state,
     handleSetInitialState,
     fetchSubtasks,
-
     handleAddTask,
     handleCloneTask,
     handleChangeExistingTask,

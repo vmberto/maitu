@@ -5,7 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/src/app/(main)/tasks/components/TaskDetailSlideOver/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/tasks/components/TaskDetailSlideOver/index.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/lib/indexeddb.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/lib/indexeddb_func.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(main)/tasks/state/provider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/tasks/state/provider.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/provider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/provider.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -230,7 +236,8 @@
       <workItem from="1742248815695" duration="455000" />
       <workItem from="1742249281485" duration="605000" />
       <workItem from="1742381752588" duration="607000" />
-      <workItem from="1748823589430" duration="4987000" />
+      <workItem from="1748823589430" duration="5003000" />
+      <workItem from="1749433852001" duration="777000" />
     </task>
     <servers />
   </component>
