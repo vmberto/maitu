@@ -29,3 +29,8 @@ export const stopPropagationFn = (e: GenericEvent) => {
 };
 
 export const json = (data: unknown) => JSON.parse(JSON.stringify(data));
+
+export const formatTime = (iso: string) => {
+  const date = new Date(iso);
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+};

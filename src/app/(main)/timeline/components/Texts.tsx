@@ -3,13 +3,13 @@
 import { useMemo } from 'react';
 
 import { useTimeline } from '@/src/app/(main)/timeline/state/provider';
-import { formatDate } from '@/src/lib/functions';
+import { formatDate, formatTime } from '@/src/lib/functions';
 import type { Task } from '@/types/main';
 
 const groupTasksByDate = (tasks: Task[]): Record<string, Task[]> => {
   const grouped = tasks.reduce(
     (groups, task) => {
-      const isoKey = task.createdAt.slice(0, 10); // ex: "2025-06-05"
+      const isoKey = task.createdAt.slice(0, 10);
       return {
         ...groups,
         [isoKey]: [...(groups[isoKey] || []), task],
@@ -32,19 +32,25 @@ export const Texts = () => {
   const groupedTasks = useMemo(() => groupTasksByDate(tasks), [tasks]);
 
   return (
-    <div>
-      {Object.keys(groupedTasks).map((date) => (
-        <div key={date} className="my-6">
-          <h2 className="mb-4 text-xl font-semibold">{date}</h2>
-          <div className="space-y-2">
-            {groupedTasks[date].map((task) => (
-              <div
-                key={task.createdAt?.toString()}
-                className="h-fit rounded-2xl bg-gray-100 p-4"
-              >
-                {task.title}
-              </div>
-            ))}
+    <div className="px-4 py-6">
+      {Object.entries(groupedTasks).map(([date, dayTasks]) => (
+        <div key={date} className="my-2">
+          <h2 className="mb-4 text-2xl font-bold text-gray-800">{date}</h2>
+          <div className="space-y-3">
+            {dayTasks.map((task) => {
+              const time = formatTime(task.createdAt);
+              return (
+                <div
+                  key={task.createdAt?.toString()}
+                  className="group relative w-fit max-w-prose rounded-2xl bg-gray-100 pt-6 p-4 shadow-sm transition hover:shadow-md"
+                >
+                  <p className="text-gray-800 mt-2">{task.title}</p>
+                  <div className="absolute left-3.5 top-3 text-xs text-gray-500">
+                    {time}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       ))}
