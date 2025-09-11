@@ -42,9 +42,9 @@ export const Texts = () => {
               return (
                 <div
                   key={task.createdAt?.toString()}
-                  className="group relative w-fit max-w-prose rounded-2xl bg-gray-100 pt-6 p-4 shadow-sm transition hover:shadow-md"
+                  className="group relative w-fit max-w-prose rounded-2xl bg-gray-100 p-4 pt-6 shadow-sm transition hover:shadow-md"
                 >
-                  <p className="text-gray-800 mt-2">{task.title}</p>
+                  <p className="mt-2 text-gray-800">{task.title}</p>
                   <div className="absolute left-3.5 top-3 text-xs text-gray-500">
                     {time}
                   </div>

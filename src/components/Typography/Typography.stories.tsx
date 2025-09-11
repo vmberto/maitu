@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react';
 
 import { Typography } from '@/src/components/Typography/Typography';
 
@@ -13,7 +13,7 @@ const meta = {
     as: { control: 'select' },
   },
   args: {},
-} satisfies Meta<typeof Typography>;
+} as Meta<typeof Typography>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

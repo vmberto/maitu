@@ -4,7 +4,7 @@ import { Button } from '@/src/components/Button/Button';
 import { ColorPicker, Colors } from '@/src/components/ColorPicker/ColorPicker';
 import { EmojiPickerComponent } from '@/src/components/EmojiPicker/EmojiPicker';
 import { Input } from '@/src/components/Input/Input';
-import { Select } from '@/src/components/Select';
+import { Select } from '@/src/components/Select/Select';
 import { SlideOver } from '@/src/components/SlideOver/SlideOver';
 import type { GenericEvent, InputChangeEventHandler } from '@/types/events';
 import { type List, ListType } from '@/types/main';

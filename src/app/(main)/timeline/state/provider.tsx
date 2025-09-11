@@ -15,7 +15,6 @@ import tasksReducer, {
 } from '@/src/app/(main)/timeline/state/reducer';
 import { useExecutionTimeout } from '@/src/hooks/useExecutionTimeout';
 import { json } from '@/src/lib/functions';
-import { getAllTasks, saveTasks } from '@/src/lib/indexeddb_func';
 import type { TextareaChangeEventHandler } from '@/types/events';
 import type { List, Task } from '@/types/main';
 
@@ -43,13 +42,7 @@ export const TimelineProvider = ({ children }: TimelineProviderProps) => {
   const [state, dispatch] = useReducer(tasksReducer, initialState);
 
   const handleSetInitialState = async (list: List, tasks: Task[]) => {
-    if (tasks.length === 0) {
-      const localTasks = await getAllTasks();
-      dispatch(setInitialState(json(localTasks), json(list)));
-    } else {
       dispatch(setInitialState(json(tasks), json(list)));
-      await saveTasks(tasks);
-    }
   };
 
   const handleChangeExistingTask = (e: TextareaChangeEventHandler) => {
@@ -84,7 +77,6 @@ export const TimelineProvider = ({ children }: TimelineProviderProps) => {
         (task) => task._id !== currentTask._id,
       );
       dispatch(setTasks(filtered));
-      await saveTasks(filtered);
       await remove(currentTask._id.toString());
       return;
     }
@@ -97,11 +89,7 @@ export const TimelineProvider = ({ children }: TimelineProviderProps) => {
   const handleUpdateTask = (t: Task) => async () => {
     if (t._id) {
       dispatch(updateSingleTask(t._id.toString(), { ...t }));
-      const updated = state.tasks.map((task) =>
-        task._id === t._id ? t : task,
-      );
       await update(t._id.toString(), t);
-      await saveTasks(updated);
     }
   };
 
@@ -123,13 +111,10 @@ export const TimelineProvider = ({ children }: TimelineProviderProps) => {
 
       dispatch(setNewTask({ title: '' } as Task));
       const tasksCopy = [...state.tasks, task];
-
       dispatch(setTasks(tasksCopy));
-
       const response = await add(task);
       const updated = [...state.tasks, response];
       dispatch(setTasks(updated));
-      await saveTasks(updated);
     }
   };
 
@@ -147,11 +132,6 @@ export const TimelineProvider = ({ children }: TimelineProviderProps) => {
       setExecutionTimeout(taskId, async () => {
         dispatch(updateSingleTask(taskId, dataToUpdate));
         await update(taskId, { ...t, ...dataToUpdate });
-
-        const updated = state.tasks.map((task) =>
-          task._id === taskId ? { ...task, ...dataToUpdate } : task,
-        );
-        await saveTasks(updated);
       });
     } else {
       clearTimeoutById(taskId);

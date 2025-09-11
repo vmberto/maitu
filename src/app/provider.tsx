@@ -12,7 +12,6 @@ import {
 } from 'react';
 
 import { add, remove, update, updateOrder } from '@/src/actions/lists.action';
-import { getAllLists, saveLists } from '@/src/lib/indexeddb_func';
 import type { List } from '@/types/main';
 
 export type ListsState = {
@@ -43,9 +42,6 @@ export const ListsProvider = ({
   useEffect(() => {
     if (listsDb.length > 0) {
       setLists(listsDb);
-      saveLists(listsDb); // cache lists on load
-    } else {
-      getAllLists().then(setLists); // fallback to IndexedDB
     }
   }, [listsDb]);
 
@@ -58,7 +54,6 @@ export const ListsProvider = ({
 
       const updated = [...lists, newListResponse];
       setLists(updated);
-      await saveLists(updated);
     },
     [lists],
   );
@@ -69,7 +64,6 @@ export const ListsProvider = ({
       list._id === id ? { ...list, ...updatedData } : list,
     );
     setLists(updated);
-    await saveLists(updated);
   };
 
   const updateListsOrder = useCallback(
@@ -88,7 +82,6 @@ export const ListsProvider = ({
       }));
 
       setLists(reordered);
-      await saveLists(reordered);
 
       await updateOrder({
         initialIndex: source.index,
@@ -102,7 +95,6 @@ export const ListsProvider = ({
     async (listId: string) => {
       const filtered = lists.filter((list) => list._id !== listId);
       setLists(filtered);
-      await saveLists(filtered);
       await remove(listId);
     },
     [lists],

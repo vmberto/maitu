@@ -1,6 +1,6 @@
 'use client';
 
-import { Menu } from '@headlessui/react';
+import { Menu, MenuButton } from '@headlessui/react';
 import { EllipsisHorizontalCircleIcon } from '@heroicons/react/24/outline';
 import { useEffect, useRef } from 'react';
 
@@ -45,12 +45,13 @@ export const TaskInput = ({ taskData, disabled }: TaskInputComponentProps) => {
     <div className="flex items-center border-b-2 border-gray-100 py-3">
       <button
         type="button"
+        aria-label="completeTask"
         onClick={handleClickCompleteTask}
         className={`${BorderColors.get(selectedList.color)} relative mr-2
         cursor-pointer items-center self-start rounded-full
           border-2 p-3.5 font-semibold transition-all`}
       >
-        {taskData?.complete && (
+        {taskData?.completedAt && (
           <div
             className={`${BackgroundColors.get(selectedList.color)} absolute right-1 top-1 size-5 rounded-full`}
           />
@@ -85,14 +86,15 @@ export const TaskInput = ({ taskData, disabled }: TaskInputComponentProps) => {
 
       {taskData?._id && !taskData?.parentTaskId && (
         <Menu as="div" className="relative inline-block self-start text-left">
-          <Menu.Button
+          <MenuButton
+            aria-label="openSlideOver"
             onClick={handleOpenSlideOver(taskData)}
             className="inline-flex w-full justify-center
                 rounded-full p-1 text-sm font-medium text-gray-700
                 focus:ring-offset-2 focus:ring-offset-gray-200 betterhover:hover:bg-gray-200"
           >
             <EllipsisHorizontalCircleIcon className="size-6" />
-          </Menu.Button>
+          </MenuButton>
         </Menu>
       )}
     </div>
