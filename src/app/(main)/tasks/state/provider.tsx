@@ -17,7 +17,6 @@ import tasksReducer, {
 } from '@/src/app/(main)/tasks/state/reducer';
 import { useExecutionTimeout } from '@/src/hooks/useExecutionTimeout';
 import { json } from '@/src/lib/functions';
-import { getAllTasks, saveTasks } from '@/src/lib/indexeddb_func';
 import { useSlideOver } from '@/src/providers/slideover.provider';
 import type { TextareaChangeEventHandler } from '@/types/events';
 import type { List, Task } from '@/types/main';
@@ -51,13 +50,7 @@ export const TasksProvider = ({ children }: TasksProviderProps) => {
   const [state, dispatch] = useReducer(tasksReducer, initialState);
 
   const handleSetInitialState = async (list: List, tasks: Task[]) => {
-    if (tasks.length === 0) {
-      const localTasks = await getAllTasks();
-      dispatch(setInitialState(json(localTasks), json(list)));
-    } else {
-      dispatch(setInitialState(json(tasks), json(list)));
-      await saveTasks(tasks);
-    }
+    dispatch(setInitialState(json(tasks), json(list)));
   };
 
   const fetchSubtasks = async () => {
@@ -114,7 +107,6 @@ export const TasksProvider = ({ children }: TasksProviderProps) => {
           (task) => task._id !== currentTask._id,
         );
         dispatch(setTasks(filtered));
-        await saveTasks(filtered);
       }
       await remove(currentTask._id.toString());
       return;
@@ -128,11 +120,7 @@ export const TasksProvider = ({ children }: TasksProviderProps) => {
   const handleUpdateTask = (t: Task) => async () => {
     if (t._id) {
       dispatch(updateSingleTask(t._id.toString(), { ...t }, false));
-      const updated = state.tasks.map((task) =>
-        task._id === t._id ? t : task,
-      );
       await update(t._id.toString(), t);
-      await saveTasks(updated);
     }
   };
 
@@ -168,7 +156,6 @@ export const TasksProvider = ({ children }: TasksProviderProps) => {
       const response = await add(task);
       const updated = [...state.tasks, response];
       dispatch(setTasks(updated));
-      await saveTasks(updated);
     }
   };
 
@@ -204,7 +191,6 @@ export const TasksProvider = ({ children }: TasksProviderProps) => {
     });
 
     await Promise.all(batch);
-    await saveTasks([...updatedTasks, ...(await Promise.all(batch))]);
     dispatch(setLoadingAction(false));
   };
 
@@ -223,11 +209,6 @@ export const TasksProvider = ({ children }: TasksProviderProps) => {
       setExecutionTimeout(taskId, async () => {
         dispatch(updateSingleTask(taskId, dataToUpdate, isSubtask));
         await update(taskId, { ...t, ...dataToUpdate });
-
-        const updated = state.tasks.map((task) =>
-          task._id === taskId ? { ...task, ...dataToUpdate } : task,
-        );
-        await saveTasks(updated);
       });
     } else {
       clearTimeoutById(taskId);

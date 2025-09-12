@@ -35,6 +35,7 @@ export const SlideOverProvider = <T extends unknown>({
 
   const handleOpenSlideOver = useCallback(
     (data: T) => (e: GenericEvent) => {
+      e.preventDefault();
       e.stopPropagation();
       setSlideOverData(data);
       setOpen(true);

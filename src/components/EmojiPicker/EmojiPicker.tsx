@@ -31,6 +31,7 @@ export const EmojiPickerComponent = ({ emoji, setEmoji }: EmojiPickerProps) => {
         height="70vh"
         lazyLoadEmojis
         onEmojiClick={({ emoji: e }) => setEmoji(e)}
+        data-testid="emoji-picker"
         categories={[
           {
             category: Categories.TRAVEL_PLACES,

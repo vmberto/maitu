@@ -19,6 +19,7 @@ export async function getMongoClient(): Promise<MongoClient> {
 }
 
 export async function getMongoDb(): Promise<Db> {
+  const dbName = process.env.E2E_TEST === 'true' ? 'maitu_e2e' : 'maitu';
   const mongoClient = await getMongoClient();
-  return mongoClient.db('maitu');
+  return mongoClient.db(dbName);
 }

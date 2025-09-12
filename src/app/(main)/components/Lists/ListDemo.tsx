@@ -1,6 +1,6 @@
 /* eslint-disable tailwindcss/no-custom-classname */
 /* eslint-disable no-underscore-dangle */
-import { Menu } from '@headlessui/react';
+import { Menu, MenuButton } from '@headlessui/react';
 import { EllipsisVerticalIcon } from '@heroicons/react/24/solid';
 import Link from 'next/link';
 
@@ -44,14 +44,14 @@ export const ListDemo = ({ list }: ListDemoProps) => {
           <Typography as="h2">{list.title}</Typography>
 
           <Menu as="div" className="relative ml-auto inline-block text-left">
-            <Menu.Button
+            <MenuButton
               onClick={handleOpenSlideOver(list)}
               className={`${clickStyle} inline-flex w-full justify-center
                 rounded-full p-1 text-sm font-medium text-gray-700
                 focus:ring-offset-2 focus:ring-offset-gray-200 betterhover:hover:bg-gray-200`}
             >
               <EllipsisVerticalIcon className="size-8" />
-            </Menu.Button>
+            </MenuButton>
           </Menu>
         </div>
       </Link>

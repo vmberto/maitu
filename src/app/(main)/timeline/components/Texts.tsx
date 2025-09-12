@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo } from 'react';
-
 import { useTimeline } from '@/src/app/(main)/timeline/state/provider';
 import { formatDate, formatTime } from '@/src/lib/functions';
 import type { Task } from '@/types/main';
@@ -33,21 +32,16 @@ export const Texts = () => {
 
   return (
     <div className="px-4 py-6">
-      {Object.entries(groupedTasks).map(([date, dayTasks]) => (
-        <div key={date} className="my-2">
-          <h2 className="mb-4 text-2xl font-bold text-gray-800">{date}</h2>
-          <div className="space-y-3">
+      {Object.entries(groupedTasks).map(([date, dayTasks], index) => (
+        <div key={date} className={index === 0 ? 'mb-8 mt-2' : 'my-8'}>
+          <h2 className="mb-4 text-lg font-semibold text-gray-900">{date}</h2>
+          <div className="space-y-4">
             {dayTasks.map((task) => {
               const time = formatTime(task.createdAt);
               return (
-                <div
-                  key={task.createdAt?.toString()}
-                  className="group relative w-fit max-w-prose rounded-2xl bg-gray-100 pt-6 p-4 shadow-sm transition hover:shadow-md"
-                >
-                  <p className="text-gray-800 mt-2">{task.title}</p>
-                  <div className="absolute left-3.5 top-3 text-xs text-gray-500">
-                    {time}
-                  </div>
+                <div key={task.createdAt?.toString()} className="max-w-prose">
+                  <div className="mb-1 text-xs text-gray-500">{time}</div>
+                  <p className="text-gray-800 leading-relaxed">{task.title}</p>
                 </div>
               );
             })}
