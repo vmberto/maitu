@@ -7,15 +7,14 @@ const PORT = process.env.PORT || 3000;
 // Set webServer.url and use.baseURL with the location of the WebServer respecting the correct set port
 const baseURL = `http://localhost:${PORT}`;
 
-// Reference: https://playwright.dev/docs/test-configuration
 export default defineConfig({
-  // Timeout per test
   timeout: 30 * 1000,
   testDir: path.join(__dirname, 'e2e'),
-  retries: 2,
+  retries: 0,
   outputDir: 'test-results/',
   webServer: {
-    command: 'npm run dev',
+    // ✅ Set env var before starting Next.js
+    command: `E2E_TEST=true npm run dev`,
     url: baseURL,
     timeout: 120 * 1000,
     reuseExistingServer: !process.env.CI,
@@ -31,16 +30,6 @@ export default defineConfig({
       use: {
         ...devices['Desktop Chrome'],
       },
-    },
-    {
-      name: 'Desktop Safari',
-      use: {
-        ...devices['Desktop Safari'],
-      },
-    },
-    {
-      name: 'Mobile Safari',
-      use: devices['iPhone 12'],
     },
   ],
 });

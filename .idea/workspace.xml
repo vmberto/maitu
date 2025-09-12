@@ -5,20 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.eslintrc.json" beforeDir="false" afterPath="$PROJECT_DIR$/.eslintrc.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.storybook/main.ts" beforeDir="false" afterPath="$PROJECT_DIR$/.storybook/main.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.storybook/preview.ts" beforeDir="false" afterPath="$PROJECT_DIR$/.storybook/preview.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.storybook/main.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.storybook/preview.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/e2e/app.spec.ts" beforeDir="false" afterPath="$PROJECT_DIR$/e2e/app.spec.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jest.setup.js" beforeDir="false" afterPath="$PROJECT_DIR$/jest.setup.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(main)/components/AddListSlideOver/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/components/AddListSlideOver/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(main)/components/Lists/Lists.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/components/Lists/Lists.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(main)/tasks/components/Tasks/TaskInput.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/tasks/components/Tasks/TaskInput.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(main)/tasks/state/provider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/tasks/state/provider.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/playwright.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/playwright.config.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(main)/components/Lists/ListDemo.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/components/Lists/ListDemo.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(main)/timeline/components/NewTextInput.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/timeline/components/NewTextInput.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/(main)/timeline/components/Texts.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/timeline/components/Texts.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(main)/timeline/state/provider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/timeline/state/provider.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/provider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/provider.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/Select.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Select/Select.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/Typography/Typography.stories.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Typography/Typography.stories.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/EmojiPicker/EmojiPicker.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/EmojiPicker/EmojiPicker.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Input/Input.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Input/Input.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/mongodb.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/mongodb.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/providers/slideover.provider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/providers/slideover.provider.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -43,10 +43,19 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "ASKED_MARK_IGNORED_FILES_AS_EXCLUDED": "true",
+    "Jest.SlideOver Component.executor": "Run",
+    "Playwright.App Login Flow with MongoMemoryServer.executor": "Debug",
+    "Playwright.App Login and List Creation Flow.executor": "Run",
+    "Playwright.App Login and List Creation Flow.should handle login form submission.executor": "Run",
+    "Playwright.App Login and List Creation Flow.should login and create a new list.executor": "Run",
+    "Playwright.App Login and List Creation Flow.should login successfully with real database.executor": "Debug",
+    "Playwright.App Login and List Creation Flow.should login successfully.executor": "Run",
+    "Playwright.should login successfully.executor": "Run",
+    "Playwright.should navigate to the about page.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "storybook-fix",
     "javascript.nodejs.core.library.configured.version": "18.18.2",
     "javascript.nodejs.core.library.typings.version": "18.18.14",
     "last_opened_file_path": "/Users/vmberto/WebstormProjects/maitu/src/app/(main)/timeline/components",
@@ -56,11 +65,12 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.standard": "",
     "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs.jest.jest_package": "/Users/vmberto/Documents/maitu/node_modules/jest",
+    "nodejs.jest.jest_package": "/Users/vmberto/WebstormProjects/maitu/node_modules/jest",
     "nodejs_package_manager_path": "npm",
+    "npm.storybook.executor": "Run",
     "prettier.import.notification.dismissed": "true",
-    "prettierjs.PrettierConfiguration.Package": "/Users/vmberto/Documents/maitu/node_modules/prettier",
-    "settings.editor.selected.configurable": "settings.javascript.prettier",
+    "prettierjs.PrettierConfiguration.Package": "/Users/vmberto/WebstormProjects/maitu/node_modules/prettier",
+    "settings.editor.selected.configurable": "actions.on.save",
     "ts.external.directory.path": "/Users/vmberto/WebstormProjects/maitu/node_modules/typescript/lib",
     "vue.rearranger.settings.migration": "true"
   }
@@ -85,47 +95,59 @@
       <recent name="$PROJECT_DIR$/src/hooks/useTodos.ts" />
     </key>
   </component>
-  <component name="RunManager" selected="Jest.EmojiPickerComponent">
-    <configuration name="ColorPicker Component" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="Playwright.App Login and List Creation Flow">
+    <configuration name="App Login Flow with MongoMemoryServer" type="JavaScriptTestRunnerPlaywright" temporary="true" nameIsGenerated="true">
       <node-interpreter value="project" />
-      <jest-package value="$PROJECT_DIR$/node_modules/jest" />
+      <playwright-package value="$PROJECT_DIR$/node_modules/@playwright/test" />
       <working-dir value="$PROJECT_DIR$" />
       <envs />
       <scope-kind value="SUITE" />
-      <test-file value="$PROJECT_DIR$/src/components/ColorPicker/ColorPicker.test.tsx" />
+      <test-file value="$PROJECT_DIR$/e2e/app.spec.ts" />
       <test-names>
-        <test-name value="ColorPicker Component" />
+        <test-name value="App Login Flow with MongoMemoryServer" />
       </test-names>
       <method v="2" />
     </configuration>
-    <configuration name="EmojiPickerComponent" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
+    <configuration name="App Login and List Creation Flow" type="JavaScriptTestRunnerPlaywright" temporary="true" nameIsGenerated="true">
       <node-interpreter value="project" />
-      <jest-package value="$PROJECT_DIR$/node_modules/jest" />
+      <playwright-package value="$PROJECT_DIR$/node_modules/@playwright/test" />
       <working-dir value="$PROJECT_DIR$" />
       <envs />
       <scope-kind value="SUITE" />
-      <test-file value="$PROJECT_DIR$/src/components/EmojiPicker/EmojiPicker.test.tsx" />
+      <test-file value="$PROJECT_DIR$/e2e/app.spec.ts" />
       <test-names>
-        <test-name value="EmojiPickerComponent" />
+        <test-name value="App Login and List Creation Flow" />
       </test-names>
       <method v="2" />
     </configuration>
-    <configuration name="EmojiPickerComponent.calls setEmoji with the selected emoji when an emoji is clicked" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
+    <configuration name="App Login and List Creation Flow.should login successfully with real database" type="JavaScriptTestRunnerPlaywright" temporary="true" nameIsGenerated="true">
       <node-interpreter value="project" />
-      <jest-package value="$PROJECT_DIR$/node_modules/jest" />
+      <playwright-package value="$PROJECT_DIR$/node_modules/@playwright/test" />
       <working-dir value="$PROJECT_DIR$" />
       <envs />
       <scope-kind value="TEST" />
-      <test-file value="$PROJECT_DIR$/src/components/EmojiPicker/EmojiPicker.test.tsx" />
+      <test-file value="$PROJECT_DIR$/e2e/app.spec.ts" />
       <test-names>
-        <test-name value="EmojiPickerComponent" />
-        <test-name value="calls setEmoji with the selected emoji when an emoji is clicked" />
+        <test-name value="App Login and List Creation Flow" />
+        <test-name value="should login successfully with real database" />
       </test-names>
       <method v="2" />
     </configuration>
-    <configuration name="should navigate to the about page" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
+    <configuration name="should login successfully" type="JavaScriptTestRunnerPlaywright" temporary="true" nameIsGenerated="true">
       <node-interpreter value="project" />
-      <jest-package value="$PROJECT_DIR$/node_modules/jest" />
+      <playwright-package value="$PROJECT_DIR$/node_modules/@playwright/test" />
+      <working-dir value="$PROJECT_DIR$" />
+      <envs />
+      <scope-kind value="TEST" />
+      <test-file value="$PROJECT_DIR$/e2e/app.spec.ts" />
+      <test-names>
+        <test-name value="should login successfully" />
+      </test-names>
+      <method v="2" />
+    </configuration>
+    <configuration name="should navigate to the about page" type="JavaScriptTestRunnerPlaywright" temporary="true" nameIsGenerated="true">
+      <node-interpreter value="project" />
+      <playwright-package value="$PROJECT_DIR$/node_modules/@playwright/test" />
       <working-dir value="$PROJECT_DIR$" />
       <envs />
       <scope-kind value="TEST" />
@@ -135,23 +157,13 @@
       </test-names>
       <method v="2" />
     </configuration>
-    <configuration name="test:e2e" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
-      <package-json value="$PROJECT_DIR$/package.json" />
-      <command value="run" />
-      <scripts>
-        <script value="test:e2e" />
-      </scripts>
-      <node-interpreter value="project" />
-      <envs />
-      <method v="2" />
-    </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="npm.test:e2e" />
-        <item itemvalue="Jest.should navigate to the about page" />
-        <item itemvalue="Jest.EmojiPickerComponent.calls setEmoji with the selected emoji when an emoji is clicked" />
-        <item itemvalue="Jest.EmojiPickerComponent" />
-        <item itemvalue="Jest.ColorPicker Component" />
+        <item itemvalue="Playwright.App Login and List Creation Flow" />
+        <item itemvalue="Playwright.App Login and List Creation Flow.should login successfully with real database" />
+        <item itemvalue="Playwright.should navigate to the about page" />
+        <item itemvalue="Playwright.should login successfully" />
+        <item itemvalue="Playwright.App Login Flow with MongoMemoryServer" />
       </list>
     </recent_temporary>
   </component>
@@ -281,6 +293,18 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="LAST_COMMIT_MESSAGE" value="" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/src/lib/mongodb.ts</url>
+          <line>12</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="23" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

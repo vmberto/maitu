@@ -20,7 +20,7 @@ export const NewTextInput = () => {
   }, [newTask.title]);
 
   return (
-    <div className="flex items-center border-b-2 border-gray-100 py-3">
+    <div className="flex items-center border-b-2 border-gray-100 p-2">
       <textarea
         id="new-task"
         ref={textareaRef}
