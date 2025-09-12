@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
+
 import { useTimeline } from '@/src/app/(main)/timeline/state/provider';
 import { formatDate, formatTime } from '@/src/lib/functions';
 import type { Task } from '@/types/main';
@@ -41,7 +42,7 @@ export const Texts = () => {
               return (
                 <div key={task.createdAt?.toString()} className="max-w-prose">
                   <div className="mb-1 text-xs text-gray-500">{time}</div>
-                  <p className="text-gray-800 leading-relaxed">{task.title}</p>
+                  <p className="leading-relaxed text-gray-800">{task.title}</p>
                 </div>
               );
             })}
