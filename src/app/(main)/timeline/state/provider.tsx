@@ -42,7 +42,7 @@ export const TimelineProvider = ({ children }: TimelineProviderProps) => {
   const [state, dispatch] = useReducer(tasksReducer, initialState);
 
   const handleSetInitialState = async (list: List, tasks: Task[]) => {
-      dispatch(setInitialState(json(tasks), json(list)));
+    dispatch(setInitialState(json(tasks), json(list)));
   };
 
   const handleChangeExistingTask = (e: TextareaChangeEventHandler) => {
