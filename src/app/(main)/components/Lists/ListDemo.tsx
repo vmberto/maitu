@@ -45,6 +45,7 @@ export const ListDemo = ({ list }: ListDemoProps) => {
 
           <Menu as="div" className="relative ml-auto inline-block text-left">
             <MenuButton
+              aria-label="list-details"
               onClick={handleOpenSlideOver(list)}
               className={`${clickStyle} inline-flex w-full justify-center
                 rounded-full p-1 text-sm font-medium text-gray-700
