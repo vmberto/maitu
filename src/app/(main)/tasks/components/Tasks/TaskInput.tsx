@@ -51,7 +51,7 @@ export const TaskInput = ({ taskData, disabled }: TaskInputComponentProps) => {
         cursor-pointer items-center self-start rounded-full
           border-2 p-3.5 font-semibold transition-all`}
       >
-        {taskData?.completedAt && (
+        {taskData?.complete && (
           <div
             className={`${BackgroundColors.get(selectedList.color)} absolute right-1 top-1 size-5 rounded-full`}
           />
