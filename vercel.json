@@ -1,4 +1,4 @@
 {
   "version": 2,
-  "ignoreCommand": "git diff --quiet HEAD^ HEAD ./docs ./README.md"
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD ./README.md"
 }
