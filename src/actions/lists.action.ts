@@ -5,7 +5,7 @@ import { revalidatePath } from 'next/cache';
 
 import { getSession } from '@/src/actions/auth.action';
 import { json } from '@/src/lib/functions';
-import { logger } from '@/src/lib/logger'; // ✅ added
+import { logger } from '@/src/lib/logger';
 import { getMongoDb } from '@/src/lib/mongodb';
 import type { List } from '@/types/main';
 

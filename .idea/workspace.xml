@@ -5,11 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/actions/test/auth.action.test.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/actions/test/lists.action.test.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/actions/test/tasks.action.test.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/(main)/components/UserInfoSlideOver/server.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/actions/tasks.action.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/actions/tasks.action.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(main)/tasks/components/Tasks/TaskInput.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/tasks/components/Tasks/TaskInput.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(main)/tasks/state/provider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/tasks/state/provider.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(main)/tasks/state/reducer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/tasks/state/reducer.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jest.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/jest.config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jest.setup.js" beforeDir="false" afterPath="$PROJECT_DIR$/jest.setup.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/actions/lists.action.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/actions/lists.action.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(main)/components/MaituHeader.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/components/MaituHeader.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(main)/components/UserInfoSlideOver/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/components/UserInfoSlideOver/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(main)/timeline/components/NewTextInput.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/timeline/components/NewTextInput.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Input/Input.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Input/Input.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/SlideOver/SlideOver.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/SlideOver/SlideOver.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -33,7 +41,10 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "ASKED_MARK_IGNORED_FILES_AS_EXCLUDED": "true",
+    "Jest.Auth Actions.executor": "Run",
     "Jest.SlideOver Component.executor": "Run",
+    "Jest.lists.actions.executor": "Run",
+    "Jest.tasks.action.executor": "Run",
     "Playwright.App Login Flow with MongoMemoryServer.executor": "Debug",
     "Playwright.App Login and List Creation Flow.executor": "Run",
     "Playwright.App Login and List Creation Flow.should create a new list after login.executor": "Run",
@@ -87,7 +98,43 @@
       <recent name="$PROJECT_DIR$/src/hooks/useTodos.ts" />
     </key>
   </component>
-  <component name="RunManager" selected="Playwright.App Login and List Creation Flow.should create a new list after login">
+  <component name="RunManager" selected="Jest.tasks.action">
+    <configuration name="Auth Actions" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
+      <node-interpreter value="project" />
+      <jest-package value="$PROJECT_DIR$/node_modules/jest" />
+      <working-dir value="$PROJECT_DIR$" />
+      <envs />
+      <scope-kind value="SUITE" />
+      <test-file value="$PROJECT_DIR$/src/actions/tests/auth.action.test.ts" />
+      <test-names>
+        <test-name value="Auth Actions" />
+      </test-names>
+      <method v="2" />
+    </configuration>
+    <configuration name="lists.actions" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
+      <node-interpreter value="project" />
+      <jest-package value="$PROJECT_DIR$/node_modules/jest" />
+      <working-dir value="$PROJECT_DIR$" />
+      <envs />
+      <scope-kind value="SUITE" />
+      <test-file value="$PROJECT_DIR$/src/actions/tests/lists.action.test.ts" />
+      <test-names>
+        <test-name value="lists.actions" />
+      </test-names>
+      <method v="2" />
+    </configuration>
+    <configuration name="tasks.action" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
+      <node-interpreter value="project" />
+      <jest-package value="$PROJECT_DIR$/node_modules/jest" />
+      <working-dir value="$PROJECT_DIR$" />
+      <envs />
+      <scope-kind value="SUITE" />
+      <test-file value="$PROJECT_DIR$/src/actions/test/tasks.action.test.ts" />
+      <test-names>
+        <test-name value="tasks.action" />
+      </test-names>
+      <method v="2" />
+    </configuration>
     <configuration name="App Login and List Creation Flow" type="JavaScriptTestRunnerPlaywright" temporary="true" nameIsGenerated="true">
       <node-interpreter value="project" />
       <playwright-package value="$PROJECT_DIR$/node_modules/@playwright/test" />
@@ -113,50 +160,13 @@
       </test-names>
       <method v="2" />
     </configuration>
-    <configuration name="App Login and List Creation Flow.should login successfully with real database" type="JavaScriptTestRunnerPlaywright" temporary="true" nameIsGenerated="true">
-      <node-interpreter value="project" />
-      <playwright-package value="$PROJECT_DIR$/node_modules/@playwright/test" />
-      <working-dir value="$PROJECT_DIR$" />
-      <envs />
-      <scope-kind value="TEST" />
-      <test-file value="$PROJECT_DIR$/e2e/app.spec.ts" />
-      <test-names>
-        <test-name value="App Login and List Creation Flow" />
-        <test-name value="should login successfully with real database" />
-      </test-names>
-      <method v="2" />
-    </configuration>
-    <configuration name="should login successfully" type="JavaScriptTestRunnerPlaywright" temporary="true" nameIsGenerated="true">
-      <node-interpreter value="project" />
-      <playwright-package value="$PROJECT_DIR$/node_modules/@playwright/test" />
-      <working-dir value="$PROJECT_DIR$" />
-      <envs />
-      <scope-kind value="TEST" />
-      <test-file value="$PROJECT_DIR$/e2e/app.spec.ts" />
-      <test-names>
-        <test-name value="should login successfully" />
-      </test-names>
-      <method v="2" />
-    </configuration>
-    <configuration name="should navigate to the about page" type="JavaScriptTestRunnerPlaywright" temporary="true" nameIsGenerated="true">
-      <node-interpreter value="project" />
-      <playwright-package value="$PROJECT_DIR$/node_modules/@playwright/test" />
-      <working-dir value="$PROJECT_DIR$" />
-      <envs />
-      <scope-kind value="TEST" />
-      <test-file value="$PROJECT_DIR$/e2e/app.spec.ts" />
-      <test-names>
-        <test-name value="should navigate to the about page" />
-      </test-names>
-      <method v="2" />
-    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Jest.tasks.action" />
+        <item itemvalue="Jest.lists.actions" />
+        <item itemvalue="Jest.Auth Actions" />
         <item itemvalue="Playwright.App Login and List Creation Flow.should create a new list after login" />
         <item itemvalue="Playwright.App Login and List Creation Flow" />
-        <item itemvalue="Playwright.App Login and List Creation Flow.should login successfully with real database" />
-        <item itemvalue="Playwright.should navigate to the about page" />
-        <item itemvalue="Playwright.should login successfully" />
       </list>
     </recent_temporary>
   </component>

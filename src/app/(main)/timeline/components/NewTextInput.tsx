@@ -1,5 +1,6 @@
 'use client';
 
+import { ArrowRightIcon } from '@heroicons/react/24/solid';
 import { useEffect, useRef } from 'react';
 
 import { useTimeline } from '@/src/app/(main)/timeline/state/provider';
@@ -24,7 +25,7 @@ export const NewTextInput = () => {
       <textarea
         id="new-task"
         ref={textareaRef}
-        placeholder="sup"
+        placeholder="what's up?"
         className="relative z-10 block w-full resize-none overflow-hidden
                     bg-transparent px-2 text-base outline-0 focus:outline-none"
         value={newTask.title}
@@ -32,8 +33,12 @@ export const NewTextInput = () => {
         onChange={handleChangeNewTask}
         onFocus={handleInputFocus(newTask as Task)}
       />
-      <Button className="self-end" type="button" onClick={handleAddTask}>
-        Add
+      <Button
+        className="self-end rounded-full bg-primary text-white transition hover:bg-primary/80"
+        type="button"
+        onClick={handleAddTask}
+      >
+        <ArrowRightIcon className="size-5" />
       </Button>
     </div>
   );

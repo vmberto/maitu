@@ -10,7 +10,7 @@ import { useSlideOver } from '@/src/providers/slideover.provider';
 type SlideDirection = 'bottom' | 'right';
 
 type ModalProps = {
-  title: string | ReactNode;
+  title?: string | ReactNode;
   open: boolean;
   onClose: () => void;
   children: ReactNode;
@@ -18,7 +18,7 @@ type ModalProps = {
 };
 
 export const SlideOver = ({
-  title,
+  title = '',
   open,
   onClose,
   children,
