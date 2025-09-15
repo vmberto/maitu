@@ -49,3 +49,6 @@ jobs:
           name: playwright-report
           path: playwright-report
           if-no-files-found: ignore
+
+      - name: Trigger Vercel Deploy
+        run: curl -X POST ${{ secrets.VERCEL_DEPLOY_HOOK }}
