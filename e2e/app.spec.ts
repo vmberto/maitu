@@ -12,7 +12,7 @@ test.describe('App Login and List Creation Flow', () => {
 
     await page.click('button[type="submit"]');
 
-    await expect(page).toHaveURL('/', { timeout: 15_000 }); // wait up to 15s
+    await expect(page).toHaveURL('/', { timeout: 15_000 });
     await expect(page.locator('h1')).toContainText('maitu');
   });
 
@@ -41,8 +41,6 @@ test.describe('App Login and List Creation Flow', () => {
 
     await page.waitForTimeout(5000);
 
-    await expect(page.locator('h1')).toContainText('maitu');
-
     const listElement = page.getByRole('link', {
       name: '🌍 Test Shopping List',
     });
@@ -52,12 +50,25 @@ test.describe('App Login and List Creation Flow', () => {
     const listDetailsButton = page.locator('button[aria-label="list-details"]');
     await expect(listDetailsButton).toBeVisible({ timeout: 10000 });
     await listDetailsButton.click();
-    await page.waitForSelector('span:has-text("Select List Color")', {
+
+    await page.waitForTimeout(1000);
+
+    const selectListColorFromDetailsPanel = page.locator(
+      'span:has-text("Select List Color")',
+    );
+    await expect(selectListColorFromDetailsPanel).toBeVisible({
       timeout: 10000,
     });
 
     const deleteInput = page.locator('input[value=""]');
     await deleteInput.fill(listTitle);
-    await page.click('button[type="submit"]:has-text("Delete")');
+
+    const deleteButton = page.locator(
+      'button[type="submit"]:has-text("DELETE")',
+    );
+    await expect(deleteButton).toBeEnabled({ timeout: 10_000 });
+    await deleteButton.click();
+
+    await page.waitForTimeout(5000);
   });
 });

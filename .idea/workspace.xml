@@ -6,7 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/actions/test/lists.action.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/actions/test/lists.action.test.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/e2e/app.spec.ts" beforeDir="false" afterPath="$PROJECT_DIR$/e2e/app.spec.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/playwright.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/playwright.config.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,7 +41,7 @@
     "Playwright.App Login and List Creation Flow.should create a new list after login.executor": "Run",
     "Playwright.App Login and List Creation Flow.should handle login form submission.executor": "Run",
     "Playwright.App Login and List Creation Flow.should login and create a new list.executor": "Run",
-    "Playwright.App Login and List Creation Flow.should login successfully with real database.executor": "Debug",
+    "Playwright.App Login and List Creation Flow.should login successfully with real database.executor": "Run",
     "Playwright.App Login and List Creation Flow.should login successfully.executor": "Run",
     "Playwright.should login successfully.executor": "Run",
     "Playwright.should navigate to the about page.executor": "Run",
@@ -87,19 +89,7 @@
       <recent name="$PROJECT_DIR$/src/hooks/useTodos.ts" />
     </key>
   </component>
-  <component name="RunManager" selected="Jest.tasks.action">
-    <configuration name="Auth Actions" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
-      <node-interpreter value="project" />
-      <jest-package value="$PROJECT_DIR$/node_modules/jest" />
-      <working-dir value="$PROJECT_DIR$" />
-      <envs />
-      <scope-kind value="SUITE" />
-      <test-file value="$PROJECT_DIR$/src/actions/tests/auth.action.test.ts" />
-      <test-names>
-        <test-name value="Auth Actions" />
-      </test-names>
-      <method v="2" />
-    </configuration>
+  <component name="RunManager" selected="Playwright.App Login and List Creation Flow.should create a new list after login">
     <configuration name="lists.actions" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
       <node-interpreter value="project" />
       <jest-package value="$PROJECT_DIR$/node_modules/jest" />
@@ -149,13 +139,26 @@
       </test-names>
       <method v="2" />
     </configuration>
+    <configuration name="App Login and List Creation Flow.should login successfully with real database" type="JavaScriptTestRunnerPlaywright" temporary="true" nameIsGenerated="true">
+      <node-interpreter value="project" />
+      <playwright-package value="$PROJECT_DIR$/node_modules/@playwright/test" />
+      <working-dir value="$PROJECT_DIR$" />
+      <envs />
+      <scope-kind value="TEST" />
+      <test-file value="$PROJECT_DIR$/e2e/app.spec.ts" />
+      <test-names>
+        <test-name value="App Login and List Creation Flow" />
+        <test-name value="should login successfully with real database" />
+      </test-names>
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Playwright.App Login and List Creation Flow.should create a new list after login" />
+        <item itemvalue="Playwright.App Login and List Creation Flow.should login successfully with real database" />
+        <item itemvalue="Playwright.App Login and List Creation Flow" />
         <item itemvalue="Jest.tasks.action" />
         <item itemvalue="Jest.lists.actions" />
-        <item itemvalue="Jest.Auth Actions" />
-        <item itemvalue="Playwright.App Login and List Creation Flow.should create a new list after login" />
-        <item itemvalue="Playwright.App Login and List Creation Flow" />
       </list>
     </recent_temporary>
   </component>
@@ -289,10 +292,17 @@
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
+        <line-breakpoint type="javascript">
+          <url>file://$PROJECT_DIR$/src/actions/auth.action.ts</url>
+          <line>13</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="29" />
+        </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/src/lib/mongodb.ts</url>
-          <line>12</line>
-          <option name="timeStamp" value="23" />
+          <url>file://$PROJECT_DIR$/src/actions/auth.action.ts</url>
+          <line>34</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="30" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
