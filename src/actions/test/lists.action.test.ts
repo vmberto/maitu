@@ -55,10 +55,8 @@ describe('lists.actions', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    // default session
     (getSession as jest.Mock).mockResolvedValue({ _id: VALID_OID_USER });
 
-    // default mongo
     (getMongoDb as jest.Mock).mockResolvedValue(mockDb);
   });
 
