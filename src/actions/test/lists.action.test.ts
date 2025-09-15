@@ -9,7 +9,6 @@ import { getMongoDb } from '../../lib/mongodb';
 import { getSession } from '../auth.action';
 import * as actions from '../lists.action';
 
-// --- Mocks ---
 jest.mock('mongodb', () => {
   return {
     // eslint-disable-next-line func-names

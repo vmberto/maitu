@@ -58,7 +58,6 @@ describe('tasks.action', () => {
     jest.clearAllMocks();
     getSession.mockResolvedValue({ _id: new ObjectId() });
 
-    // Fake collections
     mockDb = {
       collection: jest.fn().mockImplementation((_) => {
         return {
