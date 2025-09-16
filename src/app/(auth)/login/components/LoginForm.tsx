@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import type { FormEvent } from 'react';
 import { useState } from 'react';
 
@@ -16,34 +17,43 @@ export const LoginForm = () => {
     setLoading(true);
 
     const formData = new FormData(event.currentTarget);
-
     await login(null, formData);
 
     setLoading(false);
   };
 
   return (
-    <main
-      className="grid h-screen place-items-center rounded-md border-2 border-gray-200 align-middle
-      shadow-sm shadow-gray-400"
-    >
-      <div className="mx-8 rounded-lg border-8 border-gray-100 bg-gray-100 p-5 shadow-lg">
-        <Typography
-          as="h1"
-          className="mb-4 text-center text-xl font-bold text-primary"
-        >
-          maitu
-        </Typography>
+    <main className="flex h-screen items-center justify-center bg-gray-50">
+      <div className="w-full max-w-sm rounded-xl bg-white p-8 shadow-md">
+
+        <div className="mb-6 flex flex-col items-center">
+          <Image
+            src="/logo.png"
+            alt="Maitu logo"
+            width={60}
+            height={60}
+            className="mb-2"
+          />
+          <Typography as="h1" className="text-2xl font-bold text-primary">
+            maitu
+          </Typography>
+          <p className="mt-1 text-sm text-gray-500">Sign in to continue</p>
+        </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <Input name="email" type="text" placeholder="Email" />
-          <Input name="password" type="password" placeholder="Password" />
+          <Input name="email" type="email" placeholder="Email" required />
+          <Input
+            name="password"
+            type="password"
+            placeholder="Password"
+            required
+          />
           <Button
             type="submit"
             label="Login"
             color="primary"
             loading={loading}
-            className="cursor-pointer px-6 py-2 font-bold text-white"
+            className="mt-2 w-full rounded-md py-2 font-semibold"
           />
         </form>
       </div>
