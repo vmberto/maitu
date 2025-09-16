@@ -31,6 +31,7 @@ export function UserInfoSlideOver({ user }: Props) {
     <>
       <button
         type="button"
+        aria-label="user-settings-menu"
         className="ml-auto rounded-full p-2 text-primary transition hover:bg-gray-200"
         onClick={handleOpen}
       >
