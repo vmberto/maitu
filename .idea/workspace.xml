@@ -6,7 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="32d608c7-6425-4987-a27c-c89bc7b79b00" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(auth)/login/components/LoginForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(auth)/login/components/LoginForm.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(main)/components/ListDetailSlideOver/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/components/ListDetailSlideOver/index.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -87,19 +88,7 @@
       <recent name="$PROJECT_DIR$/src/hooks/useTodos.ts" />
     </key>
   </component>
-  <component name="RunManager" selected="Playwright.App Login and List Creation Flow.should create a new list after login">
-    <configuration name="lists.actions" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
-      <node-interpreter value="project" />
-      <jest-package value="$PROJECT_DIR$/node_modules/jest" />
-      <working-dir value="$PROJECT_DIR$" />
-      <envs />
-      <scope-kind value="SUITE" />
-      <test-file value="$PROJECT_DIR$/src/actions/tests/lists.action.test.ts" />
-      <test-names>
-        <test-name value="lists.actions" />
-      </test-names>
-      <method v="2" />
-    </configuration>
+  <component name="RunManager" selected="npm.storybook">
     <configuration name="tasks.action" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
       <node-interpreter value="project" />
       <jest-package value="$PROJECT_DIR$/node_modules/jest" />
@@ -150,13 +139,23 @@
       </test-names>
       <method v="2" />
     </configuration>
+    <configuration name="storybook" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="storybook" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="npm.storybook" />
         <item itemvalue="Playwright.App Login and List Creation Flow.should create a new list after login" />
         <item itemvalue="Playwright.App Login and List Creation Flow.should login successfully with real database" />
         <item itemvalue="Playwright.App Login and List Creation Flow" />
         <item itemvalue="Jest.tasks.action" />
-        <item itemvalue="Jest.lists.actions" />
       </list>
     </recent_temporary>
   </component>

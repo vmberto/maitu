@@ -73,7 +73,7 @@ export const ListDetailSlideOver = () => {
           }}
         />
 
-        <DeleteList listTitle={list?.title || ''} id={list?._id} />
+        <DeleteList listTitle={listTitle || ''} id={list?._id} />
       </div>
     </SlideOver>
   );
