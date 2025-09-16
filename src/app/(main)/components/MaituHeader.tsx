@@ -8,7 +8,6 @@ export const MaituHeader = () => {
         <Typography as="h1" className="text-xl font-semibold text-primary">
           maitu
         </Typography>
-
         <UserInfoSlideOverWrapper />
       </div>
     </header>
