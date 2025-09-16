@@ -25,7 +25,6 @@ export const LoginForm = () => {
   return (
     <main className="flex h-screen items-center justify-center bg-gray-50">
       <div className="w-full max-w-sm rounded-xl bg-white p-8 shadow-md">
-
         <div className="mb-6 flex flex-col items-center">
           <Image
             src="/logo.png"
