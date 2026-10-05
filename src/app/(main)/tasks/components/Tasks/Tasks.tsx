@@ -17,7 +17,7 @@ export const Tasks = () => {
   return (
     <div className="mb-28 px-5 pb-5">
       {incompleteTasks.map((task) => (
-        <TaskInput key={task.createdAt} taskData={task} />
+        <TaskInput key={task._id?.toString()} taskData={task} />
       ))}
       <NewTaskInput />
     </div>

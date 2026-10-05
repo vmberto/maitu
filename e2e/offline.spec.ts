@@ -2,7 +2,8 @@ import { expect, test } from '@playwright/test';
 import { Colors } from '@/src/components/ColorPicker/ColorPicker';
 import { ListType } from '@/types/main';
 import type { Entity } from '@/src/lib/offline/model';
-import type { BrowserContext } from '@playwright/test';
+import type { LocalAccount } from '@/src/lib/offline/model';
+import type { BrowserContext, Page } from '@playwright/test';
 
 const user = {
   _id: '507f191e810c19729de860ea',
@@ -19,6 +20,7 @@ async function transport(context: BrowserContext) {
   let failAcknowledgement = false;
   let writes = 0;
   let sessionDelay = 0;
+  let snapshotDelay = 0;
   const snapshot: { lists: Entity[]; tasks: Entity[] } = {
     lists: [
       {
@@ -55,8 +57,12 @@ async function transport(context: BrowserContext) {
   await context.route('**/api/sync', async (route) => {
     if (route.request().headers()['x-maitu-account'] !== activeUser._id)
       return route.fulfill({ status: 401, json: { error: 'Sign in' } });
-    if (route.request().method() === 'GET')
-      return route.fulfill({ json: snapshot });
+    if (route.request().method() === 'GET') {
+      const body = JSON.stringify(snapshot);
+      if (snapshotDelay)
+        await new Promise((resolve) => setTimeout(resolve, snapshotDelay));
+      return route.fulfill({ body, contentType: 'application/json' });
+    }
     const op = route.request().postDataJSON();
     const entities: any[] = snapshot[op.kind as 'lists' | 'tasks'];
     let item = entities.find((entity) => entity._id === op.entityId);
@@ -89,6 +95,9 @@ async function transport(context: BrowserContext) {
   });
   return {
     snapshot,
+    delaySnapshot: (delay: number) => {
+      snapshotDelay = delay;
+    },
     delaySession: (delay: number) => {
       sessionDelay = delay;
     },
@@ -102,9 +111,47 @@ async function transport(context: BrowserContext) {
   };
 }
 
+async function deviceState(page: Page): Promise<LocalAccount | null> {
+  return page.evaluate(async () => {
+    if (
+      !(await indexedDB.databases()).some((db) => db.name === 'maitu-offline')
+    )
+      return null;
+    const db = await new Promise<IDBDatabase>((resolve, reject) => {
+      const req = indexedDB.open('maitu-offline', 1);
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+    const read = (key: string) =>
+      new Promise<any>((resolve) => {
+        const req = db.transaction('accounts').objectStore('accounts').get(key);
+        req.onsuccess = () => resolve(req.result);
+      });
+    const active = await read('active');
+    const account = active ? await read(`user:${active}`) : null;
+    db.close();
+    return account;
+  });
+}
+async function waitSynced(page: Page) {
+  await expect
+    .poll(async () => {
+      const saved = await deviceState(page);
+      return !!saved?.lastSync && saved.queue.length === 0;
+    })
+    .toBe(true);
+}
+async function sync(page: Page) {
+  const before = (await deviceState(page))?.lastSync;
+  await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+  await expect
+    .poll(async () => (await deviceState(page))?.lastSync)
+    .not.toBe(before);
+}
+
 async function ready(page: import('@playwright/test').Page) {
   await page.goto('/');
-  await expect(page.getByText('All changes synced.')).toBeVisible();
+  await waitSynced(page);
   await page.evaluate(async () => {
     const registration = await navigator.serviceWorker.ready;
     if (!navigator.serviceWorker.controller)
@@ -134,7 +181,13 @@ test('offline create, edit, complete, delete and navigation survive reload, then
     .locator('textarea')
     .filter({ hasText: 'Original task' });
   await existing.fill('Edited offline');
-  await expect(page.getByText(/Saved on device/)).toBeVisible();
+  await expect
+    .poll(
+      async () =>
+        (await deviceState(page))?.tasks.find((task) => task._id === taskId)
+          ?.title,
+    )
+    .toBe('Edited offline');
   await page.reload();
   await expect(
     page.locator('textarea').filter({ hasText: 'Edited offline' }),
@@ -155,7 +208,13 @@ test('offline create, edit, complete, delete and navigation survive reload, then
       .filter({ hasText: 'Created offline' }),
   ).toBeVisible();
   await page.getByLabel('completeTask').first().click();
-  await expect(page.getByText(/Saved on device/)).toBeVisible();
+  await expect
+    .poll(async () =>
+      (await deviceState(page))?.tasks.some(
+        (task) => task._id === taskId && 'complete' in task && task.complete,
+      ),
+    )
+    .toBe(true);
   await page.reload();
   const created = page.locator(
     'textarea:not([data-task-input]):not([disabled])',
@@ -170,15 +229,15 @@ test('offline create, edit, complete, delete and navigation survive reload, then
       .filter({ hasText: 'Created offline' }),
   ).toHaveCount(0);
   await context.setOffline(false);
-  await page.getByRole('button', { name: 'Sync now' }).click();
-  await expect(page.getByText('All changes synced.')).toBeVisible();
+  await sync(page);
+  await waitSynced(page);
   expect(
     server.snapshot.tasks.find((item) => item._id === taskId),
   ).toMatchObject({ title: 'Edited offline', complete: true });
   expect(server.snapshot.tasks.filter((item) => item.deleted)).toHaveLength(1);
   const writes = server.writes();
-  await page.getByRole('button', { name: 'Sync now' }).click();
-  await expect(page.getByText('All changes synced.')).toBeVisible();
+  await sync(page);
+  await waitSynced(page);
   expect(server.writes()).toBe(writes);
 });
 
@@ -195,7 +254,7 @@ test('retries a lost acknowledgement without creating duplicate tasks', async ({
   await input.press('Enter');
   await expect(page.getByText(/Could not sync/)).toBeVisible();
   await page.reload();
-  await expect(page.getByText('All changes synced.')).toBeVisible();
+  await waitSynced(page);
   expect(
     server.snapshot.tasks.filter((item) => item.title === 'Retry task'),
   ).toHaveLength(1);
@@ -213,18 +272,24 @@ test('preserves conflicting edits until the user chooses a version', async ({
     .locator('textarea')
     .filter({ hasText: 'Original task' })
     .fill('My offline edit');
-  await expect(page.getByText(/Saved on device/)).toBeVisible();
+  await expect
+    .poll(
+      async () =>
+        (await deviceState(page))?.tasks.find((task) => task._id === taskId)
+          ?.title,
+    )
+    .toBe('My offline edit');
   server.snapshot.tasks[0].version = 1;
   server.snapshot.tasks[0].title = 'Other device edit';
   await context.setOffline(false);
-  await page.getByRole('button', { name: 'Sync now' }).click();
+  await sync(page);
   await expect(
     page.getByRole('region', { name: 'Sync conflict' }),
   ).toBeVisible();
   await page.reload();
   await expect(page.getByText('On this device: My offline edit')).toBeVisible();
   await page.getByRole('button', { name: 'Keep my change' }).click();
-  await expect(page.getByText('All changes synced.')).toBeVisible();
+  await waitSynced(page);
   expect(server.snapshot.tasks[0].title).toBe('My offline edit');
 });
 
@@ -240,7 +305,13 @@ test('never uploads an old account’s queue under a new account', async ({
     .locator('textarea')
     .filter({ hasText: 'Original task' })
     .fill('Account A pending edit');
-  await expect(page.getByText(/Saved on device/)).toBeVisible();
+  await expect
+    .poll(
+      async () =>
+        (await deviceState(page))?.tasks.find((task) => task._id === taskId)
+          ?.title,
+    )
+    .toBe('Account A pending edit');
   const before = server.writes();
   server.setUser({
     ...user,
@@ -250,8 +321,8 @@ test('never uploads an old account’s queue under a new account', async ({
   server.snapshot.lists = [];
   server.snapshot.tasks = [];
   await context.setOffline(false);
-  await page.getByRole('button', { name: 'Sync now' }).click();
-  await expect(page.getByText('All changes synced.')).toBeVisible();
+  await sync(page);
+  await waitSynced(page);
   expect(server.writes()).toBe(before);
   const queue = await page.evaluate(async (id) => {
     const db = await new Promise<IDBDatabase>((resolve) => {
@@ -368,8 +439,8 @@ test('timeline entries persist offline and sync through the same queue', async (
     page.locator('p').filter({ hasText: 'Offline timeline entry' }),
   ).toBeVisible();
   await context.setOffline(false);
-  await page.getByRole('button', { name: 'Sync now' }).click();
-  await expect(page.getByText('All changes synced.')).toBeVisible();
+  await sync(page);
+  await waitSynced(page);
   expect(
     server.snapshot.tasks.filter(
       (item) => item.title === 'Offline timeline entry',
@@ -439,7 +510,13 @@ test('offline logout locks access without deleting pending edits', async ({
     .locator('textarea')
     .filter({ hasText: 'Original task' })
     .fill('Pending before logout');
-  await expect(page.getByText(/Saved on device/)).toBeVisible();
+  await expect
+    .poll(
+      async () =>
+        (await deviceState(page))?.tasks.find((task) => task._id === taskId)
+          ?.title,
+    )
+    .toBe('Pending before logout');
   await page.goto('/');
   await page.getByLabel('user-settings-menu').click();
   await page.getByRole('button', { name: 'Logout', exact: true }).click();
@@ -470,4 +547,87 @@ test('offline logout locks access without deleting pending edits', async ({
   expect(saved.tasks.find((task: any) => task._id === taskId).title).toBe(
     'Pending before logout',
   );
+});
+
+test('background sync stays quiet, preserves todo order, and flushes edits made during a refresh', async ({
+  page,
+  context,
+}) => {
+  const server = await transport(context);
+  server.snapshot.tasks.push(
+    {
+      ...server.snapshot.tasks[0],
+      _id: '64b2f7a9c1e6f9a1b2c3d4e7',
+      title: 'Second task',
+    },
+    {
+      ...server.snapshot.tasks[0],
+      _id: '64b2f7a9c1e6f9a1b2c3d4e8',
+      title: 'Third task',
+    },
+  );
+  await ready(page);
+  await expect(
+    page.getByRole('button', { name: 'Sync now', exact: true }),
+  ).toHaveCount(0);
+  await expect(page.getByText('All changes synced.')).toHaveCount(0);
+  await page.getByRole('link', { name: '🌍 Offline list' }).click();
+  await sync(page);
+  const inputs = page.locator(
+    'textarea:not([data-task-input]):not([disabled])',
+  );
+  expect(
+    await inputs.evaluateAll((nodes) =>
+      nodes.map((node) => (node as HTMLTextAreaElement).value),
+    ),
+  ).toEqual(['Original task', 'Second task', 'Third task']);
+  server.snapshot.tasks.reverse();
+  server.delaySnapshot(1200);
+  const fetching = page.waitForRequest(
+    (request) =>
+      request.url().endsWith('/api/sync') && request.method() === 'GET',
+  );
+  await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+  await fetching;
+  await expect(page.getByRole('status')).toHaveCount(0);
+  await inputs.first().fill('Edited first task');
+  await expect
+    .poll(
+      async () =>
+        (await deviceState(page))?.tasks.find((task) => task._id === taskId)
+          ?.title,
+    )
+    .toBe('Edited first task');
+  // The edit's debounce expires during the slow snapshot; it must still sync promptly.
+  await waitSynced(page);
+  await sync(page);
+  expect(
+    await inputs.evaluateAll((nodes) =>
+      nodes.map((node) => (node as HTMLTextAreaElement).value),
+    ),
+  ).toEqual(['Edited first task', 'Second task', 'Third task']);
+  expect(server.snapshot.tasks.find((task) => task._id === taskId)?.title).toBe(
+    'Edited first task',
+  );
+  await inputs.first().blur();
+  await page.reload();
+  await expect(inputs).toHaveCount(3);
+  expect(
+    await inputs.evaluateAll((nodes) =>
+      nodes.map((node) => (node as HTMLTextAreaElement).value),
+    ),
+  ).toEqual(['Edited first task', 'Second task', 'Third task']);
+  await page.goto('/');
+  await expect(
+    page.getByRole('button', { name: 'Sync now', exact: true }),
+  ).toHaveCount(0);
+  await page.getByLabel('user-settings-menu').click();
+  const settings = page.getByRole('region', { name: 'Sync settings' });
+  await expect(settings.getByText('All changes synced.')).toBeVisible();
+  await expect(
+    settings.getByRole('button', { name: 'Sync now', exact: true }),
+  ).toBeVisible();
+  await expect(
+    settings.getByRole('button', { name: 'Export device backup' }),
+  ).toBeVisible();
 });

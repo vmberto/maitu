@@ -39,6 +39,9 @@ type OfflineContextValue = {
   ) => Promise<void>;
   remove: (kind: EntityKind, id: string) => Promise<void>;
   signOut: () => Promise<void>;
+  syncNow: () => Promise<void>;
+  exportData: () => void;
+  status: string;
 };
 const OfflineContext = createContext<OfflineContextValue | null>(null);
 export function useOffline() {
@@ -79,6 +82,7 @@ export function OfflineProvider({ children }: { children: ReactNode }) {
   const [account, setAccount] = useState<LocalAccount | null>(null);
   const [ready, setReady] = useState(false);
   const [status, setStatus] = useState('Opening device data…');
+  const [online, setOnline] = useState(true);
   const [storageError, setStorageError] = useState('');
   const [updateWaiting, setUpdateWaiting] = useState<ServiceWorker | null>(
     null,
@@ -89,7 +93,7 @@ export function OfflineProvider({ children }: { children: ReactNode }) {
   const saving = useRef(0);
   const stopped = useRef(false);
   const retry = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-  const syncRef = useRef<() => Promise<void>>(async () => {});
+  const syncRef = useRef<(manual?: boolean) => Promise<void>>(async () => {});
 
   function publish(next: LocalAccount | null, broadcast = true) {
     current.current = next;
@@ -140,15 +144,17 @@ export function OfflineProvider({ children }: { children: ReactNode }) {
     return next;
   }
 
-  async function sync() {
+  async function sync(manual = false) {
+    setOnline(navigator.onLine);
     if (syncing.current || stopped.current || !navigator.onLine) {
       if (!navigator.onLine)
         setStatus('Offline. Changes are saved on this device.');
       return;
     }
     syncing.current = true;
+    let completed = false;
     try {
-      setStatus('Syncing…');
+      if (manual) setStatus('Syncing…');
       const { user }: { user: UserObject } = await request('/api/session');
       if (stopped.current) return;
       const userId = user._id!.toString();
@@ -235,11 +241,14 @@ export function OfflineProvider({ children }: { children: ReactNode }) {
       if (navigator.locks)
         await navigator.locks.request(`maitu-sync:${userId}`, run);
       else await run(); // Atomic server receipts still make repeated sends safe without Web Locks.
+      completed = true;
       if (!stopped.current)
         setStatus(
-          current.current?.queue.length
+          current.current?.queue.some((op) => op.conflict)
             ? 'Saved on device. Some changes need attention.'
-            : 'All changes synced.',
+            : current.current?.queue.length
+              ? 'Saved on device. Waiting to sync.'
+              : 'All changes synced.',
         );
     } catch (error) {
       if (!stopped.current) {
@@ -257,6 +266,18 @@ export function OfflineProvider({ children }: { children: ReactNode }) {
       }
     } finally {
       syncing.current = false;
+      // Edits made during a snapshot fetch may miss their debounce; flush them promptly.
+      if (
+        completed &&
+        !stopped.current &&
+        current.current?.queue[0] &&
+        !current.current.queue[0].conflict
+      ) {
+        clearTimeout(retry.current);
+        retry.current = setTimeout(() => {
+          void syncRef.current();
+        }, 500);
+      }
     }
   }
   useEffect(() => {
@@ -314,8 +335,10 @@ export function OfflineProvider({ children }: { children: ReactNode }) {
     const trigger = () => {
       if (document.visibilityState === 'visible') void syncRef.current();
     };
-    const offline = () =>
+    const offline = () => {
+      setOnline(false);
       setStatus('Offline. Changes are saved on this device.');
+    };
     window.addEventListener('online', trigger);
     window.addEventListener('offline', offline);
     window.addEventListener('focus', trigger);
@@ -381,12 +404,9 @@ export function OfflineProvider({ children }: { children: ReactNode }) {
           (op) =>
             op.kind !== operation.kind || op.entityId !== operation.entityId,
         ),
-        [operation.kind]: [
-          ...saved[operation.kind].filter(
-            (item) => item._id !== operation.entityId,
-          ),
-          ...(server ? [server] : []),
-        ],
+        [operation.kind]: saved[operation.kind].flatMap((item) =>
+          item._id === operation.entityId ? (server ? [server] : []) : [item],
+        ),
       };
     });
     void syncRef.current();
@@ -394,6 +414,9 @@ export function OfflineProvider({ children }: { children: ReactNode }) {
 
   const value: OfflineContextValue = {
     account,
+    status,
+    syncNow: () => syncRef.current(true),
+    exportData: () => exportData(),
     commit,
     add: async (kind, data) => {
       const id = newId();
@@ -502,35 +525,40 @@ export function OfflineProvider({ children }: { children: ReactNode }) {
     URL.revokeObjectURL(url);
   };
 
+  const notice = !online
+    ? 'Offline. Changes are saved on this device.'
+    : status.startsWith('Sign in') || status.startsWith('Could not sync')
+      ? status
+      : null;
+
   return (
     <OfflineContext.Provider value={value}>
-      <div
-        className="border-b border-gray-200 bg-gray-50 px-5 py-2 text-sm"
-        role="status"
-        aria-live="polite"
-      >
-        {status}{' '}
-        {account?.queue.length ? `(${account.queue.length} pending)` : ''}
-        <button
-          type="button"
-          onClick={() => {
-            void syncRef.current();
-          }}
-          className="ml-3 underline"
+      {notice && (
+        <div
+          className="border-b border-gray-200 bg-gray-50 px-5 py-2 text-sm"
+          role="status"
+          aria-live="polite"
         >
-          Sync now
-        </button>
-        {account && (
-          <button type="button" onClick={exportData} className="ml-3 underline">
-            Export device backup
-          </button>
-        )}
-        {status.startsWith('Sign in') && (
-          <a href="/login" className="ml-3 underline">
-            Sign in
-          </a>
-        )}
-      </div>
+          {notice}
+          {status.startsWith('Sign in') ? (
+            <a href="/login" className="ml-3 underline">
+              Sign in
+            </a>
+          ) : (
+            online && (
+              <button
+                type="button"
+                onClick={() => {
+                  void syncRef.current(true);
+                }}
+                className="ml-3 underline"
+              >
+                Retry sync
+              </button>
+            )
+          )}
+        </div>
+      )}
       {updateWaiting && (
         <div className="border-b border-gray-200 p-3 text-sm">
           A new version is ready. Your saved device changes will be retained.{' '}

@@ -18,7 +18,7 @@ type Props = {
 
 export function UserInfoSlideOver({ user }: Props) {
   const [open, setOpen] = useState(false);
-  const { signOut } = useOffline();
+  const { signOut, syncNow, exportData, status, account } = useOffline();
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -48,6 +48,29 @@ export function UserInfoSlideOver({ user }: Props) {
             </p>
             <p className="text-sm text-gray-500">{user.email}</p>
           </div>
+
+          <section className="w-full space-y-3" aria-label="Sync settings">
+            <p className="text-sm text-gray-600">
+              {status}
+              {account?.queue.length
+                ? ` (${account.queue.length} pending)`
+                : ''}
+            </p>
+            <div className="flex flex-wrap gap-4">
+              <button
+                type="button"
+                onClick={() => {
+                  void syncNow();
+                }}
+                className="underline"
+              >
+                Sync now
+              </button>
+              <button type="button" onClick={exportData} className="underline">
+                Export device backup
+              </button>
+            </div>
+          </section>
 
           <div className="w-full space-y-3">
             <button

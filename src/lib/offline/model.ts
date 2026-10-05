@@ -85,9 +85,18 @@ export function mergeSnapshot(
     const pending = new Set(
       account.queue.filter((op) => op.kind === kind).map((op) => op.entityId),
     );
+    const remote = new Map(
+      snapshot[kind].map((entity) => [entity._id, entity]),
+    );
+    const seen = new Set(account[kind].map((entity) => entity._id));
+    // Replace existing items in place; pending edits must never change their positions.
     next[kind] = [
-      ...snapshot[kind].filter((entity) => !pending.has(entity._id)),
-      ...account[kind].filter((entity) => pending.has(entity._id)),
+      ...account[kind].flatMap((entity) => {
+        if (pending.has(entity._id)) return [entity];
+        const updated = remote.get(entity._id);
+        return updated ? [updated] : [];
+      }),
+      ...snapshot[kind].filter((entity) => !seen.has(entity._id)),
     ];
   }
   return next;

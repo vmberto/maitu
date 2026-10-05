@@ -40,7 +40,7 @@ export const Texts = () => {
             {dayTasks.map((task) => {
               const time = formatTime(task.createdAt);
               return (
-                <div key={task.createdAt?.toString()} className="max-w-prose">
+                <div key={task._id?.toString()} className="max-w-prose">
                   <div className="mb-1 text-xs text-gray-500">{time}</div>
                   <p className="leading-relaxed text-gray-800">{task.title}</p>
                 </div>

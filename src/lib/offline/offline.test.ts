@@ -107,3 +107,55 @@ it('does not coalesce a request that may already have reached the server', () =>
   expect(second.queue.map((op) => op.baseVersion)).toEqual([0, 1]);
   expect(second.queue[0].data.title).toBe('First edit');
 });
+
+it('keeps pending edits in place even when the server returns a different order', () => {
+  const first = { _id: 'a', title: 'First', version: 0 } as Entity;
+  const second = { _id: 'b', title: 'Second', version: 0 } as Entity;
+  const third = { _id: 'c', title: 'Third', version: 0 } as Entity;
+  const edited = enqueue({ ...initial, tasks: [first, second, third] }, [
+    {
+      kind: 'tasks',
+      entityId: 'a',
+      action: 'patch',
+      data: { title: 'Edited first' },
+    },
+  ]);
+  const merged = mergeSnapshot(edited, {
+    lists: [list],
+    tasks: [
+      third,
+      second,
+      { ...first, title: 'Remote first' },
+      { _id: 'd', title: 'New task', version: 0 } as Entity,
+    ],
+  });
+  expect(merged.tasks.map((task) => task._id)).toEqual(['a', 'b', 'c', 'd']);
+  expect(merged.tasks[0].title).toBe('Edited first');
+  // Acknowledging the edit must not move it back to a different slot either.
+  expect(
+    mergeSnapshot(
+      { ...merged, queue: [] },
+      {
+        lists: [list],
+        tasks: [third, second, { ...first, title: 'Edited first', version: 1 }],
+      },
+    ).tasks.map((task) => task._id),
+  ).toEqual(['a', 'b', 'c']);
+});
+
+it('removes records absent from the server while retaining pending local creations', () => {
+  const removed = { _id: 'removed', title: 'Removed', version: 0 } as Entity;
+  const account = enqueue({ ...initial, tasks: [removed] }, [
+    {
+      kind: 'tasks',
+      entityId: 'new',
+      action: 'create',
+      data: { title: 'Offline task' },
+    },
+  ]);
+  expect(
+    mergeSnapshot(account, { lists: [list], tasks: [] }).tasks.map(
+      (task) => task._id,
+    ),
+  ).toEqual(['new']);
+});
