@@ -8,7 +8,7 @@ export const HexColors = new Map<string, string>([
 ]);
 
 export const FontColor = new Map<string, string>([
-  ['primary', 'text-primary'],
+  ['primary', 'text-primary dark:text-indigo-300'],
   ['redColor', 'text-redColor'],
   ['greenColor', 'text-greenColor'],
   ['pinkColor', 'text-pinkColor'],

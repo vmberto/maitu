@@ -1,9 +1,30 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 const defaultTheme = require('tailwindcss/defaultTheme');
+const plugin = require('tailwindcss/plugin');
+const gray = require('tailwindcss/colors').gray;
+const rgb = (hex) =>
+  hex
+    .match(/[a-f0-9]{2}/gi)
+    .map((part) => parseInt(part, 16))
+    .join(' ');
+const darkGray = {
+  50: 950,
+  100: 900,
+  200: 800,
+  300: 700,
+  400: 500,
+  500: 400,
+  600: 300,
+  700: 200,
+  800: 100,
+  900: 50,
+  950: 50,
+};
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ['./src/**/*.{ts,tsx}'],
+  darkMode: 'class',
   theme: {
     colors: ({ colors }) => ({
       primary: '#3664FF',
@@ -19,7 +40,14 @@ module.exports = {
       black: colors.black,
       white: colors.white,
       slate: colors.slate,
-      gray: colors.gray,
+      gray: Object.fromEntries(
+        Object.keys(gray).map((shade) => [
+          shade,
+          `rgb(var(--gray-${shade}) / <alpha-value>)`,
+        ]),
+      ),
+      canvas: 'rgb(var(--canvas) / <alpha-value>)',
+      surface: 'rgb(var(--surface) / <alpha-value>)',
       zinc: colors.zinc,
       neutral: colors.neutral,
       stone: colors.stone,
@@ -55,5 +83,30 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    plugin(({ addBase }) =>
+      addBase({
+        ':root': {
+          '--canvas': '255 255 255',
+          '--surface': '255 255 255',
+          ...Object.fromEntries(
+            Object.entries(gray).map(([shade, value]) => [
+              `--gray-${shade}`,
+              rgb(value),
+            ]),
+          ),
+        },
+        'html.dark': {
+          '--canvas': rgb(gray[950]),
+          '--surface': rgb(gray[900]),
+          ...Object.fromEntries(
+            Object.entries(darkGray).map(([shade, value]) => [
+              `--gray-${shade}`,
+              rgb(gray[value]),
+            ]),
+          ),
+        },
+      }),
+    ),
+  ],
 };

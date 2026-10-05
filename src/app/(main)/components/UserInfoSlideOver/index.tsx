@@ -3,12 +3,12 @@
 import BarsIcon from '@heroicons/react/16/solid/Bars4Icon';
 import {
   ArrowRightOnRectangleIcon,
-  MoonIcon,
   UserCircleIcon,
 } from '@heroicons/react/24/solid';
 import { useState } from 'react';
 
 import { useOffline } from '@/src/components/Offline/OfflineProvider';
+import { ThemeToggle } from '@/src/components/ThemeToggle';
 import { SlideOver } from '@/src/components/SlideOver/SlideOver';
 import type { UserObject } from '@/types/main';
 
@@ -73,19 +73,11 @@ export function UserInfoSlideOver({ user }: Props) {
           </section>
 
           <div className="w-full space-y-3">
-            <button
-              type="button"
-              disabled
-              className="flex w-full cursor-not-allowed items-center justify-center space-x-2 rounded-md border border-gray-200
-                         bg-gray-100 px-4 py-2 text-gray-400"
-            >
-              <MoonIcon className="size-5" />
-              <span>Dark Mode</span>
-            </button>
+            <ThemeToggle />
             <button
               type="button"
               onClick={handleConfirmLogout}
-              className="flex w-full items-center justify-center space-x-2 rounded-md border border-gray-300 bg-white px-4 py-2
+              className="flex w-full items-center justify-center space-x-2 rounded-md border border-gray-300 bg-surface px-4 py-2
                          text-gray-700 transition hover:bg-gray-50"
             >
               <ArrowRightOnRectangleIcon className="size-5" />

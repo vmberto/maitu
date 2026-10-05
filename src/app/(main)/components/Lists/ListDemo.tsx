@@ -1,6 +1,7 @@
 import { Menu, MenuButton } from '@headlessui/react';
 import { EllipsisVerticalIcon } from '@heroicons/react/24/solid';
 
+import { AppLink } from '@/src/components/Offline/AppLink';
 import { DraggableWrapper } from '@/src/components/DragAndDrop/DraggableWrapper';
 import { Typography } from '@/src/components/Typography/Typography';
 import { clickStyle } from '@/src/lib/style-consts';
@@ -22,7 +23,7 @@ export const ListDemo = ({ list, index }: ListDemoProps) => {
       index={index}
       className="mb-2"
     >
-      <a
+      <AppLink
         href={`${list.type === ListType.tasks ? '/tasks' : '/timeline'}?listId=${encodeURIComponent(list._id)}`}
       >
         <div
@@ -50,7 +51,7 @@ export const ListDemo = ({ list, index }: ListDemoProps) => {
             </MenuButton>
           </Menu>
         </div>
-      </a>
+      </AppLink>
     </DraggableWrapper>
   );
 };

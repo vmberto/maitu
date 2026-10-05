@@ -3,6 +3,7 @@
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
 
 import { useTimeline } from '@/src/app/(main)/timeline/state/provider';
+import { AppLink } from '@/src/components/Offline/AppLink';
 import { Typography } from '@/src/components/Typography/Typography';
 import { FontColor, HexColors } from '@/src/lib/colors';
 import { stopPropagationFn } from '@/src/lib/functions';
@@ -13,15 +14,20 @@ export const Header = () => {
 
   return (
     <header
-      className={`${clickStyle} sticky top-0 z-20 border-b-2 border-gray-100 bg-white align-middle`}
+      className={`${clickStyle} sticky top-0 z-20 border-b-2 border-gray-100 bg-surface align-middle`}
     >
       <div className="mx-auto flex h-full max-w-xl items-center px-5">
-        <a className="flex h-12" onClick={stopPropagationFn} href="/">
+        <AppLink
+          aria-label="Back to lists"
+          className="flex h-12"
+          onClick={stopPropagationFn}
+          href="/"
+        >
           <ArrowLeftIcon
             className="relative mr-3 size-5 cursor-pointer self-center"
             color={HexColors.get(selectedList.color)}
           />
-        </a>
+        </AppLink>
         <Typography
           as="h1"
           className={`cursor-default pr-5 text-xl font-bold ${FontColor.get(

@@ -1,9 +1,4 @@
-import { Suspense } from 'react';
-import { TaskScreen } from '@/src/components/Offline/TaskScreen';
+// All main routes render the shared cached screen in the main layout.
 export default function TasksPage() {
-  return (
-    <Suspense fallback={<p>Opening tasks…</p>}>
-      <TaskScreen />
-    </Suspense>
-  );
+  return null;
 }

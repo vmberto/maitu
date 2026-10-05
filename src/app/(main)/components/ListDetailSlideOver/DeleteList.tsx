@@ -32,7 +32,7 @@ export const DeleteList = ({ id, listTitle }: DeleteListProps) => {
   return (
     <div
       className="items-center rounded-md border
-         border-danger bg-white p-4 font-semibold transition-all"
+         border-danger bg-surface p-4 font-semibold transition-all"
     >
       <form onSubmit={deleteList(id)}>
         <Input

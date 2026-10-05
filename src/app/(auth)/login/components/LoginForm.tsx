@@ -36,7 +36,7 @@ export const LoginForm = () => {
 
   return (
     <main className="flex h-screen items-center justify-center bg-gray-50">
-      <div className="w-full max-w-sm rounded-xl bg-white p-8 shadow-md">
+      <div className="w-full max-w-sm rounded-xl bg-surface p-8 shadow-md">
         <div className="mb-6 flex flex-col items-center">
           <Image
             src="/logo.png"
@@ -45,14 +45,14 @@ export const LoginForm = () => {
             height={60}
             className="mb-2"
           />
-          <Typography as="h1" className="text-2xl font-bold text-primary">
+          <Typography as="h1" className="text-2xl font-bold text-primary dark:text-indigo-300">
             maitu
           </Typography>
           <p className="mt-1 text-sm text-gray-500">Sign in to continue</p>
         </div>
 
         {error && (
-          <p role="alert" className="mb-4 text-red-700">
+          <p role="alert" className="mb-4 text-red-700 dark:text-red-300">
             {error}
           </p>
         )}

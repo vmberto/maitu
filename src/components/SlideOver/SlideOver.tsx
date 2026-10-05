@@ -74,7 +74,7 @@ export const SlideOver = ({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-gray-500/75 transition-opacity" />
+          <div className="fixed inset-0 bg-gray-500/75 dark:bg-black/70 transition-opacity" />
         </Transition.Child>
 
         <div className="fixed inset-0 overflow-hidden">
@@ -93,10 +93,10 @@ export const SlideOver = ({
               >
                 <Dialog.Panel className="pointer-events-auto relative w-screen max-w-2xl">
                   <div
-                    className={`${direction === 'bottom' ? 'mt-10 rounded-2xl' : 'rounded-l-2xl'} flex h-full flex-col overflow-y-scroll bg-white pb-6 shadow-xl`}
+                    className={`${direction === 'bottom' ? 'mt-10 rounded-2xl' : 'rounded-l-2xl'} flex h-full flex-col overflow-y-scroll bg-surface pb-6 shadow-xl`}
                   >
                     <div
-                      className="sticky top-0 z-20 mb-5 flex w-full flex-row-reverse border-b-2 bg-white px-4 pb-3 pt-4 align-baseline sm:px-6"
+                      className="sticky top-0 z-20 mb-5 flex w-full flex-row-reverse border-b-2 bg-surface px-4 pb-3 pt-4 align-baseline sm:px-6"
                       {...swipeActions}
                     >
                       <button

@@ -1,8 +1,9 @@
-import type { Categories, EmojiStyle } from 'emoji-picker-react';
+import type { Categories, EmojiStyle, Theme } from 'emoji-picker-react';
 import dynamic from 'next/dynamic';
 const EmojiPicker = dynamic(() => import('emoji-picker-react'), { ssr: false });
 import React from 'react';
 
+import { useDarkMode } from '@/src/components/ThemeToggle';
 import { Typography } from '@/src/components/Typography/Typography';
 
 type EmojiPickerProps = {
@@ -11,6 +12,7 @@ type EmojiPickerProps = {
 };
 
 export const EmojiPickerComponent = ({ emoji, setEmoji }: EmojiPickerProps) => {
+  const dark = useDarkMode();
   return (
     <div>
       <span className="mb-2 block font-light text-gray-700">List Emoji</span>
@@ -30,6 +32,7 @@ export const EmojiPickerComponent = ({ emoji, setEmoji }: EmojiPickerProps) => {
         <EmojiPicker
           open={!emoji}
           emojiStyle={'native' as EmojiStyle}
+          theme={(dark ? 'dark' : 'light') as Theme}
           previewConfig={{ showPreview: false }}
           width="100%"
           height="70vh"

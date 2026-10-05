@@ -1,5 +1,7 @@
 'use client';
 
+import ListsLoading from '@/src/app/(main)/components/Loading/ListsLoading';
+
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 
@@ -579,7 +581,10 @@ export function OfflineProvider({ children }: { children: ReactNode }) {
         </div>
       )}
       {storageError && (
-        <p role="alert" className="bg-red-50 p-4 text-red-800">
+        <p
+          role="alert"
+          className="bg-red-50 p-4 text-red-800 dark:bg-red-950 dark:text-red-200"
+        >
           {storageError}
         </p>
       )}
@@ -647,7 +652,7 @@ export function OfflineProvider({ children }: { children: ReactNode }) {
         </section>
       )}
       {!ready ? (
-        <p className="p-5">Opening Maitu…</p>
+        <ListsLoading />
       ) : account ? (
         children
       ) : (

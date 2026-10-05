@@ -43,13 +43,13 @@ export const SlideOverProvider = <T extends unknown>({
     [],
   );
 
-  const handleClearSlideOverData = () => {
+  const handleClearSlideOverData = useCallback(() => {
     setSlideOverData(undefined);
-  };
+  }, []);
 
-  const handleCloseSlideOver = () => {
+  const handleCloseSlideOver = useCallback(() => {
     setOpen(false);
-  };
+  }, []);
 
   const contextValue = useMemo(
     () => ({
@@ -59,7 +59,13 @@ export const SlideOverProvider = <T extends unknown>({
       handleCloseSlideOver,
       handleClearSlideOverData,
     }),
-    [handleOpenSlideOver, isOpen, slideOverData],
+    [
+      handleOpenSlideOver,
+      handleCloseSlideOver,
+      handleClearSlideOverData,
+      isOpen,
+      slideOverData,
+    ],
   );
 
   return (

@@ -4,7 +4,7 @@ import React from 'react';
 export default function Loading() {
   return (
     <>
-      <header className="sticky top-0 z-30 border-b-2 border-gray-100 bg-white align-middle">
+      <header className="sticky top-0 z-30 border-b-2 border-gray-100 bg-surface align-middle">
         <div className="animate-pulse">
           <div className="mx-auto flex h-full max-w-xl items-center">
             <div className="flex h-12 pl-5">

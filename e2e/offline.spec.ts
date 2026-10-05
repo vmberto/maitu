@@ -631,3 +631,196 @@ test('background sync stays quiet, preserves todo order, and flushes edits made 
     settings.getByRole('button', { name: 'Export device backup' }),
   ).toBeVisible();
 });
+
+test('dark mode persists across offline navigation and logout, and can be switched back', async ({
+  page,
+  context,
+}) => {
+  await page.emulateMedia({ colorScheme: 'light' });
+  await transport(context);
+  await ready(page);
+  await page.getByLabel('user-settings-menu').click();
+  const toggle = page.getByRole('switch', { name: 'Dark Mode' });
+  await expect(toggle).not.toBeChecked();
+  await toggle.click();
+  await expect(toggle).toBeChecked();
+  await expect(page.locator('html')).toHaveClass('dark');
+  expect(await page.evaluate(() => localStorage.getItem('maitu-theme'))).toBe(
+    'dark',
+  );
+  expect(
+    await page.evaluate(() => getComputedStyle(document.body).backgroundColor),
+  ).toBe('rgb(3, 7, 18)');
+  expect(
+    await page
+      .getByRole('dialog')
+      .locator('.bg-surface')
+      .first()
+      .evaluate((node) => getComputedStyle(node).backgroundColor),
+  ).toBe('rgb(17, 24, 39)');
+  await page.getByRole('button', { name: 'Close panel', exact: true }).click();
+  await context.setOffline(true);
+  await page.getByRole('link', { name: '🌍 Offline list' }).click();
+  await expect(page.locator('html')).toHaveClass('dark');
+  await expect(
+    page.locator('textarea').filter({ hasText: 'Original task' }),
+  ).toBeVisible();
+  expect(
+    await page
+      .locator('header')
+      .evaluate((node) => getComputedStyle(node).backgroundColor),
+  ).toBe('rgb(17, 24, 39)');
+  await page.reload();
+  await expect(page.locator('html')).toHaveClass('dark');
+  await page.goto('/');
+  await page.getByLabel('user-settings-menu').click();
+  await expect(toggle).toBeChecked();
+  await toggle.click();
+  await expect(toggle).not.toBeChecked();
+  expect(
+    await page.evaluate(() => getComputedStyle(document.body).backgroundColor),
+  ).toBe('rgb(255, 255, 255)');
+  await page.reload();
+  await expect(page.locator('html')).not.toHaveClass('dark');
+  await page.getByLabel('user-settings-menu').click();
+  await toggle.click();
+  await page.getByRole('button', { name: 'Logout', exact: true }).click();
+  await expect(
+    page.getByRole('button', { name: 'Login', exact: true }),
+  ).toBeVisible();
+  await expect(page.locator('html')).toHaveClass('dark');
+});
+
+test('uses the system theme until an explicit preference overrides it', async ({
+  page,
+  context,
+}) => {
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await transport(context);
+  await ready(page);
+  await expect(page.locator('html')).toHaveClass('dark');
+  expect(
+    await page.evaluate(() => localStorage.getItem('maitu-theme')),
+  ).toBeNull();
+  await page.emulateMedia({ colorScheme: 'light' });
+  await expect(page.locator('html')).not.toHaveClass('dark');
+  await page.getByLabel('user-settings-menu').click();
+  await page.getByRole('switch', { name: 'Dark Mode' }).click();
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await page.emulateMedia({ colorScheme: 'light' });
+  await expect(page.locator('html')).toHaveClass('dark');
+});
+
+test('main routes switch within one document offline, including browser back/forward', async ({
+  page,
+  context,
+}) => {
+  const server = await transport(context);
+  const timelineId = '64b2f7a9c1e6f9a1b2c3d4e9';
+  server.snapshot.lists.push({
+    ...server.snapshot.lists[0],
+    _id: timelineId,
+    id: timelineId,
+    title: 'My timeline',
+    type: ListType.timeline,
+    index: 1,
+  });
+  server.snapshot.tasks.push({
+    ...server.snapshot.tasks[0],
+    _id: '64b2f7a9c1e6f9a1b2c3d4ea',
+    listId: timelineId,
+    title: 'Timeline entry',
+  });
+  await ready(page);
+  const marker = await page.evaluate(() => {
+    const marker = crypto.randomUUID();
+    (window as any).__maituDocument = marker;
+    return marker;
+  });
+  const navigationRequests: string[] = [];
+  const errors: string[] = [];
+  page.on('request', (request) => {
+    if (
+      request.resourceType() === 'document' ||
+      new URL(request.url()).searchParams.has('_rsc')
+    )
+      navigationRequests.push(request.url());
+  });
+  page.on('console', (message) => {
+    if (message.type() === 'error' && /hydrat/i.test(message.text()))
+      errors.push(message.text());
+  });
+  await context.setOffline(true);
+  await page.getByRole('link', { name: '🌍 Offline list' }).click();
+  await expect(
+    page.getByRole('heading', { name: 'Offline list' }),
+  ).toBeVisible();
+  await page.getByRole('link', { name: 'Back to lists' }).click();
+  await expect(
+    page.getByRole('link', { name: '🌍 My timeline' }),
+  ).toBeVisible();
+  await page.getByRole('link', { name: '🌍 My timeline' }).click();
+  await expect(
+    page.locator('p').filter({ hasText: 'Timeline entry' }),
+  ).toBeVisible();
+  await page.goBack();
+  await expect(
+    page.getByRole('link', { name: '🌍 Offline list' }),
+  ).toBeVisible();
+  await page.goBack();
+  await expect(
+    page.getByRole('heading', { name: 'Offline list' }),
+  ).toBeVisible();
+  await page.goForward();
+  await expect(
+    page.getByRole('link', { name: '🌍 My timeline' }),
+  ).toBeVisible();
+  await page.goForward();
+  await expect(
+    page.locator('p').filter({ hasText: 'Timeline entry' }),
+  ).toBeVisible();
+  expect(await page.evaluate(() => (window as any).__maituDocument)).toBe(
+    marker,
+  );
+  expect(navigationRequests).toEqual([]);
+  await expect(page.getByText(/Opening (Maitu|tasks|timeline)/)).toHaveCount(0);
+  await page.reload();
+  await expect(
+    page.getByRole('heading', { name: 'My timeline' }),
+  ).toBeVisible();
+  await expect(
+    page.locator('p').filter({ hasText: 'Timeline entry' }),
+  ).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
+test('an extension-added body attribute does not trigger a hydration warning', async ({
+  page,
+  context,
+}) => {
+  await context.addInitScript(() => {
+    const observer = new MutationObserver(() => {
+      if (document.body) {
+        document.body.setAttribute('cz-shortcut-listen', 'true');
+        observer.disconnect();
+      }
+    });
+    observer.observe(document, { childList: true, subtree: true });
+  });
+  const errors: string[] = [];
+  page.on('console', (message) => {
+    if (message.type() === 'error' && /hydrat/i.test(message.text()))
+      errors.push(message.text());
+  });
+  await transport(context);
+  await ready(page);
+  await expect(page.locator('body')).toHaveAttribute(
+    'cz-shortcut-listen',
+    'true',
+  );
+  await page.getByRole('link', { name: '🌍 Offline list' }).click();
+  await expect(
+    page.getByRole('heading', { name: 'Offline list' }),
+  ).toBeVisible();
+  expect(errors).toEqual([]);
+});

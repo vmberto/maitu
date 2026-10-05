@@ -8,6 +8,7 @@ import { TasksProvider } from '@/src/app/(main)/tasks/state/provider';
 import { Header as TimelineHeader } from '@/src/app/(main)/timeline/components/Header';
 import { TimelineWrapper } from '@/src/app/(main)/timeline/components/TimelineWrapper';
 import { TimelineProvider } from '@/src/app/(main)/timeline/state/provider';
+import { AppLink } from './AppLink';
 import { useOffline } from './OfflineProvider';
 
 export function TaskScreen({ timeline = false }: { timeline?: boolean }) {
@@ -16,8 +17,11 @@ export function TaskScreen({ timeline = false }: { timeline?: boolean }) {
   if (!account?.lists.some((list) => list._id === listId && !list.deleted))
     return (
       <p className="p-5">
-        This list is unavailable on this device. Open the lists screen or sync
-        when online.
+        This list is unavailable on this device.{' '}
+        <AppLink href="/" className="underline">
+          Back to lists
+        </AppLink>{' '}
+        or sync when online.
       </p>
     );
   if (timeline)

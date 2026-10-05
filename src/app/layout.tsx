@@ -4,6 +4,8 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
 
+import { themeScript } from '@/src/lib/theme';
+
 import { SlideOverProvider } from '@/src/providers/slideover.provider';
 
 export const metadata: Metadata = {
@@ -27,9 +29,14 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
-      <head />
-      <body className="font-sans">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
+      <body
+        className="bg-canvas font-sans text-gray-900"
+        suppressHydrationWarning
+      >
         <SlideOverProvider>{children}</SlideOverProvider>
         <SpeedInsights />
       </body>

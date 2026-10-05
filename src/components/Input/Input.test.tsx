@@ -62,7 +62,7 @@ describe('Input Component', () => {
     const inputElement = screen.getByRole('textbox');
     fireEvent.focus(inputElement);
     expect(inputElement).toHaveClass(
-      'focus:border-blue-600 focus:bg-white focus:text-gray-700 focus:outline-none',
+      'focus:border-blue-600 focus:bg-surface focus:text-gray-700 focus:outline-none',
     );
   });
 });

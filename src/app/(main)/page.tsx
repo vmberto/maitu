@@ -1,11 +1,4 @@
-import { Lists } from '@/src/app/(main)/components/Lists/Lists';
-import { MaituHeader } from '@/src/app/(main)/components/MaituHeader';
-
+// All main routes render the shared cached screen in the main layout.
 export default function ListsPage() {
-  return (
-    <>
-      <MaituHeader />
-      <Lists />
-    </>
-  );
+  return null;
 }
