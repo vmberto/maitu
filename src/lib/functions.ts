@@ -1,6 +1,6 @@
 import { type GenericEvent } from '@/types/events';
 
-export const formatDate = (dateString?: string, onlyDate = false) => {
+export const formatDate = (dateString?: string | null, onlyDate = false) => {
   if (!dateString) {
     return '';
   }

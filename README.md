@@ -16,7 +16,7 @@ an full-stack application designed to help you save, track, and achieve your goa
 
 ## Tech Stack
 
-_maitu_ is built using modern web technologies: TypeScript, Next.js 14, Tailwind CSS and MongoDB.
+_maitu_ is built using modern web technologies: TypeScript, Next.js 16, Tailwind CSS and MongoDB.
 
 <p align="center">
   <img src="https://upload.wikimedia.org/wikipedia/commons/4/4c/Typescript_logo_2020.svg" alt="TypeScript" width="60" />
@@ -27,3 +27,34 @@ _maitu_ is built using modern web technologies: TypeScript, Next.js 14, Tailwind
   <img src="https://cdn.freebiesupply.com/logos/large/2x/jest-logo-png-transparent.png" alt="Jest" width="60" />
   <img src="https://playwright.dev/img/playwright-logo.svg" alt="Playwright" width="60" />
 </p>
+
+
+## Offline-first behavior
+
+Sign in online once and wait for “All changes synced” before going offline. The production service worker precaches the lists, tasks, timeline and login shells plus their assets. Core screens read account data from IndexedDB before contacting the server. Development mode deliberately disables the service worker; use `npm run build && npm start` to test caching.
+
+Edits and pending operations are committed together before “Saved on device” appears. Each account has its own data and queue. Unsent edits to the same item are coalesced; an operation that has been sent is immutable so a lost acknowledgement can be retried safely. Sync runs on launch, reconnect, focus and every 30 seconds while visible. Closing the app pauses sync; pending edits remain saved and resume when it opens again. Background Sync is not required.
+
+The server validates ownership and allowed fields, applies updates conditionally against entity versions, and retains operation receipts and deletion tombstones. Concurrent edits stop at a visible conflict prompt; device changes remain available until the user chooses a version. Deletes queue descendants before their parent. Core navigation uses full HTML navigations so newly created offline lists can open the generic cached task/timeline shell without an online RSC request.
+
+Logout locks local access but retains account data and pending changes for the next sign-in. Logging out offline cannot revoke the server cookie until the app reaches the server; local locking still applies. Export a device backup before clearing browser storage. Persistent-storage permission is requested on a best-effort basis; the browser may still evict data. Device backups contain private task data and should be stored accordingly.
+
+New service workers wait for explicit activation or until old app tabs close. “Update app” activates the waiting worker and reloads; committed edits survive in IndexedDB. The IndexedDB schema is version 1; future schema changes must migrate the account store, including pending operations, rather than deleting it. Old caches containing personalized HTML/RSC are removed on activation.
+
+### Setup and checks
+
+Use Node.js 22 or later. Configure `MONGODB_URI` and a random `SECRET_KEY` of at least 32 bytes in `.env.local`. The database collections remain `users`, `lists` and `todos`; legacy entities without a version are treated as version 0. No database-wide migration is needed. New sessions include only the public profile, never password hashes.
+
+```sh
+npm ci
+npm run lint
+npm run test:unit -- --runInBand
+npx playwright install chromium
+npm run test:e2e
+```
+
+Playwright builds and runs the production app. Offline tests use a simulated sync transport while exercising the real service worker, IndexedDB, UI and queue. Server authorization, version checks, sanitization and retry receipts have separate unit tests. The existing real-database login tests run only when both database and session-secret configuration are present; they require the seeded `test@user.com` account in `maitu_e2e`.
+
+This implementation pulls a full account snapshot on each sync and stores operation receipts on each entity. For substantially larger accounts, move to paginated changes with a server cursor and transactional receipt retention. Do not prune receipts/tombstones without a policy that accounts for devices that have been offline for a long time.
+
+Some dependency advisories remain in the build-time glob stack (`braces`, pulled in by Tailwind 3 and test/lint tooling); the available automated fix requires broader tooling upgrades. No forced Tailwind migration is included here.

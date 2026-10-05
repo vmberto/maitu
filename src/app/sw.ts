@@ -1,54 +1,64 @@
-import { defaultCache } from '@serwist/next/worker';
+import { isLegacyCache } from '@/src/lib/offline/model';
 import type { PrecacheEntry, SerwistGlobalConfig } from 'serwist';
-import { Serwist } from 'serwist';
+import { Serwist, setCacheNameDetails } from 'serwist';
 
 declare global {
   interface WorkerGlobalScope extends SerwistGlobalConfig {
-    // Change this attribute's name to your `injectionPoint`.
-    // `injectionPoint` is an InjectManifest option.
-    // See https://serwist.pages.dev/docs/build/configuring
     __SW_MANIFEST: (PrecacheEntry | string)[] | undefined;
   }
 }
-
 declare const self: ServiceWorkerGlobalScope;
-
-const serwist = new Serwist({
+setCacheNameDetails({ prefix: 'maitu-shell' });
+const serwist: Serwist = new Serwist({
   precacheEntries: self.__SW_MANIFEST,
-  skipWaiting: true,
+  skipWaiting: false,
   clientsClaim: true,
-  navigationPreload: true,
-  runtimeCaching: defaultCache,
+  navigationPreload: false,
+  runtimeCaching: [
+    {
+      matcher: ({ request, url }) =>
+        request.mode === 'navigate' &&
+        url.origin === self.location.origin &&
+        ['/', '/tasks', '/timeline', '/login'].includes(url.pathname),
+      handler: async ({ url }): Promise<Response> =>
+        (await serwist.matchPrecache(url.pathname)) ?? fetch(url),
+    },
+  ],
 });
 
-self.addEventListener('push', (event) => {
-  const data = JSON.parse(event.data?.text() ?? '{ title: "" }');
+// Previous versions cached personalized HTML/RSC. This release caches only static shells/assets.
+self.addEventListener('activate', (event) => {
   event.waitUntil(
-    self.registration.showNotification(data.title, {
+    caches
+      .keys()
+      .then((names) =>
+        Promise.all(
+          names.filter(isLegacyCache).map((name) => caches.delete(name)),
+        ),
+      ),
+  );
+});
+self.addEventListener('push', (event) => {
+  let data: { title?: string; message?: string };
+  try {
+    data = event.data?.json() ?? {};
+  } catch {
+    return;
+  }
+  event.waitUntil(
+    self.registration.showNotification(data.title || 'Maitu', {
       body: data.message,
       icon: '/icons/android-chrome-192x192.webp',
     }),
   );
 });
-
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
   event.waitUntil(
-    self.clients
-      .matchAll({ type: 'window', includeUncontrolled: true })
-      .then((clientList) => {
-        if (clientList.length > 0) {
-          let client = clientList[0];
-          for (let i = 0; i < clientList.length; i += 1) {
-            if (clientList[i].focused) {
-              client = clientList[i];
-            }
-          }
-          return client.focus();
-        }
-        return self.clients.openWindow('/');
-      }),
+    self.clients.matchAll({ type: 'window' }).then((clients) => {
+      const client = clients.find((item) => item.focused) ?? clients[0];
+      return client ? client.focus() : self.clients.openWindow('/');
+    }),
   );
 });
-
 serwist.addEventListeners();

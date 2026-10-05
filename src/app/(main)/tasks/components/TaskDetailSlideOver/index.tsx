@@ -9,6 +9,7 @@ import { TaskDetailTitle } from '@/src/app/(main)/tasks/components/TaskDetailSli
 import { SubTasksWrapper } from '@/src/app/(main)/tasks/components/TaskDetailSlideOver/Subtasks/SubTasksWrapper';
 import { TagsWrapper } from '@/src/app/(main)/tasks/components/TaskDetailSlideOver/Tags/TagsWrapper';
 import { useTasks } from '@/src/app/(main)/tasks/state/provider';
+import { useOffline } from '@/src/components/Offline/OfflineProvider';
 import { SlideOver } from '@/src/components/SlideOver/SlideOver';
 import { HexColors } from '@/src/lib/colors';
 import { useSlideOver } from '@/src/providers/slideover.provider';
@@ -19,10 +20,15 @@ export const TaskDetailSlideOver = () => {
     useTasks();
   const [showTaskSettings, setShowTaskSettings] = useState(false);
   const {
-    modalData: taskData,
+    modalData: selectedTask,
     isOpen,
     handleCloseSlideOver,
   } = useSlideOver<Task>();
+
+  const { account } = useOffline();
+  const taskData = account?.tasks.find(
+    (task) => task._id === selectedTask?._id,
+  ) as Task | undefined;
 
   return (
     <SlideOver
@@ -35,6 +41,7 @@ export const TaskDetailSlideOver = () => {
       <div className="flex h-full flex-col gap-4">
         {taskData && (
           <DescriptionSection
+            key={taskData._id?.toString()}
             taskData={taskData}
             updateTaskData={handleUpdateTask}
           />

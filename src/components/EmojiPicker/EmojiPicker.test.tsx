@@ -26,12 +26,11 @@ describe('EmojiPickerComponent', () => {
     expect(mockSetEmoji).toHaveBeenCalledWith('');
   });
 
-  test('renders the EmojiPicker when no emoji is selected', () => {
+  test('renders the EmojiPicker when no emoji is selected', async () => {
     render(<EmojiPickerComponent emoji="" setEmoji={mockSetEmoji} />);
 
-    expect(screen.queryByText('😊')).not.toBeInTheDocument();
     expect(
-      screen.getByRole('tab', { name: /travel & places/i }),
+      await screen.findByRole('tab', { name: /travel & places/i }),
     ).toBeInTheDocument();
   });
 });

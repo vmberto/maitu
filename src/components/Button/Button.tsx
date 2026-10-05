@@ -1,6 +1,3 @@
-/* eslint-disable tailwindcss/no-custom-classname */
-/* eslint-disable tailwindcss/classnames-order */
-/* eslint-disable react/button-has-type */
 import { ArrowPathIcon } from '@heroicons/react/24/outline'; // Import the RefreshIcon from Heroicons
 import type { HTMLProps, ReactNode } from 'react';
 

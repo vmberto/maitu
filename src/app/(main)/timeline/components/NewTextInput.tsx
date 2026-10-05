@@ -1,7 +1,7 @@
 'use client';
 
 import { ArrowRightIcon } from '@heroicons/react/24/solid';
-import { useEffect, useRef } from 'react';
+import { useEffect, useId, useRef } from 'react';
 
 import { useTimeline } from '@/src/app/(main)/timeline/state/provider';
 import { Button } from '@/src/components/Button/Button';
@@ -9,6 +9,7 @@ import { stopPropagationFn } from '@/src/lib/functions';
 import type { Task } from '@/types/main';
 
 export const NewTextInput = () => {
+  const inputId = useId();
   const textareaRef = useRef({} as HTMLTextAreaElement);
 
   const { newTask, handleAddTask, handleChangeNewTask, handleInputFocus } =
@@ -23,7 +24,9 @@ export const NewTextInput = () => {
   return (
     <div className="flex items-center border-b-2 border-gray-100 p-2">
       <textarea
-        id="new-task"
+        id={inputId}
+        data-task-input
+        aria-label="New task"
         ref={textareaRef}
         placeholder="what's up?"
         className="relative z-10 block w-full resize-none overflow-hidden

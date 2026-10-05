@@ -1,7 +1,7 @@
 'use client';
 
 import type { KeyboardEventHandler } from 'react';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useId, useRef } from 'react';
 
 import { useTasks } from '@/src/app/(main)/tasks/state/provider';
 import { BorderColors } from '@/src/lib/colors';
@@ -9,6 +9,7 @@ import { stopPropagationFn } from '@/src/lib/functions';
 import { type Task } from '@/types/main';
 
 export const NewTaskInput = () => {
+  const inputId = useId();
   const textareaRef = useRef({} as HTMLTextAreaElement);
 
   const {
@@ -45,7 +46,9 @@ export const NewTaskInput = () => {
       />
 
       <textarea
-        id="new-task"
+        id={inputId}
+        data-task-input
+        aria-label="New task"
         ref={textareaRef}
         className="relative z-10 block w-full resize-none overflow-hidden
                     bg-transparent px-2 text-base outline-0 focus:outline-none"

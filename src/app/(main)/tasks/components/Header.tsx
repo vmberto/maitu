@@ -1,7 +1,6 @@
 'use client';
 
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
-import Link from 'next/link';
 
 import { useTasks } from '@/src/app/(main)/tasks/state/provider';
 import { Typography } from '@/src/components/Typography/Typography';
@@ -17,12 +16,12 @@ export const Header = () => {
       className={`${clickStyle} sticky top-0 z-20 border-b-2 border-gray-100 bg-white align-middle`}
     >
       <div className="mx-auto flex h-full max-w-xl items-center px-5">
-        <Link className="flex h-12" onClick={stopPropagationFn} href="/">
+        <a className="flex h-12" onClick={stopPropagationFn} href="/">
           <ArrowLeftIcon
             className="relative mr-3 size-5 cursor-pointer self-center"
             color={HexColors.get(selectedList.color)}
           />
-        </Link>
+        </a>
         <Typography
           as="h1"
           className={`cursor-default pr-5 text-xl font-bold ${FontColor.get(

@@ -4,6 +4,8 @@ import Image from 'next/image';
 import type { FormEvent } from 'react';
 import { useState } from 'react';
 
+import { clearActiveAccount, change } from '@/src/lib/offline/storage';
+
 import { login } from '@/src/actions/auth.action';
 import { Button } from '@/src/components/Button/Button';
 import { Input } from '@/src/components/Input/Input';
@@ -11,15 +13,25 @@ import { Typography } from '@/src/components/Typography/Typography';
 
 export const LoginForm = () => {
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setLoading(true);
 
     const formData = new FormData(event.currentTarget);
-    await login(null, formData);
-
-    setLoading(false);
+    try {
+      await clearActiveAccount();
+      await change<boolean>('signedOut', () => false);
+      const result = await login(null, formData);
+      if (result?.formError) setError(result.formError);
+    } catch (err) {
+      if (err instanceof Error && err.message.includes('NEXT_REDIRECT'))
+        throw err;
+      setError('Could not sign in. Connect to the internet and try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -39,6 +51,11 @@ export const LoginForm = () => {
           <p className="mt-1 text-sm text-gray-500">Sign in to continue</p>
         </div>
 
+        {error && (
+          <p role="alert" className="mb-4 text-red-700">
+            {error}
+          </p>
+        )}
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <Input name="email" type="email" placeholder="Email" required />
           <Input

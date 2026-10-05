@@ -1,31 +1,18 @@
 import { defineConfig, devices } from '@playwright/test';
 import path from 'path';
 
-const PORT = 3000;
-const baseURL = `http://localhost:${PORT}`;
-
 export default defineConfig({
-  timeout: 30 * 1000,
+  timeout: 30000,
   testDir: path.join(__dirname, 'e2e'),
+  workers: 1,
   retries: 0,
   outputDir: 'test-results/',
   webServer: {
-    command: `E2E_TEST=true npm run dev`,
-    url: baseURL,
-    timeout: 120 * 1000,
+    command: 'npm run build && E2E_TEST=true npm run start',
+    url: 'http://localhost:3000',
+    timeout: 180000,
     reuseExistingServer: !process.env.CI,
   },
-  use: {
-    baseURL,
-    trace: 'retry-with-trace',
-  },
-
-  projects: [
-    {
-      name: 'Desktop Chrome',
-      use: {
-        ...devices['Desktop Chrome'],
-      },
-    },
-  ],
+  use: { baseURL: 'http://localhost:3000', trace: 'retain-on-failure' },
+  projects: [{ name: 'Desktop Chrome', use: { ...devices['Desktop Chrome'] } }],
 });

@@ -8,7 +8,7 @@ import {
 } from '@heroicons/react/24/solid';
 import { useState } from 'react';
 
-import { logout } from '@/src/actions/auth.action';
+import { useOffline } from '@/src/components/Offline/OfflineProvider';
 import { SlideOver } from '@/src/components/SlideOver/SlideOver';
 import type { UserObject } from '@/types/main';
 
@@ -18,13 +18,14 @@ type Props = {
 
 export function UserInfoSlideOver({ user }: Props) {
   const [open, setOpen] = useState(false);
+  const { signOut } = useOffline();
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
   const handleConfirmLogout = async () => {
     setOpen(false);
-    await logout().catch(console.error);
+    await signOut().catch(console.error);
   };
 
   return (

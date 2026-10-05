@@ -1,8 +1,5 @@
-/* eslint-disable tailwindcss/no-custom-classname */
-/* eslint-disable no-underscore-dangle */
 import { Menu, MenuButton } from '@headlessui/react';
 import { EllipsisVerticalIcon } from '@heroicons/react/24/solid';
-import Link from 'next/link';
 
 import { DraggableWrapper } from '@/src/components/DragAndDrop/DraggableWrapper';
 import { Typography } from '@/src/components/Typography/Typography';
@@ -12,23 +9,21 @@ import { type List, ListType } from '@/types/main';
 
 type ListDemoProps = {
   list: List;
+  index: number;
 };
 
-export const ListDemo = ({ list }: ListDemoProps) => {
+export const ListDemo = ({ list, index }: ListDemoProps) => {
   const { handleOpenSlideOver } = useSlideOver();
 
   return (
     <DraggableWrapper
       key={list._id.toString()}
       draggableId={list._id.toString()}
-      index={list.index}
+      index={index}
       className="mb-2"
     >
-      <Link
-        href={{
-          pathname: list.type === ListType.tasks ? '/tasks' : '/timeline',
-          query: { listId: list._id },
-        }}
+      <a
+        href={`${list.type === ListType.tasks ? '/tasks' : '/timeline'}?listId=${encodeURIComponent(list._id)}`}
       >
         <div
           id={list._id}
@@ -55,7 +50,7 @@ export const ListDemo = ({ list }: ListDemoProps) => {
             </MenuButton>
           </Menu>
         </div>
-      </Link>
+      </a>
     </DraggableWrapper>
   );
 };

@@ -8,10 +8,9 @@ export enum ListType {
 }
 
 export interface UserObject {
-  _id?: ObjectId;
+  _id?: ObjectId | string;
   username: string;
   email: string;
-  password: string;
 }
 
 export interface List {
@@ -44,7 +43,7 @@ export interface Task {
   index?: number;
 
   createdAt: string;
-  completedAt?: string;
+  completedAt?: string | null;
 
   tags?: string[];
 }

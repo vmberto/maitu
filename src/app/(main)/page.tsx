@@ -1,16 +1,11 @@
-import { Suspense } from 'react';
-
-import { ListsContainer } from '@/src/app/(main)/components/Lists/ListsContainer';
-import ListsLoading from '@/src/app/(main)/components/Loading/ListsLoading';
+import { Lists } from '@/src/app/(main)/components/Lists/Lists';
 import { MaituHeader } from '@/src/app/(main)/components/MaituHeader';
 
-export default async function ListsPage() {
+export default function ListsPage() {
   return (
     <>
       <MaituHeader />
-      <Suspense fallback={<ListsLoading />}>
-        <ListsContainer />
-      </Suspense>
+      <Lists />
     </>
   );
 }

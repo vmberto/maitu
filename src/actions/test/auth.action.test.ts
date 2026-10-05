@@ -12,9 +12,8 @@ import {
   encrypt,
   getSession,
   isAuthenticated,
-  login,
-  logout,
-} from '../auth.action';
+} from '../../lib/session';
+import { login, logout } from '../auth.action';
 
 jest.mock('bcrypt', () => ({ compare: jest.fn() }));
 jest.mock('jose', () => ({
@@ -63,6 +62,20 @@ describe('Auth Actions', () => {
       const result = await encrypt({ foo: 'bar' });
       expect(result).toBe('mock.jwt.token');
       expect(SignJWT).toHaveBeenCalled();
+    });
+
+    it('does not sign or accept sessions when the secret is missing', async () => {
+      const original = process.env.SECRET_KEY;
+      delete process.env.SECRET_KEY;
+      let unconfigured: typeof import('../../lib/session');
+      jest.isolateModules(() => {
+        unconfigured = require('../../lib/session');
+      });
+      process.env.SECRET_KEY = original;
+      await expect(
+        unconfigured!.encrypt({ user: { _id: '1' } }),
+      ).rejects.toThrow('32 bytes');
+      await expect(unconfigured!.decrypt('mock.jwt.token')).resolves.toBeNull();
     });
 
     it('should decrypt a valid token', async () => {
@@ -133,6 +146,15 @@ describe('Auth Actions', () => {
         'mock.jwt.token',
         expect.objectContaining({ httpOnly: true }),
       );
+      expect(SignJWT).toHaveBeenCalledWith(
+        expect.objectContaining({
+          user: { _id: '1', email: 'test', username: undefined },
+        }),
+      );
+      expect(mockCookiesSet.mock.calls[0][2]).toMatchObject({
+        sameSite: 'lax',
+        path: '/',
+      });
       expect(redirect).toHaveBeenCalledWith('/');
     });
   });
@@ -162,7 +184,11 @@ describe('Auth Actions', () => {
       });
 
       const result = await isAuthenticated();
-      expect(result).toEqual({ _id: '1' });
+      expect(result).toEqual({
+        _id: '1',
+        username: undefined,
+        email: undefined,
+      });
     });
 
     it('should return null if session invalid', async () => {
@@ -182,7 +208,11 @@ describe('Auth Actions', () => {
       });
 
       const result = await getSession();
-      expect(result).toEqual({ _id: '42' });
+      expect(result).toEqual({
+        _id: '42',
+        username: undefined,
+        email: undefined,
+      });
     });
 
     it('should redirect if not authenticated', async () => {

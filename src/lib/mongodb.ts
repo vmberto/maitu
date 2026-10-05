@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
 import type { Db } from 'mongodb';
 import { MongoClient } from 'mongodb';
 
@@ -12,8 +11,11 @@ export async function getMongoClient(): Promise<MongoClient> {
   if (!(global as any).mongoClientPromise) {
     const client = new MongoClient(process.env.MONGODB_URI || '');
     // client.connect() returns an instance of MongoClient when resolved
-    (global as any).mongoClientPromise = client.connect();
-    // eslint-disable-next-line @typescript-eslint/no-shadow
+    (global as any).mongoClientPromise = client.connect().catch((error) => {
+      (global as any).mongoClientPromise = undefined;
+      void client.close().catch(() => {});
+      throw error;
+    });
   }
   return (global as any).mongoClientPromise;
 }

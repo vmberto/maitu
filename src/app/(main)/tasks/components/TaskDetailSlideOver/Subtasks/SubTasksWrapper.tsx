@@ -1,5 +1,3 @@
-import { useEffect } from 'react';
-
 import { NewTaskInput } from '@/src/app/(main)/tasks/components/Tasks/NewTaskInput';
 import { TaskInput } from '@/src/app/(main)/tasks/components/Tasks/TaskInput';
 import { TaskSkeleton } from '@/src/app/(main)/tasks/loading';
@@ -7,11 +5,7 @@ import { useTasks } from '@/src/app/(main)/tasks/state/provider';
 import { Typography } from '@/src/components/Typography/Typography';
 
 export const SubTasksWrapper = () => {
-  const { fetchSubtasks, subtasks, fetchingSubtasks } = useTasks();
-
-  useEffect(() => {
-    fetchSubtasks();
-  }, []);
+  const { subtasks, fetchingSubtasks } = useTasks();
 
   return (
     <section className="relative h-fit rounded-2xl bg-gray-100 p-4">

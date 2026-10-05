@@ -1,6 +1,10 @@
 import { expect, test } from '@playwright/test';
 
 test.describe('App Login and List Creation Flow', () => {
+  test.skip(
+    !process.env.MONGODB_URI || !process.env.SECRET_KEY,
+    'Requires a configured test MongoDB database.',
+  );
   test('should login successfully with real database', async ({ page }) => {
     await page.goto('/login');
 

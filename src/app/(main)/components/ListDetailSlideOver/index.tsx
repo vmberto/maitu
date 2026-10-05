@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import { DeleteList } from '@/src/app/(main)/components/ListDetailSlideOver/DeleteList';
 import { useLists } from '@/src/app/provider';
@@ -10,6 +10,11 @@ import type { InputChangeEventHandler } from '@/types/events';
 import type { List } from '@/types/main';
 
 export const ListDetailSlideOver = () => {
+  const { modalData: list } = useSlideOver<List>();
+  return <ListDetailForm key={list?._id} />;
+};
+
+const ListDetailForm = () => {
   const { handleUpdateList } = useLists();
   const {
     modalData: list,
@@ -21,15 +26,11 @@ export const ListDetailSlideOver = () => {
   const [color, setColor] = useState(list?.color);
   const [listTitle, setListTitle] = useState(list?.title);
 
-  useEffect(() => {
-    setListTitle(list?.title);
-    setEmoji(list?.emoji);
-    setColor(list?.color);
-  }, [list]);
-
   const handleInputChange = (e: InputChangeEventHandler) => {
     const { value } = e.target;
     setListTitle(value);
+    if (list?._id)
+      void handleUpdateList(list._id, { title: value }).catch(() => {});
   };
 
   const updateList = async (listData: Partial<List>) => {

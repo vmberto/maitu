@@ -1,7 +1,8 @@
 import type { ForwardedRef, ReactNode } from 'react';
 import React, { forwardRef } from 'react';
 
-type Props<T extends keyof JSX.IntrinsicElements> = React.ComponentProps<T>;
+type Props<T extends keyof React.JSX.IntrinsicElements> =
+  React.ComponentProps<T>;
 
 type BaseTypographyProps = Props<'p'> &
   Props<'h1'> &

@@ -3,7 +3,7 @@ import React, { type ChangeEvent, useEffect, useRef, useState } from 'react';
 import type { Task } from '@/types/main';
 
 type DescriptionSectionProps = {
-  updateTaskData: (task: Task) => () => Promise<void>;
+  updateTaskData: (task: Partial<Task>) => () => Promise<void>;
   taskData: Task;
 };
 
@@ -21,10 +21,14 @@ export const DescriptionSection = ({
       scrollHeight = 32;
     }
     textareaRef.current.style.height = `${scrollHeight}px`;
-  }, [textareaRef.current.value]);
+  }, [description]);
 
   const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     setDescription(event.target.value);
+    void updateTaskData({
+      _id: taskData._id,
+      description: event.target.value,
+    })().catch(() => {});
   };
 
   return (
@@ -37,10 +41,6 @@ export const DescriptionSection = ({
         className="relative z-10 block w-full resize-none overflow-hidden
            rounded-md bg-transparent p-1 pb-2 text-base outline-0 focus:outline-none"
         onChange={handleChange}
-        onBlur={updateTaskData({
-          ...taskData,
-          description,
-        })}
       />
     </div>
   );

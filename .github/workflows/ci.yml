@@ -13,6 +13,7 @@ jobs:
       CI: true
       NEXT_TELEMETRY_DISABLED: 1
       MONGODB_URI: ${{ secrets.MONGODB_URI }}
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
 
     steps:
       - name: Checkout
@@ -21,7 +22,7 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - name: Install dependencies

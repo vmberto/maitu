@@ -7,8 +7,8 @@
   "display": "standalone",
   "id": "/",
   "orientation": "portrait",
-  "scope": ".",
-  "start_url": "./",
+  "scope": "/",
+  "start_url": "/",
   "icons": [
     {
       "src": "/icons/android-chrome-192x192.webp",

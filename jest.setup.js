@@ -8,7 +8,9 @@ global.TextDecoder = TextDecoder;
 const observe = jest.fn();
 const disconnect = jest.fn();
 
-window.IntersectionObserver = jest.fn(function () {
+if (typeof window !== 'undefined') window.IntersectionObserver = jest.fn(function () {
   this.observe = observe;
   this.disconnect = disconnect;
 });
+
+process.env.SECRET_KEY = 'maitu-unit-tests-secret-key-only';

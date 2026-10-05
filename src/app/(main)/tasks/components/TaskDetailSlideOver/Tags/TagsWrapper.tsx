@@ -20,16 +20,16 @@ export const TagsWrapper = ({ listColor, taskData }: TagsProps) => {
     const newTag = tagInput.trim();
     if (newTag !== '' && !tagList?.includes(newTag)) {
       const newTagList = [...tagList, newTag];
-      setTagList([...tagList, newTag]);
+      await handleUpdateTask({ _id: taskData._id, tags: newTagList })();
+      setTagList(newTagList);
       setTagInput('');
-      await handleUpdateTask({ ...taskData, tags: newTagList })();
     }
   };
 
   const handleDeleteTag = async (tagToDelete: string) => {
     const newTagList = tagList.filter((tag) => tag !== tagToDelete);
+    await handleUpdateTask({ _id: taskData._id, tags: newTagList })();
     setTagList(newTagList);
-    await handleUpdateTask({ ...taskData, tags: newTagList })();
   };
 
   const pressEnterToAddTag = async (event: KeyboardEvent<HTMLInputElement>) => {

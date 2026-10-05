@@ -1,4 +1,6 @@
-import EmojiPicker, { Categories } from 'emoji-picker-react';
+import type { Categories, EmojiStyle } from 'emoji-picker-react';
+import dynamic from 'next/dynamic';
+const EmojiPicker = dynamic(() => import('emoji-picker-react'), { ssr: false });
 import React from 'react';
 
 import { Typography } from '@/src/components/Typography/Typography';
@@ -24,49 +26,52 @@ export const EmojiPickerComponent = ({ emoji, setEmoji }: EmojiPickerProps) => {
         </button>
       )}
 
-      <EmojiPicker
-        open={!emoji}
-        previewConfig={{ showPreview: false }}
-        width="100%"
-        height="70vh"
-        lazyLoadEmojis
-        onEmojiClick={({ emoji: e }) => setEmoji(e)}
-        data-testid="emoji-picker"
-        categories={[
-          {
-            category: Categories.TRAVEL_PLACES,
-            name: 'Travel & Places',
-          },
-          {
-            category: Categories.ACTIVITIES,
-            name: 'Activities',
-          },
-          {
-            category: Categories.SMILEYS_PEOPLE,
-            name: 'Smileys & People',
-          },
-          {
-            category: Categories.ANIMALS_NATURE,
-            name: 'Animals & Nature',
-          },
-          {
-            category: Categories.FOOD_DRINK,
-            name: 'Food & Drink',
-          },
-          {
-            category: Categories.OBJECTS,
-            name: 'Objects',
-          },
-          {
-            category: Categories.SYMBOLS,
-            name: 'Symbols',
-          },
-          {
-            category: Categories.FLAGS,
-            name: 'Flags',
-          },
-        ]}
-      />
+      {!emoji && (
+        <EmojiPicker
+          open={!emoji}
+          emojiStyle={'native' as EmojiStyle}
+          previewConfig={{ showPreview: false }}
+          width="100%"
+          height="70vh"
+          lazyLoadEmojis
+          onEmojiClick={({ emoji: e }) => setEmoji(e)}
+          data-testid="emoji-picker"
+          categories={[
+            {
+              category: 'travel_places' as Categories,
+              name: 'Travel & Places',
+            },
+            {
+              category: 'activities' as Categories,
+              name: 'Activities',
+            },
+            {
+              category: 'smileys_people' as Categories,
+              name: 'Smileys & People',
+            },
+            {
+              category: 'animals_nature' as Categories,
+              name: 'Animals & Nature',
+            },
+            {
+              category: 'food_drink' as Categories,
+              name: 'Food & Drink',
+            },
+            {
+              category: 'objects' as Categories,
+              name: 'Objects',
+            },
+            {
+              category: 'symbols' as Categories,
+              name: 'Symbols',
+            },
+            {
+              category: 'flags' as Categories,
+              name: 'Flags',
+            },
+          ]}
+        />
+      )}
     </div>
   );
 };

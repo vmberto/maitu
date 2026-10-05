@@ -1,4 +1,3 @@
-/* eslint-disable class-methods-use-this */
 import { fireEvent, render, screen } from '@testing-library/react';
 
 import { useSwipeEvents } from '@/src/hooks/useSwipeEvents';

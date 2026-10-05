@@ -12,7 +12,7 @@ import { type List, ListType } from '@/types/main';
 type AddListSlideOverProps = {
   open: boolean;
   setOpen: (open: boolean) => void;
-  handleAddList: (newList: List) => void;
+  handleAddList: (newList: List) => Promise<void>;
 };
 
 const listTypeOptions = [
@@ -60,7 +60,7 @@ export const AddListSlideOver = ({
         createdAt: new Date().toISOString(),
         type: listType.value,
       } as List;
-      handleAddList(newList);
+      await handleAddList(newList);
       resetSlideOverData();
     }
   };
