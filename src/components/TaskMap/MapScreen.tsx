@@ -44,6 +44,7 @@ export function MapScreen() {
     <>
       <AppHeader
         list={list}
+        backHref={list.archived ? '/archived' : '/'}
         actions={<TaskMapButton list={list} tasks={tasks} />}
       />
       <TaskMapView

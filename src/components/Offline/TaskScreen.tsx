@@ -8,6 +8,8 @@ import { TasksProvider } from '@/src/app/(main)/tasks/state/provider';
 import { Header as TimelineHeader } from '@/src/app/(main)/timeline/components/Header';
 import { TimelineWrapper } from '@/src/app/(main)/timeline/components/TimelineWrapper';
 import { TimelineProvider } from '@/src/app/(main)/timeline/state/provider';
+import { ArchivedListView } from './ArchivedListView';
+import type { List, Task } from '@/types/main';
 import { AppLink } from './AppLink';
 import { useOffline } from './OfflineProvider';
 
@@ -23,6 +25,18 @@ export function TaskScreen({ timeline = false }: { timeline?: boolean }) {
         </AppLink>{' '}
         or sync when online.
       </p>
+    );
+  const list = account?.lists.find((list) => list._id === listId) as List;
+  if (list.archived)
+    return (
+      <ArchivedListView
+        list={list}
+        tasks={
+          (account?.tasks.filter(
+            (task) => !task.deleted && String((task as Task).listId) === listId,
+          ) ?? []) as Task[]
+        }
+      />
     );
   if (timeline)
     return (

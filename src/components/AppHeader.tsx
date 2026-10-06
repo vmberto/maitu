@@ -10,18 +10,24 @@ import type { List } from '@/types/main';
 export function AppHeader({
   list,
   actions,
+  title,
+  backHref = '/',
 }: {
   list?: List;
   actions?: ReactNode;
+  title?: string;
+  backHref?: string;
 }) {
   return (
     <header className="sticky top-0 z-20 bg-gray-100">
       <div className="mx-auto flex h-12 max-w-xl items-center gap-3 px-5">
-        {list && (
+        {(list || title) && (
           <AppLink
-            href="/"
+            href={backHref}
             aria-label="Back to lists"
-            style={{ color: HexColors.get(list.color) ?? '#3664ff' }}
+            style={{
+              color: HexColors.get(list?.color ?? 'primary') ?? '#3664ff',
+            }}
             className="rubber-button rubber-icon flex size-9 shrink-0 items-center justify-center rounded-lg text-gray-700 hover:bg-gray-100"
           >
             <ArrowLeftIcon className="size-5" />
@@ -30,7 +36,7 @@ export function AppHeader({
         <h1
           className={`min-w-0 truncate text-xl font-semibold ${FontColor.get(list?.color ?? 'primary')}`}
         >
-          {list?.title ?? 'maitu'}
+          {title ?? list?.title ?? 'maitu'}
         </h1>
         {(actions || list?.emoji) && (
           <div className="ml-auto flex shrink-0 items-center gap-2">

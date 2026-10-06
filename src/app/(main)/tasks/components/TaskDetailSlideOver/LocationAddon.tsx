@@ -7,6 +7,7 @@ import { MapPinIcon } from '@heroicons/react/24/outline';
 import { useEffect, useId, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import { useTasks } from '@/src/app/(main)/tasks/state/provider';
+import { ManualCoordinates } from './ManualCoordinates';
 import { normalizeLocation } from '@/src/lib/location';
 import type { Task, TaskLocation } from '@/types/main';
 
@@ -16,6 +17,7 @@ export function LocationAddon({ task }: { task: Task }) {
   const location = normalizeLocation(task.location);
   const legacyLocation = typeof task.location === 'string' ? task.location : '';
   const [editing, setEditing] = useState(!task.location);
+  const [manual, setManual] = useState(false);
   const [query, setQuery] = useState(legacyLocation || task.title);
   const [results, setResults] = useState<TaskLocation[]>([]);
   const [searched, setSearched] = useState(false);
@@ -172,59 +174,99 @@ export function LocationAddon({ task }: { task: Task }) {
       ) : null}
       {editing && (
         <div className="drawer-reveal mt-2">
-          <form onSubmit={search}>
-            <label htmlFor={inputId} className="sr-only">
-              Place name and city
-            </label>
-            <div className="flex items-center gap-2">
-              <input
-                id={inputId}
-                className="drawer-input min-w-0"
-                value={query}
-                onChange={(event) => {
-                  setQuery(event.target.value);
-                  setResults([]);
-                  setSearched(false);
-                }}
-                placeholder="Place name and city"
-                minLength={3}
-                maxLength={200}
-                required
-                disabled={busy}
-                autoFocus
-              />
-              <button
-                type="submit"
-                disabled={busy || query.trim().length < 3}
-                className="rubber-button shrink-0 rounded-md px-2 py-1 text-sm text-primary disabled:opacity-50"
-              >
-                {busy ? 'Searching…' : 'Search'}
-              </button>
-            </div>
-          </form>
-          {results.length > 0 && (
-            <ul aria-label="Places" className="drawer-reveal mt-2 space-y-1">
-              {results.map((place) => (
-                <li key={place.placeId}>
-                  <button
-                    type="button"
+          <div className="mb-3 flex flex-wrap gap-2 text-sm">
+            <button
+              type="button"
+              disabled={busy}
+              aria-pressed={!manual}
+              onClick={() => {
+                setManual(false);
+                setError('');
+              }}
+              className="rubber-button"
+            >
+              Search places
+            </button>
+            <button
+              type="button"
+              disabled={busy}
+              aria-pressed={manual}
+              onClick={() => {
+                setManual(true);
+                setError('');
+              }}
+              className="rubber-button"
+            >
+              Enter coordinates
+            </button>
+          </div>
+          {manual ? (
+            <ManualCoordinates
+              location={location}
+              title={task.title}
+              busy={busy}
+              onSave={save}
+            />
+          ) : (
+            <>
+              <form onSubmit={search}>
+                <label htmlFor={inputId} className="sr-only">
+                  Place name and city
+                </label>
+                <div className="flex items-center gap-2">
+                  <input
+                    id={inputId}
+                    className="drawer-input min-w-0"
+                    value={query}
+                    onChange={(event) => {
+                      setQuery(event.target.value);
+                      setResults([]);
+                      setSearched(false);
+                    }}
+                    placeholder="Place name and city"
+                    minLength={3}
+                    maxLength={200}
+                    required
                     disabled={busy}
-                    onClick={() => void save(place)}
-                    className="rubber-button rubber-row rubber-quiet w-full rounded-md px-2 py-2 text-left hover:bg-gray-700/10 focus-visible:outline-primary"
+                    autoFocus
+                  />
+                  <button
+                    type="submit"
+                    disabled={busy || query.trim().length < 3}
+                    className="rubber-button shrink-0 rounded-md px-2 py-1 text-sm text-primary disabled:opacity-50"
                   >
-                    <span className="block font-medium">{place.name}</span>
-                    <span className="block text-sm text-gray-500">
-                      {place.address}
-                    </span>
+                    {busy ? 'Searching…' : 'Search'}
                   </button>
-                </li>
-              ))}
-            </ul>
-          )}
-          {searched && !results.length && (
-            <p role="status" className="mt-2 text-sm text-gray-500">
-              No places found. Try adding the city or street.
-            </p>
+                </div>
+              </form>
+              {results.length > 0 && (
+                <ul
+                  aria-label="Places"
+                  className="drawer-reveal mt-2 space-y-1"
+                >
+                  {results.map((place) => (
+                    <li key={place.placeId}>
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={() => void save(place)}
+                        className="rubber-button rubber-row rubber-quiet w-full rounded-md px-2 py-2 text-left hover:bg-gray-700/10 focus-visible:outline-primary"
+                      >
+                        <span className="block font-medium">{place.name}</span>
+                        <span className="block text-sm text-gray-500">
+                          {place.address}
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {searched && !results.length && (
+                <p role="status" className="mt-2 text-sm text-gray-500">
+                  No places found. Try adding the city or street.
+                </p>
+              )}
+            </>
           )}
           <button
             type="button"
@@ -244,7 +286,7 @@ export function LocationAddon({ task }: { task: Task }) {
           {error}
         </p>
       )}
-      {(editing || location) && (
+      {((editing && !manual) || location?.source === 'openstreetmap') && (
         <p className="mt-2 text-xs text-gray-500">
           Places by{' '}
           <a

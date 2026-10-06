@@ -45,7 +45,15 @@ export async function ownedTask(db: Db, userId: string, taskId: string) {
   return task;
 }
 
-const listFields = ['title', 'color', 'emoji', 'index', 'createdAt', 'type'];
+const listFields = [
+  'title',
+  'color',
+  'emoji',
+  'index',
+  'createdAt',
+  'type',
+  'archived',
+];
 const taskFields = [
   'title',
   'description',
@@ -74,6 +82,9 @@ export function validateData(
     if (field === 'index') {
       if (!Number.isSafeInteger(value) || (value as number) < 0)
         throw new SyncError('Invalid order.');
+    } else if (field === 'archived') {
+      if (typeof value !== 'boolean')
+        throw new SyncError('Invalid archive status.');
     } else if (field === 'complete') {
       if (typeof value !== 'boolean')
         throw new SyncError('Invalid completion value.');
@@ -182,8 +193,10 @@ export async function applyOperation(
   const owner = objectId(userId);
   const collection = db.collection(collectionName(operation.kind));
   const existing = await collection.findOne({ _id: id });
+  let archived = false;
   if (existing) {
     if (operation.kind === 'lists') {
+      archived = !!existing.archived;
       if (existing.owner?.toString() !== userId)
         throw new SyncError('Item not found.', 404);
     } else {
@@ -191,6 +204,7 @@ export async function applyOperation(
         .collection('lists')
         .findOne({ _id: existing.listId, owner });
       if (!list) throw new SyncError('Item not found.', 404);
+      archived = !!list.archived;
       if (list.deleted && operation.action !== 'delete')
         return {
           conflict: {
@@ -202,6 +216,7 @@ export async function applyOperation(
     if (existing._appliedOperations?.includes(operation.id))
       return { entity: publicEntity(existing) };
   }
+  if (archived) throw new SyncError('Archived lists are read only.', 403);
   const conflict = (message: string) => ({
     conflict: { message, server: existing ? publicEntity(existing) : null },
   });
@@ -221,7 +236,9 @@ export async function applyOperation(
         );
   if (operation.kind === 'tasks' && operation.action !== 'delete') {
     const listId = (data.listId ?? existing?.listId)?.toString();
-    await ownedList(db, userId, listId);
+    const list = await ownedList(db, userId, listId);
+    if (list.archived)
+      throw new SyncError('Archived lists are read only.', 403);
     if (
       existing &&
       data.listId &&
@@ -254,7 +271,7 @@ export async function applyOperation(
         {
           _id: id,
           ...(operation.kind === 'lists'
-            ? { owner }
+            ? { owner, archived: { $ne: true } }
             : { listId: existing.listId }),
           deleted: { $ne: true },
           ...(operation.baseVersion === 0

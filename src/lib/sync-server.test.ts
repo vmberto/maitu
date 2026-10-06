@@ -207,3 +207,77 @@ it('persists only supported add-ons and allows removing them', () => {
       'Invalid add-ons',
     );
 });
+
+it('accepts manual coordinates including zero and rejects invalid manual points', () => {
+  const location = {
+    name: 'Manual pin',
+    address: '',
+    latitude: 0,
+    longitude: 0,
+    source: 'manual',
+    placeId: 'manual',
+  };
+  expect(validateData('tasks', { location }, false)).toEqual({ location });
+  for (const patch of [
+    { latitude: 91 },
+    { longitude: -181 },
+    { latitude: NaN },
+    { placeId: 'N123' },
+  ])
+    expect(() =>
+      validateData('tasks', { location: { ...location, ...patch } }, false),
+    ).toThrow('Invalid location');
+});
+
+it('archives a list, preserves archive receipts and rejects later mutations', async () => {
+  expect(validateData('lists', { archived: true }, false)).toEqual({
+    archived: true,
+  });
+  await applyOperation(db, userId, { ...operation, data: { archived: true } });
+  expect(lists.updateOne).toHaveBeenCalledWith(
+    expect.objectContaining({ archived: { $ne: true } }),
+    expect.objectContaining({ $set: { archived: true, deleted: false } }),
+  );
+  lists.findOne.mockResolvedValue({ ...list, archived: true });
+  await expect(applyOperation(db, userId, operation)).rejects.toThrow(
+    'read only',
+  );
+  await expect(
+    applyOperation(db, userId, {
+      ...operation,
+      kind: 'tasks',
+      entityId: taskId,
+      action: 'create',
+      baseVersion: 0,
+      data: { title: 'Task', listId },
+    }),
+  ).rejects.toThrow('read only');
+  lists.findOne.mockResolvedValue({
+    ...list,
+    archived: true,
+    _appliedOperations: [receipt],
+  });
+  expect(await applyOperation(db, userId, operation)).toHaveProperty(
+    'entity.archived',
+    true,
+  );
+});
+
+it('rejects editing and deleting tasks within archived lists', async () => {
+  lists.findOne.mockResolvedValue({ ...list, archived: true });
+  tasks.findOne.mockResolvedValue({
+    _id: new ObjectId(taskId),
+    listId: new ObjectId(listId),
+    version: 2,
+  });
+  for (const action of ['patch', 'delete'] as const)
+    await expect(
+      applyOperation(db, userId, {
+        ...operation,
+        kind: 'tasks',
+        entityId: taskId,
+        action,
+      }),
+    ).rejects.toThrow('read only');
+  expect(tasks.updateOne).not.toHaveBeenCalled();
+});

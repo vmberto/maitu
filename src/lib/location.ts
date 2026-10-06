@@ -15,9 +15,11 @@ export function normalizeLocation(value: unknown): TaskLocation | null {
     typeof place.longitude !== 'number' ||
     !Number.isFinite(place.longitude) ||
     Math.abs(place.longitude) > 180 ||
-    place.source !== 'openstreetmap' ||
+    (place.source !== 'openstreetmap' && place.source !== 'manual') ||
     typeof place.placeId !== 'string' ||
-    !/^[NWR]\d+$/.test(place.placeId)
+    (place.source === 'manual'
+      ? place.placeId !== 'manual'
+      : !/^[NWR]\d+$/.test(place.placeId))
   )
     return null;
   return {
@@ -25,7 +27,7 @@ export function normalizeLocation(value: unknown): TaskLocation | null {
     address: place.address,
     latitude: place.latitude,
     longitude: place.longitude,
-    source: 'openstreetmap',
+    source: place.source,
     placeId: place.placeId,
   };
 }
@@ -68,4 +70,30 @@ export function photonPlaces(data: unknown): TaskLocation[] {
         places.findIndex((other) => other.placeId === place.placeId) === index,
     )
     .slice(0, 6);
+}
+
+export function parseCoordinates(
+  input: string,
+): { latitude: number; longitude: number } | null {
+  const text = input
+    .trim()
+    .replace(/−/g, '-')
+    .replace(/^\(([\s\S]*)\)$/, '$1')
+    .trim();
+  const decimal = '[+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:[eE][+-]?\\d+)?';
+  const commaDecimal = '[+-]?(?:\\d+(?:,\\d+)?|,\\d+)';
+  const match =
+    text.match(new RegExp(`^(${decimal})(?:\\s*[,;]\\s*|\\s+)(${decimal})$`)) ??
+    text.match(
+      new RegExp(`^(${commaDecimal})(?:\\s*;\\s*|\\s+)(${commaDecimal})$`),
+    );
+  if (!match) return null;
+  const latitude = Number(match[1].replace(',', '.'));
+  const longitude = Number(match[2].replace(',', '.'));
+  return Number.isFinite(latitude) &&
+    Math.abs(latitude) <= 90 &&
+    Number.isFinite(longitude) &&
+    Math.abs(longitude) <= 180
+    ? { latitude, longitude }
+    : null;
 }

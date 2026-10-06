@@ -6,6 +6,7 @@ import { AppLink } from '@/src/components/Offline/AppLink';
 import { Fragment, useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { useDrawerScrollLock } from '@/src/components/UI/useDrawerScrollLock';
 import { normalizeLocation } from '@/src/lib/location';
 import type { Task } from '@/types/main';
 
@@ -18,6 +19,7 @@ export default function TaskMapView({
 }) {
   const [selectedId, setSelectedId] = useState<string | null>(focusTaskId);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const unlockScroll = useDrawerScrollLock(drawerOpen);
   const [query, setQuery] = useState('');
   const [tileError, setTileError] = useState(!navigator.onLine);
   const container = useRef<HTMLDivElement>(null);
@@ -164,9 +166,19 @@ export default function TaskMapView({
             <XMarkIcon className="size-5" />
           </button>
           <h2 className="font-semibold">{selected.title}</h2>
-          <p className="text-sm text-gray-500">
-            {selected.location.name} · {selected.location.address}
-          </p>
+          {selected.location.name !== selected.title && (
+            <p className="text-sm text-gray-500">{selected.location.name}</p>
+          )}
+          {selected.location.address && (
+            <p className="text-sm text-gray-500">{selected.location.address}</p>
+          )}
+          {(selected.location.source === 'manual' ||
+            !selected.location.address) && (
+            <p className="mt-1 text-sm text-gray-500">
+              Lat {selected.location.latitude.toFixed(6)} · Long{' '}
+              {selected.location.longitude.toFixed(6)}
+            </p>
+          )}
           <AppLink
             className="rubber-button mt-2 inline-block rounded-md px-3 py-1.5 text-sm text-primary"
             href={`/tasks?listId=${encodeURIComponent(selected.listId)}&taskId=${encodeURIComponent(selected.id)}`}
@@ -175,7 +187,11 @@ export default function TaskMapView({
           </AppLink>
         </section>
       )}
-      <Transition.Root show={drawerOpen} as={Fragment}>
+      <Transition.Root
+        show={drawerOpen}
+        as={Fragment}
+        afterLeave={unlockScroll}
+      >
         <Dialog onClose={() => setDrawerOpen(false)} className="relative z-30">
           <Transition.Child
             as={Fragment}

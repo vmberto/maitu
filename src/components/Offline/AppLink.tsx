@@ -24,7 +24,9 @@ export function AppLink({
     const url = new URL(href, window.location.href);
     if (
       url.origin !== window.location.origin ||
-      !['/', '/tasks', '/timeline', '/tasks/map'].includes(url.pathname)
+      !['/', '/tasks', '/timeline', '/tasks/map', '/archived'].includes(
+        url.pathname,
+      )
     )
       return;
     event.preventDefault();

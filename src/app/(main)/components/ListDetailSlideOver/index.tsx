@@ -1,3 +1,4 @@
+import { ArchiveBoxIcon } from '@heroicons/react/24/outline';
 import { useState } from 'react';
 
 import { DeleteList } from '@/src/app/(main)/components/ListDetailSlideOver/DeleteList';
@@ -24,6 +25,9 @@ export const ListDetailSlideOver = () => {
 
 const ListDetailForm = ({ list }: { list: List }) => {
   const { handleUpdateList } = useLists();
+  const { handleCloseSlideOver } = useSlideOver();
+  const [archiving, setArchiving] = useState(false);
+  const [archiveError, setArchiveError] = useState('');
   const [emoji, setEmoji] = useState(list?.emoji);
   const [color, setColor] = useState(list?.color);
   const [listTitle, setListTitle] = useState(list?.title ?? '');
@@ -71,6 +75,31 @@ const ListDetailForm = ({ list }: { list: List }) => {
         }}
       />
 
+      <button
+        type="button"
+        disabled={archiving}
+        className="rubber-button flex items-center justify-center gap-2 px-3 py-2 text-sm text-gray-700"
+        onClick={async () => {
+          setArchiving(true);
+          setArchiveError('');
+          try {
+            await updateList({ archived: true });
+            handleCloseSlideOver();
+          } catch {
+            setArchiveError('Could not archive this list. Please try again.');
+          } finally {
+            setArchiving(false);
+          }
+        }}
+      >
+        <ArchiveBoxIcon className="size-5" />
+        Archive list
+      </button>
+      {archiveError && (
+        <p role="alert" className="text-sm text-danger">
+          {archiveError}
+        </p>
+      )}
       <DeleteList listTitle={listTitle || ''} id={list?._id} />
     </div>
   );

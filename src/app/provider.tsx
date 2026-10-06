@@ -15,9 +15,11 @@ export type ListsState = {
 
 export function useLists(): ListsState {
   const { account, add, update, remove, commit } = useOffline();
-  const lists = (account?.lists.filter((list) => !list.deleted) ?? []).sort(
-    (a, b) => (a as List).index - (b as List).index,
-  ) as List[];
+  const lists = (
+    account?.lists.filter(
+      (list) => !list.deleted && !(list as List).archived,
+    ) ?? []
+  ).sort((a, b) => (a as List).index - (b as List).index) as List[];
   return {
     lists,
     handleAddList: async (data) => {
@@ -35,7 +37,7 @@ export function useLists(): ListsState {
       const targetId = lists[destination.index]?._id;
       await commit((saved) => {
         const ordered = saved.lists
-          .filter((list) => !list.deleted)
+          .filter((list) => !list.deleted && !(list as List).archived)
           .sort((a, b) => (a as List).index - (b as List).index);
         const from = ordered.findIndex((list) => list._id === movedId);
         const to = ordered.findIndex((list) => list._id === targetId);

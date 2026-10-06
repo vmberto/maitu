@@ -36,7 +36,6 @@ export const TaskInput = ({
     handleCompleteTask,
     handleChangeExistingTask,
     selectedList,
-    pendingCompletionIds,
   } = useTasks();
 
   useEffect(() => {
@@ -84,10 +83,6 @@ export const TaskInput = ({
           onChange={handleChangeExistingTask}
           disabled={disabled}
         />
-        {pendingCompletionIds.has(taskData._id?.toString() ?? '') &&
-          taskData.complete && (
-            <span className="text-xs text-gray-600">Click again to undo</span>
-          )}
         {taskData.tags && (
           <div className="flex flex-wrap gap-1">
             {taskData.tags.map((tag) => (

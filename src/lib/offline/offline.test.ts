@@ -159,3 +159,48 @@ it('removes records absent from the server while retaining pending local creatio
     ),
   ).toEqual(['new']);
 });
+
+it('blocks list and task mutations locally after archiving without discarding saved contents', () => {
+  const task = {
+    _id: '64b2f7a9c1e6f9a1b2c3d4e6',
+    title: 'Saved task',
+    listId: list._id,
+    version: 0,
+  } as Entity;
+  const archived = enqueue({ ...initial, tasks: [task] }, [
+    {
+      kind: 'lists',
+      entityId: list._id,
+      action: 'patch',
+      data: { archived: true },
+    },
+  ]);
+  expect(archived.tasks[0].title).toBe('Saved task');
+  for (const operation of [
+    {
+      kind: 'lists' as const,
+      entityId: list._id,
+      action: 'patch' as const,
+      data: { title: 'Edit' },
+    },
+    {
+      kind: 'lists' as const,
+      entityId: list._id,
+      action: 'delete' as const,
+      data: {},
+    },
+    {
+      kind: 'tasks' as const,
+      entityId: task._id,
+      action: 'patch' as const,
+      data: { title: 'Edit' },
+    },
+    {
+      kind: 'tasks' as const,
+      entityId: '64b2f7a9c1e6f9a1b2c3d4e7',
+      action: 'create' as const,
+      data: { title: 'New', listId: list._id },
+    },
+  ])
+    expect(() => enqueue(archived, [operation])).toThrow('read only');
+});

@@ -4,6 +4,7 @@ import { Dialog, Transition } from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/20/solid';
 import { Fragment, type ReactNode } from 'react';
 
+import { useDrawerScrollLock } from '@/src/components/UI/useDrawerScrollLock';
 import { useSwipeEvents } from '@/src/hooks/useSwipeEvents';
 import { useSlideOver } from '@/src/providers/slideover.provider';
 
@@ -24,6 +25,7 @@ export const SlideOver = ({
   children,
   direction = 'bottom',
 }: ModalProps) => {
+  const unlockScroll = useDrawerScrollLock(open);
   const { handleClearSlideOverData } = useSlideOver();
 
   const swipeActions = useSwipeEvents({
@@ -67,7 +69,10 @@ export const SlideOver = ({
       appear
       show={open}
       as={Fragment}
-      afterLeave={handleClearSlideOverData}
+      afterLeave={() => {
+        unlockScroll();
+        handleClearSlideOverData();
+      }}
     >
       <Dialog as="div" className="relative z-30" onClose={onClose}>
         <Transition.Child
@@ -101,7 +106,7 @@ export const SlideOver = ({
                   className="pointer-events-auto relative w-screen max-w-2xl"
                 >
                   <div
-                    className={`${direction === 'bottom' ? 'mt-10 rounded-2xl' : 'rounded-l-2xl'} flex h-full flex-col overflow-y-auto bg-surface pb-6 shadow-xl`}
+                    className={`${direction === 'bottom' ? 'mt-10 rounded-2xl' : 'rounded-l-2xl'} flex h-full flex-col overflow-y-auto overscroll-contain bg-surface pb-6 shadow-xl`}
                   >
                     <div
                       className="sticky top-0 z-20 mb-5 flex w-full flex-row-reverse border-b border-gray-200 bg-surface px-4 pb-3 pt-4 align-baseline sm:px-6"

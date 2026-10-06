@@ -4,6 +4,7 @@ import {
   ArrowPathIcon,
   MapPinIcon,
   Square2StackIcon,
+  ArrowUturnLeftIcon,
 } from '@heroicons/react/24/outline';
 import { ChevronDownIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
 import React, { useState } from 'react';
@@ -20,8 +21,14 @@ import { useSlideOver } from '@/src/providers/slideover.provider';
 import type { Task } from '@/types/main';
 
 export const TaskDetailSlideOver = () => {
-  const { handleUpdateTask, handleCloneTask, selectedList, loadingAction } =
-    useTasks();
+  const {
+    handleUpdateTask,
+    handleCloneTask,
+    handleCompleteTask,
+    selectedList,
+    loadingAction,
+  } = useTasks();
+  const [movingToUndone, setMovingToUndone] = useState(false);
   const [showTaskSettings, setShowTaskSettings] = useState(false);
   const {
     modalData: selectedTask,
@@ -37,15 +44,30 @@ export const TaskDetailSlideOver = () => {
   const hasLocation =
     !!taskData &&
     (!!taskData.location || taskData.addons?.includes('location'));
-  const [addonError, setAddonError] = useState('');
+  const [optionsError, setOptionsError] = useState('');
 
   async function addLocation() {
     if (!taskData) return;
-    setAddonError('');
+    setOptionsError('');
     try {
       await handleUpdateTask({ _id: taskData._id, addons: ['location'] })();
     } catch {
-      setAddonError('Could not add Location on this device. Please try again.');
+      setOptionsError(
+        'Could not add Location on this device. Please try again.',
+      );
+    }
+  }
+
+  async function moveToUndone() {
+    if (!taskData || movingToUndone) return;
+    setMovingToUndone(true);
+    setOptionsError('');
+    try {
+      await handleCompleteTask(taskData);
+    } catch {
+      setOptionsError('Could not move this task to undone. Please try again.');
+    } finally {
+      setMovingToUndone(false);
     }
   }
 
@@ -106,6 +128,18 @@ export const TaskDetailSlideOver = () => {
               <h2 className="mb-2 text-xs font-medium text-gray-500">
                 Actions
               </h2>
+              {taskData?.complete && (
+                <button
+                  type="button"
+                  disabled={movingToUndone}
+                  onClick={() => void moveToUndone()}
+                  className="rubber-button rubber-row mb-2 flex w-full items-center gap-3 px-3 py-3 text-left text-sm font-medium text-gray-900"
+                >
+                  <ArrowUturnLeftIcon className="size-5 shrink-0 text-gray-500" />
+                  <span>Move to undone</span>
+                  <ChevronRightIcon className="ml-auto size-5 text-gray-500" />
+                </button>
+              )}
               <button
                 type="button"
                 disabled={loadingAction}
@@ -134,9 +168,9 @@ export const TaskDetailSlideOver = () => {
                 <span>{hasLocation ? 'Location added' : 'Add location'}</span>
                 <ChevronRightIcon className="ml-auto size-5 text-gray-500" />
               </button>
-              {addonError && (
+              {optionsError && (
                 <p role="alert" className="mt-2 text-sm text-danger">
-                  {addonError}
+                  {optionsError}
                 </p>
               )}
             </section>

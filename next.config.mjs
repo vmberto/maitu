@@ -14,6 +14,7 @@ const withSerwist = withSerwistInit({
     '/tasks',
     '/timeline',
     '/tasks/map',
+    '/archived',
     '/login',
   ].map((url) => ({ url, revision: buildId })),
 });

@@ -841,7 +841,7 @@ test('completion gives a durable undo window before moving the row, and remains 
   });
   await complete.click();
   await expect(complete).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.getByText('Click again to undo')).toBeVisible();
+  await expect(page.getByText('Click again to undo')).toHaveCount(0);
   await expect(
     page.getByRole('heading', { name: 'Complete Tasks' }),
   ).toHaveCount(0);
@@ -858,11 +858,17 @@ test('completion gives a durable undo window before moving the row, and remains 
   await page.reload();
   await expect(complete).toHaveAttribute('aria-pressed', 'false');
   await complete.click();
-  await expect(page.getByText('Click again to undo')).toBeVisible();
+  await expect(page.getByText('Click again to undo')).toHaveCount(0);
   await expect(
     page.getByRole('heading', { name: 'Complete Tasks' }),
   ).toBeVisible({ timeout: 5000 });
-  await complete.click();
+  await page.getByRole('button', { name: 'openSlideOver' }).click();
+  await page.getByRole('button', { name: 'Task options' }).click();
+  await page.getByRole('button', { name: 'Move to undone' }).click();
+  await expect(
+    page.getByRole('button', { name: 'Move to undone' }),
+  ).toHaveCount(0);
+  await page.getByRole('button', { name: 'Close panel', exact: true }).click();
   await expect(
     page.getByRole('heading', { name: 'Complete Tasks' }),
   ).toHaveCount(0);
@@ -1495,4 +1501,180 @@ test('the locations drawer fits mobile and scrolls a large cached list', async (
   await expect(
     page.getByRole('region', { name: 'Selected place' }),
   ).toContainText('Place 40');
+});
+
+test('manual coordinates validate, save offline, show on the map and sync without place search', async ({
+  page,
+  context,
+}) => {
+  const server = await transport(context);
+  let searches = 0;
+  await context.route('**/api/places?*', async (route) => {
+    searches += 1;
+    await route.fulfill({ json: { places: [] } });
+  });
+  await context.route('https://tile.openstreetmap.org/**', (route) =>
+    route.abort(),
+  );
+  await ready(page);
+  await context.setOffline(true);
+  await page.getByRole('link', { name: '🌍 Offline list' }).click();
+  await page.getByRole('button', { name: 'openSlideOver' }).click();
+  await page.getByRole('button', { name: 'Task options' }).click();
+  await page.getByRole('button', { name: 'Add location', exact: true }).click();
+  let addon = page.getByRole('region', { name: 'Location add-on' });
+  await addon.getByRole('button', { name: 'Enter coordinates' }).click();
+  await addon
+    .getByRole('textbox', { name: 'Coordinates', exact: true })
+    .fill('95, -34.881');
+  await addon.getByRole('button', { name: 'Save coordinates' }).click();
+  await expect(addon.getByRole('alert')).toContainText('between');
+  await addon
+    .getByRole('textbox', { name: 'Coordinates', exact: true })
+    .fill('-8.063, -34.881');
+  await expect(
+    addon.getByText('Latitude -8.063 · Longitude -34.881'),
+  ).toBeVisible();
+  await addon.getByRole('button', { name: 'Save coordinates' }).click();
+  await expect(
+    addon.getByText('Lat -8.063000 · Long -34.881000'),
+  ).toBeVisible();
+  const location = {
+    name: 'Original task',
+    address: '',
+    latitude: -8.063,
+    longitude: -34.881,
+    source: 'manual',
+    placeId: 'manual',
+  };
+  await expect
+    .poll(
+      async () =>
+        ((await deviceState(page))?.tasks[0] as Task | undefined)?.location,
+    )
+    .toEqual(location);
+  expect(searches).toBe(0);
+  await page.reload();
+  await page.getByRole('button', { name: 'openSlideOver' }).click();
+  addon = page.getByRole('region', { name: 'Location add-on' });
+  await expect(
+    addon.getByText('Lat -8.063000 · Long -34.881000'),
+  ).toBeVisible();
+  await addon.getByRole('link', { name: 'See on Map' }).click();
+  await expect(
+    page.getByRole('region', { name: 'Map of task locations' }),
+  ).toBeVisible();
+  await expect(page.locator('.task-map-marker')).toHaveCount(1);
+  await expect(
+    page.getByRole('region', { name: 'Selected place' }),
+  ).toContainText('Original task');
+  await expect(
+    page.getByRole('region', { name: 'Selected place' }),
+  ).toContainText('Lat -8.063000 · Long -34.881000');
+  await expect(
+    page
+      .getByRole('region', { name: 'Selected place' })
+      .getByText('Original task', { exact: true }),
+  ).toHaveCount(1);
+  await context.setOffline(false);
+  await sync(page);
+  expect(server.snapshot.tasks[0]).toHaveProperty('location', location);
+});
+
+test('archived lists are accessible from the theme sidebar and remain read only offline', async ({
+  page,
+  context,
+}) => {
+  const server = await transport(context);
+  server.snapshot.lists.push({
+    ...server.snapshot.lists[0],
+    _id: '000000000000000000000900',
+    id: 'second',
+    title: 'Active list',
+    index: 1,
+  });
+  await ready(page);
+  await context.setOffline(true);
+  await page
+    .getByRole('button', { name: 'list-details', exact: true })
+    .first()
+    .click();
+  await page.getByRole('button', { name: 'Archive list', exact: true }).click();
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await expect(page.getByRole('link', { name: '🌍 Offline list' })).toHaveCount(
+    0,
+  );
+  await expect(
+    page.getByRole('link', { name: '🌍 Active list' }),
+  ).toBeVisible();
+  await page.getByRole('button', { name: 'user-settings-menu' }).click();
+  await page.getByRole('link', { name: 'Archived Lists', exact: true }).click();
+  await expect(page).toHaveURL('/archived');
+  await expect(
+    page.getByRole('heading', { name: 'Archived Lists' }),
+  ).toBeVisible();
+  await page.getByRole('link', { name: '🌍 Offline list' }).click();
+  await expect(page.getByText('Archived · Read only')).toBeVisible();
+  await expect(page.getByRole('textbox')).toHaveCount(0);
+  await expect(page.getByRole('button')).toHaveCount(0);
+  await page.getByText('Original task', { exact: true }).click();
+  await page.reload();
+  await expect(page.getByText('Archived · Read only')).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'completeTask', exact: true }),
+  ).toHaveCount(0);
+  await context.setOffline(false);
+  await sync(page);
+  expect(server.snapshot.lists[0]).toHaveProperty('archived', true);
+});
+
+test('drawers lock background scrolling, allow inner scrolling and restore the original position', async ({
+  page,
+  context,
+}) => {
+  await page.setViewportSize({ width: 390, height: 740 });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  const server = await transport(context);
+  server.snapshot.lists = Array.from({ length: 20 }, (_, index) => ({
+    ...server.snapshot.lists[0],
+    _id: (index + 600).toString(16).padStart(24, '0'),
+    title: `Scroll list ${index + 1}`,
+    index,
+  }));
+  await ready(page);
+  const button = page
+    .getByRole('button', { name: 'list-details', exact: true })
+    .nth(10);
+  await button.scrollIntoViewIfNeeded();
+  const before = await page.evaluate(() => window.scrollY);
+  expect(before).toBeGreaterThan(0);
+  await button.click();
+  await expect
+    .poll(() => page.evaluate(() => document.body.style.position))
+    .toBe('fixed');
+  const locked = await page.evaluate(() => document.body.style.top);
+  await page.mouse.move(5, 5);
+  await page.mouse.wheel(0, 500);
+  expect(await page.evaluate(() => document.body.style.top)).toBe(locked);
+  const drawer = page.getByRole('dialog', { name: 'Edit list' });
+  await drawer
+    .getByRole('button', { name: 'Archive list', exact: true })
+    .scrollIntoViewIfNeeded();
+  await expect(
+    drawer.getByRole('button', { name: 'Archive list', exact: true }),
+  ).toBeInViewport();
+  await page.getByRole('button', { name: 'Close panel', exact: true }).click();
+  await expect
+    .poll(() => page.evaluate(() => document.body.style.position))
+    .not.toBe('fixed');
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(before);
+  await page.getByRole('button', { name: 'user-settings-menu' }).click();
+  await expect
+    .poll(() => page.evaluate(() => document.body.style.position))
+    .toBe('fixed');
+  await page.getByRole('link', { name: 'Archived Lists', exact: true }).click();
+  await expect(page).toHaveURL('/archived');
+  await expect
+    .poll(() => page.evaluate(() => document.body.style.position))
+    .not.toBe('fixed');
 });

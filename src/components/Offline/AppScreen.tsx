@@ -8,6 +8,7 @@ import { useSlideOver } from '@/src/providers/slideover.provider';
 import { MapScreen } from '@/src/components/TaskMap/MapScreen';
 import { useOffline } from './OfflineProvider';
 import type { Task } from '@/types/main';
+import { ArchivedListsScreen } from './ArchivedListsScreen';
 import { TaskScreen } from './TaskScreen';
 
 export function AppScreen() {
@@ -25,7 +26,14 @@ export function AppScreen() {
     previousRoute.current = route;
     handleCloseSlideOver();
     handleClearSlideOverData();
-    if (pathname === '/tasks' && taskId) {
+    if (
+      pathname === '/tasks' &&
+      taskId &&
+      !(
+        account?.lists.find((list) => list._id === listId) as
+          import('@/types/main').List | undefined
+      )?.archived
+    ) {
       const task = account?.tasks.find(
         (task) =>
           task._id === taskId &&
@@ -43,6 +51,7 @@ export function AppScreen() {
     handleClearSlideOverData,
     openSlideOver,
   ]);
+  if (pathname === '/archived') return <ArchivedListsScreen />;
   if (pathname === '/tasks/map') return <MapScreen />;
   if (pathname === '/tasks' || pathname === '/timeline')
     return <TaskScreen timeline={pathname === '/timeline'} />;

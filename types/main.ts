@@ -25,6 +25,7 @@ export interface List {
   createdAt: string;
 
   type: ListType;
+  archived?: boolean;
 }
 
 export interface TaskLocation {
@@ -32,7 +33,7 @@ export interface TaskLocation {
   address: string;
   latitude: number;
   longitude: number;
-  source: 'openstreetmap';
+  source: 'openstreetmap' | 'manual';
   placeId: string;
 }
 

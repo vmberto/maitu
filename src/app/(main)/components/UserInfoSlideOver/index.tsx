@@ -4,10 +4,12 @@ import BarsIcon from '@heroicons/react/16/solid/Bars4Icon';
 import {
   ArrowRightOnRectangleIcon,
   UserCircleIcon,
+  ArchiveBoxIcon,
 } from '@heroicons/react/24/solid';
 import { useState } from 'react';
 
 import { useOffline } from '@/src/components/Offline/OfflineProvider';
+import { AppLink } from '@/src/components/Offline/AppLink';
 import { ThemeToggle } from '@/src/components/ThemeToggle';
 import { SlideOver } from '@/src/components/SlideOver/SlideOver';
 import type { UserObject } from '@/types/main';
@@ -51,6 +53,14 @@ export function UserInfoSlideOver({ user }: Props) {
 
           <div className="w-full space-y-3">
             <ThemeToggle />
+            <AppLink
+              href="/archived"
+              onClick={() => setOpen(false)}
+              className="rubber-button flex w-full items-center justify-center gap-2 px-4 py-2 text-gray-700"
+            >
+              <ArchiveBoxIcon className="size-5" />
+              Archived Lists
+            </AppLink>
             <button
               type="button"
               onClick={handleConfirmLogout}

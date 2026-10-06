@@ -39,6 +39,16 @@ export function enqueue(
     const entities = next[input.kind];
     const index = entities.findIndex((entity) => entity._id === input.entityId);
     const entity = entities[index];
+    const parent =
+      input.kind === 'lists'
+        ? entity
+        : next.lists.find(
+            (list) =>
+              list._id ===
+              String((entity as Task | undefined)?.listId ?? input.data.listId),
+          );
+    if ((parent as List | undefined)?.archived)
+      throw new Error('Archived lists are read only.');
     if (input.action !== 'create' && (!entity || entity.deleted))
       throw new Error('This item is no longer available.');
     const last = next.queue[next.queue.length - 1];
