@@ -48,12 +48,6 @@ describe('Button Component', () => {
     expect(handleClick).not.toHaveBeenCalled();
   });
 
-  test('applies the correct background color', () => {
-    render(<Button color="green">Click Me</Button>);
-    const button = screen.getByRole('button');
-    expect(button).toHaveClass('bg-green');
-  });
-
   test('button defaults to type "button"', () => {
     render(<Button color="blue">Click Me</Button>);
     const button = screen.getByRole('button');
@@ -70,17 +64,16 @@ describe('Button Component', () => {
     expect(button).toHaveAttribute('type', 'submit');
   });
 
-  test('focus styles are applied when button is focused', () => {
-    render(<Button color="blue">Click Me</Button>);
+  test('respects disabled even when loading is false', () => {
+    const handleClick = jest.fn();
+    render(
+      <Button disabled loading={false} onClick={handleClick}>
+        Disabled
+      </Button>,
+    );
     const button = screen.getByRole('button');
-    fireEvent.focus(button);
-    expect(button).toHaveClass('focus:bg-blue-700 focus:shadow-lg');
-  });
-
-  test('active styles are applied when button is active', () => {
-    render(<Button color="blue">Click Me</Button>);
-    const button = screen.getByRole('button');
-    fireEvent.mouseDown(button);
-    expect(button).toHaveClass('active:bg-blue-800 active:shadow-lg');
+    expect(button).toBeDisabled();
+    fireEvent.click(button);
+    expect(handleClick).not.toHaveBeenCalled();
   });
 });

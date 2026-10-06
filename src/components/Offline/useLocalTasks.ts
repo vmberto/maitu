@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useOffline } from './OfflineProvider';
 import { useSlideOver } from '@/src/providers/slideover.provider';
 import type { TextareaChangeEventHandler } from '@/types/events';
@@ -14,6 +14,31 @@ export function useLocalTasks(listId: string) {
   const [newTask, setNewTask] = useState<Task>({ title: '' } as Task);
   const [loadingAction, setLoadingAction] = useState(false);
   const creating = useRef(false);
+  const completionScopeAlive = useRef(true);
+  const completionTimers = useRef(
+    new Map<string, ReturnType<typeof setTimeout>>(),
+  );
+  const [pendingCompletionIds, setPendingCompletionIds] = useState(
+    new Set<string>(),
+  );
+  useEffect(() => {
+    completionScopeAlive.current = true;
+    const timers = completionTimers.current;
+    return () => {
+      completionScopeAlive.current = false;
+      timers.forEach(clearTimeout);
+      timers.clear();
+    };
+  }, []);
+  function clearCompletionGrace(id: string) {
+    clearTimeout(completionTimers.current.get(id));
+    completionTimers.current.delete(id);
+    setPendingCompletionIds((previous) => {
+      const next = new Set(previous);
+      next.delete(id);
+      return next;
+    });
+  }
   const selectedList =
     (account?.lists.find(
       (list) => list._id === listId && !list.deleted,
@@ -50,6 +75,7 @@ export function useLocalTasks(listId: string) {
     newTask,
     loadingAction,
     fetchingSubtasks: false,
+    pendingCompletionIds,
     handleInputFocus: (task: Task) => async () => {
       setCurrentTask(task);
     },
@@ -80,19 +106,41 @@ export function useLocalTasks(listId: string) {
       }
     },
     handleCompleteTask: async (task: Task) => {
-      if (task._id)
-        await update('tasks', task._id.toString(), {
-          complete: !task.complete,
-          completedAt: !task.complete ? new Date().toISOString() : null,
+      if (!task._id) return;
+      const id = task._id.toString();
+      if (task.complete) {
+        await update('tasks', id, { complete: false, completedAt: null });
+        clearCompletionGrace(id);
+        return;
+      }
+      // Save completion immediately; delay only the visual move so reloads never lose it.
+      setPendingCompletionIds((previous) => new Set(previous).add(id));
+      try {
+        await update('tasks', id, {
+          complete: true,
+          completedAt: new Date().toISOString(),
         });
+        if (!completionScopeAlive.current) return;
+        clearTimeout(completionTimers.current.get(id));
+        completionTimers.current.set(
+          id,
+          setTimeout(() => clearCompletionGrace(id), 3000),
+        );
+      } catch (error) {
+        clearCompletionGrace(id);
+        throw error;
+      }
     },
     handleCloneTask: async () => {
       if (!modalData) return;
       setLoadingAction(true);
       try {
+        const source =
+          allTasks.find((task) => String(task._id) === String(modalData._id)) ??
+          modalData;
         const cloned = await add('tasks', {
-          ...modalData,
-          title: `${modalData.title} (Clone)`,
+          ...source,
+          title: `${source.title} (Clone)`,
           complete: false,
           completedAt: undefined,
           createdAt: new Date().toISOString(),

@@ -8,7 +8,7 @@ export const SubTasksWrapper = () => {
   const { subtasks, fetchingSubtasks } = useTasks();
 
   return (
-    <section className="relative h-fit rounded-2xl bg-gray-100 p-4">
+    <section className="drawer-section relative h-fit">
       <div className="flex items-center">
         <Typography as="h1">Subtasks</Typography>
         {subtasks.length > 0 && (
@@ -19,13 +19,17 @@ export const SubTasksWrapper = () => {
       </div>
 
       {subtasks.map((task) => (
-        <TaskInput key={`${task._id}-${task.createdAt}`} taskData={task} />
+        <TaskInput
+          key={`${task._id}-${task.createdAt}`}
+          taskData={task}
+          outlined
+        />
       ))}
 
       {fetchingSubtasks &&
         [1, 2, 3, 4].map((skeleton) => <TaskSkeleton key={skeleton} />)}
 
-      {!fetchingSubtasks && <NewTaskInput />}
+      {!fetchingSubtasks && <NewTaskInput outlined />}
     </section>
   );
 };

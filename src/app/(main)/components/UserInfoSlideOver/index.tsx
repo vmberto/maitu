@@ -18,7 +18,7 @@ type Props = {
 
 export function UserInfoSlideOver({ user }: Props) {
   const [open, setOpen] = useState(false);
-  const { signOut, syncNow, exportData, status, account } = useOffline();
+  const { signOut } = useOffline();
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -33,10 +33,10 @@ export function UserInfoSlideOver({ user }: Props) {
       <button
         type="button"
         aria-label="user-settings-menu"
-        className="ml-auto rounded-full p-2 text-primary transition hover:bg-gray-200"
+        className="rubber-button rubber-icon ml-auto shrink-0 rounded-full p-2 text-primary transition hover:bg-gray-200"
         onClick={handleOpen}
       >
-        <BarsIcon aria-label="menu" className="size-6" />
+        <BarsIcon aria-hidden="true" className="size-6" />
       </button>
 
       <SlideOver open={open} onClose={handleClose} direction="right">
@@ -49,35 +49,12 @@ export function UserInfoSlideOver({ user }: Props) {
             <p className="text-sm text-gray-500">{user.email}</p>
           </div>
 
-          <section className="w-full space-y-3" aria-label="Sync settings">
-            <p className="text-sm text-gray-600">
-              {status}
-              {account?.queue.length
-                ? ` (${account.queue.length} pending)`
-                : ''}
-            </p>
-            <div className="flex flex-wrap gap-4">
-              <button
-                type="button"
-                onClick={() => {
-                  void syncNow();
-                }}
-                className="underline"
-              >
-                Sync now
-              </button>
-              <button type="button" onClick={exportData} className="underline">
-                Export device backup
-              </button>
-            </div>
-          </section>
-
           <div className="w-full space-y-3">
             <ThemeToggle />
             <button
               type="button"
               onClick={handleConfirmLogout}
-              className="flex w-full items-center justify-center space-x-2 rounded-md border border-gray-300 bg-surface px-4 py-2
+              className="rubber-button flex w-full items-center justify-center space-x-2 rounded-md border border-gray-300 bg-surface px-4 py-2
                          text-gray-700 transition hover:bg-gray-50"
             >
               <ArrowRightOnRectangleIcon className="size-5" />

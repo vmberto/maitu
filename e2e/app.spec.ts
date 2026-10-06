@@ -38,8 +38,8 @@ test.describe('App Login and List Creation Flow', () => {
     const titleInput = page.locator('input[value=""][maxlength="30"]');
     await titleInput.fill(listTitle);
 
-    const picker = page.locator('.EmojiPickerReact');
-    await picker.locator('button[aria-label="earth africa"]').click();
+    const picker = page.getByRole('region', { name: 'Choose list emoji' });
+    await picker.getByRole('button', { name: 'earth africa' }).click();
 
     await page.click('button[type="submit"]:has-text("Submit")');
 

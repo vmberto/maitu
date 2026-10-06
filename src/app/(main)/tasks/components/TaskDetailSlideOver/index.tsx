@@ -1,17 +1,21 @@
 'use client';
 
-import { ArrowPathIcon } from '@heroicons/react/24/outline';
+import {
+  ArrowPathIcon,
+  MapPinIcon,
+  Square2StackIcon,
+} from '@heroicons/react/24/outline';
 import { ChevronDownIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
 import React, { useState } from 'react';
 
 import { DescriptionSection } from '@/src/app/(main)/tasks/components/TaskDetailSlideOver/components/DescriptionSection';
 import { TaskDetailTitle } from '@/src/app/(main)/tasks/components/TaskDetailSlideOver/components/TaskDetailTitle';
 import { SubTasksWrapper } from '@/src/app/(main)/tasks/components/TaskDetailSlideOver/Subtasks/SubTasksWrapper';
+import { LocationAddon } from './LocationAddon';
 import { TagsWrapper } from '@/src/app/(main)/tasks/components/TaskDetailSlideOver/Tags/TagsWrapper';
 import { useTasks } from '@/src/app/(main)/tasks/state/provider';
 import { useOffline } from '@/src/components/Offline/OfflineProvider';
 import { SlideOver } from '@/src/components/SlideOver/SlideOver';
-import { HexColors } from '@/src/lib/colors';
 import { useSlideOver } from '@/src/providers/slideover.provider';
 import type { Task } from '@/types/main';
 
@@ -30,6 +34,21 @@ export const TaskDetailSlideOver = () => {
     (task) => task._id === selectedTask?._id,
   ) as Task | undefined;
 
+  const hasLocation =
+    !!taskData &&
+    (!!taskData.location || taskData.addons?.includes('location'));
+  const [addonError, setAddonError] = useState('');
+
+  async function addLocation() {
+    if (!taskData) return;
+    setAddonError('');
+    try {
+      await handleUpdateTask({ _id: taskData._id, addons: ['location'] })();
+    } catch {
+      setAddonError('Could not add Location on this device. Please try again.');
+    }
+  }
+
   return (
     <SlideOver
       title={
@@ -38,58 +57,91 @@ export const TaskDetailSlideOver = () => {
       open={isOpen}
       onClose={handleCloseSlideOver}
     >
-      <div className="flex h-full flex-col gap-4">
+      <div className="task-drawer flex h-full flex-col gap-3">
         {taskData && (
           <DescriptionSection
-            key={taskData._id?.toString()}
+            key={`description:${taskData._id}`}
             taskData={taskData}
             updateTaskData={handleUpdateTask}
           />
         )}
         <SubTasksWrapper />
         {taskData && (
-          <TagsWrapper listColor={selectedList?.color} taskData={taskData} />
+          <TagsWrapper
+            key={`tags:${taskData._id}`}
+            listColor={selectedList?.color}
+            taskData={taskData}
+          />
+        )}
+        {taskData && hasLocation && (
+          <LocationAddon key={`location:${taskData._id}`} task={taskData} />
         )}
         <div className="mt-auto text-center">
           <button
             type="button"
-            className="text-gray-400"
+            className="rubber-button text-sm text-gray-600 hover:text-gray-900"
+            aria-expanded={showTaskSettings}
+            aria-controls="task-options"
             onClick={() => setShowTaskSettings(!showTaskSettings)}
           >
-            Task Settings{' '}
-            <ChevronDownIcon className="mb-1 mr-1 inline size-6" />
+            Task options{' '}
+            <ChevronDownIcon
+              className={`mb-1 mr-1 inline size-6 transition-transform duration-200 motion-reduce:transition-none ${showTaskSettings ? 'rotate-180' : ''}`}
+            />
           </button>
         </div>
 
-        {showTaskSettings && (
-          <section className="rounded-2xl bg-gray-100">
-            <ul>
-              <li>
-                <button
-                  type="button"
-                  onClick={handleCloneTask}
-                  className="flex w-full rounded-2xl p-3 font-semibold hover:bg-gray-200"
-                >
-                  Clone Task
-                  <span className="ml-auto">
-                    {!loadingAction && (
-                      <ChevronRightIcon
-                        className="mb-1 mr-1 inline size-6"
-                        color={HexColors.get(selectedList?.color)}
-                      />
-                    )}
-                    {loadingAction && (
-                      <ArrowPathIcon
-                        className="mr-3 size-7 animate-spin"
-                        color={HexColors.get(selectedList?.color)}
-                      />
-                    )}
-                  </span>
-                </button>
-              </li>
-            </ul>
-          </section>
-        )}
+        <div
+          className="drawer-expandable"
+          data-open={showTaskSettings}
+          aria-hidden={!showTaskSettings}
+          inert={!showTaskSettings}
+        >
+          <div className="overflow-hidden">
+            <section
+              id="task-options"
+              className="drawer-section"
+              aria-label="Task options"
+            >
+              <h2 className="mb-2 text-xs font-medium text-gray-500">
+                Actions
+              </h2>
+              <button
+                type="button"
+                disabled={loadingAction}
+                aria-busy={loadingAction || undefined}
+                onClick={handleCloneTask}
+                className="rubber-button rubber-row flex w-full items-center gap-3 px-3 py-3 text-left text-sm font-medium text-gray-900"
+              >
+                <Square2StackIcon className="size-5 shrink-0 text-gray-500" />
+                <span>Clone Task</span>
+                {loadingAction ? (
+                  <ArrowPathIcon className="ml-auto size-5 animate-spin motion-reduce:animate-none" />
+                ) : (
+                  <ChevronRightIcon className="ml-auto size-5 text-gray-500" />
+                )}
+              </button>
+              <h2 className="mb-2 mt-5 text-xs font-medium text-gray-500">
+                Add-ons
+              </h2>
+              <button
+                type="button"
+                disabled={hasLocation}
+                onClick={() => void addLocation()}
+                className="rubber-button rubber-row flex w-full items-center gap-3 px-3 py-3 text-left text-sm font-medium text-gray-900"
+              >
+                <MapPinIcon className="size-5 shrink-0 text-gray-500" />
+                <span>{hasLocation ? 'Location added' : 'Add location'}</span>
+                <ChevronRightIcon className="ml-auto size-5 text-gray-500" />
+              </button>
+              {addonError && (
+                <p role="alert" className="mt-2 text-sm text-danger">
+                  {addonError}
+                </p>
+              )}
+            </section>
+          </div>
+        </div>
       </div>
     </SlideOver>
   );

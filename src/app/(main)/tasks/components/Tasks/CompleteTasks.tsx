@@ -1,25 +1,31 @@
 'use client';
 
 import { useMemo } from 'react';
+import { useScrollBatch } from '@/src/components/ScrollBatch';
 
 import { TaskInput } from '@/src/app/(main)/tasks/components/Tasks/TaskInput';
 import { useTasks } from '@/src/app/(main)/tasks/state/provider';
 import { Typography } from '@/src/components/Typography/Typography';
 
 export const CompleteTasks = () => {
-  const { tasks } = useTasks();
+  const { tasks, pendingCompletionIds } = useTasks();
 
   const completeTasks = useMemo(
     () =>
       tasks
-        .filter((t) => t.completedAt)
+        .filter(
+          (t) =>
+            t.completedAt && !pendingCompletionIds.has(t._id?.toString() ?? ''),
+        )
         .sort(
           (a, b) =>
             new Date(b?.completedAt || '').getTime() -
             new Date(a?.completedAt || '').getTime(),
         ),
-    [tasks],
+    [tasks, pendingCompletionIds],
   );
+
+  const { visibleCount, loader } = useScrollBatch(completeTasks.length);
 
   if (!completeTasks.length) {
     return null;
@@ -34,9 +40,10 @@ export const CompleteTasks = () => {
         </span>
       </div>
       <div id="Tasks">
-        {completeTasks.map((t) => (
+        {completeTasks.slice(0, visibleCount).map((t) => (
           <TaskInput key={t._id?.toString()} taskData={t} disabled />
         ))}
+        {loader}
       </div>
     </div>
   );

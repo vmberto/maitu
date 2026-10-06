@@ -10,21 +10,23 @@ import type { InputChangeEventHandler } from '@/types/events';
 import type { List } from '@/types/main';
 
 export const ListDetailSlideOver = () => {
-  const { modalData: list } = useSlideOver<List>();
-  return <ListDetailForm key={list?._id} />;
-};
-
-const ListDetailForm = () => {
-  const { handleUpdateList } = useLists();
   const {
     modalData: list,
     isOpen,
     handleCloseSlideOver,
   } = useSlideOver<List>();
+  return (
+    <SlideOver title="Edit list" open={isOpen} onClose={handleCloseSlideOver}>
+      {list && <ListDetailForm key={list._id} list={list} />}
+    </SlideOver>
+  );
+};
 
+const ListDetailForm = ({ list }: { list: List }) => {
+  const { handleUpdateList } = useLists();
   const [emoji, setEmoji] = useState(list?.emoji);
   const [color, setColor] = useState(list?.color);
-  const [listTitle, setListTitle] = useState(list?.title);
+  const [listTitle, setListTitle] = useState(list?.title ?? '');
 
   const handleInputChange = (e: InputChangeEventHandler) => {
     const { value } = e.target;
@@ -38,26 +40,21 @@ const ListDetailForm = () => {
   };
 
   return (
-    <SlideOver
-      title={
+    <div className="flex flex-col gap-4">
+      <section className="drawer-section">
+        <label htmlFor="title-input" className="mb-2 block text-sm font-medium">
+          List name
+        </label>
         <input
           id="title-input"
+          aria-label="List name"
           maxLength={30}
-          value={listTitle}
-          className="w-full leading-7 focus:outline-0"
+          value={listTitle ?? ''}
+          className="drawer-input"
           onChange={handleInputChange}
-          onBlur={() => updateList({ title: listTitle })}
-          onKeyDown={async (e) => {
-            if (e.key === 'Enter') {
-              await updateList({ title: listTitle });
-            }
-          }}
         />
-      }
-      open={isOpen}
-      onClose={handleCloseSlideOver}
-    >
-      <div className="flex flex-col gap-3">
+      </section>
+      <section className="drawer-section">
         <ColorPicker
           color={color}
           setColor={async (newColor) => {
@@ -65,17 +62,16 @@ const ListDetailForm = () => {
             await updateList({ color: newColor });
           }}
         />
+      </section>
+      <EmojiPickerComponent
+        emoji={emoji || ''}
+        setEmoji={async (e) => {
+          setEmoji(e);
+          await updateList({ emoji: e });
+        }}
+      />
 
-        <EmojiPickerComponent
-          emoji={emoji || ''}
-          setEmoji={async (e) => {
-            setEmoji(e);
-            await updateList({ emoji: e });
-          }}
-        />
-
-        <DeleteList listTitle={listTitle || ''} id={list?._id} />
-      </div>
-    </SlideOver>
+      <DeleteList listTitle={listTitle || ''} id={list?._id} />
+    </div>
   );
 };

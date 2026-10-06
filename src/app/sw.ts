@@ -19,7 +19,9 @@ const serwist: Serwist = new Serwist({
       matcher: ({ request, url }) =>
         request.mode === 'navigate' &&
         url.origin === self.location.origin &&
-        ['/', '/tasks', '/timeline', '/login'].includes(url.pathname),
+        ['/', '/tasks', '/timeline', '/tasks/map', '/login'].includes(
+          url.pathname,
+        ),
       handler: async ({ url }): Promise<Response> =>
         (await serwist.matchPrecache(url.pathname)) ?? fetch(url),
     },

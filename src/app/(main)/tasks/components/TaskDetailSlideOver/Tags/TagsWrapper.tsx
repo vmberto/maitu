@@ -39,7 +39,10 @@ export const TagsWrapper = ({ listColor, taskData }: TagsProps) => {
   };
 
   return (
-    <section className="flex h-fit flex-wrap gap-1 rounded-2xl bg-gray-100 p-4">
+    <section className="drawer-section flex h-fit flex-wrap gap-2">
+      <label htmlFor="task-tag" className="mb-1 w-full text-sm font-medium">
+        Tags
+      </label>
       {tagList.map((tag) => (
         <div
           key={tag}
@@ -49,7 +52,7 @@ export const TagsWrapper = ({ listColor, taskData }: TagsProps) => {
           {tag}
           <button
             type="button"
-            className="ml-2 self-center rounded-md text-gray-600 hover:text-gray-400
+            className="rubber-button rubber-icon rubber-quiet ml-2 self-center rounded-md text-gray-600 hover:text-gray-400
             focus:outline-none focus:ring-2 focus:ring-white"
             onClick={() => handleDeleteTag(tag)}
           >
@@ -59,10 +62,10 @@ export const TagsWrapper = ({ listColor, taskData }: TagsProps) => {
         </div>
       ))}
       <input
+        id="task-tag"
         maxLength={20}
         placeholder="Include new Tag"
-        className="z-10 appearance-none overflow-hidden
-                    bg-transparent px-2 text-base outline-0 focus:outline-none"
+        className="drawer-input"
         onChange={(e) => setTagInput(e.target.value)}
         value={tagInput}
         onKeyDown={pressEnterToAddTag}

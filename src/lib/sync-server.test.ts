@@ -157,3 +157,53 @@ it('validates IDs, tags, completion values, and colors at the trust boundary', (
     expect(() => validateData('tasks', data, false)).toThrow();
   expect(() => validateData('lists', { color: 'unknown' }, false)).toThrow();
 });
+
+it('validates structured locations while preserving legacy text and allowing removal', () => {
+  const location = {
+    name: 'Restaurant X',
+    address: 'Recife, Brazil',
+    latitude: -8.063,
+    longitude: -34.881,
+    source: 'openstreetmap',
+    placeId: 'N123',
+  };
+  expect(
+    validateData(
+      'tasks',
+      { location: { ...location, owner: 'ignored' } },
+      false,
+    ),
+  ).toEqual({ location });
+  expect(validateData('tasks', { location: null }, false)).toEqual({
+    location: null,
+  });
+  expect(validateData('tasks', { location: 'Legacy address' }, false)).toEqual({
+    location: 'Legacy address',
+  });
+  for (const patch of [
+    { latitude: 91 },
+    { longitude: -181 },
+    { latitude: NaN },
+    { longitude: Infinity },
+    { latitude: '8' },
+    { name: '' },
+    { address: 'x'.repeat(1001) },
+    { source: 'unknown' },
+    { placeId: 'bad' },
+  ]) {
+    expect(() =>
+      validateData('tasks', { location: { ...location, ...patch } }, false),
+    ).toThrow('Invalid location');
+  }
+});
+
+it('persists only supported add-ons and allows removing them', () => {
+  expect(validateData('tasks', { addons: ['location'] }, false)).toEqual({
+    addons: ['location'],
+  });
+  expect(validateData('tasks', { addons: [] }, false)).toEqual({ addons: [] });
+  for (const addons of ['location', ['unknown'], ['location', 'location']])
+    expect(() => validateData('tasks', { addons }, false)).toThrow(
+      'Invalid add-ons',
+    );
+});

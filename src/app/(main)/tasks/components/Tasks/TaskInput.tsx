@@ -1,8 +1,13 @@
 'use client';
 
 import { Menu, MenuButton } from '@headlessui/react';
-import { EllipsisHorizontalCircleIcon } from '@heroicons/react/24/outline';
+import {
+  EllipsisHorizontalCircleIcon,
+  MapIcon,
+} from '@heroicons/react/24/outline';
 import { useEffect, useRef } from 'react';
+import { AppLink } from '@/src/components/Offline/AppLink';
+import { normalizeLocation } from '@/src/lib/location';
 
 import { useTasks } from '@/src/app/(main)/tasks/state/provider';
 import { BackgroundColors, BorderColors } from '@/src/lib/colors';
@@ -14,9 +19,14 @@ import { type Task } from '@/types/main';
 export type TaskInputComponentProps = {
   taskData: Task;
   disabled?: boolean;
+  outlined?: boolean;
 };
 
-export const TaskInput = ({ taskData, disabled }: TaskInputComponentProps) => {
+export const TaskInput = ({
+  taskData,
+  disabled,
+  outlined = false,
+}: TaskInputComponentProps) => {
   const textareaRef = useRef({} as HTMLTextAreaElement);
   const { handleOpenSlideOver } = useSlideOver();
 
@@ -26,6 +36,7 @@ export const TaskInput = ({ taskData, disabled }: TaskInputComponentProps) => {
     handleCompleteTask,
     handleChangeExistingTask,
     selectedList,
+    pendingCompletionIds,
   } = useTasks();
 
   useEffect(() => {
@@ -36,7 +47,7 @@ export const TaskInput = ({ taskData, disabled }: TaskInputComponentProps) => {
 
   const handleClickCompleteTask = async (e: GenericEvent) => {
     e.stopPropagation();
-    if (taskData && !taskData.completedAt && handleCompleteTask) {
+    if (taskData && handleCompleteTask) {
       await handleCompleteTask(taskData);
     }
   };
@@ -46,8 +57,10 @@ export const TaskInput = ({ taskData, disabled }: TaskInputComponentProps) => {
       <button
         type="button"
         aria-label="completeTask"
+        aria-pressed={taskData.complete}
+        title={taskData.complete ? 'Mark as incomplete' : 'Complete task'}
         onClick={handleClickCompleteTask}
-        className={`${BorderColors.get(selectedList.color)} relative mr-2
+        className={`rubber-touch ${BorderColors.get(selectedList.color)} relative mr-2
         cursor-pointer items-center self-start rounded-full
           border-2 p-3.5 font-semibold transition-all`}
       >
@@ -58,10 +71,12 @@ export const TaskInput = ({ taskData, disabled }: TaskInputComponentProps) => {
         )}
       </button>
 
-      <div className="relative z-10 flex h-fit w-full flex-col gap-1 overflow-hidden px-2">
+      <div
+        className={`relative z-10 flex h-fit w-full flex-col gap-1 overflow-hidden ${outlined ? 'px-0' : 'px-2'}`}
+      >
         <textarea
           ref={textareaRef}
-          className="w-full resize-none bg-transparent text-base outline-0 focus:outline-none"
+          className={`${outlined ? 'drawer-input' : 'w-full bg-transparent outline-0 focus:outline-none'} resize-none text-base`}
           value={taskData.title}
           onClick={stopPropagationFn}
           onFocus={handleInputFocus(taskData)}
@@ -69,6 +84,10 @@ export const TaskInput = ({ taskData, disabled }: TaskInputComponentProps) => {
           onChange={handleChangeExistingTask}
           disabled={disabled}
         />
+        {pendingCompletionIds.has(taskData._id?.toString() ?? '') &&
+          taskData.complete && (
+            <span className="text-xs text-gray-600">Click again to undo</span>
+          )}
         {taskData.tags && (
           <div className="flex flex-wrap gap-1">
             {taskData.tags.map((tag) => (
@@ -85,17 +104,29 @@ export const TaskInput = ({ taskData, disabled }: TaskInputComponentProps) => {
       </div>
 
       {taskData?._id && !taskData?.parentTaskId && (
-        <Menu as="div" className="relative inline-block self-start text-left">
-          <MenuButton
-            aria-label="openSlideOver"
-            onClick={handleOpenSlideOver(taskData)}
-            className="inline-flex w-full justify-center
+        <div className="flex shrink-0 items-center gap-2 self-start">
+          {normalizeLocation(taskData.location) && (
+            <AppLink
+              href={`/tasks/map?listId=${encodeURIComponent(String(taskData.listId))}&taskId=${encodeURIComponent(String(taskData._id))}`}
+              aria-label={`See ${taskData.title} on map`}
+              title="See on map"
+              className="rubber-touch flex w-fit items-center rounded text-gray-400 hover:text-gray-600 focus-visible:outline-primary"
+            >
+              <MapIcon aria-hidden="true" className="size-3" />
+            </AppLink>
+          )}
+          <Menu as="div" className="relative inline-block self-start text-left">
+            <MenuButton
+              aria-label="openSlideOver"
+              onClick={handleOpenSlideOver(taskData)}
+              className="rubber-button rubber-icon inline-flex w-full justify-center
                 rounded-full p-1 text-sm font-medium text-gray-700
                 focus:ring-offset-2 focus:ring-offset-gray-200 betterhover:hover:bg-gray-200"
-          >
-            <EllipsisHorizontalCircleIcon className="size-6" />
-          </MenuButton>
-        </Menu>
+            >
+              <EllipsisHorizontalCircleIcon className="size-6" />
+            </MenuButton>
+          </Menu>
+        </div>
       )}
     </div>
   );

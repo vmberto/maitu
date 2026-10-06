@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { Colors } from '@/src/components/ColorPicker/ColorPicker';
-import { ListType } from '@/types/main';
+import { ListType, type Task } from '@/types/main';
 import type { Entity } from '@/src/lib/offline/model';
 import type { LocalAccount } from '@/src/lib/offline/model';
 import type { BrowserContext, Page } from '@playwright/test';
@@ -622,14 +622,16 @@ test('background sync stays quiet, preserves todo order, and flushes edits made 
     page.getByRole('button', { name: 'Sync now', exact: true }),
   ).toHaveCount(0);
   await page.getByLabel('user-settings-menu').click();
-  const settings = page.getByRole('region', { name: 'Sync settings' });
-  await expect(settings.getByText('All changes synced.')).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Sync settings' })).toHaveCount(
+    0,
+  );
   await expect(
-    settings.getByRole('button', { name: 'Sync now', exact: true }),
-  ).toBeVisible();
+    page.getByRole('button', { name: 'Sync now', exact: true }),
+  ).toHaveCount(0);
   await expect(
-    settings.getByRole('button', { name: 'Export device backup' }),
-  ).toBeVisible();
+    page.getByRole('button', { name: 'Export device backup' }),
+  ).toHaveCount(0);
+  await expect(page.getByRole('switch', { name: 'Dark Mode' })).toBeVisible();
 });
 
 test('dark mode persists across offline navigation and logout, and can be switched back', async ({
@@ -823,4 +825,674 @@ test('an extension-added body attribute does not trigger a hydration warning', a
     page.getByRole('heading', { name: 'Offline list' }),
   ).toBeVisible();
   expect(errors).toEqual([]);
+});
+
+test('completion gives a durable undo window before moving the row, and remains reversible later', async ({
+  page,
+  context,
+}) => {
+  await transport(context);
+  await ready(page);
+  await context.setOffline(true);
+  await page.getByRole('link', { name: '🌍 Offline list' }).click();
+  const complete = page.getByRole('button', {
+    name: 'completeTask',
+    exact: true,
+  });
+  await complete.click();
+  await expect(complete).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByText('Click again to undo')).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'Complete Tasks' }),
+  ).toHaveCount(0);
+  await expect
+    .poll(async () =>
+      (await deviceState(page))?.tasks.some(
+        (task) => task._id === taskId && 'complete' in task && task.complete,
+      ),
+    )
+    .toBe(true);
+  await complete.click();
+  await expect(complete).toHaveAttribute('aria-pressed', 'false');
+  await expect(page.getByText('Click again to undo')).toHaveCount(0);
+  await page.reload();
+  await expect(complete).toHaveAttribute('aria-pressed', 'false');
+  await complete.click();
+  await expect(page.getByText('Click again to undo')).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'Complete Tasks' }),
+  ).toBeVisible({ timeout: 5000 });
+  await complete.click();
+  await expect(
+    page.getByRole('heading', { name: 'Complete Tasks' }),
+  ).toHaveCount(0);
+  await expect(complete).toHaveAttribute('aria-pressed', 'false');
+});
+
+test('headers share their dimensions and list drawers slide with readable fields in dark mode', async ({
+  page,
+  context,
+}) => {
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await transport(context);
+  await ready(page);
+  const homeHeight = await page
+    .locator('header')
+    .evaluate((node) => node.getBoundingClientRect().height);
+  expect(homeHeight).toBe(48);
+  expect(
+    await page
+      .locator('header')
+      .evaluate((node) => getComputedStyle(node).backgroundImage),
+  ).toBe('none');
+  await page.getByRole('button', { name: 'list-details', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: 'Edit list' });
+  const panel = dialog.locator('[data-drawer-panel]');
+  await expect
+    .poll(() =>
+      panel.evaluate((node) =>
+        node
+          .getAnimations()
+          .some(
+            (animation) =>
+              Number(animation.effect?.getComputedTiming().duration) > 0,
+          ),
+      ),
+    )
+    .toBe(true);
+  const input = dialog.getByRole('textbox', { name: 'List name' });
+  await expect(input).toHaveValue('Offline list');
+  await input.fill('Renamed list');
+  expect(
+    await input.evaluate((node) => getComputedStyle(node).backgroundColor),
+  ).toBe('rgb(3, 7, 18)');
+  expect(
+    await dialog
+      .locator('.drawer-section')
+      .first()
+      .evaluate((node) => getComputedStyle(node).backgroundColor),
+  ).toBe('rgb(31, 41, 55)');
+  await expect
+    .poll(async () => (await deviceState(page))?.lists[0].title)
+    .toBe('Renamed list');
+  await expect
+    .poll(() => panel.evaluate((node) => node.getAnimations().length))
+    .toBe(0);
+  await page.screenshot({
+    path: test.info().outputPath('dark-list-drawer.png'),
+  });
+  await page.getByRole('button', { name: 'Close panel', exact: true }).click();
+  await page.getByRole('link', { name: '🌍 Renamed list' }).click();
+  expect(
+    await page
+      .locator('header')
+      .evaluate((node) => node.getBoundingClientRect().height),
+  ).toBe(homeHeight);
+  await page.getByRole('button', { name: 'openSlideOver' }).click();
+  const taskDialog = page.getByRole('dialog');
+  await expect
+    .poll(() =>
+      taskDialog
+        .locator('[data-drawer-panel]')
+        .evaluate((node) =>
+          node
+            .getAnimations()
+            .some(
+              (animation) =>
+                Number(animation.effect?.getComputedTiming().duration) > 0,
+            ),
+        ),
+    )
+    .toBe(true);
+  await expect(
+    taskDialog.getByRole('textbox', { name: 'Description' }),
+  ).toBeVisible();
+  const sections = await taskDialog
+    .locator('.drawer-section')
+    .evaluateAll((nodes) =>
+      nodes.map((node) => ({
+        background: getComputedStyle(node).backgroundColor,
+        border: getComputedStyle(node).borderTopWidth,
+      })),
+    );
+  expect(sections.length).toBeGreaterThanOrEqual(3);
+  expect(
+    sections.every(
+      (section) =>
+        section.background === 'rgb(31, 41, 55)' && section.border === '0px',
+    ),
+  ).toBe(true);
+  await expect
+    .poll(() =>
+      taskDialog
+        .locator('[data-drawer-panel]')
+        .evaluate((node) => node.getAnimations().length),
+    )
+    .toBe(0);
+  await page.screenshot({
+    path: test.info().outputPath('dark-task-drawer.png'),
+  });
+});
+
+test('all lists remain visible without search or pagination', async ({
+  page,
+  context,
+}) => {
+  const server = await transport(context);
+  server.snapshot.lists = Array.from({ length: 30 }, (_, index) => ({
+    ...server.snapshot.lists[0],
+    _id: (index + 100).toString(16).padStart(24, '0'),
+    id: String(index),
+    title: `List ${index + 1}`,
+    index,
+  }));
+  await ready(page);
+  const cards = page.locator('a[href^="/tasks?listId="]');
+  await expect(cards).toHaveCount(30);
+  await expect(page.getByRole('searchbox')).toHaveCount(0);
+  await context.setOffline(true);
+  await page.getByRole('link', { name: '🌍 List 30' }).click();
+  await expect(page.getByRole('heading', { name: 'List 30' })).toBeVisible();
+});
+
+test('the native emoji picker fits a narrow mobile drawer', async ({
+  page,
+  context,
+}) => {
+  await page.setViewportSize({ width: 320, height: 740 });
+  await page.emulateMedia({ colorScheme: 'dark', reducedMotion: 'reduce' });
+  await transport(context);
+  await ready(page);
+  await page.getByRole('button', { name: 'list-details', exact: true }).click();
+  const picker = page.getByRole('region', { name: 'Choose list emoji' });
+  await expect(
+    picker.getByRole('button', { name: 'earth africa' }),
+  ).toBeInViewport();
+  const fits = await picker.locator('.grid').evaluate((grid) => {
+    const bounds = grid.getBoundingClientRect();
+    return Array.from(grid.children).every((button) => {
+      const rect = button.getBoundingClientRect();
+      return rect.left >= bounds.left - 1 && rect.right <= bounds.right + 1;
+    });
+  });
+  expect(fits).toBe(true);
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth,
+    ),
+  ).toBe(true);
+});
+
+test('tasks reveal cached batches on scroll while offline', async ({
+  page,
+  context,
+}) => {
+  const server = await transport(context);
+  server.snapshot.tasks = Array.from({ length: 65 }, (_, index) => ({
+    ...server.snapshot.tasks[0],
+    _id: (index + 200).toString(16).padStart(24, '0'),
+    title: `Cached task ${index + 1}`,
+  }));
+  server.snapshot.tasks.push(
+    ...Array.from({ length: 45 }, (_, index) => ({
+      ...server.snapshot.tasks[0],
+      _id: (index + 400).toString(16).padStart(24, '0'),
+      title: `Finished task ${index + 1}`,
+      complete: true,
+      completedAt: '2026-01-01T00:00:00.000Z',
+    })),
+  );
+  await ready(page);
+  await page.getByRole('link', { name: '🌍 Offline list' }).click();
+  await expect(
+    page.locator('textarea').filter({ hasText: 'Cached task 20' }),
+  ).toBeVisible();
+  await expect(
+    page.locator('textarea').filter({ hasText: 'Cached task 21' }),
+  ).toHaveCount(0);
+  await context.setOffline(true);
+  for (const count of [40, 60, 65]) {
+    await page
+      .getByRole('button', { name: 'More tasks' })
+      .first()
+      .scrollIntoViewIfNeeded();
+    await expect(
+      page.locator(`textarea`).filter({ hasText: `Cached task ${count}` }),
+    ).toHaveCount(1);
+  }
+  const completed = page.locator('#complete-tasks');
+  for (const count of [40, 45]) {
+    await completed
+      .getByRole('button', { name: 'More tasks' })
+      .scrollIntoViewIfNeeded();
+    await expect(completed.locator('textarea')).toHaveCount(count);
+  }
+  await expect(page.getByRole('button', { name: 'More tasks' })).toHaveCount(0);
+});
+
+test('a location add-on stores selected coordinates, survives offline reload, syncs and can be removed offline', async ({
+  page,
+  context,
+}) => {
+  await page.emulateMedia({ colorScheme: 'dark' });
+  const server = await transport(context);
+  const location = {
+    name: 'Restaurant X',
+    address: 'Rua do Sol 12, Recife, Brazil',
+    latitude: -8.063,
+    longitude: -34.881,
+    source: 'openstreetmap',
+    placeId: 'N123',
+  };
+  let searches = 0;
+  await context.route('**/api/places?*', async (route) => {
+    searches += 1;
+    expect(new URL(route.request().url()).searchParams.get('q')).toBe(
+      'Restaurant X Recife',
+    );
+    await route.fulfill({
+      json: {
+        places: [
+          location,
+          {
+            ...location,
+            name: 'Restaurant X Olinda',
+            address: 'Olinda, Brazil',
+            placeId: 'W456',
+          },
+        ],
+      },
+    });
+  });
+  await ready(page);
+  await page.getByRole('link', { name: '🌍 Offline list' }).click();
+  await page.getByRole('button', { name: 'openSlideOver' }).click();
+  const errors: string[] = [];
+  page.on('console', (message) => {
+    if (message.type() === 'error') errors.push(message.text());
+  });
+  await expect(
+    page.getByRole('region', { name: 'Location add-on' }),
+  ).toHaveCount(0);
+  const options = page.getByRole('button', { name: 'Task options' });
+  await options.click();
+  await expect(options).toHaveAttribute('aria-expanded', 'true');
+  await page.getByRole('button', { name: 'Add location', exact: true }).click();
+  let addon = page.getByRole('region', { name: 'Location add-on' });
+  await addon
+    .getByRole('textbox', { name: 'Place name and city' })
+    .fill('Restaurant X Recife');
+  expect(searches).toBe(0);
+  await addon.getByRole('button', { name: 'Search', exact: true }).click();
+  await expect(
+    addon.getByRole('list', { name: 'Places' }).getByRole('button'),
+  ).toHaveCount(2);
+  await context.setOffline(true);
+  await addon
+    .getByRole('button', {
+      name: 'Restaurant X Rua do Sol 12, Recife, Brazil',
+      exact: true,
+    })
+    .click();
+  await expect(
+    addon.getByText('Lat -8.063000 · Long -34.881000'),
+  ).toBeVisible();
+  await expect
+    .poll(
+      async () =>
+        ((await deviceState(page))?.tasks[0] as Task | undefined)?.location,
+    )
+    .toEqual(location);
+  await page.reload();
+  await page.getByRole('button', { name: 'openSlideOver' }).click();
+  addon = page.getByRole('region', { name: 'Location add-on' });
+  await expect(addon.getByText('Restaurant X', { exact: true })).toBeVisible();
+  await addon.getByRole('button', { name: 'Location options' }).click();
+  await page.getByRole('menuitem', { name: 'Change location' }).click();
+  await addon.getByRole('button', { name: 'Search', exact: true }).click();
+  await expect(addon.getByRole('alert')).toContainText(
+    'Connect to the internet',
+  );
+  expect(searches).toBe(1);
+  await addon.getByRole('button', { name: 'Cancel' }).click();
+  await context.setOffline(false);
+  await sync(page);
+  expect(server.snapshot.tasks[0]).toHaveProperty('location', location);
+  await page.screenshot({
+    path: test.info().outputPath('location-addon-dark.png'),
+  });
+  await page.getByRole('button', { name: 'Task options' }).click();
+  await context.setOffline(true);
+  await addon.getByRole('button', { name: 'Location options' }).click();
+  await page.getByRole('menuitem', { name: 'Remove location add-on' }).click();
+  await expect(
+    page.getByRole('button', { name: 'Add location', exact: true }),
+  ).toBeVisible();
+  await expect
+    .poll(
+      async () =>
+        ((await deviceState(page))?.tasks[0] as Task | undefined)?.location,
+    )
+    .toBeNull();
+  await context.setOffline(false);
+  await sync(page);
+  expect(server.snapshot.tasks[0]).toHaveProperty('location', null);
+  expect(server.snapshot.tasks[0]).toHaveProperty('addons', []);
+  expect(errors.filter((error) => /same key|unique.*key/i.test(error))).toEqual(
+    [],
+  );
+});
+
+test('location search handles empty results and service errors without changing a legacy location', async ({
+  page,
+  context,
+}) => {
+  const server = await transport(context);
+  server.snapshot.tasks[0] = {
+    ...server.snapshot.tasks[0],
+    location: 'Old restaurant address',
+  };
+  let calls = 0;
+  await context.route('**/api/places?*', async (route) => {
+    calls += 1;
+    await route.fulfill(
+      calls === 1
+        ? { json: { places: [] } }
+        : {
+            status: 503,
+            json: {
+              error:
+                'Place search is temporarily unavailable. Try again shortly.',
+            },
+          },
+    );
+  });
+  await ready(page);
+  await page.getByRole('link', { name: '🌍 Offline list' }).click();
+  await page.getByRole('button', { name: 'openSlideOver' }).click();
+  const addon = page.getByRole('region', { name: 'Location add-on' });
+  await expect(
+    addon.getByText('Old restaurant address', { exact: true }),
+  ).toBeVisible();
+  await addon.getByRole('button', { name: 'Location options' }).click();
+  await page.getByRole('menuitem', { name: 'Change location' }).click();
+  await addon
+    .getByRole('textbox', { name: 'Place name and city' })
+    .fill('Restaurant X Recife');
+  await addon.getByRole('button', { name: 'Search', exact: true }).click();
+  await expect(addon.getByRole('status')).toContainText('No places found');
+  await addon.getByRole('button', { name: 'Search', exact: true }).click();
+  await expect(addon.getByRole('alert')).toContainText(
+    'temporarily unavailable',
+  );
+  await expect
+    .poll(
+      async () =>
+        ((await deviceState(page))?.tasks[0] as Task | undefined)?.location,
+    )
+    .toBe('Old restaurant address');
+});
+
+test('task options animate and an empty location block can be added and removed offline', async ({
+  page,
+  context,
+}) => {
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await transport(context);
+  await ready(page);
+  await page.getByRole('link', { name: '🌍 Offline list' }).click();
+  await page.getByRole('button', { name: 'openSlideOver' }).click();
+  const options = page.getByRole('button', { name: 'Task options' });
+  const panel = page.locator('.drawer-expandable');
+  await expect
+    .poll(() => panel.evaluate((node) => node.getBoundingClientRect().height))
+    .toBe(0);
+  await options.click();
+  await expect
+    .poll(() => panel.evaluate((node) => node.getBoundingClientRect().height))
+    .toBeGreaterThan(100);
+  expect(
+    await panel.evaluate((node) => getComputedStyle(node).transitionProperty),
+  ).toContain('grid-template-rows');
+  await expect
+    .poll(() => panel.evaluate((node) => node.getAnimations().length))
+    .toBe(0);
+  await page.screenshot({
+    path: test.info().outputPath('task-options-buttons.png'),
+  });
+  await options.click();
+  await expect
+    .poll(() => panel.evaluate((node) => node.getBoundingClientRect().height))
+    .toBe(0);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await options.click();
+  expect(
+    await panel.evaluate((node) => getComputedStyle(node).transitionDuration),
+  ).toBe('0s');
+  await context.setOffline(true);
+  await page.getByRole('button', { name: 'Add location', exact: true }).click();
+  await expect
+    .poll(
+      async () =>
+        ((await deviceState(page))?.tasks[0] as Task | undefined)?.addons,
+    )
+    .toEqual(['location']);
+  await page.reload();
+  await page.getByRole('button', { name: 'openSlideOver' }).click();
+  const block = page.getByRole('region', { name: 'Location add-on' });
+  await expect(
+    block.getByRole('textbox', { name: 'Place name and city' }),
+  ).toBeVisible();
+  await block.getByRole('button', { name: 'Location options' }).click();
+  await page.getByRole('menuitem', { name: 'Remove location add-on' }).click();
+  await expect(block).toHaveCount(0);
+  await page.getByRole('button', { name: 'Task options' }).click();
+  await expect(
+    page.getByRole('button', { name: 'Add location', exact: true }),
+  ).toBeVisible();
+});
+
+test('list map toggles through the shared header, scopes locations and supports a searchable drawer offline', async ({
+  page,
+  context,
+}) => {
+  await page.emulateMedia({ colorScheme: 'dark', reducedMotion: 'reduce' });
+  const server = await transport(context);
+  server.snapshot.lists[0] = {
+    ...server.snapshot.lists[0],
+    color: Colors.RED_COLOR,
+  };
+  server.snapshot.tasks[0] = {
+    ...server.snapshot.tasks[0],
+    location: 'Legacy address',
+    addons: ['location'],
+  };
+  let tileRequests = 0;
+  await context.route('https://tile.openstreetmap.org/**', async (route) => {
+    tileRequests += 1;
+    await route.fulfill({
+      contentType: 'image/png',
+      body: Buffer.from(
+        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jGxkAAAAASUVORK5CYII=',
+        'base64',
+      ),
+    });
+  });
+  await ready(page);
+  await page.getByRole('link', { name: '🌍 Offline list' }).click();
+  await expect(
+    page.getByRole('link', { name: 'Map', exact: true }),
+  ).toHaveCount(0);
+  const template = server.snapshot.tasks[0];
+  const located = (
+    id: string,
+    title: string,
+    latitude: number,
+    complete = false,
+  ) => ({
+    ...template,
+    _id: id,
+    title,
+    complete,
+    completedAt: complete ? '2026-01-01T00:00:00.000Z' : null,
+    location: {
+      name: title,
+      address: 'Recife, Brazil',
+      latitude,
+      longitude: -34.881,
+      source: 'openstreetmap' as const,
+      placeId: 'N123',
+    },
+  });
+  server.snapshot.lists.push({
+    ...server.snapshot.lists[0],
+    _id: '000000000000000000000999',
+    title: 'Other list',
+  });
+  server.snapshot.tasks.push(
+    located('000000000000000000000101', 'Restaurant One', -8.063),
+    located('000000000000000000000102', 'Restaurant Two', -8.073),
+    located('000000000000000000000103', 'Finished restaurant', -8.083, true),
+    {
+      ...located('000000000000000000000104', 'Other list restaurant', -8.093),
+      listId: '000000000000000000000999',
+    },
+  );
+  await sync(page);
+  await expect(
+    page.getByRole('link', { name: 'Map', exact: true }),
+  ).toBeVisible();
+  expect(tileRequests).toBe(0);
+  await page.getByRole('link', { name: 'Map', exact: true }).click();
+  const map = page.locator('main');
+  await expect(page).toHaveURL(/\/tasks\/map\?/);
+  await expect(
+    page.getByRole('heading', { name: 'Offline list', exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('link', { name: 'Map', exact: true }),
+  ).toHaveAttribute('aria-current', 'page');
+  await expect(
+    map.getByRole('region', { name: 'Map of task locations' }),
+  ).toBeVisible();
+  await expect(map.locator('.task-map-marker')).toHaveCount(3);
+  await expect(map.locator('.task-map-marker-complete')).toHaveCount(1);
+  await expect(
+    map.locator('.task-map-marker:not(.task-map-marker-complete)'),
+  ).toHaveCount(2);
+  await expect(page.getByLabel('Map legend')).toHaveCount(0);
+  await expect(page.getByRole('list', { name: 'Located tasks' })).toHaveCount(
+    0,
+  );
+  await map.getByRole('button', { name: 'Locations (3)' }).click();
+  const drawer = page.getByRole('dialog', { name: 'Locations', exact: true });
+  await expect(
+    drawer.getByRole('list', { name: 'Located tasks' }).getByRole('button'),
+  ).toHaveCount(3);
+  await drawer
+    .getByRole('searchbox', { name: 'Search locations' })
+    .fill('Finished');
+  await expect(
+    drawer.getByRole('list', { name: 'Located tasks' }).getByRole('button'),
+  ).toHaveCount(1);
+  await drawer.getByRole('button', { name: /Finished restaurant/ }).click();
+  await expect(drawer).toHaveCount(0);
+  await expect(
+    map.getByRole('region', { name: 'Selected place' }),
+  ).toContainText('Finished restaurant');
+  await map.getByRole('button', { name: 'Locations (3)' }).click();
+  await drawer
+    .getByRole('searchbox', { name: 'Search locations' })
+    .fill('Restaurant One');
+  await drawer
+    .getByRole('list', { name: 'Located tasks' })
+    .getByRole('button')
+    .click();
+  await map
+    .getByRole('button', { name: 'Show Restaurant One', exact: true })
+    .click();
+  const selected = map.getByRole('region', { name: 'Selected place' });
+  await expect(
+    selected.getByRole('heading', { name: 'Restaurant One' }),
+  ).toBeVisible();
+  await page.screenshot({ path: test.info().outputPath('task-map-dark.png') });
+  await selected.getByRole('link', { name: 'Open task' }).click();
+  await expect(page).toHaveURL(/\/tasks\?/);
+  await expect(
+    page.getByRole('dialog').getByRole('heading').first(),
+  ).toContainText('Restaurant One');
+  await page.getByRole('link', { name: 'See on Map' }).click();
+  await expect(page).toHaveURL(
+    /\/tasks\/map\?.*taskId=000000000000000000000101/,
+  );
+  await expect(
+    page.getByRole('region', { name: 'Selected place' }),
+  ).toContainText('Restaurant One');
+  await context.setOffline(true);
+  await page.reload();
+  await expect(map.locator('.task-map-marker')).toHaveCount(3);
+  await map.getByRole('button', { name: 'Locations (3)' }).click();
+  await drawer
+    .getByRole('searchbox', { name: 'Search locations' })
+    .fill('Recife');
+  await expect(
+    drawer.getByRole('list', { name: 'Located tasks' }).getByRole('button'),
+  ).toHaveCount(3);
+  await drawer.getByRole('button', { name: 'Close locations' }).click();
+  await page.getByRole('link', { name: 'Map', exact: true }).click();
+  await expect(page).toHaveURL(/\/tasks\?/);
+  await expect(
+    page.getByRole('heading', { name: 'Offline list', exact: true }),
+  ).toBeVisible();
+  await expect(map).toHaveCount(0);
+});
+
+test('the locations drawer fits mobile and scrolls a large cached list', async ({
+  page,
+  context,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  const server = await transport(context);
+  server.snapshot.tasks = Array.from({ length: 40 }, (_, index) => ({
+    ...server.snapshot.tasks[0],
+    _id: (index + 500).toString(16).padStart(24, '0'),
+    title: `Place ${index + 1}`,
+    location: {
+      name: `Place ${index + 1}`,
+      address: 'Recife',
+      latitude: -8.063 + index * 0.001,
+      longitude: -34.881,
+      source: 'openstreetmap' as const,
+      placeId: `N${index + 1}`,
+    },
+  }));
+  await context.route('https://tile.openstreetmap.org/**', (route) =>
+    route.abort(),
+  );
+  await ready(page);
+  await page.getByRole('link', { name: '🌍 Offline list' }).click();
+  await page.getByRole('link', { name: 'Map', exact: true }).click();
+  await page.getByRole('button', { name: 'Locations (40)' }).click();
+  const drawer = page.getByRole('dialog', { name: 'Locations', exact: true });
+  const rows = drawer
+    .getByRole('list', { name: 'Located tasks' })
+    .getByRole('button');
+  await expect(rows).toHaveCount(40);
+  await rows.last().scrollIntoViewIfNeeded();
+  await expect(rows.last()).toBeInViewport();
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+  await drawer
+    .getByRole('searchbox', { name: 'Search locations' })
+    .fill('Place 40');
+  await expect(rows).toHaveCount(1);
+  await rows.first().click();
+  await expect(drawer).toHaveCount(0);
+  await expect(
+    page.getByRole('region', { name: 'Selected place' }),
+  ).toContainText('Place 40');
 });

@@ -38,19 +38,23 @@ export const SlideOver = ({
   const getTransitionClasses = (dir: SlideDirection) => {
     if (dir === 'bottom') {
       return {
-        enter: 'transform transition ease-in-out duration-500 sm:duration-500',
+        enter:
+          'transform transition ease-in-out duration-300 motion-reduce:duration-0',
         enterFrom: 'translate-y-full',
         enterTo: 'translate-y-0',
-        leave: 'transform transition ease-in-out duration-500 sm:duration-500',
+        leave:
+          'transform transition ease-in-out duration-300 motion-reduce:duration-0',
         leaveFrom: 'translate-y-0',
         leaveTo: 'translate-y-full',
       };
     }
     return {
-      enter: 'transform transition ease-in-out duration-500 sm:duration-500',
+      enter:
+        'transform transition ease-in-out duration-300 motion-reduce:duration-0',
       enterFrom: 'translate-x-full',
       enterTo: 'translate-x-0',
-      leave: 'transform transition ease-in-out duration-500 sm:duration-500',
+      leave:
+        'transform transition ease-in-out duration-300 motion-reduce:duration-0',
       leaveFrom: 'translate-x-0',
       leaveTo: 'translate-x-full',
     };
@@ -60,6 +64,7 @@ export const SlideOver = ({
 
   return (
     <Transition.Root
+      appear
       show={open}
       as={Fragment}
       afterLeave={handleClearSlideOverData}
@@ -67,10 +72,10 @@ export const SlideOver = ({
       <Dialog as="div" className="relative z-30" onClose={onClose}>
         <Transition.Child
           as={Fragment}
-          enter="ease-in-out duration-500"
+          enter="ease-out duration-300 motion-reduce:duration-0"
           enterFrom="opacity-0"
           enterTo="opacity-100"
-          leave="ease-in-out duration-500"
+          leave="ease-out duration-300 motion-reduce:duration-0"
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
@@ -91,17 +96,20 @@ export const SlideOver = ({
                 leaveFrom={transitions.leaveFrom}
                 leaveTo={transitions.leaveTo}
               >
-                <Dialog.Panel className="pointer-events-auto relative w-screen max-w-2xl">
+                <Dialog.Panel
+                  data-drawer-panel
+                  className="pointer-events-auto relative w-screen max-w-2xl"
+                >
                   <div
-                    className={`${direction === 'bottom' ? 'mt-10 rounded-2xl' : 'rounded-l-2xl'} flex h-full flex-col overflow-y-scroll bg-surface pb-6 shadow-xl`}
+                    className={`${direction === 'bottom' ? 'mt-10 rounded-2xl' : 'rounded-l-2xl'} flex h-full flex-col overflow-y-auto bg-surface pb-6 shadow-xl`}
                   >
                     <div
-                      className="sticky top-0 z-20 mb-5 flex w-full flex-row-reverse border-b-2 bg-surface px-4 pb-3 pt-4 align-baseline sm:px-6"
+                      className="sticky top-0 z-20 mb-5 flex w-full flex-row-reverse border-b border-gray-200 bg-surface px-4 pb-3 pt-4 align-baseline sm:px-6"
                       {...swipeActions}
                     >
                       <button
                         type="button"
-                        className="ml-auto self-start rounded-md text-gray-600 hover:text-gray-400 focus:outline-none focus:ring-2 focus:ring-white"
+                        className="rubber-button rubber-icon ml-auto self-start rounded-md text-gray-600 hover:text-gray-400 focus:outline-none focus:ring-2 focus:ring-white"
                         onClick={() => {
                           onClose();
                         }}

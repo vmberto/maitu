@@ -9,9 +9,13 @@ const withSerwist = withSerwistInit({
   disable: process.env.NODE_ENV !== 'production',
   cacheOnNavigation: false,
   reloadOnOnline: false,
-  additionalPrecacheEntries: ['/', '/tasks', '/timeline', '/login'].map(
-    (url) => ({ url, revision: buildId }),
-  ),
+  additionalPrecacheEntries: [
+    '/',
+    '/tasks',
+    '/timeline',
+    '/tasks/map',
+    '/login',
+  ].map((url) => ({ url, revision: buildId })),
 });
 
 /** @type {import('next').NextConfig} */

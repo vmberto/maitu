@@ -8,7 +8,7 @@ import { BorderColors } from '@/src/lib/colors';
 import { stopPropagationFn } from '@/src/lib/functions';
 import { type Task } from '@/types/main';
 
-export const NewTaskInput = () => {
+export const NewTaskInput = ({ outlined = false }: { outlined?: boolean }) => {
   const inputId = useId();
   const textareaRef = useRef({} as HTMLTextAreaElement);
 
@@ -49,9 +49,9 @@ export const NewTaskInput = () => {
         id={inputId}
         data-task-input
         aria-label="New task"
+
         ref={textareaRef}
-        className="relative z-10 block w-full resize-none overflow-hidden
-                    bg-transparent px-2 text-base outline-0 focus:outline-none"
+        className={`${outlined ? 'drawer-input' : 'bg-transparent px-2 outline-0 focus:outline-none'} relative z-10 block w-full resize-none overflow-hidden text-base`}
         value={newTask.title}
         onClick={stopPropagationFn}
         onBlur={handleAddTask}

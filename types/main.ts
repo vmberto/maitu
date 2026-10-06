@@ -27,6 +27,15 @@ export interface List {
   type: ListType;
 }
 
+export interface TaskLocation {
+  name: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+  source: 'openstreetmap';
+  placeId: string;
+}
+
 export interface Task {
   _id?: ObjectId | string;
   title: string;
@@ -38,7 +47,9 @@ export interface Task {
 
   complete: boolean;
 
-  location?: string;
+  // Keep legacy text locations readable; new selections include coordinates.
+  location?: TaskLocation | string | null;
+  addons?: 'location'[];
 
   index?: number;
 

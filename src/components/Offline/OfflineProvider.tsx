@@ -41,9 +41,6 @@ type OfflineContextValue = {
   ) => Promise<void>;
   remove: (kind: EntityKind, id: string) => Promise<void>;
   signOut: () => Promise<void>;
-  syncNow: () => Promise<void>;
-  exportData: () => void;
-  status: string;
 };
 const OfflineContext = createContext<OfflineContextValue | null>(null);
 export function useOffline() {
@@ -416,9 +413,6 @@ export function OfflineProvider({ children }: { children: ReactNode }) {
 
   const value: OfflineContextValue = {
     account,
-    status,
-    syncNow: () => syncRef.current(true),
-    exportData: () => exportData(),
     commit,
     add: async (kind, data) => {
       const id = newId();
@@ -491,14 +485,23 @@ export function OfflineProvider({ children }: { children: ReactNode }) {
     account?.[conflict.kind].find((item) => item._id === conflict.entityId);
   const conflictFields = conflict
     ? Object.keys(conflict.data).filter((field) =>
-        ['description', 'tags', 'complete', 'color', 'emoji', 'index'].includes(
-          field,
-        ),
+        [
+          'description',
+          'tags',
+          'location',
+          'addons',
+          'complete',
+          'color',
+          'emoji',
+          'index',
+        ].includes(field),
       )
     : [];
   const fieldNames: Record<string, string> = {
     description: 'Description',
     tags: 'Tags',
+    location: 'Location',
+    addons: 'Add-ons',
     complete: 'Completion',
     color: 'Color',
     emoji: 'Emoji',
@@ -513,20 +516,9 @@ export function OfflineProvider({ children }: { children: ReactNode }) {
           ? value
             ? 'Complete'
             : 'Incomplete'
-          : String(value);
-  const exportData = () => {
-    const url = URL.createObjectURL(
-      new Blob([JSON.stringify(account, null, 2)], {
-        type: 'application/json',
-      }),
-    );
-    const anchor = document.createElement('a');
-    anchor.href = url;
-    anchor.download = 'maitu-device-backup.json';
-    anchor.click();
-    URL.revokeObjectURL(url);
-  };
-
+          : typeof value === 'object'
+            ? JSON.stringify(value)
+            : String(value);
   const notice = !online
     ? 'Offline. Changes are saved on this device.'
     : status.startsWith('Sign in') || status.startsWith('Could not sync')
@@ -553,7 +545,7 @@ export function OfflineProvider({ children }: { children: ReactNode }) {
                 onClick={() => {
                   void syncRef.current(true);
                 }}
-                className="ml-3 underline"
+                className="rubber-button ml-3 underline"
               >
                 Retry sync
               </button>
@@ -566,7 +558,7 @@ export function OfflineProvider({ children }: { children: ReactNode }) {
           A new version is ready. Your saved device changes will be retained.{' '}
           <button
             type="button"
-            className="underline"
+            className="rubber-button underline"
             onClick={() => {
               navigator.serviceWorker.addEventListener(
                 'controllerchange',
@@ -633,7 +625,7 @@ export function OfflineProvider({ children }: { children: ReactNode }) {
                 onClick={() => {
                   void resolve(conflict, true);
                 }}
-                className="mr-4 underline"
+                className="rubber-button mr-4 underline"
               >
                 Keep my change
               </button>
@@ -643,7 +635,7 @@ export function OfflineProvider({ children }: { children: ReactNode }) {
             onClick={() => {
               void resolve(conflict, false);
             }}
-            className="underline"
+            className="rubber-button underline"
           >
             {conflict.conflict!.server
               ? 'Use server version'

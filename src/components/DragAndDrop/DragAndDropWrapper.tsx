@@ -21,7 +21,7 @@ export const DragAndDropWrapper = ({
     <DragDropContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
       <Droppable droppableId="droppable-list">
         {(provided) => (
-          <div ref={provided.innerRef}>
+          <div ref={provided.innerRef} {...provided.droppableProps}>
             {children}
             {provided.placeholder}
           </div>

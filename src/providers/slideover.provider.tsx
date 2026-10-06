@@ -14,6 +14,7 @@ import type { GenericEvent } from '@/types/events';
 export type SlideOverState<T> = {
   modalData: T | undefined;
   isOpen: boolean;
+  openSlideOver: (modalData: T) => void;
   handleOpenSlideOver: (modalData: T) => (e: GenericEvent) => void;
   handleClearSlideOverData: () => void;
   handleCloseSlideOver: () => void;
@@ -33,14 +34,18 @@ export const SlideOverProvider = <T extends unknown>({
   const [isOpen, setOpen] = useState<boolean>(false);
   const [slideOverData, setSlideOverData] = useState<T>();
 
+  const openSlideOver = useCallback((data: T) => {
+    setSlideOverData(data);
+    setOpen(true);
+  }, []);
+
   const handleOpenSlideOver = useCallback(
     (data: T) => (e: GenericEvent) => {
       e.preventDefault();
       e.stopPropagation();
-      setSlideOverData(data);
-      setOpen(true);
+      openSlideOver(data);
     },
-    [],
+    [openSlideOver],
   );
 
   const handleClearSlideOverData = useCallback(() => {
@@ -55,11 +60,13 @@ export const SlideOverProvider = <T extends unknown>({
     () => ({
       modalData: slideOverData,
       isOpen,
+      openSlideOver,
       handleOpenSlideOver,
       handleCloseSlideOver,
       handleClearSlideOverData,
     }),
     [
+      openSlideOver,
       handleOpenSlideOver,
       handleCloseSlideOver,
       handleClearSlideOverData,

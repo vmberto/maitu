@@ -1,5 +1,6 @@
 import type { Db, Document } from 'mongodb';
 import { ObjectId } from 'mongodb';
+import { normalizeLocation } from './location';
 
 import type { Entity, EntityKind, Operation, Snapshot } from './offline/model';
 
@@ -27,13 +28,11 @@ export function publicEntity(doc: Document): Entity {
   return JSON.parse(JSON.stringify({ ...data, version: doc.version ?? 0 }));
 }
 export async function ownedList(db: Db, userId: string, listId: string) {
-  const list = await db
-    .collection('lists')
-    .findOne({
-      _id: objectId(listId),
-      owner: objectId(userId),
-      deleted: { $ne: true },
-    });
+  const list = await db.collection('lists').findOne({
+    _id: objectId(listId),
+    owner: objectId(userId),
+    deleted: { $ne: true },
+  });
   if (!list) throw new SyncError('List not found.', 404);
   return list;
 }
@@ -54,6 +53,7 @@ const taskFields = [
   'completedAt',
   'tags',
   'location',
+  'addons',
   'index',
   'createdAt',
   'listId',
@@ -77,6 +77,25 @@ export function validateData(
     } else if (field === 'complete') {
       if (typeof value !== 'boolean')
         throw new SyncError('Invalid completion value.');
+    } else if (field === 'addons') {
+      if (
+        !Array.isArray(value) ||
+        value.length > 1 ||
+        value.some((addon) => addon !== 'location')
+      )
+        throw new SyncError('Invalid add-ons.');
+    } else if (field === 'location') {
+      if (
+        value === null ||
+        (typeof value === 'string' && value.length <= 200)
+      ) {
+        result[field] = value;
+      } else {
+        const place = normalizeLocation(value);
+        if (!place) throw new SyncError('Invalid location.');
+        result[field] = place;
+      }
+      continue;
     } else if (field === 'tags') {
       if (
         !Array.isArray(value) ||

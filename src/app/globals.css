@@ -14,3 +14,77 @@ select,
 a {
   -webkit-tap-highlight-color: transparent;
 }
+
+@layer components {
+  .drawer-section {
+    @apply rounded-xl border border-gray-300 bg-panel p-4;
+  }
+  .drawer-input {
+    @apply w-full rounded-lg border border-gray-300 bg-field px-3 py-2 text-gray-900 placeholder:text-gray-500 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/25;
+  }
+  .task-drawer .drawer-section {
+    @apply border-0 px-3 py-2;
+  }
+  .task-drawer .drawer-input {
+    @apply rounded-none border-0 bg-transparent px-0 py-1 focus:border-transparent;
+  }
+  .task-drawer .border-b-2 {
+    @apply border-0 py-3;
+  }
+}
+
+.drawer-expandable {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows 220ms ease,
+    opacity 180ms ease;
+}
+.drawer-expandable[data-open='true'] {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+.drawer-reveal {
+  animation: drawer-reveal 180ms ease-out;
+}
+@keyframes drawer-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .drawer-expandable {
+    transition: none;
+  }
+  .drawer-reveal {
+    animation: none;
+  }
+}
+
+.task-map-marker span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #3664ff;
+  color: white;
+  border: 2px solid white;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 25%);
+  font: 600 13px sans-serif;
+}
+.task-map-marker:focus-visible {
+  outline: 3px solid #3664ff;
+  outline-offset: 3px;
+}
+
+.task-map-marker-complete span {
+  background: #16a34a;
+}

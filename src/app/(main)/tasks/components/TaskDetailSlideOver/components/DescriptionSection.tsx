@@ -32,14 +32,14 @@ export const DescriptionSection = ({
   };
 
   return (
-    <div className="h-fit rounded-2xl bg-gray-100 p-4">
+    <div className="drawer-section h-fit">
       <textarea
         id="description"
+        aria-label="Description"
         ref={textareaRef}
         value={description}
         placeholder="Write about it..."
-        className="relative z-10 block w-full resize-none overflow-hidden
-           rounded-md bg-transparent p-1 pb-2 text-base outline-0 focus:outline-none"
+        className="drawer-input block min-h-[32px] resize-none overflow-hidden"
         onChange={handleChange}
       />
     </div>

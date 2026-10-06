@@ -43,7 +43,7 @@ export const ListDemo = ({ list, index }: ListDemoProps) => {
             <MenuButton
               aria-label="list-details"
               onClick={handleOpenSlideOver(list)}
-              className={`${clickStyle} inline-flex w-full justify-center
+              className={`rubber-button rubber-icon ${clickStyle} inline-flex w-full justify-center
                 rounded-full p-1 text-sm font-medium text-gray-700
                 focus:ring-offset-2 focus:ring-offset-gray-200 betterhover:hover:bg-gray-200`}
             >

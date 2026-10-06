@@ -48,6 +48,8 @@ module.exports = {
       ),
       canvas: 'rgb(var(--canvas) / <alpha-value>)',
       surface: 'rgb(var(--surface) / <alpha-value>)',
+      panel: 'rgb(var(--panel) / <alpha-value>)',
+      field: 'rgb(var(--field) / <alpha-value>)',
       zinc: colors.zinc,
       neutral: colors.neutral,
       stone: colors.stone,
@@ -89,6 +91,8 @@ module.exports = {
         ':root': {
           '--canvas': '255 255 255',
           '--surface': '255 255 255',
+          '--panel': rgb(gray[50]),
+          '--field': '255 255 255',
           ...Object.fromEntries(
             Object.entries(gray).map(([shade, value]) => [
               `--gray-${shade}`,
@@ -99,6 +103,8 @@ module.exports = {
         'html.dark': {
           '--canvas': rgb(gray[950]),
           '--surface': rgb(gray[900]),
+          '--panel': rgb(gray[800]),
+          '--field': rgb(gray[950]),
           ...Object.fromEntries(
             Object.entries(darkGray).map(([shade, value]) => [
               `--gray-${shade}`,

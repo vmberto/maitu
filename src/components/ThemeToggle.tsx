@@ -24,7 +24,7 @@ export function ThemeToggle() {
       aria-checked={dark}
       aria-label="Dark Mode"
       onClick={() => setTheme(dark ? 'light' : 'dark')}
-      className="flex w-full items-center justify-center gap-2 rounded-md border border-gray-200 bg-gray-100 px-4 py-2 text-gray-900 hover:bg-gray-200"
+      className="rubber-button flex w-full items-center justify-center gap-2 rounded-md border border-gray-200 bg-gray-100 px-4 py-2 text-gray-900 hover:bg-gray-200"
     >
       <MoonIcon className="size-5" />
       <span>Dark Mode</span>
