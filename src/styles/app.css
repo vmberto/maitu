@@ -7,6 +7,29 @@ body {
   overscroll-behavior: none;
   touch-action: pan-x pan-y;
 }
+.list-card-link::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+}
+.list-card {
+  transition: transform 120ms ease, border-color 160ms ease;
+}
+.list-card:has(.list-card-link:active) {
+  transform: scale(0.99);
+}
+.route-enter {
+  animation: route-in 160ms ease-out;
+}
+@keyframes route-in {
+  from { opacity: 0.7; transform: translateY(3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .route-enter { animation: none; }
+  .list-card { transition: none; }
+}
 
 input,
 textarea,

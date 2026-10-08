@@ -94,7 +94,9 @@
       <div class="h-12 rounded-lg bg-panel"></div>
       <div class="h-20 rounded-lg bg-panel"></div>
     </div>
-  {:else if $offline.account}{@render children()}
+  {:else if $offline.account}<div class="route-content" data-route={page.url.pathname + page.url.search}>
+      {#key page.url.pathname + page.url.search}<div class="route-enter">{@render children()}</div>{/key}
+    </div>
   {:else}<p class="p-5">
       Sign in online once to save your data for offline use. <a
         href="/login"

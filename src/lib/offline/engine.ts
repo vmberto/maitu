@@ -295,13 +295,16 @@ export function createOfflineEngine(options: {
     }
     void (async () => {
       try {
-        if (await read<boolean>('signedOut')) {
+        const [signedOut, active] = await Promise.all([
+          read<boolean>('signedOut'),
+          read<string>('active'),
+        ]);
+        if (signedOut) {
           stopped = true;
           redirect('/login');
           setReady(true);
           return;
         }
-        const active = await read<string>('active');
         if (active && !stopped)
           publish((await readAccount(active)) ?? null, false);
         setReady(true);

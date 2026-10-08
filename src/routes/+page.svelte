@@ -91,7 +91,7 @@
         animate:flip={{ duration: 180 }}
         data-sort-id={String(list._id)}
         title="Hold to reorder; use arrow keys when the row is focused"
-        class="flex items-center gap-3 rounded-md border-2 border-gray-200 bg-surface p-4 shadow-sm"
+        class="list-card relative flex items-center gap-3 rounded-md border-2 border-gray-200 bg-surface p-4 shadow-sm"
       >
         <button
           type="button"
@@ -101,13 +101,14 @@
           title="Use arrow keys to reorder">Reorder</button
         ><a
           href={`/${list.type === ListType.timeline ? 'timeline' : 'tasks'}?listId=${encodeURIComponent(String(list._id))}`}
-          class="flex min-w-0 flex-1 items-center gap-3 font-medium"
+          data-sveltekit-preload-code="viewport"
+          class="list-card-link flex min-w-0 flex-1 items-center gap-3 font-medium"
           style:color={HexColors.get(list.color)}
           ><span class="text-4xl">{list.emoji}</span><span>{list.title}</span
           ></a
         ><button
           aria-label={`List settings ${list.title}`}
-          class="rubber-button rubber-icon text-gray-500"
+          class="rubber-button rubber-icon relative z-10 text-gray-500"
           onclick={() => (settingsId = String(list._id))}
           ><Icon name="dots" /></button
         >
