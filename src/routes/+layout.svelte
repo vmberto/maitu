@@ -47,7 +47,7 @@
   {#if $offline.storageError}<p role="alert" class="p-4 text-danger">
       {$offline.storageError}
     </p>{/if}
-  {#if $offline.status.startsWith('Could not sync') || $offline.status.startsWith('Sign in')}<p
+  {#if $offline.status.startsWith('Sign in')}<p
       role="status"
       class="p-4 text-sm"
     >

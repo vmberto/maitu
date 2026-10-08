@@ -279,7 +279,7 @@
             aria-label={`Task ${task.title}`}
             value={titleEdits[String(task._id)] ?? task.title}
             use:autosize={task.title}
-            readonly={list.archived}
+            readonly={true}
             rows="1"
             class="todo-title w-full resize-none border-0 bg-transparent text-gray-600"
             oninput={(event) => {

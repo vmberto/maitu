@@ -7,6 +7,23 @@
 }
 
 /* Shared tactile finish; compact controls can override their spacing. */
+button,
+textarea {
+  -webkit-appearance: none;
+  appearance: none;
+}
+button {
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+}
+textarea {
+  resize: none;
+  overflow: hidden;
+}
+textarea:focus {
+  box-shadow: none;
+}
 .rubber-button {
   border-radius: 8px;
   background-color: var(--rubber-fill, rgb(var(--gray-100)));

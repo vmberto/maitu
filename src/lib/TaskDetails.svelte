@@ -196,7 +196,7 @@
   <header data-drawer-header class="drawer-header">
     <div class="min-w-0 flex-1">
       <h2 class="mb-5 text-lg font-semibold">
-        {#if readonly}{task?.title}{:else}<input
+        {#if readonly || task?.complete}{task?.title}{:else}<input
             onblur={async (event) => {
               const title = titleDraft ?? event.currentTarget.value;
               try {
