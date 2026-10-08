@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { hash } from 'bcrypt';
+import { hash } from 'bcryptjs';
 const findOne = vi.hoisted(() => vi.fn());
 vi.mock('../../../../lib/mongodb', () => ({
   getMongoDb: async () => ({ collection: () => ({ findOne }) }),

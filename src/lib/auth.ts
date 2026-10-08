@@ -1,7 +1,8 @@
 import { jwtVerify, SignJWT } from 'jose';
+import { env } from '$env/dynamic/private';
 import { logger } from './logger';
 
-const { SECRET_KEY } = process.env;
+const { SECRET_KEY } = env;
 const key = new TextEncoder().encode(SECRET_KEY);
 
 export const publicUser = (user: any) => ({
