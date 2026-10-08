@@ -83,7 +83,7 @@ self.addEventListener('push', (event) => {
   event.waitUntil(
     self.registration.showNotification(data.title || 'Maitu', {
       body: data.message,
-      icon: '/icons/android-chrome-192x192.webp',
+      icon: '/icons/apple-touch-icon.png?v=3',
     }),
   );
 });
