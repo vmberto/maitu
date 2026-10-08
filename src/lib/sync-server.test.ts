@@ -1,4 +1,3 @@
-/** @jest-environment node */
 import type { Db } from 'mongodb';
 import { ObjectId } from 'mongodb';
 import { applyOperation, snapshot, validateData } from './sync-server';
@@ -27,20 +26,18 @@ let tasks: any;
 let db: Db;
 beforeEach(() => {
   lists = {
-    findOne: jest.fn().mockResolvedValue(list),
-    updateOne: jest.fn().mockResolvedValue({ matchedCount: 1 }),
-    insertOne: jest.fn(),
-    find: jest
+    findOne: vi.fn().mockResolvedValue(list),
+    updateOne: vi.fn().mockResolvedValue({ matchedCount: 1 }),
+    insertOne: vi.fn(),
+    find: vi
       .fn()
-      .mockReturnValue({ toArray: jest.fn().mockResolvedValue([list]) }),
+      .mockReturnValue({ toArray: vi.fn().mockResolvedValue([list]) }),
   };
   tasks = {
-    findOne: jest.fn().mockResolvedValue(null),
-    updateOne: jest.fn(),
-    insertOne: jest.fn(),
-    find: jest
-      .fn()
-      .mockReturnValue({ toArray: jest.fn().mockResolvedValue([]) }),
+    findOne: vi.fn().mockResolvedValue(null),
+    updateOne: vi.fn(),
+    insertOne: vi.fn(),
+    find: vi.fn().mockReturnValue({ toArray: vi.fn().mockResolvedValue([]) }),
   };
   db = {
     collection: (name: string) => (name === 'lists' ? lists : tasks),

@@ -2,7 +2,7 @@
   "name": "maitu",
   "description": "an application to save your goals",
   "short_name": "maitu",
-  "theme_color": "#3664FF",
+  "theme_color": "#f3f4f6",
   "background_color": "#3664FF",
   "display": "standalone",
   "id": "/",

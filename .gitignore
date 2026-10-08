@@ -50,3 +50,7 @@ public/swe-worker*
 # storybook
 /storybook-static
 *storybook.log
+.svelte-test-results/
+
+/.svelte-kit/
+/.vercel/

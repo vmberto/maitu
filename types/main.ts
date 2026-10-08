@@ -1,6 +1,6 @@
 import type { ObjectId } from 'mongodb';
 
-import type { Colors } from '@/src/components/ColorPicker/ColorPicker';
+import type { Colors } from './colors';
 
 export enum ListType {
   tasks = 'tasks',

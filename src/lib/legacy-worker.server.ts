@@ -1,0 +1,4 @@
+export const legacyWorker = `const cacheName='maitu-shell-legacy-upgrade';
+self.addEventListener('install', e => e.waitUntil((async()=>{ const cache=await caches.open(cacheName); await cache.put('/',new Response('<!doctype html><title>Legacy maitu</title><h1>Legacy maitu</h1><button id="upgrade">Update app</button><script>document.querySelector("#upgrade").onclick=async()=>{const r=await navigator.serviceWorker.getRegistration();navigator.serviceWorker.addEventListener("controllerchange",()=>location.reload(),{once:true});r.waiting.postMessage({type:"SKIP_WAITING"});};</script>',{headers:{'Content-Type':'text/html'}})); await self.skipWaiting(); })()));
+self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));
+self.addEventListener('fetch',e=>{if(e.request.mode==='navigate')e.respondWith(caches.open(cacheName).then(c=>c.match('/')));});`;

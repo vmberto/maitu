@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+    />
+    <meta name="theme-color" content="#f3f4f6" />
+    <link rel="manifest" href="/manifest.json" />
+    <script>
+      (() => {
+        const media = window.matchMedia('(prefers-color-scheme: dark)');
+        const apply = () => {
+          let saved;
+          try {
+            saved = localStorage.getItem('maitu-theme');
+          } catch {}
+          const dark = saved === 'dark' || (saved !== 'light' && media.matches);
+          document.documentElement.classList.toggle('dark', dark);
+          document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
+          document
+            .querySelector('meta[name="theme-color"]')
+            ?.setAttribute('content', dark ? '#171717' : '#f3f4f6');
+          window.dispatchEvent(new Event('maitu-theme-change'));
+        };
+        apply();
+        if (document.readyState === 'loading')
+          document.addEventListener('DOMContentLoaded', apply, { once: true });
+        media.addEventListener('change', apply);
+        window.addEventListener('storage', (event) => {
+          if (event.key === 'maitu-theme' || event.key === null) apply();
+        });
+      })();
+    </script>
+    %sveltekit.head%
+  </head>
+  <body class="bg-canvas font-sans text-gray-900">
+    <div style="display: contents">%sveltekit.body%</div>
+  </body>
+</html>
