@@ -1,5 +1,5 @@
 import { json } from '@sveltejs/kit';
-import { compare } from 'bcrypt';
+import { compare } from 'bcryptjs';
 import { getMongoDb } from '../../../../lib/mongodb';
 import { encrypt, publicUser } from '../../../../lib/auth';
 import { headers } from '#lib/session.server';
