@@ -209,7 +209,8 @@
                 class="mt-1 flex flex-wrap gap-1"
               >
                 {#each Array.from(new Set(task.tags)) as tag (tag)}<span
-                    class="rounded-md bg-panel px-2 py-0.5 text-xs text-gray-500"
+                    class="rounded-md px-2 py-0.5 text-xs text-white"
+                    style:background-color="var(--list-color)"
                     >{tag}</span
                   >{/each}
               </div>{/if}
@@ -273,34 +274,43 @@
           disabled
           title="Completed tasks cannot be reopened"
         ></button>
-        <textarea
-          aria-label={`Task ${task.title}`}
-          value={titleEdits[String(task._id)] ?? task.title}
-          use:autosize={task.title}
-          readonly={list.archived}
-          rows="1"
-          class="todo-title min-w-0 flex-1 resize-none border-0 bg-transparent text-gray-600"
-          oninput={(event) => {
-            titleEdits[String(task._id)] = event.currentTarget.value;
-            void engine
-              .update('tasks', String(task._id), {
-                title: event.currentTarget.value,
-              })
-              .catch(() => (error = 'Could not save this task.'));
-          }}
-          onblur={async (event) => {
-            const id = String(task._id);
-            try {
-              await commitTaskTitle(
-                id,
-                titleEdits[id] ?? event.currentTarget.value,
-                !!list?.archived,
-              );
-              delete titleEdits[id];
-            } catch {
-              error = 'Could not save this task.';
-            }
-          }}></textarea>
+        <div class="min-w-0 flex-1">
+          <textarea
+            aria-label={`Task ${task.title}`}
+            value={titleEdits[String(task._id)] ?? task.title}
+            use:autosize={task.title}
+            readonly={list.archived}
+            rows="1"
+            class="todo-title w-full resize-none border-0 bg-transparent text-gray-600"
+            oninput={(event) => {
+              titleEdits[String(task._id)] = event.currentTarget.value;
+              void engine
+                .update('tasks', String(task._id), {
+                  title: event.currentTarget.value,
+                })
+                .catch(() => (error = 'Could not save this task.'));
+            }}
+            onblur={async (event) => {
+              const id = String(task._id);
+              try {
+                await commitTaskTitle(
+                  id,
+                  titleEdits[id] ?? event.currentTarget.value,
+                  !!list?.archived,
+                );
+                delete titleEdits[id];
+              } catch {
+                error = 'Could not save this task.';
+              }
+            }}></textarea>
+          {#if task.tags?.length}<div class="mt-0.5 flex flex-wrap gap-1">
+              {#each Array.from(new Set(task.tags)) as tag (tag)}<span
+                  class="rounded-md px-2 py-0.5 text-xs text-white"
+                  style:background-color="var(--list-color)"
+                  >{tag}</span
+                >{/each}
+            </div>{/if}
+        </div>
         {#if normalizeLocation(task.location)}<a
             href={`/tasks/map?listId=${listId}&taskId=${task._id}`}
             aria-label={`See ${task.title} on map`}
