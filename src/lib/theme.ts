@@ -10,7 +10,7 @@ export const themeScript = `(() => {
     const dark = saved === 'dark' || (saved !== 'light' && media.matches);
     document.documentElement.classList.toggle('dark', dark);
     document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', dark ? '#030712' : '#3664FF');
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', dark ? '#171717' : '#f3f4f6');
     window.dispatchEvent(new Event('maitu-theme-change'));
   };
   apply();
@@ -29,6 +29,6 @@ export function setTheme(theme: Theme) {
   document.documentElement.style.colorScheme = theme;
   document
     .querySelector('meta[name="theme-color"]')
-    ?.setAttribute('content', theme === 'dark' ? '#030712' : '#3664FF');
+    ?.setAttribute('content', theme === 'dark' ? '#171717' : '#f3f4f6');
   window.dispatchEvent(new Event('maitu-theme-change'));
 }

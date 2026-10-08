@@ -1,21 +1,18 @@
 import { defineConfig, devices } from '@playwright/test';
-import path from 'path';
-
-const port = Number(process.env.PLAYWRIGHT_PORT ?? 3100);
-const baseURL = `http://localhost:${port}`;
-
+const port = Number(process.env.PLAYWRIGHT_PORT ?? 3200);
+const baseURL = `http://127.0.0.1:${port}`;
 export default defineConfig({
-  timeout: 30000,
-  testDir: path.join(__dirname, 'e2e'),
+  testDir: './e2e',
+  testMatch: 'svelte.spec.ts',
   workers: 1,
-  retries: 0,
-  outputDir: 'test-results/',
+  timeout: 30000,
+  outputDir: 'test-results/svelte',
+  use: { baseURL, trace: 'retain-on-failure' },
+  projects: [{ name: 'Chrome', use: devices['Desktop Chrome'] }],
   webServer: {
-    command: `npm run build && E2E_TEST=true npm run start -- --port ${port}`,
+    command: `npm run build && PORT=${port} HOST=127.0.0.1 E2E_TEST=true npm run start`,
     url: baseURL,
     timeout: 180000,
     reuseExistingServer: false,
   },
-  use: { baseURL, trace: 'retain-on-failure' },
-  projects: [{ name: 'Desktop Chrome', use: { ...devices['Desktop Chrome'] } }],
 });

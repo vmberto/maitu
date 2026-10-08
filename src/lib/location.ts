@@ -1,4 +1,4 @@
-import type { TaskLocation } from '@/types/main';
+import type { TaskLocation } from '../../types/main';
 
 export function normalizeLocation(value: unknown): TaskLocation | null {
   if (!value || typeof value !== 'object') return null;

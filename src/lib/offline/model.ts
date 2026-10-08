@@ -1,4 +1,4 @@
-import type { List, Task, UserObject } from '@/types/main';
+import type { List, Task, UserObject } from '../../../types/main';
 
 export type EntityKind = 'lists' | 'tasks';
 export type Entity = (List | Task) & {
