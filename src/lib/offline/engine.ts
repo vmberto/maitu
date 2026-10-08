@@ -86,6 +86,7 @@ export function createOfflineEngine(options: {
   let current: LocalAccount | null = null;
   let channel: BroadcastChannel | null = null;
   let syncing = false;
+  let syncFailures = 0;
   let saving = 0;
   let stopped = false;
   let retry: ReturnType<typeof setTimeout> | undefined;
@@ -144,9 +145,10 @@ export function createOfflineEngine(options: {
       return;
     }
     syncing = true;
+    clearTimeout(retry);
     let completed = false;
     try {
-      if (manual) setStatus('Syncing…');
+      setStatus('Syncing…');
       const { user }: { user: UserObject } = await request('/api/session');
       if (stopped) return;
       const userId = user._id!.toString();
@@ -234,6 +236,7 @@ export function createOfflineEngine(options: {
         await navigator.locks.request(`maitu-sync:${userId}`, run);
       else await run(); // Atomic server receipts still make repeated sends safe without Web Locks.
       completed = true;
+      syncFailures = 0;
       if (!stopped)
         setStatus(
           current?.queue.some((op) => op.conflict)
@@ -244,11 +247,16 @@ export function createOfflineEngine(options: {
         );
     } catch (error) {
       if (!stopped) {
+        syncFailures += 1;
         setStatus(
           error instanceof Error && error.message.startsWith('Sign in')
             ? error.message
-            : 'Could not sync. Changes stay saved on this device.',
+            : manual || syncFailures >= 2
+              ? 'Could not sync. Changes stay saved on this device.'
+              : 'Saved on device. Waiting to sync.',
         );
+        if (!(error instanceof Error && error.message.startsWith('Sign in')))
+          retry = setTimeout(() => void sync(), Math.min(2000 * syncFailures, 30000));
         if (
           !current &&
           error instanceof Error &&
