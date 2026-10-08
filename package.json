@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev --host 127.0.0.1 --port 3000",
-    "build": "vite build",
+    "build": "if [ \"$VERCEL\" = \"1\" ]; then vite build; else CLOUDFLARE=1 vite build; fi",
     "build:cloudflare": "CLOUDFLARE=1 vite build",
     "deploy": "npm run build:cloudflare && wrangler deploy",
     "preview:cloudflare": "npm run build:cloudflare && wrangler dev",
