@@ -10,6 +10,7 @@ export async function POST({
 }: import('./$types').RequestEvent) {
   if (request.headers.get('origin') !== url.origin)
     return json({ error: 'Invalid origin.' }, { status: 403, headers });
+  let stage = 'request';
   try {
     const data = await request.formData();
     const email = data.get('email'),
@@ -24,16 +25,19 @@ export async function POST({
         { error: 'Incorrect email or password' },
         { status: 400, headers },
       );
+    stage = 'database';
     const user = await (
       await getMongoDb()
     )
       .collection('users')
       .findOne({ email });
+    stage = 'password verification';
     if (!user?.password || !(await compare(password, user.password)))
       return json(
         { error: 'Incorrect email or password' },
         { status: 401, headers },
       );
+    stage = 'session signing';
     const expires = new Date(Date.now() + 30 * 86400000);
     cookies.set(
       'session',
@@ -47,7 +51,13 @@ export async function POST({
       },
     );
     return json({ user: publicUser(user) }, { headers });
-  } catch {
+  } catch (error) {
+    console.error('Login failed', {
+      stage,
+      errorType: error instanceof Error ? error.name : 'UnknownError',
+      mongoConfigured: !!process.env.MONGODB_URI,
+      secretConfigured: !!process.env.SECRET_KEY,
+    });
     return json(
       { error: 'Sign in is temporarily unavailable.' },
       { status: 503, headers },

@@ -1,5 +1,4 @@
 import { session, headers } from '#lib/session.server';
-import { env } from '$env/dynamic/private';
 import { photonPlaces } from '../../../lib/location';
 import type { RequestHandler } from './$types';
 export const GET: RequestHandler = async ({ cookies, url }) => {
@@ -17,7 +16,7 @@ export const GET: RequestHandler = async ({ cookies, url }) => {
   try {
     const endpoint = new URL(
       'api/',
-      env.PHOTON_URL || 'https://photon.komoot.io/',
+      process.env.PHOTON_URL || 'https://photon.komoot.io/',
     );
     endpoint.searchParams.set('q', query);
     endpoint.searchParams.set('limit', '6');

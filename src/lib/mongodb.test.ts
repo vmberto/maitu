@@ -3,6 +3,7 @@ import { getMongoClient } from './mongodb';
 
 vi.mock('mongodb', () => ({ MongoClient: vi.fn() }));
 it('retries a failed connection instead of caching a rejected promise forever', async () => {
+  vi.stubEnv('MONGODB_URI', 'mongodb://localhost:27017/maitu');
   (global as any).mongoClientPromise = undefined;
   const client = {
     connect: vi.fn(),
@@ -21,4 +22,5 @@ it('retries a failed connection instead of caching a rejected promise forever', 
   expect(client.connect).toHaveBeenCalledTimes(2);
   expect(client.close).toHaveBeenCalledTimes(1);
   (global as any).mongoClientPromise = undefined;
+  vi.unstubAllEnvs();
 });
