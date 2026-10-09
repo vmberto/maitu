@@ -5,7 +5,6 @@
   import { drawerBehavior, closeDrawer } from '#lib/drawer';
   import { sortable } from '#lib/reorder';
   import { HexColors } from '../lib/colors';
-  import ListDetails from '#lib/ListDetails.svelte';
   import { engine, offline } from '#lib/offline';
   import { Colors } from '../../types/colors';
   import { ListType, type List } from '../../types/main';
@@ -200,12 +199,13 @@
     >
   </header>
   <div class="drawer-body">
-    <form id="new-list-form" onsubmit={addList} class="rounded-lg bg-panel p-4">
+    <form id="new-list-form" onsubmit={addList} class="flex items-end gap-3">
+      <span class="flex size-14 shrink-0 items-center justify-center rounded-xl bg-panel text-3xl">{emoji}</span>
       <label class="min-w-0 flex-1"
-        ><span class="mb-2 block text-sm font-medium">List name</span><input
+        ><span class="mb-2 block text-xs font-semibold uppercase tracking-wide text-gray-600">Name</span><input
           bind:value={title}
           aria-label="List name"
-          placeholder="New list"
+          placeholder="Name your list"
           class="drawer-input"
           maxlength="30"
           required
@@ -236,10 +236,10 @@
     >
   </div>
 </dialog>
-{#if settingsList}<ListDetails
+{#if settingsList}{#await import('#lib/ListDetails.svelte') then module}{@const ListDetails = module.default}<ListDetails
     list={settingsList}
     close={() => (settingsId = null)}
-  />{/if}
+  />{/await}{/if}
 
 <style>
   dialog::backdrop {

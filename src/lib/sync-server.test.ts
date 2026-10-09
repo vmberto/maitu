@@ -7,6 +7,16 @@ const userId = '507f191e810c19729de860ea';
 const listId = '64b2f7a9c1e6f9a1b2c3d4e5';
 const taskId = '64b2f7a9c1e6f9a1b2c3d4e6';
 const receipt = '00000000-0000-4000-8000-000000000001';
+it('moves a task only into an owned active list', async () => {
+  const destination = '64b2f7a9c1e6f9a1b2c3d4e7';
+  const existing = { _id: new ObjectId(taskId), listId: new ObjectId(listId), version: 2 };
+  tasks.findOne.mockResolvedValue(existing);
+  tasks.updateOne.mockResolvedValue({ matchedCount: 1 });
+  await applyOperation(db, userId, { ...operation, kind: 'tasks', entityId: taskId, data: { listId: destination } });
+  expect(tasks.updateOne.mock.calls[0][1].$set.listId.toString()).toBe(destination);
+  lists.findOne.mockResolvedValue(null);
+  await expect(applyOperation(db, userId, { ...operation, kind: 'tasks', entityId: taskId, data: { listId: destination } })).rejects.toThrow('not found');
+});
 const list = {
   _id: new ObjectId(listId),
   owner: new ObjectId(userId),

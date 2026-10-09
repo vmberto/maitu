@@ -9,9 +9,7 @@
   import { page } from '$app/state';
   import { engine, offline } from '#lib/offline';
   import ListHeader from '#lib/ListHeader.svelte';
-  import ListDetails from '#lib/ListDetails.svelte';
   import { normalizeLocation } from '../../lib/location';
-  import TaskDetails from '#lib/TaskDetails.svelte';
   import type { List, Task } from '../../../types/main';
   const listId = $derived(page.url.searchParams.get('listId') ?? '');
   const list = $derived(
@@ -330,13 +328,13 @@
     {#if error}<p role="alert" class="text-sm text-danger">{error}</p>{/if}
   {/if}
 </main>
-{#if detailsId}<TaskDetails
+{#if detailsId}{#await import('#lib/TaskDetails.svelte') then module}{@const TaskDetails = module.default}<TaskDetails
     taskId={detailsId}
     readonly={!!list?.archived}
     close={() => (detailsId = null)}
-  />{/if}
+  />{/await}{/if}
 
-{#if listSettings && list}<ListDetails
+{#if listSettings && list}{#await import('#lib/ListDetails.svelte') then module}{@const ListDetails = module.default}<ListDetails
     {list}
     close={() => (listSettings = false)}
-  />{/if}
+  />{/await}{/if}

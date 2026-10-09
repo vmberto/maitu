@@ -10,7 +10,7 @@ export default defineConfig({
   use: { baseURL, trace: 'retain-on-failure' },
   projects: [{ name: 'Chrome', use: devices['Desktop Chrome'] }],
   webServer: {
-    command: `npm run build && PORT=${port} HOST=127.0.0.1 E2E_TEST=true npm run start`,
+    command: `E2E_TEST=true npm run build && PORT=${port} HOST=127.0.0.1 E2E_TEST=true npm run start`,
     url: baseURL,
     timeout: 180000,
     reuseExistingServer: false,

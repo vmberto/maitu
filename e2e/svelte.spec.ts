@@ -8,6 +8,24 @@ const user = {
   email: 'pilot@example.com',
 };
 const listId = '64b2f7a9c1e6f9a1b2c3d4e5';
+test('moves a task and its subtasks to another active tasks list', async ({ page, context }) => {
+  const server = await transport(context);
+  const target = '64b2f7a9c1e6f9a1b2c3d4e6';
+  server.snapshot.lists.push({ ...server.snapshot.lists[0], _id: target, title: 'Destination', index: 1 });
+  const parent = '64b2f7a9c1e6f9a1b2c3d4e7';
+  server.snapshot.tasks.push(
+    { _id: parent, listId, title: 'Move me', complete: false, createdAt: '2026-01-01', version: 0 },
+    { _id: '64b2f7a9c1e6f9a1b2c3d4e8', listId, parentTaskId: parent, title: 'Child', complete: false, createdAt: '2026-01-01', version: 0 },
+  );
+  await page.goto(`/tasks?listId=${listId}`);
+  await page.getByRole('button', { name: 'Task details Move me' }).click();
+  await page.getByText('Task Options', { exact: true }).click();
+  await page.getByRole('button', { name: 'Move Task', exact: true }).click();
+  await page.getByRole('combobox', { name: 'Destination list' }).selectOption(target);
+  await page.getByRole('button', { name: 'Move task', exact: true }).last().click();
+  await expect.poll(async () => (await device(page)).tasks.filter((task: any) => task.listId === target).length).toBe(2);
+  await expect(page.getByRole('button', { name: 'Task details Move me' })).toHaveCount(0);
+});
 async function transport(context: BrowserContext) {
   const snapshot: { lists: any[]; tasks: any[] } = {
     lists: [
@@ -237,7 +255,7 @@ test('Svelte coordinates, list map, black theme, zoom controls and archived read
   await page.getByText('Task Options', { exact: true }).click();
   await page.getByRole('button', { name: 'Location', exact: true }).click();
   await page
-    .getByRole('textbox', { name: 'Coordinates', exact: true })
+    .getByRole('textbox', { name: 'Search places', exact: true })
     .fill('-8.0476, -34.8770');
   await page
     .getByRole('button', { name: 'Save location', exact: true })
@@ -299,6 +317,8 @@ test('timeline, tags, subtasks and cloning preserve their data offline', async (
 }) => {
   await transport(context);
   await page.goto('/');
+  await page.evaluate(async () => { await navigator.serviceWorker.ready; });
+  await expect.poll(() => page.evaluate(() => !!navigator.serviceWorker.controller)).toBe(true);
   await page.getByRole('button', { name: 'New List', exact: true }).click();
   await page.getByRole('textbox', { name: 'List name' }).fill('Journal');
   await page

@@ -57,15 +57,15 @@
   );
 </script>
 
-<section class="mt-4 rounded-lg bg-panel p-4">
-  <h3 class="mb-3 text-sm font-medium">Select List Color</h3>
+<section class="mt-5">
+  <h3 class="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-600">Color</h3>
   <div class="flex gap-3" role="radiogroup" aria-label="List color">
     {#each Object.values(Colors) as value}<button
         type="button"
         role="radio"
         aria-checked={color === value}
         aria-label={value}
-        class="rubber-touch size-8 rounded-full border-2"
+        class="rubber-touch size-10 rounded-full border-2"
         style:background={HexColors.get(value)}
         style:border-color={color === value
           ? 'rgb(var(--gray-900))'
@@ -74,8 +74,8 @@
       ></button>{/each}
   </div>
 </section>
-<section class="mt-4 rounded-lg bg-panel p-4" aria-label="Choose list emoji">
-  <h3 class="mb-2 text-sm font-medium">List emoji</h3>
+<section class="mt-5" aria-label="Choose list emoji">
+  <h3 class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-600">Emoji</h3>
   <input
     aria-label="Search emojis"
     type="search"
@@ -83,7 +83,7 @@
     bind:value={query}
     class="drawer-input"
   />
-  <div class="mt-3 grid grid-cols-5 gap-2 sm:grid-cols-9">
+  <div class="mt-3 grid grid-cols-6 gap-2 sm:grid-cols-8">
     {#each choices as [symbol, name] (symbol)}<button
         type="button"
         aria-label={name}

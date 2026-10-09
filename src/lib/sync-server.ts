@@ -239,12 +239,6 @@ export async function applyOperation(
     const list = await ownedList(db, userId, listId);
     if (list.archived)
       throw new SyncError('Archived lists are read only.', 403);
-    if (
-      existing &&
-      data.listId &&
-      data.listId.toString() !== existing.listId.toString()
-    )
-      throw new SyncError('Moving tasks between lists is not supported.');
     const parentId = data.parentTaskId ?? existing?.parentTaskId;
     if (parentId) {
       const parent = await ownedTask(db, userId, parentId.toString());

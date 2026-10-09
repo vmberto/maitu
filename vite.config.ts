@@ -12,7 +12,7 @@ export default defineConfig(({ mode }) => {
     if (!process.env[key] && env[key]) process.env[key] = env[key];
   const deployment = process.env.VERCEL
     ? vercel({ runtime: 'nodejs24.x' })
-    : process.env.CLOUDFLARE || process.env.CF_PAGES
+    : (process.env.CLOUDFLARE || process.env.CF_PAGES) && !process.env.E2E_TEST
       ? cloudflare()
       : adapter();
   return {

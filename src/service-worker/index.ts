@@ -16,7 +16,7 @@ const urls = [
   ...immutable.map((file) => `/${file.path.replace(/^\//, '')}`),
   ...assets
     .map((file) => `/${file.path.replace(/^\//, '')}`)
-    .filter((path) => !/\/(?:sw|swe-worker).*\.js$/.test(path)),
+    .filter((path) => !/\/\.|\/(?:sw|swe-worker).*\.js$/.test(path)),
   ...routes,
 ];
 self.addEventListener('install', (event) =>

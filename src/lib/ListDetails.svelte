@@ -42,14 +42,14 @@
   </header>
   <div class="drawer-body">
     {#if list.archived}<p>Archived · Read only</p>
-      <h3>{list.title}</h3>{:else}<label class="block rounded-lg bg-panel p-3"
-        ><span class="mb-2 block text-sm font-medium">List name</span><input
+      <h3>{list.title}</h3>{:else}<div class="flex items-end gap-3"><span class="flex size-14 shrink-0 items-center justify-center rounded-xl bg-panel text-3xl">{list.emoji}</span><label class="min-w-0 flex-1"
+        ><span class="mb-2 block text-xs font-semibold uppercase tracking-wide text-gray-600">Name</span><input
           aria-label="List title"
           value={list.title}
-          class="w-full border-0 bg-transparent"
+          class="drawer-input"
           oninput={(event) => void save({ title: event.currentTarget.value })}
         /></label
-      >
+      ></div>
       <ListAppearance color={list.color} emoji={list.emoji} onchange={save} />
       <button
         class="rubber-button mt-5 text-danger"
@@ -86,7 +86,7 @@
             >Delete list permanently</button
           >
         </form>
-      </details>{/if}
+      </details><button class="rubber-button rubber-primary mt-5 w-full py-3" onclick={() => closeDrawer(dialog)}>Done</button>{/if}
     {#if error}<p role="alert" class="mt-3 text-danger">{error}</p>{/if}
   </div>
 </dialog>

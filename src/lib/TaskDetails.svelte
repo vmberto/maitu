@@ -7,7 +7,7 @@
   import { engine, offline } from '#lib/offline';
   import { lockBody } from './scroll-lock';
   import { normalizeLocation, parseCoordinates } from './location';
-  import type { Task, TaskLocation } from '../../types/main';
+  import type { List, Task, TaskLocation } from '../../types/main';
   let {
     taskId,
     close,
@@ -21,11 +21,17 @@
   let titleDraft = $state<string | null>(null);
   let descriptionDraft = $state<string | null>(null);
   let childDrafts = $state<Record<string, string>>({});
-  let coordinates = $state('');
   let locationName = $state('');
   let search = $state('');
   let results = $state<TaskLocation[]>([]);
   let searching = $state(false);
+  let selectedPlace = $state<TaskLocation | null>(null);
+  let moving = $state(false);
+  let destination = $state('');
+  const destinations = $derived(($offline.account?.lists ?? []).filter(
+    (list) => !list.deleted && !(list as List).archived && (list as List).type === 'tasks' && String(list._id) !== String(task?.listId),
+  ) as List[]);
+  const detectedCoordinates = $derived(parseCoordinates(search));
   let editLocation = $state(false);
   const task = $derived(
     $offline.account?.tasks.find((task) => task._id === taskId) as
@@ -70,9 +76,7 @@
   const place = $derived(normalizeLocation(task?.location));
   $effect(() => {
     dialog?.showModal();
-    dialog
-      ?.querySelector<HTMLButtonElement>('[aria-label="Close panel"]')
-      ?.focus({ preventScroll: true });
+    dialog?.focus({ preventScroll: true });
     return lockBody();
   });
   async function save(data: Partial<Task>) {
@@ -140,10 +144,12 @@
   }
   async function searchPlaces(event: SubmitEvent) {
     event.preventDefault();
+    if (detectedCoordinates) return;
     if (searching) return;
     searching = true;
     error = '';
     results = [];
+    selectedPlace = null;
     try {
       const response = await fetch(
         `/api/places?q=${encodeURIComponent(search.trim())}`,
@@ -162,7 +168,12 @@
   }
   async function saveLocation(event: SubmitEvent) {
     event.preventDefault();
-    const value = parseCoordinates(coordinates);
+    const value = detectedCoordinates;
+    if (selectedPlace && !value) {
+      await save({ location: selectedPlace, addons: ['location'] });
+      if (!error) editLocation = false;
+      return;
+    }
     if (!value) {
       error = 'Paste valid latitude, longitude coordinates.';
       return;
@@ -179,9 +190,21 @@
     });
     if (!error) editLocation = false;
   }
+  async function moveTask(event: SubmitEvent) {
+    event.preventDefault();
+    if (readonly || !destinations.some((list) => String(list._id) === destination)) return;
+    try {
+      await engine.commit((saved) => saved.tasks
+        .filter((item) => !item.deleted && (String(item._id) === taskId || String((item as Task).parentTaskId) === taskId))
+        .sort((a, b) => Number(String(b._id) === taskId) - Number(String(a._id) === taskId))
+        .map((item) => ({ kind: 'tasks', entityId: String(item._id), action: 'patch', data: { listId: destination, index: saved.tasks.filter((task) => String((task as Task).listId) === destination).length } })));
+      closeDrawer(dialog);
+    } catch { error = 'Could not move this task.'; }
+  }
 </script>
 
 <dialog
+  tabindex="-1"
   use:drawerBehavior
   bind:this={dialog}
   oncancel={(event) => {
@@ -196,7 +219,9 @@
   <header data-drawer-header class="drawer-header">
     <div class="min-w-0 flex-1">
       <h2 class="mb-5 text-lg font-semibold">
-        {#if readonly || task?.complete}{task?.title}{:else}<input
+        {#if readonly || task?.complete}{task?.title}{:else}<textarea
+            rows="1"
+            use:autosize={titleDraft ?? task?.title ?? ''}
             onblur={async (event) => {
               const title = titleDraft ?? event.currentTarget.value;
               try {
@@ -209,12 +234,12 @@
             }}
             aria-label="Task title"
             value={titleDraft ?? task?.title ?? ''}
-            class="w-[calc(100%-2rem)] border-0 bg-transparent p-0 font-semibold"
+            class="w-full resize-none border-0 bg-transparent p-0 font-semibold"
             oninput={(event) => {
               titleDraft = event.currentTarget.value;
               void save({ title: titleDraft });
             }}
-          />{/if}
+          ></textarea>{/if}
       </h2>
       <div class="task-dates mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs font-normal text-gray-500">
         <p><span class="task-date-label">Created</span> <time datetime={task?.createdAt}>{dateLabel(task?.createdAt)}</time></p>
@@ -368,7 +393,7 @@
                   class="rubber-button block w-full"
                   onclick={() => {
                     editLocation = true;
-                    coordinates = place
+                    search = place
                       ? `${place.latitude}, ${place.longitude}`
                       : '';
                     locationName = place?.name ?? '';
@@ -397,8 +422,9 @@
             <input
               aria-label="Search places"
               bind:value={search}
-              placeholder="Place name and city"
-              class="drawer-input min-w-0 flex-1"
+              oninput={() => { selectedPlace = null; results = []; }}
+              placeholder="Search a place or paste coordinates"
+              class="location-search drawer-input min-w-0 flex-1"
               minlength="3"
               maxlength="200"
               required
@@ -406,34 +432,18 @@
               >{searching ? 'Searching…' : 'Search'}</button
             >
           </form>
+          {#if detectedCoordinates}<p class="mt-3 text-sm text-gray-500">Coordinates detected: latitude {detectedCoordinates.latitude}, longitude {detectedCoordinates.longitude}</p>
+          {:else}<div class="location-results mt-3 overflow-hidden rounded-lg border border-gray-200">
           {#each results as result (result.placeId)}<button
-              class="rubber-button mt-2 block w-full text-left"
-              onclick={async () => {
-                await save({ location: result, addons: ['location'] });
-                if (!error) {
-                  editLocation = false;
-                  results = [];
-                }
-              }}
+              class="location-result block w-full border-b border-gray-200 px-3 py-3 text-left last:border-0"
+              aria-pressed={selectedPlace?.placeId === result.placeId}
+              onclick={() => selectedPlace = result}
               >{result.name}<span class="block text-xs text-gray-500"
                 >{result.address}</span
               ></button
-            >{/each}
-          <form onsubmit={saveLocation} class="mt-3 space-y-3">
-            <label class="block text-sm"
-              >Place name<input
-                bind:value={locationName}
-                class="drawer-input mt-1"
-              /></label
-            ><label class="block text-sm"
-              >Coordinates<input
-                aria-label="Coordinates"
-                placeholder="-8.0476, -34.8770"
-                bind:value={coordinates}
-                class="drawer-input mt-1"
-                required
-              /></label
-            ><button class="rubber-button text-primary">Save location</button>
+            >{/each}</div>{/if}
+          <form onsubmit={saveLocation} class="mt-4">
+            <button disabled={!detectedCoordinates && !selectedPlace} class="rubber-button rubber-primary w-full py-3">Save location</button>
           </form>{/if}
       </section>{/if}
     {#if !readonly}<details class="task-options mt-5 rounded-lg bg-panel p-3">
@@ -447,6 +457,11 @@
         <div class="mt-4 space-y-4">
           <section>
             <h3 class="mb-2 text-sm text-gray-500">Actions</h3>
+            <button class="rubber-touch option-row" onclick={() => moving = !moving}><Icon name="back" size={18} /><span>Move Task</span></button>
+            {#if moving}<form onsubmit={moveTask} class="my-2 space-y-2">
+              <select aria-label="Destination list" bind:value={destination} class="drawer-input"><option value="">Choose a tasks list</option>{#each destinations as list (list._id)}<option value={String(list._id)}>{list.emoji} {list.title}</option>{/each}</select>
+              <button class="rubber-button rubber-primary w-full" disabled={!destination}>Move task</button>
+            </form>{/if}
             <button class="rubber-touch option-row" onclick={clone}
               ><Icon name="clone" size={18} /><span>Clone Task</span></button
             ><button

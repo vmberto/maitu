@@ -15,6 +15,11 @@ export function drawerBehavior(
   direction: 'bottom' | 'right' = 'bottom',
 ) {
   node.dataset.direction = direction;
+  node.tabIndex = -1;
+  const opened = () => {
+    if (node.open) node.focus({ preventScroll: true });
+  };
+  node.addEventListener('toggle', opened);
   const click = (event: MouseEvent) => {
     const rect = node.getBoundingClientRect();
     if (
@@ -28,6 +33,8 @@ export function drawerBehavior(
   };
   let start: { x: number; y: number } | null = null;
   const down = (event: PointerEvent) => {
+    const control = (event.target as Element).closest<HTMLElement>('input,textarea,button,select,summary');
+    if (control) control.dataset.pointerFocus = '';
     if (
       !(event.target as Element).closest('[data-drawer-header]') ||
       (event.target as Element).closest('button,input,textarea')
@@ -53,8 +60,12 @@ export function drawerBehavior(
   node.addEventListener('pointerdown', down);
   node.addEventListener('pointerup', up);
   node.addEventListener('pointercancel', cancel);
+  const keyboard = () => node.querySelectorAll('[data-pointer-focus]').forEach((element) => element.removeAttribute('data-pointer-focus'));
+  node.addEventListener('keydown', keyboard);
   return {
     destroy() {
+      node.removeEventListener('toggle', opened);
+      node.removeEventListener('keydown', keyboard);
       node.removeEventListener('click', click);
       node.removeEventListener('pointerdown', down);
       node.removeEventListener('pointerup', up);
