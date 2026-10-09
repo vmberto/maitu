@@ -255,7 +255,7 @@ test('Svelte coordinates, list map, black theme, zoom controls and archived read
   await page.getByText('Task Options', { exact: true }).click();
   await page.getByRole('button', { name: 'Location', exact: true }).click();
   await page
-    .getByRole('textbox', { name: 'Search places', exact: true })
+    .getByRole('textbox', { name: 'Coordinates', exact: true })
     .fill('-8.0476, -34.8770');
   await page
     .getByRole('button', { name: 'Save location', exact: true })

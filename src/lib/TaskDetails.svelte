@@ -23,6 +23,8 @@
   let childDrafts = $state<Record<string, string>>({});
   let locationName = $state('');
   let search = $state('');
+  let coordinates = $state('');
+  let searchInitialized = false;
   let results = $state<TaskLocation[]>([]);
   let searching = $state(false);
   let selectedPlace = $state<TaskLocation | null>(null);
@@ -31,7 +33,7 @@
   const destinations = $derived(($offline.account?.lists ?? []).filter(
     (list) => !list.deleted && !(list as List).archived && (list as List).type === 'tasks' && String(list._id) !== String(task?.listId),
   ) as List[]);
-  const detectedCoordinates = $derived(parseCoordinates(search));
+  const detectedCoordinates = $derived(parseCoordinates(coordinates));
   let editLocation = $state(false);
   const task = $derived(
     $offline.account?.tasks.find((task) => task._id === taskId) as
@@ -55,8 +57,7 @@
     if (!value || !Number.isFinite(new Date(value).getTime()))
       return 'Date unavailable';
     return new Date(value).toLocaleString([], {
-      dateStyle: 'medium',
-      timeStyle: 'short',
+      day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
     });
   }
   async function toggleChild(child: Task) {
@@ -74,6 +75,12 @@
     }
   }
   const place = $derived(normalizeLocation(task?.location));
+  $effect(() => {
+    if (task && !searchInitialized) {
+      search = task.title;
+      searchInitialized = true;
+    }
+  });
   $effect(() => {
     dialog?.showModal();
     dialog?.focus({ preventScroll: true });
@@ -144,7 +151,6 @@
   }
   async function searchPlaces(event: SubmitEvent) {
     event.preventDefault();
-    if (detectedCoordinates) return;
     if (searching) return;
     searching = true;
     error = '';
@@ -217,6 +223,9 @@
   class="task-drawer w-[calc(100%-1rem)] max-w-xl rounded-2xl bg-surface p-5 text-gray-900 shadow-xl"
 >
   <header data-drawer-header class="drawer-header">
+    <span class="task-header-status" class:done={task?.complete} aria-hidden="true">
+      {#if task?.complete}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4 10-10" /></svg>{/if}
+    </span>
     <div class="min-w-0 flex-1">
       <h2 class="mb-5 text-lg font-semibold">
         {#if readonly || task?.complete}{task?.title}{:else}<textarea
@@ -241,13 +250,13 @@
             }}
           ></textarea>{/if}
       </h2>
-      <div class="task-dates mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs font-normal text-gray-500">
+      <div class="task-dates mt-2 flex flex-wrap items-center gap-x-3 gap-y-2 text-xs font-normal text-gray-500">
+        {#if task?.complete}<p class="task-state-badge done">Completed <time datetime={task.completedAt ?? undefined}>{dateLabel(task.completedAt)}</time></p>{:else}<span class="task-state-badge">Open</span>{/if}
         <p><span class="task-date-label">Created</span> <time datetime={task?.createdAt}>{dateLabel(task?.createdAt)}</time></p>
-        {#if task?.complete}<p><span class="task-status">Completed</span> <time datetime={task.completedAt ?? undefined}>{dateLabel(task.completedAt)}</time></p>{/if}
       </div>
     </div>
     <button
-      class="rubber-button rubber-icon float-right"
+      class="rubber-touch task-header-close"
       aria-label="Close panel"
       onclick={() => closeDrawer(dialog)}>×</button
     >
@@ -393,7 +402,8 @@
                   class="rubber-button block w-full"
                   onclick={() => {
                     editLocation = true;
-                    search = place
+                    search = task?.title ?? '';
+                    coordinates = place
                       ? `${place.latitude}, ${place.longitude}`
                       : '';
                     locationName = place?.name ?? '';
@@ -423,7 +433,7 @@
               aria-label="Search places"
               bind:value={search}
               oninput={() => { selectedPlace = null; results = []; }}
-              placeholder="Search a place or paste coordinates"
+              placeholder="Place name and city"
               class="location-search drawer-input min-w-0 flex-1"
               minlength="3"
               maxlength="200"
@@ -432,17 +442,20 @@
               >{searching ? 'Searching…' : 'Search'}</button
             >
           </form>
-          {#if detectedCoordinates}<p class="mt-3 text-sm text-gray-500">Coordinates detected: latitude {detectedCoordinates.latitude}, longitude {detectedCoordinates.longitude}</p>
-          {:else}<div class="location-results mt-3 overflow-hidden rounded-lg border border-gray-200">
+          {#if results.length}<div class="location-results mt-3 overflow-hidden rounded-lg border border-gray-200">
           {#each results as result (result.placeId)}<button
               class="location-result block w-full border-b border-gray-200 px-3 py-3 text-left last:border-0"
               aria-pressed={selectedPlace?.placeId === result.placeId}
-              onclick={() => selectedPlace = result}
+              onclick={() => { selectedPlace = result; coordinates = ''; }}
               >{result.name}<span class="block text-xs text-gray-500"
                 >{result.address}</span
               ></button
             >{/each}</div>{/if}
           <form onsubmit={saveLocation} class="mt-4">
+            <label class="mb-3 block text-sm text-gray-500">Latitude, Longitude
+              <input aria-label="Coordinates" bind:value={coordinates} oninput={() => selectedPlace = null} placeholder="-8.0476, -34.8770" class="location-search drawer-input mt-2" />
+            </label>
+            {#if detectedCoordinates}<p class="mb-3 text-sm text-gray-500">Latitude {detectedCoordinates.latitude}, longitude {detectedCoordinates.longitude}</p>{/if}
             <button disabled={!detectedCoordinates && !selectedPlace} class="rubber-button rubber-primary w-full py-3">Save location</button>
           </form>{/if}
       </section>{/if}
