@@ -7,6 +7,18 @@ body {
   overscroll-behavior: none;
   touch-action: pan-x pan-y;
 }
+.lists-sidebar { display: none; }
+@media (min-width: 1024px) {
+  .with-lists { display: grid; grid-template-columns: 280px minmax(0, 1fr); }
+  .lists-sidebar {
+    display: block;
+    position: sticky;
+    top: 0;
+    height: 100dvh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}
 .list-card-link::after {
   content: '';
   position: absolute;

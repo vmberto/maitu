@@ -8,6 +8,15 @@ const user = {
   email: 'pilot@example.com',
 };
 const listId = '64b2f7a9c1e6f9a1b2c3d4e5';
+test('login handles a deployment error returned as plain text', async ({ page }) => {
+  await page.route('**/api/auth/login', (route) => route.fulfill({ status: 503, contentType: 'text/plain', body: 'The deployment is unavailable' }));
+  await page.goto('/login');
+  await page.getByRole('textbox', { name: 'Email' }).fill('test@example.com');
+  await page.getByLabel('Password').fill('test-password');
+  await page.getByRole('button', { name: 'Login', exact: true }).click();
+  await expect(page.getByRole('alert')).toHaveText('Sign in service is unavailable (HTTP 503). Please try again shortly.');
+  await expect(page).toHaveURL(/\/login$/);
+});
 test('moves a task and its subtasks to another active tasks list', async ({ page, context }) => {
   const server = await transport(context);
   const target = '64b2f7a9c1e6f9a1b2c3d4e6';

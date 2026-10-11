@@ -4,6 +4,7 @@
   import { onMount } from 'svelte';
   import { page } from '$app/state';
   import { engine, offline } from '#lib/offline';
+  import ListsSidebar from '#lib/ListsSidebar.svelte';
   import '../styles/app.css';
   import '../styles/buttons.css';
   let { children } = $props();
@@ -95,7 +96,10 @@
       <div class="h-20 rounded-lg bg-panel"></div>
     </div>
   {:else if $offline.account}<div class="route-content" data-route={page.url.pathname + page.url.search}>
-      {#key page.url.pathname + page.url.search}<div class="route-enter">{@render children()}</div>{/key}
+      <div class:with-lists={page.url.pathname.startsWith('/tasks') || page.url.pathname === '/timeline'}>
+        {#if page.url.pathname.startsWith('/tasks') || page.url.pathname === '/timeline'}<ListsSidebar />{/if}
+        <div class="route-pane min-w-0">{#key page.url.pathname + page.url.search}<div class="route-enter">{@render children()}</div>{/key}</div>
+      </div>
     </div>
   {:else}<p class="p-5">
       Sign in online once to save your data for offline use. <a

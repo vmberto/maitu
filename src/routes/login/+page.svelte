@@ -12,7 +12,9 @@
         method: 'POST',
         body: new FormData(event.currentTarget as HTMLFormElement),
       });
-      const data = await response.json();
+      const data = await response.json().catch(() => null);
+      if (!data || typeof data !== 'object')
+        throw new Error(`Sign in service is unavailable (HTTP ${response.status}). Please try again shortly.`);
       if (!response.ok) throw new Error(data.error || 'Could not sign in.');
       await change<boolean>('signedOut', () => false);
       // A fresh engine lifecycle is needed after local logout.
