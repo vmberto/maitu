@@ -103,7 +103,7 @@
         description: '',
         complete: false,
         listId,
-        index: tasks.length,
+        index: Math.max(-1, ...tasks.map((task) => task.index ?? 0)) + 1,
         parentTaskId: null,
         createdAt: new Date().toISOString(),
       });
@@ -117,7 +117,19 @@
   }
   async function complete(task: Task) {
     const id = String(task._id);
-    if (list?.archived || task.complete) return;
+    if (list?.archived) return;
+    if (task.complete) {
+      if (!pending.includes(id)) return;
+      try {
+        await engine.update('tasks', id, { complete: false, completedAt: null });
+        clearTimeout(timers.get(id));
+        timers.delete(id);
+        pending = pending.filter((item) => item !== id);
+      } catch {
+        error = 'Could not save completion on your device.';
+      }
+      return;
+    }
     pending = [...pending, id];
     try {
       await engine.update('tasks', id, {
@@ -141,7 +153,7 @@
 
 <ListHeader {list} settings={() => (listSettings = true)} />
 <main
-  class="task-list mx-auto max-w-xl px-5 pb-28"
+  class="task-list mx-auto max-w-xl px-5 pt-3 pb-28"
   style:--list-color={HexColors.get(list?.color ?? 'primary')}
 >
   {#if !list}<p class="py-5">This list is unavailable on this device.</p>
@@ -173,7 +185,7 @@
             class="rubber-touch todo-check"
             aria-label="completeTask"
             aria-pressed={task.complete}
-            disabled={list.archived || task.complete}
+            disabled={list.archived}
             onclick={() => complete(task)}
           ></button>
           <div class="min-w-0 flex-1">
@@ -204,7 +216,7 @@
                     () => (error = 'Could not save this task on your device.'),
                   );
               }}></textarea>{#if task.tags?.length}<div
-                class="mt-1 flex flex-wrap gap-1"
+                class="task-tags flex flex-wrap gap-1"
               >
                 {#each Array.from(new Set(task.tags)) as tag (tag)}<span
                     class="rounded-md px-2 py-0.5 text-xs text-white"
@@ -217,12 +229,12 @@
           {#if normalizeLocation(task.location)}<a
               href={`/tasks/map?listId=${listId}&taskId=${task._id}`}
               aria-label={`See ${task.title} on map`}
-              class="rubber-touch text-sm text-gray-500"
+              class="task-action rubber-touch text-sm text-gray-500"
               ><Icon name="map" size={16} /></a
             >{/if}
           <button
             aria-label={`Task details ${task.title}`}
-            class="rubber-button rubber-icon text-gray-500"
+            class="task-action rubber-button rubber-icon text-gray-500"
             onclick={() => (detailsId = String(task._id))}
             ><Icon name="dots" /></button
           >
@@ -255,7 +267,7 @@
         <button type="submit" class="sr-only">Add task</button>
       </form>{/if}
     {#if completed.length}<h2
-        class="mt-16 mb-3 flex items-center justify-between border-b border-gray-200 py-3 font-semibold"
+        class="mt-16 flex items-center justify-between border-b border-gray-200 py-3 font-semibold"
       >
         Complete Tasks <span
           class="rounded-full bg-panel px-2.5 py-1 text-sm font-normal text-gray-500"
@@ -263,7 +275,7 @@
         >
       </h2>{/if}
     {#each completed.slice(0, completeVisible) as task (String(task._id))}<div
-        class="task-row completed-row flex items-center gap-2 border-b border-gray-200 py-2"
+        class="task-row completed-row flex items-start gap-2 border-b border-gray-200 py-2"
       >
         <button
           class="rubber-touch todo-check"
@@ -301,7 +313,7 @@
                 error = 'Could not save this task.';
               }
             }}></textarea>
-          {#if task.tags?.length}<div class="mt-0.5 flex flex-wrap gap-1">
+          {#if task.tags?.length}<div class="task-tags flex flex-wrap gap-1">
               {#each Array.from(new Set(task.tags)) as tag (tag)}<span
                   class="rounded-md px-2 py-0.5 text-xs text-white"
                   style:background-color="var(--list-color)"
@@ -312,9 +324,9 @@
         {#if normalizeLocation(task.location)}<a
             href={`/tasks/map?listId=${listId}&taskId=${task._id}`}
             aria-label={`See ${task.title} on map`}
-            class="rubber-touch text-gray-500"><Icon name="map" size={16} /></a
+            class="task-action rubber-touch text-gray-500"><Icon name="map" size={16} /></a
           >{/if}<button
-          class="rubber-button rubber-icon"
+          class="task-action rubber-button rubber-icon"
           aria-label={`Task details ${task.title}`}
           onclick={() => (detailsId = String(task._id))}
           ><Icon name="dots" /></button

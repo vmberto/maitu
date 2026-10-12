@@ -1,5 +1,7 @@
 <script lang="ts">
   import Icon from '#lib/Icon.svelte';
+  import Tabs from './ui-lib/Tabs.svelte';
+  import Button from './ui-lib/Button.svelte';
   import { autosize } from '#lib/autosize';
   import { HexColors } from './colors';
   import { drawerBehavior, closeDrawer } from '#lib/drawer';
@@ -28,6 +30,7 @@
   let results = $state<TaskLocation[]>([]);
   let searching = $state(false);
   let selectedPlace = $state<TaskLocation | null>(null);
+  let locationTab = $state('search');
   let moving = $state(false);
   let destination = $state('');
   const destinations = $derived(($offline.account?.lists ?? []).filter(
@@ -159,24 +162,26 @@
     try {
       const response = await fetch(
         `/api/places?q=${encodeURIComponent(search.trim())}`,
+        { signal: AbortSignal.timeout(12000) },
       );
-      const body = await response.json();
-      if (!response.ok) throw new Error(body.error);
+      const body = await response.json().catch(() => null);
+      if (!response.ok || !body) throw new Error(body?.error || 'Place search is unavailable.');
       results = (body.places ?? [])
         .map(normalizeLocation)
         .filter((place: TaskLocation | null): place is TaskLocation => !!place);
-      if (!results.length) error = 'No places found. Paste coordinates below.';
-    } catch {
-      error = 'Place search is unavailable. Paste coordinates below.';
+      selectedPlace = results[0] ?? null;
+      if (!results.length) error = 'No places found. Try adding the city or use Latitude / Longitude.';
+    } catch (cause) {
+      error = cause instanceof Error && cause.name !== 'TimeoutError' ? cause.message : 'Place search timed out. Try again or use Latitude / Longitude.';
     } finally {
       searching = false;
     }
   }
   async function saveLocation(event: SubmitEvent) {
     event.preventDefault();
-    const value = detectedCoordinates;
-    if (selectedPlace && !value) {
-      await save({ location: selectedPlace, addons: ['location'] });
+    const value = locationTab === 'coordinates' ? detectedCoordinates : null;
+    if (locationTab === 'search' && selectedPlace) {
+      await save({ location: normalizeLocation(selectedPlace), addons: ['location'] });
       if (!error) editLocation = false;
       return;
     }
@@ -286,7 +291,7 @@
       <h3 class="mb-3 text-sm text-gray-500">Subtasks</h3>
       <div class="space-y-4">
         {#each children as child (String(child._id))}<div
-            class="flex items-start gap-3 rounded-md px-1 py-1"
+            class="task-row subtask-row flex items-start gap-2 rounded-md"
           >
             <button
               type="button"
@@ -303,7 +308,7 @@
               rows="1"
               {readonly}
               class:subtask-complete={child.complete}
-              class="subtask-title min-w-0 flex-1 resize-none border-0 bg-transparent"
+              class="todo-title subtask-title min-w-0 flex-1 resize-none border-0 bg-transparent"
               oninput={(event) => {
                 childDrafts[String(child._id)] = event.currentTarget.value;
                 void engine
@@ -328,7 +333,7 @@
           </div>{/each}
       </div>
       {#if !readonly}<form
-          class="mt-4 flex items-start gap-3"
+          class="task-row subtask-row mt-4 flex items-start gap-2"
           onsubmit={addSubtask}
         >
           <span class="todo-check opacity-50" aria-hidden="true"
@@ -338,7 +343,7 @@
             bind:value={subtask}
             use:autosize={subtask}
             rows="1"
-            class="subtask-title min-w-0 flex-1 resize-none border-0 bg-transparent"
+            class="todo-title subtask-title min-w-0 flex-1 resize-none border-0 bg-transparent"
             onblur={() => void addSubtask()}
             onkeydown={(event) => {
               if (event.key === 'Enter' && !event.isComposing) {
@@ -392,21 +397,26 @@
           {#if !readonly}<details class="relative">
               <summary
                 aria-label="Location options"
-                class="rubber-button rubber-icon cursor-pointer list-none"
-                >…</summary
+                class="location-options-toggle rubber-touch cursor-pointer list-none"
+                ><Icon name="dots" size={18} /></summary
               >
               <div
-                class="absolute right-0 z-10 w-44 rounded-lg bg-surface p-2 shadow-lg"
+                class="absolute right-0 z-10 mt-2 grid w-44 gap-2 rounded-lg border border-gray-200 bg-surface p-2 shadow-lg"
               >
                 <button
                   class="rubber-button block w-full"
-                  onclick={() => {
+                  onclick={async (event) => {
+                    const menu = event.currentTarget.closest('details');
+                    await save({ location: null });
+                    if (error) return;
                     editLocation = true;
+                    locationTab = 'search';
                     search = task?.title ?? '';
-                    coordinates = place
-                      ? `${place.latitude}, ${place.longitude}`
-                      : '';
-                    locationName = place?.name ?? '';
+                    coordinates = '';
+                    locationName = '';
+                    results = [];
+                    selectedPlace = null;
+                    menu?.removeAttribute('open');
                   }}>Change location</button
                 ><button
                   class="rubber-button block w-full text-danger"
@@ -425,7 +435,10 @@
             href={`/tasks/map?listId=${encodeURIComponent(String(task?.listId))}&taskId=${taskId}`}
             >See on Map</a
           >{/if}
-        {#if !readonly && (!place || editLocation)}<form
+        {#if !readonly && (!place || editLocation)}
+          <div class="mt-4"><Tabs label="Location entry method" value={locationTab} options={[{ value: 'search', label: 'Search Place' }, { value: 'coordinates', label: 'Latitude / Longitude' }]} onchange={(value) => { locationTab = value; error = ''; }} /></div>
+          <div role="tabpanel" aria-label={locationTab === 'search' ? 'Search Place' : 'Latitude / Longitude'}>
+          {#if locationTab === 'search'}<form
             onsubmit={searchPlaces}
             class="mt-3 flex gap-3"
           >
@@ -438,8 +451,8 @@
               minlength="3"
               maxlength="200"
               required
-            /><button class="rubber-button" disabled={searching}
-              >{searching ? 'Searching…' : 'Search'}</button
+            /><Button type="submit" disabled={searching}
+              >{searching ? 'Searching…' : 'Search'}</Button
             >
           </form>
           {#if results.length}<div class="location-results mt-3 overflow-hidden rounded-lg border border-gray-200">
@@ -450,14 +463,13 @@
               >{result.name}<span class="block text-xs text-gray-500"
                 >{result.address}</span
               ></button
-            >{/each}</div>{/if}
+            >{/each}</div>{/if}{/if}
           <form onsubmit={saveLocation} class="mt-4">
-            <label class="mb-3 block text-sm text-gray-500">Latitude, Longitude
-              <input aria-label="Coordinates" bind:value={coordinates} oninput={() => selectedPlace = null} placeholder="-8.0476, -34.8770" class="location-search drawer-input mt-2" />
-            </label>
-            {#if detectedCoordinates}<p class="mb-3 text-sm text-gray-500">Latitude {detectedCoordinates.latitude}, longitude {detectedCoordinates.longitude}</p>{/if}
-            <button disabled={!detectedCoordinates && !selectedPlace} class="rubber-button rubber-primary w-full py-3">Save location</button>
-          </form>{/if}
+            {#if locationTab === 'coordinates'}
+              <input aria-label="Coordinates" bind:value={coordinates} oninput={() => selectedPlace = null} placeholder="0.0000, 0.0000" class="location-search drawer-input mb-3" />
+            {#if detectedCoordinates}<p class="mb-3 text-sm text-gray-500">Latitude {detectedCoordinates.latitude}, longitude {detectedCoordinates.longitude}</p>{/if}{/if}
+            <Button type="submit" disabled={locationTab === 'coordinates' ? !detectedCoordinates : !selectedPlace} class="text-sm text-primary">Save location</Button>
+          </form></div>{/if}
       </section>{/if}
     {#if !readonly}<details class="task-options mt-5 rounded-lg bg-panel p-3">
         <summary

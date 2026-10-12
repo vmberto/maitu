@@ -8,6 +8,52 @@ const user = {
   email: 'pilot@example.com',
 };
 const listId = '64b2f7a9c1e6f9a1b2c3d4e5';
+test('undoes completion during the grace period and appends tasks after sparse indexes', async ({ page, context }) => {
+  const server = await transport(context);
+  server.snapshot.tasks.push({ _id: '64b2f7a9c1e6f9a1b2c3d4e9', listId, title: 'Existing', index: 100, complete: false, createdAt: '2026-01-01', version: 0 });
+  await page.goto(`/tasks?listId=${listId}`);
+  const toggle = page.getByRole('button', { name: 'completeTask', exact: true });
+  await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-pressed', 'true');
+  await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-pressed', 'false');
+  await page.waitForTimeout(3100);
+  await expect(page.getByText('Complete Tasks', { exact: true })).toHaveCount(0);
+  const input = page.getByRole('textbox', { name: 'New task', exact: true });
+  await input.fill('New bottom task');
+  await input.press('Enter');
+  await expect.poll(() => page.locator('[data-sort-id] textarea').evaluateAll((nodes) => nodes.map((node) => (node as HTMLTextAreaElement).value))).toEqual(['Existing', 'New bottom task']);
+  const saved = await device(page);
+  expect(saved.tasks.find((task: any) => task.title === 'Existing').completedAt).toBeNull();
+  expect(saved.tasks.find((task: any) => task.title === 'New bottom task').index).toBe(101);
+});
+test('searches, selects and saves a place using the location tabs', async ({ page, context }) => {
+  await transport(context);
+  const place = { name: 'Marco Zero', address: 'Recife, Brazil', latitude: -8.063, longitude: -34.871, source: 'openstreetmap', placeId: 'N123' };
+  await page.route('**/api/places?*', (route) => route.fulfill({ json: { places: [place] } }));
+  await page.goto(`/tasks?listId=${listId}`);
+  await page.getByRole('textbox', { name: 'New task', exact: true }).fill('Marco Zero');
+  await page.getByRole('textbox', { name: 'New task', exact: true }).press('Enter');
+  await page.getByRole('button', { name: 'Task details Marco Zero' }).click();
+  await page.getByText('Task Options', { exact: true }).click();
+  await page.getByRole('button', { name: 'Location', exact: true }).click();
+  await expect(page.getByRole('textbox', { name: 'Search places' })).toHaveValue('Marco Zero');
+  await expect(page.getByRole('textbox', { name: 'Coordinates' })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Search', exact: true }).click();
+  await expect(page.getByRole('button', { name: /Marco Zero Recife/ })).toHaveAttribute('aria-pressed', 'true');
+  await page.getByRole('button', { name: 'Save location', exact: true }).click();
+  await expect(page.getByRole('link', { name: 'See on Map' })).toBeVisible();
+  expect((await device(page)).tasks.find((task: any) => task.title === 'Marco Zero').location).toEqual(place);
+  await page.getByLabel('Location options', { exact: true }).click();
+  await page.getByRole('button', { name: 'Change location', exact: true }).click();
+  await expect(page.getByRole('link', { name: 'See on Map' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Save location', exact: true })).toBeDisabled();
+  expect((await device(page)).tasks.find((task: any) => task.title === 'Marco Zero').location).toBeNull();
+  await page.getByRole('tab', { name: 'Latitude / Longitude' }).click();
+  await expect(page.getByRole('textbox', { name: 'Coordinates' })).toHaveValue('');
+  await expect(page.getByRole('textbox', { name: 'Coordinates' })).toHaveAttribute('placeholder', '0.0000, 0.0000');
+  await expect(page.getByRole('navigation', { name: 'Your lists' })).toHaveCount(0);
+});
 test('login handles a deployment error returned as plain text', async ({ page }) => {
   await page.route('**/api/auth/login', (route) => route.fulfill({ status: 503, contentType: 'text/plain', body: 'The deployment is unavailable' }));
   await page.goto('/login');
@@ -263,6 +309,7 @@ test('Svelte coordinates, list map, black theme, zoom controls and archived read
     .toBe('fixed');
   await page.getByText('Task Options', { exact: true }).click();
   await page.getByRole('button', { name: 'Location', exact: true }).click();
+  await page.getByRole('tab', { name: 'Latitude / Longitude', exact: true }).click();
   await page
     .getByRole('textbox', { name: 'Coordinates', exact: true })
     .fill('-8.0476, -34.8770');
