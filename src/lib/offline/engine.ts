@@ -4,6 +4,7 @@ import {
   clearActiveAccount,
   read,
   readAccount,
+  readStartup,
 } from './storage';
 import { enqueue, isLegacyCache, mergeSnapshot, newId } from './model';
 import type {
@@ -295,18 +296,14 @@ export function createOfflineEngine(options: {
     }
     void (async () => {
       try {
-        const [signedOut, active] = await Promise.all([
-          read<boolean>('signedOut'),
-          read<string>('active'),
-        ]);
+        const { signedOut, account } = await readStartup();
         if (signedOut) {
           stopped = true;
           redirect('/login');
           setReady(true);
           return;
         }
-        if (active && !stopped)
-          publish((await readAccount(active)) ?? null, false);
+        if (account && !stopped) publish(account, false);
         setReady(true);
         await sync();
       } catch {

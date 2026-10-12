@@ -8,6 +8,56 @@ const user = {
   email: 'pilot@example.com',
 };
 const listId = '64b2f7a9c1e6f9a1b2c3d4e5';
+test('map selection highlights the foreground marker and swipe cards offer directions', async ({ page, context }) => {
+  const server = await transport(context);
+  const ids = ['64b2f7a9c1e6f9a1b2c3d4ea', '64b2f7a9c1e6f9a1b2c3d4eb'];
+  ids.forEach((id, index) => server.snapshot.tasks.push({ _id: id, listId, title: `Place ${index}`, complete: false, createdAt: '2026-01-01', version: 0, addons: ['location'], location: { name: `Place ${index}`, address: '', latitude: -8.0476 + index * .001, longitude: -34.877, source: 'manual', placeId: 'manual' } }));
+  await page.goto(`/tasks/map?listId=${listId}&taskId=${ids[0]}`);
+  await expect(page.locator('.selected-marker')).toHaveCount(1);
+  await expect(page.locator('.map-card.active')).toHaveAttribute('data-task-id', ids[0]);
+  await page.locator('.selected-marker').evaluate((marker) => (marker as HTMLElement).dataset.resumeCheck = 'preserved');
+  server.snapshot.tasks[0].title = 'Updated place';
+  await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+  await expect(page.locator('.map-card.active h2')).toHaveText('Updated place');
+  await expect(page.locator('.selected-marker')).toHaveAttribute('data-resume-check', 'preserved');
+  await expect(page.locator('.map-card.active').getByRole('link', { name: 'Directions' })).toHaveAttribute('href', 'https://www.google.com/maps/dir/?api=1&destination=-8.0476,-34.877');
+  await expect.poll(() => page.locator('.selected-marker').evaluate((node) => Number((node as HTMLElement).style.zIndex))).toBeGreaterThan(9000);
+  await page.locator('.map-cards').evaluate((strip) => {
+    strip.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+    const card = strip.children[1] as HTMLElement;
+    strip.scrollLeft = card.offsetLeft - (strip.clientWidth - card.clientWidth) / 2;
+  });
+  await expect(page.locator('.map-card.active')).toHaveAttribute('data-task-id', ids[1]);
+  await expect(page.locator('.selected-marker')).toHaveCount(1);
+  const previousCard = page.getByRole('button', { name: 'Focus Updated place on map' });
+  const box = await previousCard.boundingBox();
+  expect(box).not.toBeNull();
+  await page.mouse.click(Math.max(5, box!.x + box!.width - 5), box!.y + 30);
+  await expect(page.locator('.map-card.active')).toHaveAttribute('data-task-id', ids[0]);
+});
+test('cached startup renders a large saved account without network', async ({ page, context }) => {
+  test.setTimeout(60000);
+  const server = await transport(context);
+  for (let index = 0; index < 5000; index++) server.snapshot.tasks.push({
+    _id: (index + 100).toString(16).padStart(24, '0'), listId, title: `Task ${index}`, complete: false,
+    createdAt: '2026-01-01', version: 0, index,
+  });
+  await page.goto('/');
+  await expect(page.getByRole('link', { name: '📝 Pilot list' })).toBeVisible();
+  await expect.poll(async () => (await device(page)).tasks.length).toBe(5000);
+  await page.evaluate(async () => { await navigator.serviceWorker.ready; });
+  await expect.poll(() => page.evaluate(() => !!navigator.serviceWorker.controller)).toBe(true);
+  await context.setOffline(true);
+  const samples: number[] = [];
+  for (let run = 0; run < 10; run++) {
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await expect(page.getByRole('link', { name: '📝 Pilot list' })).toBeVisible();
+    samples.push(await page.evaluate(() => performance.now()));
+  }
+  console.log(`Cached startup with 5,000 tasks: median ${samples.sort((a, b) => a - b)[5].toFixed(0)}ms, max ${Math.max(...samples).toFixed(0)}ms across 10 offline reloads`);
+  await test.info().attach('cached-startup.json', { body: JSON.stringify({ tasks: 5000, samplesMs: samples }), contentType: 'application/json' });
+  expect(Math.max(...samples)).toBeLessThan(1500);
+});
 test('undoes completion during the grace period and appends tasks after sparse indexes', async ({ page, context }) => {
   const server = await transport(context);
   server.snapshot.tasks.push({ _id: '64b2f7a9c1e6f9a1b2c3d4e9', listId, title: 'Existing', index: 100, complete: false, createdAt: '2026-01-01', version: 0 });
@@ -180,6 +230,7 @@ test('Svelte saves through the shared engine, reloads offline and retries a lost
     return { path, bytes: content.length, gzipBytes: gzipSync(content).length };
   });
   const gzipBytes = metrics.reduce((sum, item) => sum + item.gzipBytes, 0);
+  expect(gzipBytes, 'Keep the lists startup JavaScript below 55 KB gzip').toBeLessThan(55000);
   console.log(
     `Svelte lists initial JavaScript: ${gzipBytes} gzip bytes across ${files.length} files`,
   );

@@ -2,7 +2,7 @@ import 'fake-indexeddb/auto';
 import { webcrypto } from 'node:crypto';
 import { enqueue, mergeSnapshot } from './model';
 import type { Entity, LocalAccount } from './model';
-import { change, readAccount, accountKey } from './storage';
+import { change, readAccount, accountKey, readStartup } from './storage';
 
 const user = {
   _id: '507f191e810c19729de860ea',
@@ -16,6 +16,15 @@ const list = {
   index: 0,
 } as Entity;
 const initial: LocalAccount = { user, lists: [list], tasks: [], queue: [] };
+it('loads the active account consistently and never restores a signed-out account', async () => {
+  await change(accountKey(user._id), () => initial);
+  await change('active', () => user._id);
+  await change('signedOut', () => false);
+  expect(await readStartup()).toEqual({ signedOut: false, account: initial });
+  await change('signedOut', () => true);
+  expect(await readStartup()).toEqual({ signedOut: true, account: null });
+  await change('signedOut', () => false);
+});
 
 beforeAll(() => {
   Object.defineProperty(globalThis, 'crypto', { value: webcrypto });

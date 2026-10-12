@@ -32,6 +32,27 @@ export async function read<T>(key: string): Promise<T | undefined> {
   });
 }
 
+export async function readStartup(): Promise<{ signedOut: boolean; account: LocalAccount | null }> {
+  const db = await open();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE, 'readonly');
+    const store = tx.objectStore(STORE);
+    let signedOut = false;
+    let account: LocalAccount | null = null;
+    store.get('signedOut').onsuccess = (event) => {
+      signedOut = !!(event.target as IDBRequest).result;
+    };
+    store.get('active').onsuccess = (event) => {
+      const active = (event.target as IDBRequest).result;
+      if (active) store.get(accountKey(active)).onsuccess = (event) => {
+        account = (event.target as IDBRequest).result ?? null;
+      };
+    };
+    tx.oncomplete = () => resolve({ signedOut, account: signedOut ? null : account });
+    tx.onabort = tx.onerror = () => reject(tx.error ?? new Error('Could not read saved device data.'));
+  });
+}
+
 // Read + modify + write in one IndexedDB transaction also serializes edits across tabs.
 export async function change<T>(
   key: string,

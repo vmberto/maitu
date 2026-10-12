@@ -60,7 +60,7 @@
     if (!value || !Number.isFinite(new Date(value).getTime()))
       return 'Date unavailable';
     return new Date(value).toLocaleString([], {
-      day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
+      day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit',
     });
   }
   async function toggleChild(child: Task) {

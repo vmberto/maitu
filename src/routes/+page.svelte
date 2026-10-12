@@ -1,5 +1,4 @@
 <script lang="ts">
-  import ListAppearance from '#lib/ListAppearance.svelte';
   import { flip } from 'svelte/animate';
   import Icon from '#lib/Icon.svelte';
   import { drawerBehavior, closeDrawer } from '#lib/drawer';
@@ -23,6 +22,7 @@
   let error = $state('');
   let menu: HTMLDialogElement;
   let newList: HTMLDialogElement;
+  let newListOpen = $state(false);
   let newListUnlock: (() => void) | undefined;
   onDestroy(() => newListUnlock?.());
   let unlock: (() => void) | undefined;
@@ -100,7 +100,7 @@
           title="Use arrow keys to reorder">Reorder</button
         ><a
           href={`/${list.type === ListType.timeline ? 'timeline' : 'tasks'}?listId=${encodeURIComponent(String(list._id))}`}
-          data-sveltekit-preload-code="viewport"
+          data-sveltekit-preload-code="hover"
           class="list-card-link flex min-w-0 flex-1 items-center gap-3 font-medium"
           style:color={HexColors.get(list.color)}
           ><span class="text-4xl">{list.emoji}</span><span>{list.title}</span
@@ -116,6 +116,7 @@
   <button
     class="rubber-button mt-4 w-full text-primary"
     onclick={() => {
+      newListOpen = true;
       newList.showModal();
       newListUnlock = lockBody();
     }}>New List</button
@@ -130,6 +131,7 @@
     closeDrawer(menu);
   }}
   onclose={() => {
+    newListOpen = false;
     unlock?.();
     unlock = undefined;
   }}
@@ -222,14 +224,14 @@
         ></select
       ></label
     >
-    <ListAppearance
+    {#if newListOpen}{#await import('#lib/ListAppearance.svelte') then module}{@const ListAppearance = module.default}<ListAppearance
       {color}
       {emoji}
       onchange={(data) => {
         color = data.color ?? color;
         emoji = data.emoji ?? emoji;
       }}
-    /><button
+    />{/await}{/if}<button
       form="new-list-form"
       type="submit"
       class="rubber-button rubber-primary mt-5 w-full">Add list</button
