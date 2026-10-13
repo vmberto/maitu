@@ -19,9 +19,6 @@
   "dependencies": {
     "@sveltejs/kit": "3.0.1",
     "@tiptap/core": "^3.32.0",
-    "@tiptap/extension-image": "^3.32.0",
-    "@tiptap/extension-list": "^3.32.0",
-    "@tiptap/extension-table": "^3.32.0",
     "@tiptap/markdown": "^3.32.0",
     "@tiptap/starter-kit": "^3.32.0",
     "bcryptjs": "^3.0.3",

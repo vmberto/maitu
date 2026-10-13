@@ -261,9 +261,8 @@ test('Svelte saves through the shared engine, reloads offline and retries a lost
   await page
     .getByRole('button', { name: 'Task details Offline Svelte task' })
     .click();
-  await page
-    .getByRole('textbox', { name: 'Description', exact: true })
-    .fill('Durable description');
+  await page.getByRole('textbox', { name: 'Description', exact: true }).click();
+  await page.getByRole('textbox', { name: 'Description', exact: true }).fill('Durable description');
   await page.getByRole('button', { name: 'Close panel', exact: true }).click();
   await page.reload();
   await expect(
@@ -889,16 +888,19 @@ test('mixed lists create notes and surface related tasks through archive, restor
   await page.getByRole('combobox', { name: 'List type' }).selectOption('mixed');
   await page.getByRole('button', { name: 'Add list', exact: true }).click();
   await page.getByRole('link', { name: '📝 Diário' }).click();
-  await expect(page.getByRole('tab', { name: 'All', exact: true })).toHaveAttribute('aria-selected', 'true');
+  await expect(page.getByRole('tab', { name: 'Tasks', exact: true })).toHaveAttribute('aria-selected', 'true');
   await page.getByRole('tab', { name: 'Notes', exact: true }).click();
-  const input = page.getByRole('textbox', { name: 'New item', exact: true });
+  const input = page.getByRole('textbox', { name: 'New note', exact: true });
+  await expect(input).toHaveAttribute('placeholder', 'Add note…');
   await input.fill('Searching for a Home');
   await input.press('Enter');
   await page.getByRole('button', { name: 'Open note Searching for a Home', exact: true }).click();
   const sheet = page.getByRole('dialog');
   await expect(sheet.getByText('Open', { exact: true })).toHaveCount(0);
+  await sheet.getByRole('textbox', { name: 'Description' }).click();
   await sheet.getByRole('textbox', { name: 'Description' }).fill('# Our priorities\n- Quiet street\n- Natural light\n\n# Things to investigate\nCompare building fees.');
-  await expect(sheet.getByRole('heading', { name: 'Our priorities' })).toBeVisible();
+  await sheet.getByRole('heading', { name: 'Tags', exact: true }).click();
+  await expect(sheet.locator('.markdown-editor h1').first()).toHaveText('Our priorities');
   await sheet.getByRole('textbox', { name: 'New tag', exact: true }).fill('home search');
   await sheet.getByRole('textbox', { name: 'New tag', exact: true }).press('Enter');
   await sheet.getByRole('textbox', { name: 'New subtask', exact: true }).fill('Contact the agent');
@@ -939,8 +941,9 @@ test('mixed lists create notes and surface related tasks through archive, restor
   await expect.poll(() => page.evaluate(() => !!navigator.serviceWorker.controller)).toBe(true);
   await context.setOffline(true);
   await page.reload();
-  await expect(page.getByRole('button', { name: 'Open note Searching for a Home', exact: true })).toBeVisible();
   await expect(page.getByRole('textbox', { name: 'Task Contact the agent', exact: true })).toBeVisible();
+  await page.getByRole('tab', { name: 'Notes', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Open note Searching for a Home', exact: true })).toBeVisible();
 });
 
 
@@ -952,19 +955,19 @@ test('existing task lists can enable Tasks & Notes without losing entries', asyn
   await page.getByRole('button', { name: 'List settings', exact: true }).click();
   await page.getByRole('combobox', { name: 'List type' }).selectOption('mixed');
   await page.getByRole('button', { name: 'Done', exact: true }).click();
-  await expect(page.getByRole('tab', { name: 'All', exact: true })).toBeVisible();
+  await expect(page.getByRole('tab', { name: 'Tasks', exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Task details Existing', exact: true }).click();
   const sheet = page.getByRole('dialog');
-  await expect(sheet.getByRole('textbox', { name: 'Description' })).toHaveValue('Keep my notes');
+  await expect(sheet.getByRole('textbox', { name: 'Description' })).toHaveText('Keep my notes');
   await sheet.getByText('Task Options', { exact: true }).click();
   await sheet.getByRole('button', { name: 'Convert to note', exact: true }).click();
-  await expect(sheet.getByRole('textbox', { name: 'Description' })).toHaveValue('Keep my notes');
+  await expect(sheet.getByRole('textbox', { name: 'Description' })).toHaveText('Keep my notes');
   await expect(sheet.getByRole('button', { name: 'Convert to task', exact: true })).toBeVisible();
   await page.screenshot({ path: '/tmp/maitu-note-mobile.png' });
   await sheet.getByRole('button', { name: 'Close panel' }).click();
   await expect(sheet).not.toBeVisible();
-  await page.getByRole('tab', { name: 'All', exact: true }).focus();
-  await page.keyboard.press('ArrowRight');
+  await page.getByRole('tab', { name: 'Notes', exact: true }).focus();
+  await page.keyboard.press('ArrowLeft');
   await expect(page.getByRole('tab', { name: 'Tasks', exact: true })).toHaveAttribute('aria-selected', 'true');
   await expect(page.getByRole('button', { name: 'Open note Existing', exact: true })).toHaveCount(0);
   await page.keyboard.press('ArrowRight');
@@ -973,23 +976,26 @@ test('existing task lists can enable Tasks & Notes without losing entries', asyn
   expect(server.snapshot.tasks.find((task) => task.title === 'Existing').description).toBe('Keep my notes');
 });
 
-test('item details scroll together, render Markdown while typing and expand every archived note', async ({ page, context }) => {
+test('item details scroll together, edit Markdown on focus and expand every archived note', async ({ page, context }) => {
   const server = await transport(context);
   server.snapshot.lists[0].type = 'mixed';
   const parent = '64b2f7a9c1e6f9a1b2c3d4ef';
   server.snapshot.tasks.push({ _id: parent, listId, title: 'A task with a long title that wraps naturally on mobile', description: '', complete: false, createdAt: '2026-01-01', version: 0, addons: ['location'], location: { name: 'Home', address: 'Recife', latitude: -8, longitude: -34, source: 'manual', placeId: 'manual' } });
   for (let index = 0; index < 35; index++) {
     server.snapshot.tasks.push({ _id: (index + 200).toString(16).padStart(24, '0'), listId, title: `Related ${index}`, parentTaskId: parent, complete: false, createdAt: '2026-01-01', version: 0 });
-    server.snapshot.tasks.push({ _id: (index + 300).toString(16).padStart(24, '0'), listId, type: 'note', archived: true, title: `Archived ${index}`, description: '', complete: false, createdAt: '2026-01-01', version: 0 });
+    server.snapshot.tasks.push({ _id: (index + 300).toString(16).padStart(24, '0'), listId, type: 'note', archived: true, title: index === 34 ? 'Archived 34 ' + 'A long note title '.repeat(20) : `Archived ${index}`, description: '', complete: false, createdAt: '2026-01-01', version: 0 });
   }
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(`/tasks?listId=${listId}`);
+  await expect(page.getByRole('textbox', { name: 'New task', exact: true })).toHaveAttribute('placeholder', 'Add task…');
   const archive = page.locator('details').filter({ has: page.locator('summary').filter({ hasText: 'Archived Notes' }) });
-  await expect(archive.getByRole('button', { name: 'Open archived note Archived 34', exact: true })).not.toBeVisible();
+  await expect(archive.getByRole('button', { name: /^Open archived note Archived 34 / })).not.toBeVisible();
   await archive.locator('summary').click();
   await expect(archive.getByRole('button')).toHaveCount(35);
-  await expect(archive.getByRole('button', { name: 'Open archived note Archived 34', exact: true })).toBeVisible();
-  await archive.getByRole('button', { name: 'Open archived note Archived 34', exact: true }).click();
+  await expect(archive.getByRole('button', { name: /^Open archived note Archived 34 / })).toBeVisible();
+  const archivedIcon = await archive.getByRole('button', { name: /^Open archived note Archived 34 / }).locator('svg').boundingBox();
+  expect(archivedIcon!.width).toBe(24);
+  await archive.getByRole('button', { name: /^Open archived note Archived 34 / }).click();
   await page.getByRole('button', { name: 'Close panel', exact: true }).click();
   await expect(page.getByRole('dialog')).not.toBeVisible();
   await page.getByRole('button', { name: 'Task details A task with a long title that wraps naturally on mobile', exact: true }).click();
@@ -999,19 +1005,35 @@ test('item details scroll together, render Markdown while typing and expand ever
   await expect(sheet.getByRole('button', { name: 'Edit note', exact: true })).toHaveCount(0);
   const close = await sheet.getByRole('button', { name: 'Close panel', exact: true }).boundingBox();
   const panel = await sheet.boundingBox();
-  expect(close!.x + close!.width).toBeLessThanOrEqual(panel!.x + panel!.width - 16);
-  expect(close!.y).toBeGreaterThanOrEqual(panel!.y + 16);
+  expect(close!.x + close!.width).toBeLessThanOrEqual(panel!.x + panel!.width - 14);
+  expect(close!.y).toBeGreaterThanOrEqual(panel!.y + 14);
+  await expect(page.getByRole('tab')).toHaveCount(2);
+  await expect(page.getByRole('tab', { name: 'All', exact: true })).toHaveCount(0);
   const description = sheet.getByRole('textbox', { name: 'Description', exact: true });
-  await description.fill('# Priorities\n\n**Quiet street** and *natural light*.\n\n- Room to work\n\n[Safe link](https://example.com)\n\n<img src="x" onerror="window.markdownExecuted=true"><a href="javascript:window.markdownExecuted=true">Unsafe link</a>');
+  await description.click();
+  await description.fill('# Priorities\n\n**Quiet street** and *natural light*.\n\n- Room to work\n\nhttps://example.com/a/very/long/property/listing?ref=research\n\n[Safe link](https://example.com)\n\n[Broken link](https://%)\n\n<img src="x" onerror="window.markdownExecuted=true"><a href="javascript:window.markdownExecuted=true">Unsafe link</a>');
   await expect(description).toBeFocused();
-  const preview = sheet.getByRole('region', { name: 'Markdown preview' });
-  await expect(preview.locator('strong')).toHaveText('Quiet street');
-  await expect(preview.locator('em')).toHaveText('natural light');
-  await expect(preview.getByRole('link', { name: 'Safe link', exact: true })).toHaveAttribute('href', 'https://example.com');
-  await expect(preview.locator('script, [onerror], [href^="javascript:"]')).toHaveCount(0);
+  await expect(sheet.locator('.markdown-editor textarea')).toHaveCount(1);
+  await expect(sheet.locator('.markdown-editor .rendered')).toHaveCount(0);
+  await sheet.getByRole('heading', { name: 'Tags', exact: true }).click();
+  const rendered = sheet.locator('.markdown-editor .rendered');
+  await expect(sheet.locator('.markdown-editor textarea')).toHaveCount(0);
+  await expect(rendered.locator('strong')).toHaveText('Quiet street');
+  await expect(rendered.locator('em')).toHaveText('natural light');
+  await expect(rendered.getByRole('link', { name: 'Safe link', exact: true })).toHaveAttribute('href', 'https://example.com');
+  const chip = rendered.getByRole('link', { name: 'https://example.com/a/very/long/property/listing?ref=research', exact: true });
+  await expect(chip.locator('.url-icon')).toHaveCount(1);
+  await expect(chip).toHaveAttribute('title', 'https://example.com/a/very/long/property/listing?ref=research');
+  await page.screenshot({ path: '/tmp/maitu-url-chips.png' });
+  await chip.focus();
+  await expect(sheet.locator('.markdown-editor textarea')).toHaveCount(0);
+  await expect(rendered.locator('script, [onerror], [href^="javascript:"]')).toHaveCount(0);
   expect(await page.evaluate(() => (window as any).markdownExecuted)).toBeUndefined();
-  await description.fill('# Updated while typing\n\n- Another priority');
-  await expect(preview.getByRole('heading', { name: 'Updated while typing', exact: true })).toBeVisible();
+  await rendered.locator('h1').click();
+  await expect(description).toHaveValue(/# Priorities/);
+  await description.fill('# Updated while editing\n\n- Another priority');
+  await sheet.getByRole('heading', { name: 'Tags', exact: true }).click();
+  await expect(rendered.locator('h1')).toHaveText('Updated while editing');
   const headerBefore = await sheet.locator('.drawer-header').boundingBox();
   await sheet.locator('.detail-scroll').evaluate((node) => node.scrollTop = 400);
   const headerAfter = await sheet.locator('.drawer-header').boundingBox();
@@ -1022,5 +1044,6 @@ test('item details scroll together, render Markdown while typing and expand ever
   await sheet.getByText('Task Options', { exact: true }).click();
   await expect(sheet.getByRole('button', { name: 'Clone Task', exact: true })).toBeVisible();
   await sheet.locator('.detail-scroll').evaluate((node) => node.scrollTop = 0);
+  expect(await sheet.locator('.drawer-body').evaluate((node) => parseFloat(getComputedStyle(node).paddingBottom))).toBeGreaterThanOrEqual(112);
   await page.screenshot({ path: '/tmp/maitu-improved-detail.png' });
 });

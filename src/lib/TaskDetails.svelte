@@ -269,7 +269,7 @@
     <button
       class="rubber-touch task-header-close"
       aria-label="Close panel"
-      onclick={() => closeDrawer(dialog)}>×</button
+      onclick={() => closeDrawer(dialog)}><Icon name="close" size={20} /></button
     >
   </header>
   <div class="drawer-body">
@@ -502,20 +502,20 @@
 
 <style>
   .detail-scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
-  .task-drawer :global(.drawer-header) { display: block; position: relative; padding: 24px 72px 24px 24px; touch-action: pan-y; }
-  .task-drawer :global(.task-header-close) { position: absolute; top: 20px; right: 20px; }
-  .task-drawer h2 { margin: 0 0 12px; font-size: 26px; line-height: 1.35; }
-  .task-drawer :global(.drawer-body) { display: flex; flex-direction: column; gap: 24px; overflow: visible; padding: 24px 24px calc(112px + env(safe-area-inset-bottom)); }
-  .task-drawer :global(.subtask-row) { margin: 0; border-bottom: 1px solid rgb(var(--gray-200)); padding: 12px 0; border-radius: 0; }
-  .task-drawer :global(.task-options) { border-top: 1px solid rgb(var(--gray-200)); padding-top: 20px; }
-  .entry-actions { display: flex; flex-direction: column; gap: 20px; padding-top: 20px; }
+  .task-drawer :global(.drawer-header) { display: block; position: relative; padding: 16px 64px 16px 20px; border-bottom: 0; touch-action: pan-y; }
+  .task-drawer :global(.task-header-close) { position: absolute; top: 14px; right: 16px; }
+  .task-drawer h2 { margin: 0 0 8px; font-size: 22px; line-height: 1.35; }
+  .task-drawer :global(.drawer-body) { display: flex; flex-direction: column; gap: 16px; overflow: visible; padding: 8px 20px calc(112px + env(safe-area-inset-bottom)); }
+  .task-drawer :global(.subtask-row) { margin: 0; border-bottom: 0; padding: 8px 0; border-radius: 0; }
+  .task-drawer :global(.task-options) { background: rgb(var(--panel)); border-radius: 12px; padding: 16px; }
+  .entry-actions { display: flex; flex-direction: column; gap: 16px; padding-top: 16px; }
   .task-drawer :global(.option-row) { padding: 10px 0; }
   .task-drawer :global(.drawer-body form > span.inline-flex) { background: rgb(54 100 255 / 10%); border-radius: 999px; }
   dialog::backdrop { background: rgb(0 0 0 / 0.5); }
   @media (max-width: 480px) {
-    .task-drawer :global(.drawer-header) { padding: 20px 64px 20px 20px; }
-    .task-drawer :global(.drawer-body) { padding: 20px 20px calc(112px + env(safe-area-inset-bottom)); }
-    .task-drawer :global(.task-header-close) { top: 16px; right: 16px; }
-    .task-drawer h2 { font-size: 24px; }
+    .task-drawer :global(.drawer-header) { padding: 16px 60px 12px 16px; }
+    .task-drawer :global(.drawer-body) { padding: 8px 16px calc(112px + env(safe-area-inset-bottom)); }
+    .task-drawer :global(.task-header-close) { top: 14px; right: 14px; }
+    .task-drawer h2 { font-size: 21px; }
   }
 </style>
