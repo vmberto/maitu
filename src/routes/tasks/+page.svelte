@@ -159,7 +159,7 @@
 
 <ListHeader {list} settings={() => (listSettings = true)} />
 <main
-  class="task-list mx-auto max-w-xl px-5 pt-3 pb-28"
+  class="task-list mx-auto max-w-xl px-5 pb-28"
   style:--list-color={HexColors.get(list?.color ?? 'primary')}
 >
   {#if !list}<p class="py-5">This list is unavailable on this device.</p>

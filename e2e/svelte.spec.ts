@@ -131,6 +131,15 @@ test('moves a task and its subtasks to another active tasks list', async ({ page
   await expect.poll(async () => (await device(page)).tasks.filter((task: any) => task.listId === target).length).toBe(2);
   await expect(page.getByRole('button', { name: 'Task details Move me' })).toHaveCount(0);
 });
+async function pasteDescription(page: Page, text: string) {
+  const editor = page.getByRole('textbox', { name: 'Description', exact: true });
+  await editor.click();
+  await editor.evaluate((node, text) => {
+    const clipboardData = new DataTransfer();
+    clipboardData.setData('text/plain', text);
+    node.dispatchEvent(new ClipboardEvent('paste', { bubbles: true, cancelable: true, clipboardData }));
+  }, text);
+}
 async function transport(context: BrowserContext) {
   const snapshot: { lists: any[]; tasks: any[] } = {
     lists: [
@@ -898,7 +907,7 @@ test('mixed lists create notes and surface related tasks through archive, restor
   const sheet = page.getByRole('dialog');
   await expect(sheet.getByText('Open', { exact: true })).toHaveCount(0);
   await sheet.getByRole('textbox', { name: 'Description' }).click();
-  await sheet.getByRole('textbox', { name: 'Description' }).fill('# Our priorities\n- Quiet street\n- Natural light\n\n# Things to investigate\nCompare building fees.');
+  await pasteDescription(page, '# Our priorities\n- Quiet street\n- Natural light\n\n# Things to investigate\nCompare building fees.');
   await sheet.getByRole('heading', { name: 'Tags', exact: true }).click();
   await expect(sheet.locator('.markdown-editor h1').first()).toHaveText('Our priorities');
   await sheet.getByRole('textbox', { name: 'New tag', exact: true }).fill('home search');
@@ -976,7 +985,7 @@ test('existing task lists can enable Tasks & Notes without losing entries', asyn
   expect(server.snapshot.tasks.find((task) => task.title === 'Existing').description).toBe('Keep my notes');
 });
 
-test('item details scroll together, edit Markdown on focus and expand every archived note', async ({ page, context }) => {
+test('item details scroll together, edit bold and bullet lists live and expand every archived note', async ({ page, context }) => {
   const server = await transport(context);
   server.snapshot.lists[0].type = 'mixed';
   const parent = '64b2f7a9c1e6f9a1b2c3d4ef';
@@ -1010,30 +1019,47 @@ test('item details scroll together, edit Markdown on focus and expand every arch
   await expect(page.getByRole('tab')).toHaveCount(2);
   await expect(page.getByRole('tab', { name: 'All', exact: true })).toHaveCount(0);
   const description = sheet.getByRole('textbox', { name: 'Description', exact: true });
-  await description.click();
-  await description.fill('# Priorities\n\n**Quiet street** and *natural light*.\n\n- Room to work\n\nhttps://example.com/a/very/long/property/listing?ref=research\n\n[Safe link](https://example.com)\n\n[Broken link](https://%)\n\n<img src="x" onerror="window.markdownExecuted=true"><a href="javascript:window.markdownExecuted=true">Unsafe link</a>');
+  await pasteDescription(page, '# Priorities\n\n**Quiet street** and *natural light*.\n\n- Room to work\n\nhttps://example.com/a/very/long/property/listing?ref=research\n\n[Safe link](https://example.com)\n\n<img src="x" onerror="window.markdownExecuted=true"><a href="javascript:window.markdownExecuted=true">Unsafe link</a>');
   await expect(description).toBeFocused();
-  await expect(sheet.locator('.markdown-editor textarea')).toHaveCount(1);
-  await expect(sheet.locator('.markdown-editor .rendered')).toHaveCount(0);
-  await sheet.getByRole('heading', { name: 'Tags', exact: true }).click();
-  const rendered = sheet.locator('.markdown-editor .rendered');
   await expect(sheet.locator('.markdown-editor textarea')).toHaveCount(0);
-  await expect(rendered.locator('strong')).toHaveText('Quiet street');
-  await expect(rendered.locator('em')).toHaveText('natural light');
-  await expect(rendered.getByRole('link', { name: 'Safe link', exact: true })).toHaveAttribute('href', 'https://example.com');
-  const chip = rendered.getByRole('link', { name: 'https://example.com/a/very/long/property/listing?ref=research', exact: true });
-  await expect(chip.locator('.url-icon')).toHaveCount(1);
-  await expect(chip).toHaveAttribute('title', 'https://example.com/a/very/long/property/listing?ref=research');
-  await page.screenshot({ path: '/tmp/maitu-url-chips.png' });
-  await chip.focus();
-  await expect(sheet.locator('.markdown-editor textarea')).toHaveCount(0);
-  await expect(rendered.locator('script, [onerror], [href^="javascript:"]')).toHaveCount(0);
+  await expect(description.locator('strong')).toHaveText('Quiet street');
+  await expect(description.locator('em')).toHaveText('natural light');
+  await expect(description.locator('ul li')).toHaveText('Room to work');
+  const chip = description.getByRole('link', { name: 'example.com', exact: true });
+  await expect(chip).toHaveAttribute('href', 'https://example.com/a/very/long/property/listing?ref=research');
+  await expect(chip).toHaveAttribute('target', '_blank');
+  await expect(chip).toHaveAttribute('rel', 'noopener noreferrer');
+  await page.screenshot({ path: '/tmp/maitu-live-editor.png' });
+  await context.route('https://example.com/**', (route) => route.fulfill({ body: '<p>Destination</p>', contentType: 'text/html' }));
+  const popupPromise = page.waitForEvent('popup');
+  await chip.click();
+  const popup = await popupPromise;
+  await expect(popup).toHaveURL('https://example.com/a/very/long/property/listing?ref=research');
+  await popup.close();
+  await expect(description.locator('script, [onerror], [href^="javascript:"]')).toHaveCount(0);
   expect(await page.evaluate(() => (window as any).markdownExecuted)).toBeUndefined();
-  await rendered.locator('h1').click();
-  await expect(description).toHaveValue(/# Priorities/);
-  await description.fill('# Updated while editing\n\n- Another priority');
+  await description.fill('');
+  await description.pressSequentially('- ');
+  await expect(description.locator('ul')).toHaveCount(1);
+  await description.press('ControlOrMeta+B');
+  await description.pressSequentially('New priorities');
+  await expect(description.locator('ul li strong')).toHaveText('New priorities');
+  await description.press('ArrowRight');
+  await description.press('End');
+  await description.press('Enter');
+  await description.pressSequentially('Another priority');
+  await expect(description.locator('ul li')).toHaveCount(2);
+  await expect(description.locator('ul li').nth(1)).toHaveText('Another priority');
+  await description.press('Enter');
+  await description.press('Enter');
+  await description.pressSequentially('A closing paragraph');
+  await expect(description.locator('ul li')).toHaveCount(2);
+  await expect(description.locator('p').last()).toHaveText('A closing paragraph');
+  await expect(sheet.getByRole('button', { name: 'Bold', exact: true })).toHaveCount(0);
+  await expect(sheet.getByRole('button', { name: 'Bullet list', exact: true })).toHaveCount(0);
   await sheet.getByRole('heading', { name: 'Tags', exact: true }).click();
-  await expect(rendered.locator('h1')).toHaveText('Updated while editing');
+  await expect(description.locator('ul')).toBeVisible();
+  await expect.poll(async () => (await device(page)).tasks.find((task: any) => task._id === parent).description).toContain('**New priorities**');
   const headerBefore = await sheet.locator('.drawer-header').boundingBox();
   await sheet.locator('.detail-scroll').evaluate((node) => node.scrollTop = 400);
   const headerAfter = await sheet.locator('.drawer-header').boundingBox();
@@ -1046,4 +1072,10 @@ test('item details scroll together, edit Markdown on focus and expand every arch
   await sheet.locator('.detail-scroll').evaluate((node) => node.scrollTop = 0);
   expect(await sheet.locator('.drawer-body').evaluate((node) => parseFloat(getComputedStyle(node).paddingBottom))).toBeGreaterThanOrEqual(112);
   await page.screenshot({ path: '/tmp/maitu-improved-detail.png' });
+  await sheet.getByRole('button', { name: 'Close panel', exact: true }).click();
+  await expect(sheet).not.toBeVisible();
+  await page.getByRole('button', { name: 'Task details A task with a long title that wraps naturally on mobile', exact: true }).click();
+  await expect(sheet.getByRole('textbox', { name: 'Description', exact: true }).locator('ul li strong').first()).toHaveText('New priorities');
+  await expect(sheet.getByRole('textbox', { name: 'Description', exact: true }).locator('ul li')).toHaveCount(2);
+
 });
