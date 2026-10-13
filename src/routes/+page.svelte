@@ -219,7 +219,7 @@
         aria-label="List type"
         bind:value={type}
         class="drawer-input mt-1"
-        ><option value={ListType.tasks}>Tasks</option><option
+        ><option value={ListType.tasks}>Tasks</option><option value={ListType.mixed}>Tasks &amp; Notes</option><option
           value={ListType.timeline}>Timeline</option
         ></select
       ></label

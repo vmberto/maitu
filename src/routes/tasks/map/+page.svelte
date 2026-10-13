@@ -19,6 +19,7 @@
     ($offline.account?.tasks.filter(
       (item) =>
         !item.deleted &&
+        !(item as Task).archived &&
         String((item as Task).listId) === listId &&
         normalizeLocation((item as Task).location),
     ) ?? []) as Task[],
@@ -159,7 +160,7 @@
 </script>
 
 <ListHeader {list} />
-<main class="relative h-[calc(100dvh-3rem)]">
+<main class="map-page relative h-[calc(100dvh-3rem)]">
   <div
     bind:this={container}
     class="h-full w-full"
@@ -177,7 +178,7 @@
       data-task-id={String(task._id)}
       class:active={String(task._id) === selectedId}
       class:complete={task.complete}
-      aria-label={`${task.title}, ${task.complete ? 'completed' : 'to do'}`}
+      aria-label={`${task.title}, ${task.type === 'note' ? 'note' : task.complete ? 'completed' : 'to do'}`}
       class="map-card rounded-xl bg-surface p-4 text-gray-900 shadow-lg"
     >
       {#if String(task._id) !== selectedId}<button type="button" class="map-card-select" aria-label={`Focus ${task.title} on map`} onclick={() => selectedId = String(task._id)}></button>{/if}
@@ -196,7 +197,7 @@
       <a
         class="rubber-button mt-3 inline-block text-primary"
         href={`/${list?.type === 'timeline' ? 'timeline' : 'tasks'}?listId=${listId}&taskId=${task._id}`}
-        >Open task</a
+        >{task.type === 'note' ? 'Open note' : 'Open task'}</a
       >
       <a class="rubber-button ml-2 mt-3 inline-block text-primary" href={`https://www.google.com/maps/dir/?api=1&destination=${location.latitude},${location.longitude}`} target="_blank" rel="noopener noreferrer">Directions</a>
     </section>{/each}</div>{/if}

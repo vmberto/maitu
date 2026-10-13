@@ -288,3 +288,44 @@ it('rejects editing and deleting tasks within archived lists', async () => {
     ).rejects.toThrow('read only');
   expect(tasks.updateOne).not.toHaveBeenCalled();
 });
+
+
+it('accepts the mixed list type and validates entry types and archive flags', () => {
+  expect(validateData('lists', { type: 'mixed' }, false)).toEqual({ type: 'mixed' });
+  expect(validateData('tasks', { type: 'note', archived: true }, false)).toEqual({ type: 'note', archived: true });
+  for (const data of [{ type: 'topic' }, { archived: 'true' }])
+    expect(() => validateData('tasks', data, false)).toThrow();
+});
+
+it('converts completed tasks into notes and rejects completing or nesting notes', async () => {
+  tasks.findOne.mockResolvedValue({ _id: new ObjectId(taskId), listId: new ObjectId(listId), complete: true, completedAt: '2026-01-01', version: 2 });
+  tasks.updateOne.mockResolvedValue({ matchedCount: 1 });
+  const patch = { ...operation, kind: 'tasks' as const, entityId: taskId, data: { type: 'note' } };
+  await applyOperation(db, userId, patch);
+  expect(tasks.updateOne.mock.calls[0][1].$set).toMatchObject({ type: 'note', complete: false, completedAt: null });
+  tasks.findOne.mockResolvedValue({ _id: new ObjectId(taskId), listId: new ObjectId(listId), type: 'note', version: 2 });
+  await expect(applyOperation(db, userId, { ...patch, data: { complete: true } })).rejects.toThrow('Notes cannot be completed');
+  await expect(applyOperation(db, userId, { ...patch, data: { parentTaskId: listId } })).rejects.toThrow('Notes cannot be subtasks');
+});
+
+it('archives and restores notes, but rejects archiving tasks', async () => {
+  tasks.findOne.mockResolvedValue({ _id: new ObjectId(taskId), listId: new ObjectId(listId), type: 'note', version: 2 });
+  tasks.updateOne.mockResolvedValue({ matchedCount: 1 });
+  const patch = { ...operation, kind: 'tasks' as const, entityId: taskId, data: { archived: true } };
+  await applyOperation(db, userId, patch);
+  expect(tasks.updateOne.mock.calls[0][1].$set).toMatchObject({ archived: true });
+  tasks.findOne.mockResolvedValue({ _id: new ObjectId(taskId), listId: new ObjectId(listId), type: 'note', archived: true, version: 2 });
+  await applyOperation(db, userId, { ...patch, data: { archived: false } });
+  expect(tasks.updateOne.mock.calls[1][1].$set).toMatchObject({ archived: false });
+  tasks.findOne.mockResolvedValue({ _id: new ObjectId(taskId), listId: new ObjectId(listId), version: 2 });
+  await expect(applyOperation(db, userId, patch)).rejects.toThrow('Only notes can be archived');
+});
+
+
+it('detaches a related task when it is moved independently to another list', async () => {
+  tasks.findOne.mockResolvedValue({ _id: new ObjectId(taskId), listId: new ObjectId(listId), parentTaskId: new ObjectId('64b2f7a9c1e6f9a1b2c3d4e8'), version: 2 });
+  tasks.updateOne.mockResolvedValue({ matchedCount: 1 });
+  await applyOperation(db, userId, { ...operation, kind: 'tasks', entityId: taskId, data: { listId: '64b2f7a9c1e6f9a1b2c3d4e7', parentTaskId: null } });
+  expect(tasks.updateOne.mock.calls[0][1].$set.parentTaskId).toBeNull();
+  expect(tasks.findOne).toHaveBeenCalledTimes(2);
+});

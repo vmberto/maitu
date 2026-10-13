@@ -8,6 +8,8 @@
   import { onDestroy } from 'svelte';
   import { page } from '$app/state';
   import { engine, offline } from '#lib/offline';
+  import Tabs from '#lib/ui-lib/Tabs.svelte';
+  import { entriesForView } from '../../lib/entries';
   import ListHeader from '#lib/ListHeader.svelte';
   import { normalizeLocation } from '../../lib/location';
   import type { List, Task } from '../../../types/main';
@@ -17,14 +19,17 @@
       (item) => item._id === listId && !item.deleted,
     ) as List | undefined,
   );
-  const tasks = $derived(
-    ($offline.account?.tasks.filter(
-      (item) =>
-        !item.deleted &&
-        String((item as Task).listId) === listId &&
-        !(item as Task).parentTaskId,
-    ) ?? []) as Task[],
+  const mixed = $derived(list?.type === 'mixed');
+  let filter = $state('tasks');
+  const listTasks = $derived(
+    ($offline.account?.tasks.filter((item) => !item.deleted &&
+      String((item as Task).listId) === listId) ?? []) as Task[],
   );
+  const tasks = $derived(entriesForView(listTasks, mixed, filter, false));
+  const archivedEntries = $derived(entriesForView(listTasks, true, 'notes', true));
+  function parentNote(task: Task) {
+    return listTasks.find((item) => String(item._id) === String(task.parentTaskId) && item.type === 'note');
+  }
   let listSettings = $state(false);
   let draft = $state('');
   let titleEdits = $state<Record<string, string>>({});
@@ -102,8 +107,9 @@
         title: draft.trim(),
         description: '',
         complete: false,
+        ...(mixed ? { type: filter === 'notes' ? 'note' as const : 'task' as const } : {}),
         listId,
-        index: Math.max(-1, ...tasks.map((task) => task.index ?? 0)) + 1,
+        index: Math.max(-1, ...listTasks.map((task) => task.index ?? 0)) + 1,
         parentTaskId: null,
         createdAt: new Date().toISOString(),
       });
@@ -117,7 +123,7 @@
   }
   async function complete(task: Task) {
     const id = String(task._id);
-    if (list?.archived) return;
+    if (list?.archived || task.type === 'note') return;
     if (task.complete) {
       if (!pending.includes(id)) return;
       try {
@@ -158,6 +164,12 @@
 >
   {#if !list}<p class="py-5">This list is unavailable on this device.</p>
   {:else}
+    {#if mixed}
+      <Tabs label="Entry filter" appearance="underline" value={filter}
+        options={[{ value: 'tasks', label: 'Tasks' }, { value: 'notes', label: 'Notes' }]}
+        onchange={(value) => { filter = value; visible = 20; completeVisible = 20; }} />
+    {/if}
+    <div role={mixed ? 'tabpanel' : undefined} aria-label={mixed ? (filter === 'tasks' ? 'Tasks' : 'Notes') : undefined}>
     {#if list.archived}<p class="py-3 text-sm text-gray-500">
         Archived · Read only
       </p>{/if}
@@ -181,13 +193,13 @@
               class="sr-only focus:not-sr-only"
               title="Use arrow keys to reorder">Reorder</button
             >{/if}
-          <button
+          {#if task.type === 'note'}<button class="rubber-touch shrink-0 p-1 text-primary" aria-label={`Open note ${task.title}`} onclick={() => detailsId = String(task._id)}><Icon name="note" size={24} /></button>{:else}<button
             class="rubber-touch todo-check"
             aria-label="completeTask"
             aria-pressed={task.complete}
             disabled={list.archived}
             onclick={() => complete(task)}
-          ></button>
+          ></button>{/if}
           <div class="min-w-0 flex-1">
             <textarea
               use:autosize={task.title}
@@ -215,7 +227,9 @@
                   .catch(
                     () => (error = 'Could not save this task on your device.'),
                   );
-              }}></textarea>{#if task.tags?.length}<div
+              }}></textarea>
+            {#if mixed && parentNote(task)}<button class="block text-left text-xs text-gray-500" onclick={() => detailsId = String(task.parentTaskId)}>{parentNote(task)?.title}</button>{/if}
+            {#if task.tags?.length}<div
                 class="task-tags flex flex-wrap gap-1"
               >
                 {#each Array.from(new Set(task.tags)) as tag (tag)}<span
@@ -249,9 +263,10 @@
         onsubmit={addTask}
         class="task-row flex items-start gap-2 border-b border-gray-200 py-2"
       >
-        <span class="todo-check opacity-60" aria-hidden="true"></span>
+        <span class:todo-check={!mixed} class="shrink-0 p-0.5 text-primary opacity-60" aria-hidden="true">{#if mixed}<Icon name="plus" size={24} />{/if}</span>
         <textarea
-          aria-label="New task"
+          aria-label={mixed ? "New item" : "New task"}
+          placeholder={mixed ? "Add item…" : undefined}
           data-task-input
           bind:value={draft}
           use:autosize={draft}
@@ -264,7 +279,7 @@
               void addTask();
             }
           }}></textarea>
-        <button type="submit" class="sr-only">Add task</button>
+        <button type="submit" class="sr-only">{mixed ? "Add item" : "Add task"}</button>
       </form>{/if}
     {#if completed.length}<h2
         class="mt-16 flex items-center justify-between border-b border-gray-200 py-3 font-semibold"
@@ -337,6 +352,13 @@
         class="h-2"
         aria-hidden="true"
       ></div>{/if}
+    {#if mixed}<details class="group mt-8 border-t border-gray-200 pt-4">
+      <summary class="flex cursor-pointer items-center justify-between text-sm font-semibold text-gray-500">Archived Notes <span class="flex items-center gap-2"><span class="rounded-full bg-panel px-2 py-1">{archivedEntries.length}</span><span class="transition-transform group-open:rotate-180"><Icon name="chevron" size={18} /></span></span></summary>
+      <div class="mt-3">
+        {#each archivedEntries as note (String(note._id))}<button class="flex w-full items-center gap-3 border-b border-gray-200 py-3 text-left text-gray-500" aria-label={`Open archived note ${note.title}`} onclick={() => detailsId = String(note._id)}><Icon name="note" size={24} /><span>{note.title}</span></button>{:else}<p class="py-3 text-sm text-gray-500">No archived notes.</p>{/each}
+      </div>
+    </details>{/if}
+    </div>
     {#if error}<p role="alert" class="text-sm text-danger">{error}</p>{/if}
   {/if}
 </main>

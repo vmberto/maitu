@@ -1,4 +1,5 @@
 <script lang="ts">
+  import TaskSection from './TaskSection.svelte';
   import Icon from '#lib/Icon.svelte';
   import Tabs from './ui-lib/Tabs.svelte';
   import Button from './ui-lib/Button.svelte';
@@ -9,6 +10,7 @@
   import { engine, offline } from '#lib/offline';
   import { lockBody } from './scroll-lock';
   import { normalizeLocation, parseCoordinates } from './location';
+  import MarkdownEditor from './MarkdownEditor.svelte';
   import type { List, Task, TaskLocation } from '../../types/main';
   let {
     taskId,
@@ -33,15 +35,18 @@
   let locationTab = $state('search');
   let moving = $state(false);
   let destination = $state('');
-  const destinations = $derived(($offline.account?.lists ?? []).filter(
-    (list) => !list.deleted && !(list as List).archived && (list as List).type === 'tasks' && String(list._id) !== String(task?.listId),
-  ) as List[]);
-  const detectedCoordinates = $derived(parseCoordinates(coordinates));
-  let editLocation = $state(false);
   const task = $derived(
     $offline.account?.tasks.find((task) => task._id === taskId) as
       Task | undefined,
   );
+  const ownerList = $derived($offline.account?.lists.find((item) => item._id === String(task?.listId)) as List | undefined);
+  const mixed = $derived(ownerList?.type === 'mixed');
+  const isNote = $derived(task?.type === 'note');
+  const destinations = $derived(($offline.account?.lists ?? []).filter(
+    (list) => !list.deleted && !(list as List).archived && ((list as List).type === 'mixed' || (!isNote && (list as List).type === 'tasks')) && String(list._id) !== String(task?.listId),
+  ) as List[]);
+  const detectedCoordinates = $derived(parseCoordinates(coordinates));
+  let editLocation = $state(false);
   const children = $derived(
     ($offline.account?.tasks.filter(
       (item) => !item.deleted && String((item as Task).parentTaskId) === taskId,
@@ -107,6 +112,7 @@
         title: subtask.trim(),
         description: '',
         complete: false,
+        ...(mixed ? { type: 'task' as const } : {}),
         listId: task.listId,
         parentTaskId: taskId,
         createdAt: new Date().toISOString(),
@@ -133,6 +139,7 @@
         ...data,
         title: `${data.title} (Clone)`,
         parentTaskId: null,
+        archived: false,
         complete: false,
         completedAt: null,
         createdAt: new Date().toISOString(),
@@ -208,7 +215,7 @@
       await engine.commit((saved) => saved.tasks
         .filter((item) => !item.deleted && (String(item._id) === taskId || String((item as Task).parentTaskId) === taskId))
         .sort((a, b) => Number(String(b._id) === taskId) - Number(String(a._id) === taskId))
-        .map((item) => ({ kind: 'tasks', entityId: String(item._id), action: 'patch', data: { listId: destination, index: saved.tasks.filter((task) => String((task as Task).listId) === destination).length } })));
+        .map((item) => ({ kind: 'tasks', entityId: String(item._id), action: 'patch', data: { listId: destination, ...(String(item._id) === taskId && task?.parentTaskId ? { parentTaskId: null } : {}), index: saved.tasks.filter((task) => String((task as Task).listId) === destination).length } })));
       closeDrawer(dialog);
     } catch { error = 'Could not move this task.'; }
   }
@@ -227,10 +234,8 @@
   class:task-complete={task?.complete}
   class="task-drawer w-[calc(100%-1rem)] max-w-xl rounded-2xl bg-surface p-5 text-gray-900 shadow-xl"
 >
+  <div class="detail-scroll">
   <header data-drawer-header class="drawer-header">
-    <span class="task-header-status" class:done={task?.complete} aria-hidden="true">
-      {#if task?.complete}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4 10-10" /></svg>{/if}
-    </span>
     <div class="min-w-0 flex-1">
       <h2 class="mb-5 text-lg font-semibold">
         {#if readonly || task?.complete}{task?.title}{:else}<textarea
@@ -256,7 +261,8 @@
           ></textarea>{/if}
       </h2>
       <div class="task-dates mt-2 flex flex-wrap items-center gap-x-3 gap-y-2 text-xs font-normal text-gray-500">
-        {#if task?.complete}<p class="task-state-badge done">Completed <time datetime={task.completedAt ?? undefined}>{dateLabel(task.completedAt)}</time></p>{:else}<span class="task-state-badge">Open</span>{/if}
+        {#if !isNote}{#if task?.complete}<p class="task-state-badge done">Completed <time datetime={task.completedAt ?? undefined}>{dateLabel(task.completedAt)}</time></p>{:else}<span class="task-state-badge">Open</span>{/if}{/if}
+        {#if task?.archived}<span>Archived</span>{/if}
         <p><span class="task-date-label">Created</span> <time datetime={task?.createdAt}>{dateLabel(task?.createdAt)}</time></p>
       </div>
     </div>
@@ -267,29 +273,45 @@
     >
   </header>
   <div class="drawer-body">
-    <section class="rounded-lg bg-panel p-3">
-      <textarea
-        aria-label="Description"
-        placeholder="Write about it…"
-        use:autosize={descriptionDraft ?? task?.description ?? ''}
-        rows="2"
-        value={descriptionDraft ?? task?.description ?? ''}
-        {readonly}
-        class="task-description w-full resize-none border-0 bg-transparent text-gray-900 focus:ring-primary"
-        oninput={(event) => {
-          descriptionDraft = event.currentTarget.value;
-          void save({ description: descriptionDraft });
-        }}
-        onblur={async () => {
-          if (descriptionDraft !== null) {
-            await save({ description: descriptionDraft });
-            if (!error) descriptionDraft = null;
-          }
-        }}></textarea>
-    </section>
-    <section class="mt-4 rounded-lg bg-panel p-3">
-      <h3 class="mb-3 text-sm text-gray-500">Subtasks</h3>
-      <div class="space-y-4">
+    <TaskSection>
+      <MarkdownEditor value={descriptionDraft ?? task?.description ?? ''} {readonly}
+        onchange={(value) => { descriptionDraft = value; void save({ description: value }); }} />
+    </TaskSection>
+    <TaskSection title="Tags">
+      <form class="flex flex-wrap items-center gap-2" onsubmit={addTag}>
+        {#each Array.from(new Set(task?.tags ?? [])) as value (value)}<span
+            class="inline-flex items-center gap-2 rounded-md bg-surface px-2.5 py-1 text-sm text-gray-700"
+            >{value}{#if !readonly}<button
+                type="button"
+                aria-label={`Remove tag ${value}`}
+                class="rubber-touch text-gray-400 hover:text-danger"
+                onclick={() =>
+                  void save({
+                    tags: task?.tags?.filter((item) => item !== value),
+                  })}>×</button
+              >{/if}</span
+          >{/each}
+        {#if !readonly}<input
+            aria-label="New tag"
+            placeholder="Add tag"
+            bind:value={tag}
+            maxlength="20"
+            class="min-w-0 flex-1 basis-28 border-0 bg-transparent text-sm"
+            onblur={() => void addTag()}
+            onkeydown={(event) => {
+              if (event.key === 'Enter' && !event.isComposing) {
+                event.preventDefault();
+                void addTag();
+              }
+            }}
+          /><button type="submit" class="sr-only">Add tag</button
+          >{:else if !task?.tags?.length}<p class="text-sm text-gray-500">
+            No tags
+          </p>{/if}
+      </form>
+    </TaskSection>
+    <TaskSection title="Related Tasks">
+      <div class="related-rows">
         {#each children as child (String(child._id))}<div
             class="task-row subtask-row flex items-start gap-2 rounded-md"
           >
@@ -336,10 +358,9 @@
           class="task-row subtask-row mt-4 flex items-start gap-2"
           onsubmit={addSubtask}
         >
-          <span class="todo-check opacity-50" aria-hidden="true"
-          ></span><textarea
+          <span class:todo-check={!isNote} class="shrink-0 p-0.5 text-primary opacity-50" aria-hidden="true">{#if isNote}<Icon name="plus" size={24} />{/if}</span><textarea
             aria-label="New subtask"
-            placeholder="Add subtask"
+            placeholder="Add related task"
             bind:value={subtask}
             use:autosize={subtask}
             rows="1"
@@ -352,48 +373,11 @@
               }
             }}></textarea><button type="submit" class="sr-only">Add</button>
         </form>{:else if !children.length}<p class="text-sm text-gray-500">
-          No subtasks
+          No related tasks
         </p>{/if}
-    </section>
-    <section class="mt-4 rounded-lg bg-panel p-3">
-      <h3 class="mb-3 text-sm text-gray-500">Tags</h3>
-      <form class="flex flex-wrap items-center gap-2" onsubmit={addTag}>
-        {#each Array.from(new Set(task?.tags ?? [])) as value (value)}<span
-            class="inline-flex items-center gap-2 rounded-md bg-surface px-2.5 py-1 text-sm text-gray-700"
-            >{value}{#if !readonly}<button
-                type="button"
-                aria-label={`Remove tag ${value}`}
-                class="rubber-touch text-gray-400 hover:text-danger"
-                onclick={() =>
-                  void save({
-                    tags: task?.tags?.filter((item) => item !== value),
-                  })}>×</button
-              >{/if}</span
-          >{/each}
-        {#if !readonly}<input
-            aria-label="New tag"
-            placeholder="Add tag"
-            bind:value={tag}
-            maxlength="20"
-            class="min-w-0 flex-1 basis-28 border-0 bg-transparent text-sm"
-            onblur={() => void addTag()}
-            onkeydown={(event) => {
-              if (event.key === 'Enter' && !event.isComposing) {
-                event.preventDefault();
-                void addTag();
-              }
-            }}
-          /><button type="submit" class="sr-only">Add tag</button
-          >{:else if !task?.tags?.length}<p class="text-sm text-gray-500">
-            No tags
-          </p>{/if}
-      </form>
-    </section>
-    {#if task?.addons?.includes('location') || place}<section
-        class="mt-4 rounded-lg bg-panel p-3"
-      >
-        <div class="flex items-center justify-between">
-          <h3 class="font-medium">Location</h3>
+    </TaskSection>
+    {#if task?.addons?.includes('location') || place}<TaskSection title="Location">
+        {#snippet actions()}
           {#if !readonly}<details class="relative">
               <summary
                 aria-label="Location options"
@@ -425,7 +409,7 @@
                 >
               </div>
             </details>{/if}
-        </div>
+        {/snippet}
         {#if place}<p class="mt-2">{place.name}</p>
           <p class="text-sm text-gray-500">
             {place.address || `${place.latitude}, ${place.longitude}`}
@@ -470,25 +454,22 @@
             {#if detectedCoordinates}<p class="mb-3 text-sm text-gray-500">Latitude {detectedCoordinates.latitude}, longitude {detectedCoordinates.longitude}</p>{/if}{/if}
             <Button type="submit" disabled={locationTab === 'coordinates' ? !detectedCoordinates : !selectedPlace} class="text-sm text-primary">Save location</Button>
           </form></div>{/if}
-      </section>{/if}
-    {#if !readonly}<details class="task-options mt-5 rounded-lg bg-panel p-3">
+      </TaskSection>{/if}
+    {#if !readonly}<details class="task-options">
         <summary
           class="flex cursor-pointer list-none items-center justify-between font-medium"
-          ><span>Task Options</span><span
-            class="options-chevron transition-transform"
-            ><Icon name="chevron" size={18} /></span
-          ></summary
-        >
-        <div class="mt-4 space-y-4">
-          <section>
-            <h3 class="mb-2 text-sm text-gray-500">Actions</h3>
-            <button class="rubber-touch option-row" onclick={() => moving = !moving}><Icon name="back" size={18} /><span>Move Task</span></button>
+          ><span>Task Options</span><span class="options-chevron transition-transform"><Icon name="chevron" size={18} /></span></summary>
+        <div class="entry-actions">
+          <TaskSection title="Actions">
+            {#if mixed && !task?.parentTaskId}<button class="rubber-touch option-row" onclick={async () => { await save({ type: isNote ? 'task' : 'note', complete: false, completedAt: null, archived: false }); }}><Icon name="note" size={18} /><span>{isNote ? 'Convert to task' : 'Convert to note'}</span></button>{/if}
+            {#if mixed && isNote}<button class="rubber-touch option-row" onclick={async () => { await save({ archived: !task?.archived }); if (!error) closeDrawer(dialog); }}><Icon name="archive" size={18} /><span>{task?.archived ? 'Restore note' : 'Archive note'}</span></button>{/if}
+            <button class="rubber-touch option-row" onclick={() => moving = !moving}><Icon name="back" size={18} /><span>{isNote ? 'Move Note' : 'Move Task'}</span></button>
             {#if moving}<form onsubmit={moveTask} class="my-2 space-y-2">
               <select aria-label="Destination list" bind:value={destination} class="drawer-input"><option value="">Choose a tasks list</option>{#each destinations as list (list._id)}<option value={String(list._id)}>{list.emoji} {list.title}</option>{/each}</select>
               <button class="rubber-button rubber-primary w-full" disabled={!destination}>Move task</button>
             </form>{/if}
             <button class="rubber-touch option-row" onclick={clone}
-              ><Icon name="clone" size={18} /><span>Clone Task</span></button
+              ><Icon name="clone" size={18} /><span>{isNote ? 'Clone Note' : 'Clone Task'}</span></button
             ><button
               class="rubber-touch option-row text-danger"
               onclick={async () => {
@@ -498,11 +479,10 @@
                 } catch {
                   error = 'Could not delete this task.';
                 }
-              }}><Icon name="trash" size={18} /><span>Delete Task</span></button
+              }}><Icon name="trash" size={18} /><span>{isNote ? 'Delete Note' : 'Delete Task'}</span></button
             >
-          </section>
-          <section>
-            <h3 class="mb-2 text-sm text-gray-500">Add-ons</h3>
+          </TaskSection>
+          <TaskSection title="Add-ons">
             <button
               class="rubber-touch option-row"
               disabled={task?.addons?.includes('location')}
@@ -512,15 +492,30 @@
                   class="text-xs text-gray-500">Added</span
                 >{:else}<Icon name="plus" size={16} />{/if}</button
             >
-          </section>
+          </TaskSection>
         </div>
       </details>{/if}
     {#if error}<p role="alert" class="mt-3 text-sm text-danger">{error}</p>{/if}
   </div>
+  </div>
 </dialog>
 
 <style>
-  dialog::backdrop {
-    background: rgb(0 0 0 / 0.5);
+  .detail-scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+  .task-drawer :global(.drawer-header) { display: block; position: relative; padding: 24px 72px 24px 24px; touch-action: pan-y; }
+  .task-drawer :global(.task-header-close) { position: absolute; top: 20px; right: 20px; }
+  .task-drawer h2 { margin: 0 0 12px; font-size: 26px; line-height: 1.35; }
+  .task-drawer :global(.drawer-body) { display: flex; flex-direction: column; gap: 24px; overflow: visible; padding: 24px 24px calc(112px + env(safe-area-inset-bottom)); }
+  .task-drawer :global(.subtask-row) { margin: 0; border-bottom: 1px solid rgb(var(--gray-200)); padding: 12px 0; border-radius: 0; }
+  .task-drawer :global(.task-options) { border-top: 1px solid rgb(var(--gray-200)); padding-top: 20px; }
+  .entry-actions { display: flex; flex-direction: column; gap: 20px; padding-top: 20px; }
+  .task-drawer :global(.option-row) { padding: 10px 0; }
+  .task-drawer :global(.drawer-body form > span.inline-flex) { background: rgb(54 100 255 / 10%); border-radius: 999px; }
+  dialog::backdrop { background: rgb(0 0 0 / 0.5); }
+  @media (max-width: 480px) {
+    .task-drawer :global(.drawer-header) { padding: 20px 64px 20px 20px; }
+    .task-drawer :global(.drawer-body) { padding: 20px 20px calc(112px + env(safe-area-inset-bottom)); }
+    .task-drawer :global(.task-header-close) { top: 16px; right: 16px; }
+    .task-drawer h2 { font-size: 24px; }
   }
 </style>

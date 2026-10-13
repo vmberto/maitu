@@ -5,6 +5,7 @@ import type { Colors } from './colors';
 export enum ListType {
   tasks = 'tasks',
   timeline = 'timeline',
+  mixed = 'mixed',
 }
 
 export interface UserObject {
@@ -38,6 +39,8 @@ export interface TaskLocation {
 }
 
 export interface Task {
+  type?: 'task' | 'note';
+  archived?: boolean;
   _id?: ObjectId | string;
   title: string;
 

@@ -50,6 +50,9 @@
           oninput={(event) => void save({ title: event.currentTarget.value })}
         /></label
       ></div>
+      {#if list.type !== 'timeline'}<label class="mt-4 block text-sm">List type<select aria-label="List type" value={list.type} class="drawer-input mt-1" onchange={(event) => void save({ type: event.currentTarget.value as List['type'] })}>
+        <option value="tasks" disabled={list.type === 'mixed'}>Tasks</option><option value="mixed">Tasks &amp; Notes</option>
+      </select></label>{/if}
       <ListAppearance color={list.color} emoji={list.emoji} onchange={save} />
       <button
         class="rubber-button mt-5 text-danger"

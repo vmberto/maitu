@@ -420,7 +420,7 @@ export function createOfflineEngine(options: {
     update: async (
       kind: EntityKind,
       id: string,
-      data: Partial<List & Task>,
+      data: Partial<List> | Partial<Task>,
     ) => {
       const patch = Object.fromEntries(
         Object.entries(data).filter(

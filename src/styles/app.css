@@ -265,7 +265,7 @@ select:focus:not(:focus-visible) {
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: 16px 16px 80px;
+  padding: 16px 16px calc(112px + env(safe-area-inset-bottom));
 }
 .todo-title {
   padding: 3px 8px;
@@ -423,3 +423,6 @@ select:focus:not(:focus-visible) {
 .task-options[open] .options-chevron {
   transform: rotate(180deg);
 }
+
+/* Leave room below the final item on scrollable content pages. */
+.route-content main:not(.map-page) { padding-bottom: calc(112px + env(safe-area-inset-bottom)); }

@@ -11,6 +11,7 @@
     $offline.account?.tasks.some(
       (task) =>
         !task.deleted &&
+        !(task as Task).archived &&
         String((task as Task).listId) === String(list?._id) &&
         normalizeLocation((task as Task).location),
     ),

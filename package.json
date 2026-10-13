@@ -18,9 +18,17 @@
   },
   "dependencies": {
     "@sveltejs/kit": "3.0.1",
+    "@tiptap/core": "^3.32.0",
+    "@tiptap/extension-image": "^3.32.0",
+    "@tiptap/extension-list": "^3.32.0",
+    "@tiptap/extension-table": "^3.32.0",
+    "@tiptap/markdown": "^3.32.0",
+    "@tiptap/starter-kit": "^3.32.0",
     "bcryptjs": "^3.0.3",
+    "dompurify": "^3.4.17",
     "jose": "^5.6.3",
     "leaflet": "^1.9.4",
+    "marked": "^18.1.1",
     "mongodb": "^6.3.0",
     "pino": "^9.9.5",
     "svelte": "5.57.1"

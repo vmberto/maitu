@@ -4,7 +4,7 @@
     size = 20,
   }: {
     name:
-      'map' | 'menu' | 'back' | 'dots' | 'clone' | 'trash' | 'chevron' | 'plus';
+      'map' | 'menu' | 'back' | 'dots' | 'clone' | 'trash' | 'chevron' | 'plus' | 'note' | 'archive';
     size?: number;
   } = $props();
 </script>
@@ -36,6 +36,8 @@
       d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 10v7m4-7v7"
     />
   {:else if name === 'chevron'}<path d="m6 9 6 6 6-6" />
+  {:else if name === 'archive'}<rect x="3" y="3" width="18" height="5" rx="1" /><path d="M5 8v13h14V8M10 12h4" />
+  {:else if name === 'note'}<path d="M14 3H5v18h14V8l-5-5Zm0 0v5h5M8 12h8M8 16h8" />
   {:else if name === 'plus'}<path d="M12 5v14M5 12h14" />
   {:else}<circle cx="5" cy="12" r="1" /><circle cx="12" cy="12" r="1" /><circle
       cx="19"

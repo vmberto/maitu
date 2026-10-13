@@ -55,6 +55,8 @@ const listFields = [
   'archived',
 ];
 const taskFields = [
+  'type',
+  'archived',
   'title',
   'description',
   'complete',
@@ -136,7 +138,7 @@ export function validateData(
       !Number.isFinite(Date.parse(value))
     )
       throw new SyncError('Invalid date.');
-    if (field === 'type' && !['tasks', 'timeline'].includes(value as string))
+    if (field === 'type' && !(kind === 'lists' ? ['tasks', 'timeline', 'mixed'] : ['task', 'note']).includes(value as string))
       throw new SyncError('Invalid list type.');
     if (
       field === 'color' &&
@@ -239,7 +241,17 @@ export async function applyOperation(
     const list = await ownedList(db, userId, listId);
     if (list.archived)
       throw new SyncError('Archived lists are read only.', 403);
-    const parentId = data.parentTaskId ?? existing?.parentTaskId;
+    const entry = { ...existing, ...data };
+    if (entry.type === 'note') {
+      if (entry.parentTaskId) throw new SyncError('Notes cannot be subtasks.');
+      if (data.complete === true || data.completedAt)
+        throw new SyncError('Notes cannot be completed.');
+      data.complete = false;
+      data.completedAt = null;
+    } else if (entry.archived) {
+      throw new SyncError('Only notes can be archived.');
+    }
+    const parentId = entry.parentTaskId;
     if (parentId) {
       const parent = await ownedTask(db, userId, parentId.toString());
       if (
