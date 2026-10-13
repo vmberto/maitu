@@ -38,6 +38,8 @@ export interface TaskLocation {
   placeId: string;
 }
 
+export type TaskAddon = 'location' | 'relatedTasks';
+
 export interface Task {
   type?: 'task' | 'note';
   archived?: boolean;
@@ -53,7 +55,7 @@ export interface Task {
 
   // Keep legacy text locations readable; new selections include coordinates.
   location?: TaskLocation | string | null;
-  addons?: 'location'[];
+  addons?: TaskAddon[];
 
   index?: number;
 

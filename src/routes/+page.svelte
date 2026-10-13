@@ -1,6 +1,6 @@
 <script lang="ts">
   import { flip } from 'svelte/animate';
-  import Icon from '#lib/Icon.svelte';
+  import Icon from '#lib/ui/Icon.svelte';
   import { drawerBehavior, closeDrawer } from '#lib/drawer';
   import { sortable } from '#lib/reorder';
   import { HexColors } from '../lib/colors';
@@ -142,7 +142,7 @@
     <button
       class="rubber-button rubber-icon float-right"
       aria-label="Close panel"
-      onclick={() => closeDrawer(menu)}>×</button
+      onclick={() => closeDrawer(menu)}><Icon name="close" size={20} /></button
     >
   </header>
   <div class="drawer-body">
@@ -197,7 +197,7 @@
     <button
       class="rubber-button rubber-icon"
       aria-label="Close panel"
-      onclick={() => closeDrawer(newList)}>×</button
+      onclick={() => closeDrawer(newList)}><Icon name="close" size={20} /></button
     >
   </header>
   <div class="drawer-body">

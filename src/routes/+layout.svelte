@@ -5,7 +5,8 @@
   import { page } from '$app/state';
   import { engine, offline } from '#lib/offline';
   import '../styles/app.css';
-  import '../styles/buttons.css';
+  import '../lib/ui/buttons.css';
+  import '../lib/ui/drawer.css';
   let { children } = $props();
   onMount(() => {
     if (window.location.pathname !== '/login') return engine.start();

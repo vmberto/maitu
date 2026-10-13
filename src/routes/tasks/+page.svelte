@@ -2,13 +2,14 @@
   import { flip } from 'svelte/animate';
   import { commitTaskTitle } from '#lib/task-title';
   import { HexColors } from '#lib/colors';
-  import Icon from '#lib/Icon.svelte';
+  import Icon from '#lib/ui/Icon.svelte';
   import { autosize } from '#lib/autosize';
   import { sortable } from '#lib/reorder';
   import { onDestroy } from 'svelte';
   import { page } from '$app/state';
   import { engine, offline } from '#lib/offline';
-  import Tabs from '#lib/ui-lib/Tabs.svelte';
+  import Tabs from '#lib/ui/Tabs.svelte';
+  import Disclosure from '#lib/ui/Disclosure.svelte';
   import { entriesForView } from '../../lib/entries';
   import ListHeader from '#lib/ListHeader.svelte';
   import { normalizeLocation } from '../../lib/location';
@@ -27,9 +28,8 @@
   );
   const tasks = $derived(entriesForView(listTasks, mixed, filter, false));
   const archivedEntries = $derived(entriesForView(listTasks, true, 'notes', true));
-  function parentNote(task: Task) {
-    return listTasks.find((item) => String(item._id) === String(task.parentTaskId) && item.type === 'note');
-  }
+  const parentNotes = $derived(new Map(listTasks.filter((task) => task.type === 'note').map((task) => [String(task._id), task])));
+  function parentNote(task: Task) { return parentNotes.get(String(task.parentTaskId)); }
   let listSettings = $state(false);
   let draft = $state('');
   let titleEdits = $state<Record<string, string>>({});
@@ -352,12 +352,11 @@
         class="h-2"
         aria-hidden="true"
       ></div>{/if}
-    {#if mixed}<details class="group mt-6 rounded-xl bg-panel p-4">
-      <summary class="flex cursor-pointer items-center justify-between text-sm font-semibold text-gray-500">Archived Notes <span class="flex items-center gap-2"><span class="rounded-full bg-panel px-2 py-1">{archivedEntries.length}</span><span class="transition-transform group-open:rotate-180"><Icon name="chevron" size={18} /></span></span></summary>
+    {#if mixed && filter === 'notes'}<Disclosure title="Archived Notes" badge={archivedEntries.length} class="mt-6 text-gray-500">
       <div class="mt-3">
         {#each archivedEntries as note (String(note._id))}<button class="flex w-full items-start gap-3 py-3 text-left text-gray-500" aria-label={`Open archived note ${note.title}`} onclick={() => detailsId = String(note._id)}><Icon name="note" size={24} /><span class="min-w-0 break-words">{note.title}</span></button>{:else}<p class="py-3 text-sm text-gray-500">No archived notes.</p>{/each}
       </div>
-    </details>{/if}
+    </Disclosure>{/if}
     </div>
     {#if error}<p role="alert" class="text-sm text-danger">{error}</p>{/if}
   {/if}

@@ -51,6 +51,10 @@ export function enqueue(
       throw new Error('Archived lists are read only.');
     if (input.action !== 'create' && (!entity || entity.deleted))
       throw new Error('This item is no longer available.');
+    if (input.kind === 'tasks' && (entity as Task | undefined)?.addons?.includes('relatedTasks') &&
+      Array.isArray(input.data.addons) && !input.data.addons.includes('relatedTasks') &&
+      next.tasks.some((task) => !task.deleted && String((task as Task).parentTaskId) === input.entityId))
+      throw new Error('Remove all related tasks before removing this add-on.');
     const last = next.queue[next.queue.length - 1];
     // Coalesce only operations that have never been sent. Retried requests must stay immutable.
     if (

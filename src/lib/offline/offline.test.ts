@@ -213,3 +213,16 @@ it('blocks list and task mutations locally after archiving without discarding sa
   ])
     expect(() => enqueue(archived, [operation])).toThrow('read only');
 });
+
+
+it('protects Related Tasks offline and permits removing the add-on after deleting the last child', () => {
+  const parent = { _id: 'parent', listId: list._id, addons: ['relatedTasks', 'location'], version: 0 } as Entity;
+  const child = { _id: 'child', listId: list._id, parentTaskId: 'parent', complete: true, version: 0 } as Entity;
+  const account: LocalAccount = { ...initial, tasks: [parent, child] };
+  const removeAddon = { kind: 'tasks' as const, entityId: 'parent', action: 'patch' as const, data: { addons: ['location'] } };
+  expect(() => enqueue(account, [removeAddon])).toThrow('Remove all related tasks');
+  expect(account.tasks[0]).toEqual(parent);
+  const next = enqueue(account, [{ kind: 'tasks', entityId: 'child', action: 'delete', data: {} }, removeAddon]);
+  expect(next.tasks[0]).toHaveProperty('addons', ['location']);
+  expect(next.tasks[1].deleted).toBe(true);
+});

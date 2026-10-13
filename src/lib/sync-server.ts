@@ -93,8 +93,9 @@ export function validateData(
     } else if (field === 'addons') {
       if (
         !Array.isArray(value) ||
-        value.length > 1 ||
-        value.some((addon) => addon !== 'location')
+        value.length > 2 ||
+        new Set(value).size !== value.length ||
+        value.some((addon) => !['location', 'relatedTasks'].includes(addon))
       )
         throw new SyncError('Invalid add-ons.');
     } else if (field === 'location') {
@@ -241,6 +242,10 @@ export async function applyOperation(
     const list = await ownedList(db, userId, listId);
     if (list.archived)
       throw new SyncError('Archived lists are read only.', 403);
+    if (existing?.addons?.includes('relatedTasks') && Array.isArray(data.addons) && !data.addons.includes('relatedTasks')) {
+      const child = await db.collection('todos').findOne({ parentTaskId: id, deleted: { $ne: true } });
+      if (child) throw new SyncError('Remove all related tasks before removing this add-on.');
+    }
     const entry = { ...existing, ...data };
     if (entry.type === 'note') {
       if (entry.parentTaskId) throw new SyncError('Notes cannot be subtasks.');

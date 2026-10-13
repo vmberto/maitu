@@ -209,6 +209,7 @@ it('persists only supported add-ons and allows removing them', () => {
     addons: ['location'],
   });
   expect(validateData('tasks', { addons: [] }, false)).toEqual({ addons: [] });
+  expect(validateData('tasks', { addons: ['location', 'relatedTasks'] }, false)).toEqual({ addons: ['location', 'relatedTasks'] });
   for (const addons of ['location', ['unknown'], ['location', 'location']])
     expect(() => validateData('tasks', { addons }, false)).toThrow(
       'Invalid add-ons',
@@ -328,4 +329,21 @@ it('detaches a related task when it is moved independently to another list', asy
   await applyOperation(db, userId, { ...operation, kind: 'tasks', entityId: taskId, data: { listId: '64b2f7a9c1e6f9a1b2c3d4e7', parentTaskId: null } });
   expect(tasks.updateOne.mock.calls[0][1].$set.parentTaskId).toBeNull();
   expect(tasks.findOne).toHaveBeenCalledTimes(2);
+});
+
+
+it('rejects removing Related Tasks while children remain, including completed children', async () => {
+  const parent = { _id: new ObjectId(taskId), listId: new ObjectId(listId), addons: ['relatedTasks', 'location'], version: 2 };
+  tasks.findOne.mockResolvedValueOnce(parent).mockResolvedValueOnce({ parentTaskId: parent._id, complete: true });
+  await expect(applyOperation(db, userId, { ...operation, kind: 'tasks', entityId: taskId, data: { addons: ['location'] } })).rejects.toThrow('Remove all related tasks');
+  expect(tasks.findOne).toHaveBeenLastCalledWith({ parentTaskId: parent._id, deleted: { $ne: true } });
+  expect(tasks.updateOne).not.toHaveBeenCalled();
+});
+
+it('allows removing an empty Related Tasks add-on without losing Location', async () => {
+  const parent = { _id: new ObjectId(taskId), listId: new ObjectId(listId), addons: ['relatedTasks', 'location'], version: 2 };
+  tasks.findOne.mockResolvedValueOnce(parent).mockResolvedValueOnce(null).mockResolvedValueOnce(parent);
+  tasks.updateOne.mockResolvedValue({ matchedCount: 1 });
+  await applyOperation(db, userId, { ...operation, kind: 'tasks', entityId: taskId, data: { addons: ['location'] } });
+  expect(tasks.updateOne.mock.calls[0][1].$set.addons).toEqual(['location']);
 });

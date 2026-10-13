@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icon from './ui/Icon.svelte';
   import ListAppearance from '#lib/ListAppearance.svelte';
   import { drawerBehavior, closeDrawer } from '#lib/drawer';
   import { engine } from '#lib/offline';
@@ -37,7 +38,7 @@
     <button
       class="rubber-button rubber-icon float-right"
       aria-label="Close panel"
-      onclick={() => closeDrawer(dialog)}>×</button
+      onclick={() => closeDrawer(dialog)}><Icon name="close" size={20} /></button
     >
   </header>
   <div class="drawer-body">

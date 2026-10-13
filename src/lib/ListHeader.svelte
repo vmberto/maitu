@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Icon from '#lib/Icon.svelte';
+  import Icon from '#lib/ui/Icon.svelte';
   import { page } from '$app/state';
   import { offline } from '#lib/offline';
   import { normalizeLocation } from './location';

@@ -85,7 +85,7 @@ test('searches, selects and saves a place using the location tabs', async ({ pag
   await page.getByRole('textbox', { name: 'New task', exact: true }).fill('Marco Zero');
   await page.getByRole('textbox', { name: 'New task', exact: true }).press('Enter');
   await page.getByRole('button', { name: 'Task details Marco Zero' }).click();
-  await page.getByText('Task Options', { exact: true }).click();
+  await page.getByText('Options', { exact: true }).click();
   await page.getByRole('button', { name: 'Location', exact: true }).click();
   await expect(page.getByRole('textbox', { name: 'Search places' })).toHaveValue('Marco Zero');
   await expect(page.getByRole('textbox', { name: 'Coordinates' })).toHaveCount(0);
@@ -124,13 +124,18 @@ test('moves a task and its subtasks to another active tasks list', async ({ page
   );
   await page.goto(`/tasks?listId=${listId}`);
   await page.getByRole('button', { name: 'Task details Move me' }).click();
-  await page.getByText('Task Options', { exact: true }).click();
+  await page.getByText('Options', { exact: true }).click();
   await page.getByRole('button', { name: 'Move Task', exact: true }).click();
   await page.getByRole('combobox', { name: 'Destination list' }).selectOption(target);
   await page.getByRole('button', { name: 'Move task', exact: true }).last().click();
   await expect.poll(async () => (await device(page)).tasks.filter((task: any) => task.listId === target).length).toBe(2);
   await expect(page.getByRole('button', { name: 'Task details Move me' })).toHaveCount(0);
 });
+async function enableRelatedTasks(page: Page) {
+  await page.getByText('Options', { exact: true }).click();
+  await page.getByRole('button', { name: 'Related Tasks', exact: true }).click();
+  await page.getByText('Options', { exact: true }).click();
+}
 async function pasteDescription(page: Page, text: string) {
   const editor = page.getByRole('textbox', { name: 'Description', exact: true });
   await editor.click();
@@ -366,7 +371,7 @@ test('Svelte coordinates, list map, black theme, zoom controls and archived read
   await expect
     .poll(() => page.evaluate(() => document.body.style.position))
     .toBe('fixed');
-  await page.getByText('Task Options', { exact: true }).click();
+  await page.getByText('Options', { exact: true }).click();
   await page.getByRole('button', { name: 'Location', exact: true }).click();
   await page.getByRole('tab', { name: 'Latitude / Longitude', exact: true }).click();
   await page
@@ -460,6 +465,7 @@ test('timeline, tags, subtasks and cloning preserve their data offline', async (
   await page
     .getByRole('button', { name: 'Task details Task with addons' })
     .click();
+  await enableRelatedTasks(page);
   await page.getByRole('textbox', { name: 'New subtask' }).fill('Child');
   await page
     .getByRole('textbox', { name: 'New subtask', exact: true })
@@ -469,7 +475,7 @@ test('timeline, tags, subtasks and cloning preserve their data offline', async (
     .fill('Edited child');
   await page.getByRole('textbox', { name: 'New tag' }).fill('food');
   await page.getByRole('textbox', { name: 'New tag' }).press('Enter');
-  await page.getByText('Task Options', { exact: true }).click();
+  await page.getByText('Options', { exact: true }).click();
   await page.getByRole('button', { name: 'Clone Task' }).click();
   await expect(
     page.getByRole('textbox', {
@@ -870,7 +876,7 @@ test('completed tasks are locked, counted, newest first and reveal every batch o
     page.getByText('Created', { exact: false }).first(),
   ).toBeVisible();
   await expect(page.getByRole('dialog').locator('time')).toHaveCount(2);
-  await page.getByText('Task Options', { exact: true }).click();
+  await page.getByText('Options', { exact: true }).click();
   await expect(
     page.getByRole('button', { name: 'Move to undone' }),
   ).toHaveCount(0);
@@ -912,6 +918,7 @@ test('mixed lists create notes and surface related tasks through archive, restor
   await expect(sheet.locator('.markdown-editor h1').first()).toHaveText('Our priorities');
   await sheet.getByRole('textbox', { name: 'New tag', exact: true }).fill('home search');
   await sheet.getByRole('textbox', { name: 'New tag', exact: true }).press('Enter');
+  await enableRelatedTasks(page);
   await sheet.getByRole('textbox', { name: 'New subtask', exact: true }).fill('Contact the agent');
   await sheet.getByRole('textbox', { name: 'New subtask', exact: true }).press('Enter');
   await expect(sheet.getByRole('textbox', { name: 'Subtask Contact the agent', exact: true })).toBeVisible();
@@ -923,7 +930,7 @@ test('mixed lists create notes and surface related tasks through archive, restor
   await expect(page.getByRole('textbox', { name: 'Task Searching for a Home', exact: true })).toHaveCount(0);
   await page.screenshot({ path: '/tmp/maitu-related-tasks.png' });
   await page.getByRole('button', { name: 'Searching for a Home', exact: true }).click();
-  await sheet.getByText('Task Options', { exact: true }).click();
+  await sheet.getByText('Options', { exact: true }).click();
   await sheet.getByRole('button', { name: 'Archive note', exact: true }).click();
   await expect(sheet).not.toBeVisible();
   await expect(page.getByRole('textbox', { name: 'Task Contact the agent', exact: true })).toBeVisible();
@@ -931,10 +938,10 @@ test('mixed lists create notes and surface related tasks through archive, restor
   await expect(page.getByRole('button', { name: 'Open note Searching for a Home', exact: true })).toHaveCount(0);
   await page.getByText('Archived Notes', { exact: false }).click();
   await page.getByRole('button', { name: 'Open archived note Searching for a Home', exact: true }).click();
-  await sheet.getByText('Task Options', { exact: true }).click();
+  await sheet.getByText('Options', { exact: true }).click();
   await sheet.getByRole('button', { name: 'Restore note', exact: true }).click();
   await page.getByRole('button', { name: 'Open note Searching for a Home', exact: true }).click();
-  await sheet.getByText('Task Options', { exact: true }).click();
+  await sheet.getByText('Options', { exact: true }).click();
   await sheet.getByRole('button', { name: 'Convert to task', exact: true }).click();
   await expect(sheet.getByText('Open', { exact: true })).toBeVisible();
   await sheet.getByRole('button', { name: 'Convert to note', exact: true }).click();
@@ -968,7 +975,7 @@ test('existing task lists can enable Tasks & Notes without losing entries', asyn
   await page.getByRole('button', { name: 'Task details Existing', exact: true }).click();
   const sheet = page.getByRole('dialog');
   await expect(sheet.getByRole('textbox', { name: 'Description' })).toHaveText('Keep my notes');
-  await sheet.getByText('Task Options', { exact: true }).click();
+  await sheet.getByText('Options', { exact: true }).click();
   await sheet.getByRole('button', { name: 'Convert to note', exact: true }).click();
   await expect(sheet.getByRole('textbox', { name: 'Description' })).toHaveText('Keep my notes');
   await expect(sheet.getByRole('button', { name: 'Convert to task', exact: true })).toBeVisible();
@@ -997,6 +1004,8 @@ test('item details scroll together, edit bold and bullet lists live and expand e
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(`/tasks?listId=${listId}`);
   await expect(page.getByRole('textbox', { name: 'New task', exact: true })).toHaveAttribute('placeholder', 'Add task…');
+  await expect(page.locator('summary').filter({ hasText: 'Archived Notes' })).toHaveCount(0);
+  await page.getByRole('tab', { name: 'Notes', exact: true }).click();
   const archive = page.locator('details').filter({ has: page.locator('summary').filter({ hasText: 'Archived Notes' }) });
   await expect(archive.getByRole('button', { name: /^Open archived note Archived 34 / })).not.toBeVisible();
   await archive.locator('summary').click();
@@ -1007,6 +1016,7 @@ test('item details scroll together, edit bold and bullet lists live and expand e
   await archive.getByRole('button', { name: /^Open archived note Archived 34 / }).click();
   await page.getByRole('button', { name: 'Close panel', exact: true }).click();
   await expect(page.getByRole('dialog')).not.toBeVisible();
+  await page.getByRole('tab', { name: 'Tasks', exact: true }).click();
   await page.getByRole('button', { name: 'Task details A task with a long title that wraps naturally on mobile', exact: true }).click();
   const sheet = page.getByRole('dialog');
   await expect(sheet.locator('.entry-kind-line')).toHaveCount(0);
@@ -1061,21 +1071,91 @@ test('item details scroll together, edit bold and bullet lists live and expand e
   await expect(description.locator('ul')).toBeVisible();
   await expect.poll(async () => (await device(page)).tasks.find((task: any) => task._id === parent).description).toContain('**New priorities**');
   const headerBefore = await sheet.locator('.drawer-header').boundingBox();
-  await sheet.locator('.detail-scroll').evaluate((node) => node.scrollTop = 400);
+  await sheet.locator('.detail-scroll').evaluate((node) => node.scrollTop += 400);
   const headerAfter = await sheet.locator('.drawer-header').boundingBox();
   expect(headerAfter!.y).toBeLessThan(headerBefore!.y - 300);
   await sheet.getByRole('heading', { name: 'Location', exact: true }).scrollIntoViewIfNeeded();
   const headingStyle = await sheet.getByRole('heading', { name: 'Location', exact: true }).evaluate((node) => ({ fontSize: getComputedStyle(node).fontSize, fontWeight: getComputedStyle(node).fontWeight }));
   expect(await sheet.getByRole('heading', { name: 'Related Tasks', exact: true }).evaluate((node) => ({ fontSize: getComputedStyle(node).fontSize, fontWeight: getComputedStyle(node).fontWeight }))).toEqual(headingStyle);
-  await sheet.getByText('Task Options', { exact: true }).click();
+  await sheet.getByText('Options', { exact: true }).click();
   await expect(sheet.getByRole('button', { name: 'Clone Task', exact: true })).toBeVisible();
   await sheet.locator('.detail-scroll').evaluate((node) => node.scrollTop = 0);
   expect(await sheet.locator('.drawer-body').evaluate((node) => parseFloat(getComputedStyle(node).paddingBottom))).toBeGreaterThanOrEqual(112);
   await page.screenshot({ path: '/tmp/maitu-improved-detail.png' });
   await sheet.getByRole('button', { name: 'Close panel', exact: true }).click();
   await expect(sheet).not.toBeVisible();
+  await page.getByRole('tab', { name: 'Tasks', exact: true }).click();
   await page.getByRole('button', { name: 'Task details A task with a long title that wraps naturally on mobile', exact: true }).click();
   await expect(sheet.getByRole('textbox', { name: 'Description', exact: true }).locator('ul li strong').first()).toHaveText('New priorities');
   await expect(sheet.getByRole('textbox', { name: 'Description', exact: true }).locator('ul li')).toHaveCount(2);
+
+});
+
+test('Related Tasks is optional, protects its children and preserves Location independently', async ({ page, context }) => {
+  await transport(context);
+  await page.goto(`/tasks?listId=${listId}`);
+  await page.getByRole('textbox', { name: 'New task', exact: true }).fill('Optional add-ons');
+  await page.getByRole('textbox', { name: 'New task', exact: true }).press('Enter');
+  await page.getByRole('button', { name: 'Task details Optional add-ons', exact: true }).click();
+  const sheet = page.getByRole('dialog');
+  await expect(sheet.getByRole('heading', { name: 'Related Tasks', exact: true })).toHaveCount(0);
+  await enableRelatedTasks(page);
+  await expect(sheet.getByRole('button', { name: 'Remove Related Tasks', exact: true })).toBeEnabled();
+  await sheet.getByRole('textbox', { name: 'New subtask', exact: true }).fill('Child stays');
+  await sheet.getByRole('textbox', { name: 'New subtask', exact: true }).press('Enter');
+  await expect(sheet.getByRole('button', { name: 'Remove Related Tasks', exact: true })).toBeDisabled();
+  await sheet.getByText('Options', { exact: true }).click();
+  const locationButton = sheet.getByRole('button', { name: 'Location', exact: true });
+  expect(await locationButton.evaluate((node) => parseFloat(getComputedStyle(node).paddingLeft))).toBeGreaterThan(0);
+  await locationButton.click();
+  await sheet.getByRole('tab', { name: 'Latitude / Longitude', exact: true }).click();
+  await sheet.getByRole('textbox', { name: 'Coordinates', exact: true }).fill('-8, -34');
+  await sheet.getByRole('button', { name: 'Save location', exact: true }).click();
+  await expect.poll(async () => (await device(page)).tasks.find((task: any) => task.title === 'Optional add-ons').addons).toEqual(['relatedTasks', 'location']);
+  await sheet.getByLabel('Location options', { exact: true }).click();
+  await sheet.getByRole('button', { name: 'Remove location', exact: true }).click();
+  await expect(sheet.getByRole('heading', { name: 'Location', exact: true })).toHaveCount(0);
+  await expect(sheet.getByRole('textbox', { name: 'Subtask Child stays', exact: true })).toBeVisible();
+  await expect.poll(async () => (await device(page)).tasks.find((task: any) => task.title === 'Optional add-ons').addons).toEqual(['relatedTasks']);
+  await sheet.getByRole('button', { name: 'Location', exact: true }).click();
+  await sheet.getByRole('textbox', { name: 'Subtask Child stays', exact: true }).fill('');
+  await sheet.getByRole('textbox', { name: 'Subtask Child stays', exact: true }).press('Tab');
+  await expect(sheet.getByRole('button', { name: 'Remove Related Tasks', exact: true })).toBeEnabled();
+  await sheet.getByRole('button', { name: 'Remove Related Tasks', exact: true }).click();
+  await expect(sheet.getByRole('heading', { name: 'Related Tasks', exact: true })).toHaveCount(0);
+  await expect(sheet.getByRole('heading', { name: 'Location', exact: true })).toBeVisible();
+  await expect.poll(async () => (await device(page)).tasks.find((task: any) => task.title === 'Optional add-ons').addons).toEqual(['location']);
+});
+
+test.describe('lazy editor loading', () => {
+  test.use({ serviceWorkers: 'block' });
+test('the detail sheet renders while the rich editor download is delayed', async ({ page, context }) => {
+  const server = await transport(context);
+  server.snapshot.tasks.push({ _id: '64b2f7a9c1e6f9a1b2c3d4ee', listId, title: 'Fast details', description: '', complete: false, createdAt: '2026-01-01', version: 0 });
+  const manifest = JSON.parse(readFileSync('.svelte-kit/output/client/.vite/manifest.json', 'utf8'));
+  const editorFile = manifest['src/lib/ui/RichTextEditor.svelte'].file;
+  let release!: () => void;
+  let requested!: () => void;
+  const waitForRelease = new Promise<void>((resolve) => release = resolve);
+  const waitForRequest = new Promise<void>((resolve) => requested = resolve);
+  await page.route(`**/${editorFile}`, async (route) => {
+    requested();
+    await waitForRelease;
+    await route.continue();
+  });
+  try {
+    await page.goto(`/tasks?listId=${listId}`);
+    await page.getByRole('button', { name: 'Task details Fast details', exact: true }).click();
+    await waitForRequest;
+    const sheet = page.getByRole('dialog');
+    await expect(sheet.getByRole('textbox', { name: 'Task title', exact: true })).toHaveValue('Fast details');
+    await expect(sheet.getByRole('heading', { name: 'Tags', exact: true })).toBeVisible();
+    await expect(sheet.getByText('Options', { exact: true })).toBeVisible();
+    await expect(sheet.getByRole('textbox', { name: 'Description', exact: true })).toHaveCount(0);
+  } finally {
+    release();
+  }
+  await expect(page.getByRole('textbox', { name: 'Description', exact: true })).toBeVisible();
+});
 
 });

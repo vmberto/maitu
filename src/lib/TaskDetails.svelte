@@ -1,8 +1,9 @@
 <script lang="ts">
-  import TaskSection from './TaskSection.svelte';
-  import Icon from '#lib/Icon.svelte';
-  import Tabs from './ui-lib/Tabs.svelte';
-  import Button from './ui-lib/Button.svelte';
+  import Section from './ui/Section.svelte';
+  import Icon from '#lib/ui/Icon.svelte';
+  import Tabs from './ui/Tabs.svelte';
+  import Button from './ui/Button.svelte';
+  import Disclosure from './ui/Disclosure.svelte';
   import { autosize } from '#lib/autosize';
   import { HexColors } from './colors';
   import { drawerBehavior, closeDrawer } from '#lib/drawer';
@@ -10,8 +11,7 @@
   import { engine, offline } from '#lib/offline';
   import { lockBody } from './scroll-lock';
   import { normalizeLocation, parseCoordinates } from './location';
-  import MarkdownEditor from './MarkdownEditor.svelte';
-  import type { List, Task, TaskLocation } from '../../types/main';
+  import type { List, Task, TaskLocation, TaskAddon } from '../../types/main';
   let {
     taskId,
     close,
@@ -52,6 +52,15 @@
       (item) => !item.deleted && String((item as Task).parentTaskId) === taskId,
     ) ?? []) as Task[],
   );
+  const addons = $derived(Array.from(new Set([
+    ...(task?.addons ?? []),
+    ...(children.length ? ['relatedTasks' as const] : []),
+    ...(normalizeLocation(task?.location) ? ['location' as const] : []),
+  ])));
+  async function setAddon(addon: TaskAddon, enabled: boolean) {
+    if (!enabled && addon === 'relatedTasks' && children.length) return;
+    await save({ addons: enabled ? [...addons, addon] : addons.filter((item) => item !== addon) });
+  }
   const listColor = $derived(
     HexColors.get(
       (
@@ -105,7 +114,7 @@
   }
   async function addSubtask(event?: Event) {
     event?.preventDefault();
-    if (!subtask.trim() || readonly || !task || addingSubtask) return;
+    if (!subtask.trim() || readonly || !task || addingSubtask || !addons.includes('relatedTasks')) return;
     addingSubtask = true;
     try {
       await engine.add('tasks', {
@@ -188,7 +197,7 @@
     event.preventDefault();
     const value = locationTab === 'coordinates' ? detectedCoordinates : null;
     if (locationTab === 'search' && selectedPlace) {
-      await save({ location: normalizeLocation(selectedPlace), addons: ['location'] });
+      await save({ location: normalizeLocation(selectedPlace), addons: Array.from(new Set([...addons, 'location'])) });
       if (!error) editLocation = false;
       return;
     }
@@ -204,7 +213,7 @@
         source: 'manual',
         placeId: 'manual',
       },
-      addons: ['location'],
+      addons: Array.from(new Set([...addons, 'location'])),
     });
     if (!error) editLocation = false;
   }
@@ -273,11 +282,16 @@
     >
   </header>
   <div class="drawer-body">
-    <TaskSection>
-      <MarkdownEditor value={descriptionDraft ?? task?.description ?? ''} {readonly}
-        onchange={(value) => { descriptionDraft = value; void save({ description: value }); }} />
-    </TaskSection>
-    <TaskSection title="Tags">
+    <Section>
+      {#await import('./ui/RichTextEditor.svelte')}
+        <p role="status" class="min-h-[72px] text-sm text-gray-500">Loading description…</p>
+      {:then module}
+        {@const RichTextEditor = module.default}
+        <RichTextEditor value={descriptionDraft ?? task?.description ?? ''} {readonly}
+          onchange={(value) => { descriptionDraft = value; void save({ description: value }); }} />
+      {/await}
+    </Section>
+    <Section title="Tags">
       <form class="flex flex-wrap items-center gap-2" onsubmit={addTag}>
         {#each Array.from(new Set(task?.tags ?? [])) as value (value)}<span
             class="inline-flex items-center gap-2 rounded-md bg-surface px-2.5 py-1 text-sm text-gray-700"
@@ -309,8 +323,10 @@
             No tags
           </p>{/if}
       </form>
-    </TaskSection>
-    <TaskSection title="Related Tasks">
+    </Section>
+    {#if addons.includes('relatedTasks')}<Section title="Related Tasks">
+      {#snippet actions()}{#if !readonly}<Button class="text-sm text-gray-500" aria-label="Remove Related Tasks" disabled={children.length > 0}
+        title={children.length ? 'Remove all related tasks first' : 'Remove Related Tasks'} onclick={() => void setAddon('relatedTasks', false)}>Remove</Button>{/if}{/snippet}
       <div class="related-rows">
         {#each children as child (String(child._id))}<div
             class="task-row subtask-row flex items-start gap-2 rounded-md"
@@ -375,8 +391,8 @@
         </form>{:else if !children.length}<p class="text-sm text-gray-500">
           No related tasks
         </p>{/if}
-    </TaskSection>
-    {#if task?.addons?.includes('location') || place}<TaskSection title="Location">
+    </Section>{/if}
+    {#if task?.addons?.includes('location') || place}<Section title="Location">
         {#snippet actions()}
           {#if !readonly}<details class="relative">
               <summary
@@ -404,7 +420,7 @@
                   }}>Change location</button
                 ><button
                   class="rubber-button block w-full text-danger"
-                  onclick={() => void save({ addons: [], location: null })}
+                  onclick={() => void save({ addons: addons.filter((addon) => addon !== 'location'), location: null })}
                   >Remove location</button
                 >
               </div>
@@ -454,24 +470,19 @@
             {#if detectedCoordinates}<p class="mb-3 text-sm text-gray-500">Latitude {detectedCoordinates.latitude}, longitude {detectedCoordinates.longitude}</p>{/if}{/if}
             <Button type="submit" disabled={locationTab === 'coordinates' ? !detectedCoordinates : !selectedPlace} class="text-sm text-primary">Save location</Button>
           </form></div>{/if}
-      </TaskSection>{/if}
-    {#if !readonly}<details class="task-options">
-        <summary
-          class="flex cursor-pointer list-none items-center justify-between font-medium"
-          ><span>Task Options</span><span class="options-chevron transition-transform"><Icon name="chevron" size={18} /></span></summary>
+      </Section>{/if}
+    {#if !readonly}<Disclosure title="Options" class="task-options">
         <div class="entry-actions">
-          <TaskSection title="Actions">
-            {#if mixed && !task?.parentTaskId}<button class="rubber-touch option-row" onclick={async () => { await save({ type: isNote ? 'task' : 'note', complete: false, completedAt: null, archived: false }); }}><Icon name="note" size={18} /><span>{isNote ? 'Convert to task' : 'Convert to note'}</span></button>{/if}
-            {#if mixed && isNote}<button class="rubber-touch option-row" onclick={async () => { await save({ archived: !task?.archived }); if (!error) closeDrawer(dialog); }}><Icon name="archive" size={18} /><span>{task?.archived ? 'Restore note' : 'Archive note'}</span></button>{/if}
-            <button class="rubber-touch option-row" onclick={() => moving = !moving}><Icon name="back" size={18} /><span>{isNote ? 'Move Note' : 'Move Task'}</span></button>
+          <Section title="Actions">
+            {#if mixed && !task?.parentTaskId}<Button variant="row" onclick={async () => { await save({ type: isNote ? 'task' : 'note', complete: false, completedAt: null, archived: false }); }}><Icon name="note" size={18} /><span>{isNote ? 'Convert to task' : 'Convert to note'}</span></Button>{/if}
+            {#if mixed && isNote}<Button variant="row" onclick={async () => { await save({ archived: !task?.archived }); if (!error) closeDrawer(dialog); }}><Icon name="archive" size={18} /><span>{task?.archived ? 'Restore note' : 'Archive note'}</span></Button>{/if}
+            <Button variant="row" onclick={() => moving = !moving}><Icon name="back" size={18} /><span>{isNote ? 'Move Note' : 'Move Task'}</span></Button>
             {#if moving}<form onsubmit={moveTask} class="my-2 space-y-2">
               <select aria-label="Destination list" bind:value={destination} class="drawer-input"><option value="">Choose a tasks list</option>{#each destinations as list (list._id)}<option value={String(list._id)}>{list.emoji} {list.title}</option>{/each}</select>
               <button class="rubber-button rubber-primary w-full" disabled={!destination}>Move task</button>
             </form>{/if}
-            <button class="rubber-touch option-row" onclick={clone}
-              ><Icon name="clone" size={18} /><span>{isNote ? 'Clone Note' : 'Clone Task'}</span></button
-            ><button
-              class="rubber-touch option-row text-danger"
+            <Button variant="row" onclick={clone}
+              ><Icon name="clone" size={18} /><span>{isNote ? 'Clone Note' : 'Clone Task'}</span></Button><Button variant="row" class="text-danger"
               onclick={async () => {
                 try {
                   await engine.remove('tasks', taskId);
@@ -479,22 +490,23 @@
                 } catch {
                   error = 'Could not delete this task.';
                 }
-              }}><Icon name="trash" size={18} /><span>{isNote ? 'Delete Note' : 'Delete Task'}</span></button
-            >
-          </TaskSection>
-          <TaskSection title="Add-ons">
-            <button
-              class="rubber-touch option-row"
-              disabled={task?.addons?.includes('location')}
-              onclick={() => void save({ addons: ['location'] })}
+              }}><Icon name="trash" size={18} /><span>{isNote ? 'Delete Note' : 'Delete Task'}</span></Button>
+          </Section>
+          <Section title="Add-ons">
+            <Button variant="row"
+              disabled={addons.includes('location')}
+              onclick={() => void setAddon('location', true)}
               ><Icon name="map" size={18} /><span class="flex-1">Location</span
-              >{#if task?.addons?.includes('location')}<span
+              >{#if addons.includes('location')}<span
                   class="text-xs text-gray-500">Added</span
-                >{:else}<Icon name="plus" size={16} />{/if}</button
-            >
-          </TaskSection>
+                >{:else}<Icon name="plus" size={16} />{/if}</Button>
+            <Button variant="row" disabled={addons.includes('relatedTasks')} onclick={() => void setAddon('relatedTasks', true)}>
+              <Icon name="menu" size={18} /><span class="flex-1">Related Tasks</span>
+              {#if addons.includes('relatedTasks')}<span class="text-xs text-gray-500">Added</span>{:else}<Icon name="plus" size={16} />{/if}
+            </Button>
+          </Section>
         </div>
-      </details>{/if}
+      </Disclosure>{/if}
     {#if error}<p role="alert" class="mt-3 text-sm text-danger">{error}</p>{/if}
   </div>
   </div>
@@ -503,13 +515,12 @@
 <style>
   .detail-scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
   .task-drawer :global(.drawer-header) { display: block; position: relative; padding: 16px 64px 16px 20px; border-bottom: 0; touch-action: pan-y; }
+  .task-drawer :global(.drawer-header textarea) { padding: 0; font: inherit; }
   .task-drawer :global(.task-header-close) { position: absolute; top: 14px; right: 16px; }
-  .task-drawer h2 { margin: 0 0 8px; font-size: 22px; line-height: 1.35; }
+  .task-drawer h2 { margin: 0 0 8px; font-size: 22px; font-weight: 600; line-height: 1.35; overflow-wrap: anywhere; }
   .task-drawer :global(.drawer-body) { display: flex; flex-direction: column; gap: 16px; overflow: visible; padding: 8px 20px calc(112px + env(safe-area-inset-bottom)); }
   .task-drawer :global(.subtask-row) { margin: 0; border-bottom: 0; padding: 8px 0; border-radius: 0; }
-  .task-drawer :global(.task-options) { background: rgb(var(--panel)); border-radius: 12px; padding: 16px; }
-  .entry-actions { display: flex; flex-direction: column; gap: 16px; padding-top: 16px; }
-  .task-drawer :global(.option-row) { padding: 10px 0; }
+  .entry-actions { display: flex; flex-direction: column; gap: 16px; }
   .task-drawer :global(.drawer-body form > span.inline-flex) { background: rgb(54 100 255 / 10%); border-radius: 999px; }
   dialog::backdrop { background: rgb(0 0 0 / 0.5); }
   @media (max-width: 480px) {

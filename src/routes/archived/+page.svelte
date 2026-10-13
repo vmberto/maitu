@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Icon from '#lib/Icon.svelte';
+  import Icon from '#lib/ui/Icon.svelte';
   import { offline } from '#lib/offline';
   import type { List } from '../../../types/main';
   const lists = $derived(
