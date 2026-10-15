@@ -20,3 +20,15 @@ it('runs delivery with server keys only for authorized requests', async () => {
   expect(await result.json()).toEqual({ sent: 2, retried: 0, expired: 0 });
   expect(mocks.deliver).toHaveBeenCalledWith(db, { publicKey: 'configured', privateKey: 'configured', subject: 'configured' });
 });
+
+it('authorizes and configures reminder delivery from Cloudflare runtime bindings', async () => {
+  const db = {};
+  mocks.db.mockResolvedValue(db);
+  mocks.deliver.mockResolvedValue({ sent: 1 });
+  const request = event('Bearer worker-secret');
+  request.platform = { env: { CRON_SECRET: 'worker-secret', VAPID_PUBLIC_KEY: 'worker-public', VAPID_PRIVATE_KEY: 'worker-private', VAPID_SUBJECT: 'mailto:test@example.com' } };
+  const response = await GET(request);
+  expect(response.status).toBe(200);
+  expect(await response.json()).toEqual({ sent: 1 });
+  expect(mocks.deliver).toHaveBeenCalledWith(db, { publicKey: 'worker-public', privateKey: 'worker-private', subject: 'mailto:test@example.com' });
+});

@@ -4,7 +4,6 @@ import { getMongoDb } from '../../../lib/mongodb';
 import { subscriptionId, validateSubscription } from '../../../lib/reminders.server';
 import { ObjectId } from 'mongodb';
 import type { RequestEvent } from './$types';
-const env = process.env;
 
 async function handle(event: RequestEvent) {
   if (event.request.method !== 'GET' && event.request.headers.get('origin') !== event.url.origin)
@@ -12,9 +11,12 @@ async function handle(event: RequestEvent) {
   const user = await session(event.cookies);
   if (!user || event.request.headers.get('X-Maitu-Account') !== user._id)
     return json({ error: 'Sign in to manage notifications.' }, { status: 401, headers });
-  if (event.request.method === 'GET') return env.VAPID_PUBLIC_KEY && env.VAPID_PRIVATE_KEY && env.VAPID_SUBJECT && env.CRON_SECRET
-    ? json({ publicKey: env.VAPID_PUBLIC_KEY }, { headers })
-    : json({ error: 'Reminder delivery is not configured yet.' }, { status: 503, headers });
+  if (event.request.method === 'GET') {
+    const env = { ...process.env, ...(event.platform as { env?: NodeJS.ProcessEnv } | undefined)?.env };
+    const missing = ['VAPID_PUBLIC_KEY', 'VAPID_PRIVATE_KEY', 'VAPID_SUBJECT', 'CRON_SECRET'].filter((name) => !env[name]?.trim());
+    if (missing.length) return json({ error: `Reminder delivery is not configured. Missing server settings: ${missing.join(', ')}.`, missing }, { status: 503, headers });
+    return json({ publicKey: env.VAPID_PUBLIC_KEY }, { headers });
+  }
   const text = await event.request.text();
   if (text.length > 4096) return json({ error: 'Subscription is too large.' }, { status: 413, headers });
   let input;

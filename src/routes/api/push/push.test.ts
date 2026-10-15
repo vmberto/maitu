@@ -23,8 +23,14 @@ it('requires the signed-in account and same origin for writes', async () => {
 });
 it('publishes only the public key and reports missing delivery configuration', async () => {
   expect(await (await GET(event('GET'))).json()).toEqual({ publicKey: 'configured' });
+  vi.stubEnv('VAPID_PRIVATE_KEY', 'private-value-never-expose');
   vi.stubEnv('CRON_SECRET', '');
-  expect((await GET(event('GET'))).status).toBe(503);
+  const response = await GET(event('GET'));
+  expect(response.status).toBe(503);
+  const body = await response.json();
+  expect(body.missing).toEqual(['CRON_SECRET']);
+  expect(body.error).toContain('Missing server settings: CRON_SECRET');
+  expect(JSON.stringify(body)).not.toContain('private-value-never-expose');
 });
 it('registers validated subscriptions under the signed-in account and scopes deletion by ownership', async () => {
   expect((await POST(event('POST'))).status).toBe(200);
@@ -38,4 +44,17 @@ it('rejects arbitrary URLs and enforces the device limit', async () => {
   expect(mocks.update).not.toHaveBeenCalled();
   mocks.count.mockResolvedValue(20);
   expect((await POST(event('POST'))).status).toBe(400);
+});
+
+it('reads configured Cloudflare Worker bindings without relying on process.env', async () => {
+  const env: Record<string, string> = {};
+  for (const key of ['VAPID_PUBLIC_KEY', 'VAPID_PRIVATE_KEY', 'VAPID_SUBJECT', 'CRON_SECRET']) {
+    vi.stubEnv(key, '');
+    env[key] = key === 'VAPID_PUBLIC_KEY' ? 'worker-public-key' : 'private-worker-value';
+  }
+  const request = event('GET');
+  request.platform = { env };
+  const response = await GET(request);
+  expect(response.status).toBe(200);
+  expect(await response.json()).toEqual({ publicKey: 'worker-public-key' });
 });

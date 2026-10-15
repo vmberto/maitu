@@ -11,6 +11,7 @@ const routes = [
   '/timeline',
   '/tasks/map',
   '/archived',
+  '/archived/items',
   '/login',
 ];
 const urls = [
@@ -58,7 +59,7 @@ self.addEventListener('fetch', (event) => {
       caches
         .open(name)
         .then(
-          async (cache) => (await cache.match('/')) ?? fetch(event.request),
+          async (cache) => (await cache.match(url.pathname)) ?? (await cache.match('/')) ?? fetch(event.request),
         ),
     );
     return;

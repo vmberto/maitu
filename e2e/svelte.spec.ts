@@ -1264,9 +1264,11 @@ test('Related Tasks is optional, protects its children and preserves Location in
   const sheet = page.getByRole('dialog');
   await expect(sheet.getByRole('heading', { name: 'Related Tasks', exact: true })).toHaveCount(0);
   await enableRelatedTasks(page);
+  await sheet.getByLabel('Related Tasks options', { exact: true }).click();
   await expect(sheet.getByRole('button', { name: 'Remove Related Tasks', exact: true })).toBeEnabled();
   await sheet.getByRole('textbox', { name: 'New subtask', exact: true }).fill('Child stays');
   await sheet.getByRole('textbox', { name: 'New subtask', exact: true }).press('Enter');
+  await sheet.getByLabel('Related Tasks options', { exact: true }).click();
   await expect(sheet.getByRole('button', { name: 'Remove Related Tasks', exact: true })).toBeDisabled();
   await sheet.getByText('Options', { exact: true }).click();
   const locationButton = sheet.getByRole('button', { name: 'Location', exact: true });
@@ -1284,6 +1286,7 @@ test('Related Tasks is optional, protects its children and preserves Location in
   await sheet.getByRole('button', { name: 'Location', exact: true }).click();
   await sheet.getByRole('textbox', { name: 'Subtask Child stays', exact: true }).fill('');
   await sheet.getByRole('textbox', { name: 'Subtask Child stays', exact: true }).press('Tab');
+  await sheet.getByLabel('Related Tasks options', { exact: true }).click();
   await expect(sheet.getByRole('button', { name: 'Remove Related Tasks', exact: true })).toBeEnabled();
   await sheet.getByRole('button', { name: 'Remove Related Tasks', exact: true }).click();
   await expect(sheet.getByRole('heading', { name: 'Related Tasks', exact: true })).toHaveCount(0);
@@ -1514,6 +1517,7 @@ test('task add-ons control scheduling and the tag input fills space after tags',
   await tag.press('Enter');
   await expect(drawer.getByRole('button', { name: 'Remove tag three', exact: true })).toBeVisible();
   await drawer.locator('.scheduling summary').click();
+  await drawer.getByLabel('Schedule & Reminder options', { exact: true }).click();
   await drawer.getByRole('button', { name: 'Remove Schedule & Reminder', exact: true }).click();
   await expect(drawer.locator('.scheduling')).toHaveCount(0);
   await expect.poll(async () => (await device(page)).tasks.find((task: any) => task._id === taskId)?.reminder).toBeNull();
@@ -1567,6 +1571,7 @@ test('the date filter appears after scheduling and stays after removing scheduli
   await drawer.getByLabel('Scheduled date', { exact: true }).fill('2026-10-20');
   await drawer.getByRole('button', { name: 'Save date', exact: true }).click();
   await expect(filter).toHaveCount(1);
+  await drawer.getByLabel('Schedule & Reminder options', { exact: true }).click();
   await drawer.getByRole('button', { name: 'Remove Schedule & Reminder', exact: true }).click();
   await expect(drawer.locator('.scheduling')).toHaveCount(0);
   await drawer.getByRole('button', { name: 'Close panel', exact: true }).click();
@@ -1577,4 +1582,67 @@ test('the date filter appears after scheduling and stays after removing scheduli
   await page.reload();
   await expect(filter).toBeVisible();
   await expect(page.getByRole('textbox', { name: 'Task Schedule history', exact: true })).toBeVisible();
+});
+
+test('dedicated archive groups mixed tasks and notes and supports restore offline', async ({ page, context }) => {
+  const server = await transport(context);
+  server.snapshot.lists[0].type = 'mixed';
+  const otherList = '64b2f7a9c1e6f9a1b2c3d4e7';
+  server.snapshot.lists.push({ ...server.snapshot.lists[0], _id: otherList, title: 'Other list', type: 'tasks' });
+  server.snapshot.tasks.push(
+    { _id: '64b2f7a9c1e6f9a1b2c3d4e8', listId, title: 'Task to archive', complete: false, createdAt: '2026-01-01', version: 0 },
+    { _id: '64b2f7a9c1e6f9a1b2c3d4e9', listId, title: 'Archived note', type: 'note', archived: true, complete: false, createdAt: '2026-01-01', version: 0 },
+    { _id: '64b2f7a9c1e6f9a1b2c3d4ea', listId: otherList, title: 'Other archived task', archived: true, complete: true, createdAt: '2026-01-01', version: 0 },
+  );
+  await page.goto(`/tasks?listId=${listId}`);
+  await page.getByRole('button', { name: 'Task details Task to archive', exact: true }).click();
+  await page.getByRole('dialog').getByText('Options', { exact: true }).click();
+  await page.getByRole('button', { name: 'Archive task', exact: true }).click();
+  await expect(page.getByRole('dialog')).not.toBeVisible();
+  await page.getByRole('link', { name: 'Archived Items', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Archived Items', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Open archived task Task to archive', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Open archived note Archived note', exact: true })).toBeVisible();
+  await expect(page.getByText('Other archived task', { exact: true })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Open archived task Task to archive', exact: true }).click();
+  await page.getByRole('dialog').getByText('Options', { exact: true }).click();
+  await page.getByRole('button', { name: 'Restore task', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Open archived task Task to archive', exact: true })).toHaveCount(0);
+  await page.goto('/');
+  await page.getByRole('button', { name: 'user-settings-menu' }).click();
+  await page.getByRole('link', { name: 'Archived Items', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Open archived note Archived note', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Open archived task Other archived task', exact: true })).toBeVisible();
+  await expect.poll(async () => (await device(page)).queue.length).toBe(0);
+  await expect.poll(() => page.evaluate(() => !!navigator.serviceWorker.controller)).toBe(true);
+  await context.setOffline(true);
+  await page.reload();
+  await expect(page.getByRole('button', { name: 'Open archived note Archived note', exact: true })).toBeVisible();
+  await page.screenshot({ path: '/tmp/maitu-archive-page.png' });
+});
+
+test('all add-ons share a top-right options menu without colliding with the scheduling toggle', async ({ page, context }) => {
+  const server = await transport(context);
+  const id = '64b2f7a9c1e6f9a1b2c3d4ef';
+  server.snapshot.tasks.push({ _id: id, listId, title: 'All add-ons', description: '', complete: false, createdAt: '2026-01-01', version: 0, addons: ['scheduling', 'location', 'relatedTasks'] });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(`/tasks?listId=${listId}&taskId=${id}`);
+  const drawer = page.getByRole('dialog');
+  await expect(drawer.getByRole('textbox', { name: 'Description', exact: true })).toBeVisible();
+  await drawer.getByLabel('Schedule & Reminder options', { exact: true }).click();
+  await expect(drawer.getByRole('button', { name: 'Remove Schedule & Reminder', exact: true })).toBeVisible();
+  await expect(drawer.locator('.scheduling')).not.toHaveAttribute('open');
+  await drawer.getByRole('button', { name: 'Remove Schedule & Reminder', exact: true }).press('Escape');
+  await expect(drawer).toBeVisible();
+  await expect(drawer.getByRole('button', { name: 'Remove Schedule & Reminder', exact: true })).not.toBeVisible();
+  await drawer.locator('.scheduling summary').click();
+  await expect(drawer.getByLabel('Scheduled date', { exact: true })).toBeVisible();
+  await drawer.locator('.scheduling summary').click();
+  for (const name of ['Schedule & Reminder', 'Related Tasks', 'Location']) {
+    await drawer.getByLabel(`${name} options`, { exact: true }).click();
+    await drawer.getByRole('button', { name: name === 'Location' ? 'Remove location' : `Remove ${name}`, exact: true }).click();
+  }
+  await expect(drawer.locator('.scheduling')).toHaveCount(0);
+  await expect(drawer.getByRole('heading', { name: 'Location', exact: true })).toHaveCount(0);
+  await expect(drawer.getByRole('heading', { name: 'Related Tasks', exact: true })).toHaveCount(0);
 });

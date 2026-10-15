@@ -1,4 +1,5 @@
 <script lang="ts">
+  import AddonMenu from './ui/AddonMenu.svelte';
   import Section from './ui/Section.svelte';
   import Icon from '#lib/ui/Icon.svelte';
   import Tabs from './ui/Tabs.svelte';
@@ -335,8 +336,7 @@
       onremove={readonly ? undefined : () => void setAddon('scheduling', false)}
       onsave={(data) => engine.update('tasks', taskId, data).then(() => {})} />{/if}
     {#if addons.includes('relatedTasks')}<Section title="Related Tasks">
-      {#snippet actions()}{#if !readonly}<Button class="text-sm text-gray-500" aria-label="Remove Related Tasks" disabled={children.length > 0}
-        title={children.length ? 'Remove all related tasks first' : 'Remove Related Tasks'} onclick={() => void setAddon('relatedTasks', false)}>Remove</Button>{/if}{/snippet}
+      {#snippet actions()}{#if !readonly}<AddonMenu name="Related Tasks" disabled={children.length > 0} reason={children.length ? 'Remove all related tasks first' : ''} onremove={() => setAddon('relatedTasks', false)} />{/if}{/snippet}
       <div class="related-rows">
         {#each children.filter((child) => !child.archived) as child (String(child._id))}<div
             class="task-row subtask-row flex items-start gap-2 rounded-md"
@@ -405,37 +405,16 @@
     </Section>{/if}
     {#if task?.addons?.includes('location') || place}<Section title="Location">
         {#snippet actions()}
-          {#if !readonly}<details class="relative">
-              <summary
-                aria-label="Location options"
-                class="location-options-toggle rubber-touch cursor-pointer list-none"
-                ><Icon name="dots" size={18} /></summary
-              >
-              <div
-                class="absolute right-0 z-10 mt-2 grid w-44 gap-2 rounded-lg border border-gray-200 bg-surface p-2 shadow-lg"
-              >
-                <button
-                  class="rubber-button block w-full"
-                  onclick={async (event) => {
-                    const menu = event.currentTarget.closest('details');
-                    await save({ location: null });
-                    if (error) return;
-                    editLocation = true;
-                    locationTab = 'search';
-                    search = task?.title ?? '';
-                    coordinates = '';
-                    locationName = '';
-                    results = [];
-                    selectedPlace = null;
-                    menu?.removeAttribute('open');
-                  }}>Change location</button
-                ><button
-                  class="rubber-button block w-full text-danger"
-                  onclick={() => void save({ addons: addons.filter((addon) => addon !== 'location'), location: null })}
-                  >Remove location</button
-                >
-              </div>
-            </details>{/if}
+          {#if !readonly}<AddonMenu name="Location" removeLabel="Remove location" onremove={() => save({ addons: addons.filter((addon) => addon !== 'location'), location: null })}>
+            <button class="rubber-button w-full text-left" onclick={async (event) => {
+              const menu = event.currentTarget.closest('details');
+              await save({ location: null });
+              if (error) return;
+              editLocation = true; locationTab = 'search'; search = task?.title ?? '';
+              coordinates = ''; locationName = ''; results = []; selectedPlace = null;
+              menu?.removeAttribute('open');
+            }}>Change location</button>
+          </AddonMenu>{/if}
         {/snippet}
         {#if place}<p class="mt-2">{place.name}</p>
           <p class="text-sm text-gray-500">

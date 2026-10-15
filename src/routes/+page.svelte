@@ -171,6 +171,7 @@
             style:transform={dark ? 'translateX(20px)' : 'translateX(0)'}
           ></span></span
         ></button
+      ><a href="/archived/items" class="rubber-button block w-full">Archived Items</a
       ><a href="/archived" class="rubber-button block w-full">Archived Lists</a
       ><button
         class="rubber-button block w-full"

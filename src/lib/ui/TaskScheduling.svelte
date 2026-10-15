@@ -1,4 +1,5 @@
 <script lang="ts">
+  import AddonMenu from './AddonMenu.svelte';
   import Disclosure from './Disclosure.svelte';
   import Button from './Button.svelte';
   import { calendarDate, shiftDate, scheduleLabel, zonedInstant } from '../scheduling';
@@ -51,6 +52,7 @@
   }
 </script>
 
+<div class="scheduling-panel" class:has-menu={!!onremove}>
 <Disclosure title={schedule ? scheduleLabel(schedule, new Date(), zone) : 'Schedule & Reminder'} class="scheduling">
   <div class="space-y-4 text-sm">
     <fieldset disabled={readonly || busy} class="space-y-3">
@@ -74,11 +76,15 @@
       {#if !readonly}<div class="flex flex-wrap gap-2"><Button disabled={busy} onclick={saveReminder}>{busy ? 'Saving…' : reminder ? 'Update reminder' : 'Set reminder'}</Button>{#if reminder}<Button disabled={busy} onclick={() => run(() => onsave({ reminder: null }))}>Disable reminder</Button><Button disabled={busy} onclick={() => run(async () => { await enablePush(accountId); enabled = true; })}>Enable on this device</Button>{/if}</div>{/if}
       {#if enabled}<p role="status" class="text-xs text-gray-500">Notifications enabled on this device.</p>{/if}
     </fieldset>
-    {#if onremove}<Button class="text-sm text-gray-500" onclick={onremove}>Remove Schedule &amp; Reminder</Button>{/if}
     {#if error}<p role="alert" class="text-danger">{error}</p>{/if}
   </div>
 </Disclosure>
+{#if onremove}<div class="scheduling-menu"><AddonMenu name="Schedule & Reminder" onremove={onremove} disabled={busy} /></div>{/if}
+</div>
 
 <style>
+  .scheduling-panel { position: relative; }
+  .scheduling-menu { position: absolute; top: 12px; right: 12px; }
+  .has-menu :global(.scheduling > summary) { padding-right: 40px; }
   input { display: block; width: 100%; min-width: 0; margin-top: 4px; padding: 8px; border: 1px solid rgb(var(--gray-300, 209 213 219)); border-radius: 8px; background: rgb(var(--surface)); }
 </style>
