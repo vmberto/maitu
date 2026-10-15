@@ -8,6 +8,162 @@ const user = {
   email: 'pilot@example.com',
 };
 const listId = '64b2f7a9c1e6f9a1b2c3d4e5';
+test('adds scheduling after creation, filters calendar ranges, reschedules and removes dates offline', async ({ page, context }) => {
+  await page.clock.setFixedTime(new Date('2026-10-14T15:00:00Z'));
+  const server = await transport(context);
+  for (const [index, title, date] of [[0, 'Undated', null], [1, 'Late task', '2026-10-12'], [2, 'Today task', '2026-10-14'], [3, 'Next week task', '2026-10-21'], [4, 'Next month task', '2026-11-02']] as const)
+    server.snapshot.tasks.push({ _id: (100 + index).toString(16).padStart(24, '0'), listId, title, complete: false, createdAt: '2026-01-01', version: 0, schedule: date ? { date, timeZone: 'America/Recife' } : null });
+  await page.goto(`/tasks?listId=${listId}`);
+  await expect(page.getByRole('textbox', { name: 'Task Undated', exact: true })).toBeVisible();
+  await expect(page.getByText('Overdue', { exact: true })).toBeVisible();
+  await expect(page.getByRole('textbox', { name: 'Task Today task', exact: true })).toBeVisible();
+  await expect(page.getByRole('textbox', { name: 'Task Next week task', exact: true })).not.toBeVisible();
+  await page.getByText('Upcoming', { exact: true }).last().click();
+  await expect(page.getByRole('textbox', { name: 'Task Next week task', exact: true })).toBeVisible();
+  await page.getByLabel('Date filter').selectOption('today');
+  await expect(page.getByRole('textbox', { name: 'Task Today task', exact: true })).toBeVisible();
+  await expect(page.getByRole('textbox', { name: 'Task Undated', exact: true })).toHaveCount(0);
+  await page.getByLabel('Date filter').selectOption('week');
+  await expect(page.getByRole('textbox', { name: 'Task Late task', exact: true })).toBeVisible();
+  await expect(page.getByRole('textbox', { name: 'Task Next week task', exact: true })).toHaveCount(0);
+  await page.getByLabel('Date filter').selectOption('month');
+  await expect(page.getByRole('textbox', { name: 'Task Next week task', exact: true, includeHidden: true })).toHaveCount(1);
+  await expect(page.getByRole('textbox', { name: 'Task Next month task', exact: true })).toHaveCount(0);
+  await page.getByLabel('Date filter').selectOption('all');
+  await expect(page.locator('.task-creation').getByText('Schedule & Reminder', { exact: true })).toHaveCount(0);
+  await page.getByLabel('New task', { exact: true }).fill('Created scheduled');
+  await page.getByLabel('New task', { exact: true }).press('Enter');
+  await page.getByRole('button', { name: 'Task details Created scheduled', exact: true }).click();
+  const initialDrawer = page.getByRole('dialog');
+  await expect(initialDrawer.locator('.scheduling')).toHaveCount(0);
+  await initialDrawer.getByText('Options', { exact: true }).click();
+  await initialDrawer.getByRole('button', { name: 'Schedule & Reminder', exact: true }).click();
+  await initialDrawer.locator('.scheduling summary').click();
+  await initialDrawer.getByLabel('Scheduled date', { exact: true }).fill('2026-10-21');
+  await initialDrawer.getByRole('button', { name: 'Save date', exact: true }).click();
+  await expect.poll(async () => (await device(page)).tasks.find((task: any) => task.title === 'Created scheduled')?.schedule?.date).toBe('2026-10-21');
+  await initialDrawer.getByRole('button', { name: 'Close panel', exact: true }).click();
+  const id = (await device(page)).tasks.find((task: any) => task.title === 'Created scheduled')._id;
+  await page.evaluate(async () => { await navigator.serviceWorker.ready; });
+  await expect.poll(() => page.evaluate(() => !!navigator.serviceWorker.controller)).toBe(true);
+  await context.setOffline(true);
+  await page.goto(`/tasks?listId=${listId}&taskId=${id}`);
+  const drawer = page.getByRole('dialog');
+  await drawer.getByText(/Oct 21/, { exact: true }).click();
+  await drawer.getByLabel('Scheduled date', { exact: true }).fill('2026-10-14');
+  await drawer.getByRole('button', { name: 'Save date', exact: true }).click();
+  await expect.poll(async () => (await device(page)).tasks.find((task: any) => task._id === id)?.schedule?.date).toBe('2026-10-14');
+  await drawer.getByRole('button', { name: 'Remove date', exact: true }).click();
+  await expect.poll(async () => (await device(page)).tasks.find((task: any) => task._id === id)?.schedule).toBeNull();
+  await drawer.getByRole('button', { name: 'Close panel', exact: true }).click();
+  await expect(page.getByRole('textbox', { name: 'Task Created scheduled', exact: true })).toBeVisible();
+});
+
+test('keeps scheduling when notification permission is denied and requires an explicit reminder time', async ({ page, context }) => {
+  await transport(context);
+  await page.clock.setFixedTime(new Date('2026-10-14T15:00:00Z'));
+  await page.addInitScript(() => { Object.defineProperty(Notification, 'requestPermission', { value: async () => 'denied' }); });
+  await page.goto(`/tasks?listId=${listId}`);
+  await page.getByLabel('New task', { exact: true }).fill('Reminder test');
+  await page.getByLabel('New task', { exact: true }).press('Enter');
+  await page.getByRole('button', { name: 'Task details Reminder test' }).click();
+  const drawer = page.getByRole('dialog');
+  await drawer.getByText('Options', { exact: true }).click();
+  await drawer.getByRole('button', { name: 'Schedule & Reminder', exact: true }).click();
+  await drawer.locator('.scheduling summary').click();
+  await drawer.getByLabel('Scheduled date', { exact: true }).fill('2026-10-16');
+  await drawer.getByRole('button', { name: 'Save date', exact: true }).click();
+  await drawer.getByLabel('Reminder date', { exact: true }).fill('2026-10-15');
+  await drawer.getByRole('button', { name: 'Set reminder', exact: true }).click();
+  await expect(drawer.getByRole('alert')).toContainText('explicit time');
+  await drawer.getByLabel('Reminder time', { exact: true }).fill('09:00');
+  await drawer.getByRole('button', { name: 'Set reminder', exact: true }).click();
+  await expect(drawer.getByRole('alert')).toContainText('Notifications are blocked');
+  expect((await device(page)).tasks.find((task: any) => task.title === 'Reminder test').schedule.date).toBe('2026-10-16');
+});
+
+test('registers a reminder independently of the scheduled date and disables it without losing the date', async ({ page, context }) => {
+  await transport(context);
+  await page.clock.setFixedTime(new Date('2026-10-14T15:00:00Z'));
+  const registrations: any[] = [];
+  await context.route('**/api/push', async (route) => {
+    if (route.request().method() === 'GET') await route.fulfill({ json: { publicKey: 'A'.repeat(87) } });
+    else { registrations.push(route.request().postDataJSON()); await route.fulfill({ json: { ok: true } }); }
+  });
+  await page.addInitScript(() => {
+    Object.defineProperty(Notification, 'requestPermission', { value: async () => 'granted' });
+    Object.defineProperty(PushManager.prototype, 'getSubscription', { value: async () => ({ toJSON: () => ({ endpoint: 'https://fcm.googleapis.com/fcm/send/test', keys: { p256dh: 'A'.repeat(87), auth: 'B'.repeat(22) } }) }) });
+  });
+  await page.goto(`/tasks?listId=${listId}`);
+  await page.getByLabel('New task', { exact: true }).fill('Friday task');
+  await page.getByLabel('New task', { exact: true }).press('Enter');
+  await page.getByRole('button', { name: 'Task details Friday task' }).click();
+  const drawer = page.getByRole('dialog');
+  await drawer.getByText('Options', { exact: true }).click();
+  await drawer.getByRole('button', { name: 'Schedule & Reminder', exact: true }).click();
+  await drawer.locator('.scheduling summary').click();
+  await drawer.getByLabel('Scheduled date', { exact: true }).fill('2026-10-16');
+  await drawer.getByRole('button', { name: 'Save date', exact: true }).click();
+  await drawer.getByLabel('Reminder date', { exact: true }).fill('2026-10-15');
+  await drawer.getByLabel('Reminder time', { exact: true }).fill('09:00');
+  await drawer.getByRole('button', { name: 'Set reminder', exact: true }).click();
+  await expect(drawer.getByText('Notifications enabled on this device.')).toBeVisible();
+  expect(registrations.length).toBe(1);
+  const saved = (await device(page)).tasks.find((task: any) => task.title === 'Friday task');
+  expect(saved.reminder.at).toBe('2026-10-15T12:00:00.000Z');
+  expect(saved.schedule.date).toBe('2026-10-16');
+  await drawer.getByRole('button', { name: 'Disable reminder', exact: true }).click();
+  await expect.poll(async () => (await device(page)).tasks.find((task: any) => task.title === 'Friday task')?.reminder).toBeNull();
+  expect((await device(page)).tasks.find((task: any) => task.title === 'Friday task').schedule.date).toBe('2026-10-16');
+});
+
+test('service worker deduplicates reminders, opens the task and suppresses unsynced completion', async ({ page, context }) => {
+  const server = await transport(context);
+  const taskId = '64b2f7a9c1e6f9a1b2c3d4e8';
+  server.snapshot.tasks.push({ _id: taskId, listId, title: 'Notification task', complete: false, createdAt: '2026-01-01', version: 0 });
+  await page.goto(`/tasks?listId=${listId}`);
+  await expect(page.getByLabel('Task Notification task', { exact: true })).toBeVisible();
+  await page.evaluate(async () => { await navigator.serviceWorker.ready; });
+  await expect.poll(() => page.evaluate(() => !!navigator.serviceWorker.controller)).toBe(true);
+  const worker = context.serviceWorkers()[0];
+  await worker.evaluate(() => {
+    const scope = self as unknown as { registration: ServiceWorkerRegistration; testNotifications: Map<string, { tag: string; data: unknown; close: () => void }> };
+    scope.testNotifications = new Map();
+    scope.registration.showNotification = async (_title, options) => {
+      const tag = options!.tag!;
+      scope.testNotifications.set(tag, { tag, data: options!.data, close: () => scope.testNotifications.delete(tag) });
+    };
+    scope.registration.getNotifications = async () => [...scope.testNotifications.values()] as Notification[];
+  });
+  const payload = { title: 'Notification task', message: 'Task reminder', deliveryId: 'device-delivery-1', reminderId: 'new-reminder-from-other-device', taskId, accountId: user._id, url: `/tasks?listId=${listId}&taskId=${taskId}` };
+  const push = (data: typeof payload) => worker.evaluate((data) => {
+    let work: Promise<unknown> = Promise.resolve();
+    const event = new Event('push');
+    Object.defineProperties(event, { data: { value: { json: () => data } }, waitUntil: { value: (promise: Promise<unknown>) => work = promise } });
+    self.dispatchEvent(event);
+    return work;
+  }, data);
+  await push(payload);
+  await push(payload);
+  expect(await worker.evaluate(async () => (await (self as unknown as { registration: ServiceWorkerRegistration }).registration.getNotifications()).map((notification) => notification.tag))).toEqual(['device-delivery-1']);
+  await worker.evaluate(async () => {
+    const notification = (await (self as unknown as { registration: ServiceWorkerRegistration }).registration.getNotifications())[0];
+    let work: Promise<unknown> = Promise.resolve();
+    const event = new Event('notificationclick');
+    Object.defineProperties(event, { notification: { value: notification }, waitUntil: { value: (promise: Promise<unknown>) => work = promise } });
+    self.dispatchEvent(event);
+    // Synthetic clicks can navigate but do not carry the OS user activation required to focus.
+    try { await work; } catch (error) { if ((error as DOMException).name !== 'InvalidAccessError') throw error; }
+  });
+  await expect(page).toHaveURL(new RegExp(`taskId=${taskId}`));
+  await expect(page.getByRole('dialog').getByLabel('Task title')).toHaveValue('Notification task');
+  await page.getByRole('button', { name: 'Close panel' }).click();
+  await context.setOffline(true);
+  await page.getByRole('button', { name: 'completeTask', exact: true }).click();
+  await push({ ...payload, deliveryId: 'device-delivery-2' });
+  expect(await worker.evaluate(async () => (await (self as unknown as { registration: ServiceWorkerRegistration }).registration.getNotifications()).length)).toBe(0);
+});
+
 test('map selection highlights the foreground marker and swipe cards offer directions', async ({ page, context }) => {
   const server = await transport(context);
   const ids = ['64b2f7a9c1e6f9a1b2c3d4ea', '64b2f7a9c1e6f9a1b2c3d4eb'];
@@ -442,8 +598,7 @@ test('timeline, tags, subtasks and cloning preserve their data offline', async (
   await page.getByRole('button', { name: 'New List', exact: true }).click();
   await page.getByRole('textbox', { name: 'List name' }).fill('Journal');
   await page
-    .getByRole('combobox', { name: 'List type' })
-    .selectOption('timeline');
+    .getByRole('radio', { name: 'Timeline', exact: true }).check();
   await page.getByRole('button', { name: 'Add list', exact: true }).click();
   await page.getByRole('link', { name: '📝 Journal' }).click();
   await expect(page).toHaveURL(/\/timeline\?/);
@@ -895,12 +1050,12 @@ test('completed tasks are locked, counted, newest first and reveal every batch o
 });
 
 
-test('mixed lists create notes and surface related tasks through archive, restore and offline reload', async ({ page, context }) => {
+test('mixed lists keep related tasks inside notes through archive, restore and offline reload', async ({ page, context }) => {
   const server = await transport(context);
   await page.goto('/');
   await page.getByRole('button', { name: 'New List', exact: true }).click();
   await page.getByRole('textbox', { name: 'List name' }).fill('Diário');
-  await page.getByRole('combobox', { name: 'List type' }).selectOption('mixed');
+  await page.getByRole('radio', { name: 'Tasks & Notes', exact: true }).check();
   await page.getByRole('button', { name: 'Add list', exact: true }).click();
   await page.getByRole('link', { name: '📝 Diário' }).click();
   await expect(page.getByRole('tab', { name: 'Tasks', exact: true })).toHaveAttribute('aria-selected', 'true');
@@ -914,7 +1069,7 @@ test('mixed lists create notes and surface related tasks through archive, restor
   await expect(sheet.getByText('Open', { exact: true })).toHaveCount(0);
   await sheet.getByRole('textbox', { name: 'Description' }).click();
   await pasteDescription(page, '# Our priorities\n- Quiet street\n- Natural light\n\n# Things to investigate\nCompare building fees.');
-  await sheet.getByRole('heading', { name: 'Tags', exact: true }).click();
+  await sheet.getByRole('textbox', { name: 'New tag', exact: true }).click();
   await expect(sheet.locator('.markdown-editor h1').first()).toHaveText('Our priorities');
   await sheet.getByRole('textbox', { name: 'New tag', exact: true }).fill('home search');
   await sheet.getByRole('textbox', { name: 'New tag', exact: true }).press('Enter');
@@ -926,18 +1081,21 @@ test('mixed lists create notes and surface related tasks through archive, restor
   await page.screenshot({ path: '/tmp/maitu-note-detail.png' });
   await sheet.getByRole('button', { name: 'Close panel' }).click();
   await page.getByRole('tab', { name: 'Tasks', exact: true }).click();
-  await expect(page.getByRole('textbox', { name: 'Task Contact the agent', exact: true })).toBeVisible();
+  await expect(page.getByRole('textbox', { name: 'Task Contact the agent', exact: true })).toHaveCount(0);
   await expect(page.getByRole('textbox', { name: 'Task Searching for a Home', exact: true })).toHaveCount(0);
   await page.screenshot({ path: '/tmp/maitu-related-tasks.png' });
-  await page.getByRole('button', { name: 'Searching for a Home', exact: true }).click();
+  await page.getByRole('tab', { name: 'Notes', exact: true }).click();
+  await page.getByRole('button', { name: 'Open note Searching for a Home', exact: true }).click();
   await sheet.getByText('Options', { exact: true }).click();
   await sheet.getByRole('button', { name: 'Archive note', exact: true }).click();
   await expect(sheet).not.toBeVisible();
-  await expect(page.getByRole('textbox', { name: 'Task Contact the agent', exact: true })).toBeVisible();
+  await page.getByRole('tab', { name: 'Tasks', exact: true }).click();
+  await expect(page.getByRole('textbox', { name: 'Task Contact the agent', exact: true })).toHaveCount(0);
   await page.getByRole('tab', { name: 'Notes', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Open note Searching for a Home', exact: true })).toHaveCount(0);
-  await page.getByText('Archived Notes', { exact: false }).click();
+  await page.getByText('Archived Items', { exact: false }).click();
   await page.getByRole('button', { name: 'Open archived note Searching for a Home', exact: true }).click();
+  await expect(sheet.getByRole('textbox', { name: 'Subtask Contact the agent', exact: true })).toBeVisible();
   await sheet.getByText('Options', { exact: true }).click();
   await sheet.getByRole('button', { name: 'Restore note', exact: true }).click();
   await page.getByRole('button', { name: 'Open note Searching for a Home', exact: true }).click();
@@ -947,8 +1105,10 @@ test('mixed lists create notes and surface related tasks through archive, restor
   await sheet.getByRole('button', { name: 'Convert to note', exact: true }).click();
   await sheet.getByRole('button', { name: 'Close panel' }).click();
   await page.getByRole('tab', { name: 'Tasks', exact: true }).click();
-  await page.getByRole('button', { name: 'completeTask', exact: true }).click();
-  await page.getByRole('button', { name: 'Searching for a Home', exact: true }).click();
+  await expect(page.getByRole('textbox', { name: 'Task Contact the agent', exact: true })).toHaveCount(0);
+  await page.getByRole('tab', { name: 'Notes', exact: true }).click();
+  await page.getByRole('button', { name: 'Open note Searching for a Home', exact: true }).click();
+  await sheet.getByRole('button', { name: 'Complete subtask Contact the agent', exact: true }).click();
   await expect(sheet.getByRole('button', { name: 'Uncomplete subtask Contact the agent' })).toHaveAttribute('aria-pressed', 'true');
   await sheet.getByRole('button', { name: 'Close panel' }).click();
   await expect.poll(async () => (await device(page)).queue.length).toBe(0);
@@ -957,9 +1117,11 @@ test('mixed lists create notes and surface related tasks through archive, restor
   await expect.poll(() => page.evaluate(() => !!navigator.serviceWorker.controller)).toBe(true);
   await context.setOffline(true);
   await page.reload();
-  await expect(page.getByRole('textbox', { name: 'Task Contact the agent', exact: true })).toBeVisible();
+  await expect(page.getByRole('textbox', { name: 'Task Contact the agent', exact: true })).toHaveCount(0);
   await page.getByRole('tab', { name: 'Notes', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Open note Searching for a Home', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Open note Searching for a Home', exact: true }).click();
+  await expect(sheet.getByRole('button', { name: 'Uncomplete subtask Contact the agent' })).toHaveAttribute('aria-pressed', 'true');
 });
 
 
@@ -969,7 +1131,7 @@ test('existing task lists can enable Tasks & Notes without losing entries', asyn
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(`/tasks?listId=${listId}`);
   await page.getByRole('button', { name: 'List settings', exact: true }).click();
-  await page.getByRole('combobox', { name: 'List type' }).selectOption('mixed');
+  await page.getByRole('radio', { name: 'Tasks & Notes', exact: true }).check();
   await page.getByRole('button', { name: 'Done', exact: true }).click();
   await expect(page.getByRole('tab', { name: 'Tasks', exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Task details Existing', exact: true }).click();
@@ -1004,9 +1166,9 @@ test('item details scroll together, edit bold and bullet lists live and expand e
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(`/tasks?listId=${listId}`);
   await expect(page.getByRole('textbox', { name: 'New task', exact: true })).toHaveAttribute('placeholder', 'Add task…');
-  await expect(page.locator('summary').filter({ hasText: 'Archived Notes' })).toHaveCount(0);
+  await expect(page.locator('summary').filter({ hasText: 'Archived Items' })).toHaveCount(1);
   await page.getByRole('tab', { name: 'Notes', exact: true }).click();
-  const archive = page.locator('details').filter({ has: page.locator('summary').filter({ hasText: 'Archived Notes' }) });
+  const archive = page.locator('details').filter({ has: page.locator('summary').filter({ hasText: 'Archived Items' }) });
   await expect(archive.getByRole('button', { name: /^Open archived note Archived 34 / })).not.toBeVisible();
   await archive.locator('summary').click();
   await expect(archive.getByRole('button')).toHaveCount(35);
@@ -1049,6 +1211,8 @@ test('item details scroll together, edit bold and bullet lists live and expand e
   await expect(description.locator('script, [onerror], [href^="javascript:"]')).toHaveCount(0);
   expect(await page.evaluate(() => (window as any).markdownExecuted)).toBeUndefined();
   await description.fill('');
+  // Clearing a heading retains its block type; start a paragraph before testing the list shortcut.
+  await description.press('ControlOrMeta+Alt+0');
   await description.pressSequentially('- ');
   await expect(description.locator('ul')).toHaveCount(1);
   await description.press('ControlOrMeta+B');
@@ -1067,7 +1231,7 @@ test('item details scroll together, edit bold and bullet lists live and expand e
   await expect(description.locator('p').last()).toHaveText('A closing paragraph');
   await expect(sheet.getByRole('button', { name: 'Bold', exact: true })).toHaveCount(0);
   await expect(sheet.getByRole('button', { name: 'Bullet list', exact: true })).toHaveCount(0);
-  await sheet.getByRole('heading', { name: 'Tags', exact: true }).click();
+  await sheet.getByRole('textbox', { name: 'New tag', exact: true }).click();
   await expect(description.locator('ul')).toBeVisible();
   await expect.poll(async () => (await device(page)).tasks.find((task: any) => task._id === parent).description).toContain('**New priorities**');
   const headerBefore = await sheet.locator('.drawer-header').boundingBox();
@@ -1149,7 +1313,7 @@ test('the detail sheet renders while the rich editor download is delayed', async
     await waitForRequest;
     const sheet = page.getByRole('dialog');
     await expect(sheet.getByRole('textbox', { name: 'Task title', exact: true })).toHaveValue('Fast details');
-    await expect(sheet.getByRole('heading', { name: 'Tags', exact: true })).toBeVisible();
+    await expect(sheet.getByRole('textbox', { name: 'New tag', exact: true })).toBeVisible();
     await expect(sheet.getByText('Options', { exact: true })).toBeVisible();
     await expect(sheet.getByRole('textbox', { name: 'Description', exact: true })).toHaveCount(0);
   } finally {
@@ -1158,4 +1322,259 @@ test('the detail sheet renders while the rich editor download is delayed', async
   await expect(page.getByRole('textbox', { name: 'Description', exact: true })).toBeVisible();
 });
 
+});
+
+for (const type of ['tasks', 'mixed', 'notes', 'timeline']) {
+  test(`${type} items archive and restore through Options`, async ({ page, context }) => {
+    const server = await transport(context);
+    server.snapshot.lists[0].type = type;
+    const id = '64b2f7a9c1e6f9a1b2c3d4ef';
+    server.snapshot.tasks.push({ _id: id, listId, title: 'Archive this item', description: '', complete: false, createdAt: '2026-01-01', version: 0 });
+    if (type === 'mixed') server.snapshot.tasks.push({ _id: '64b2f7a9c1e6f9a1b2c3d4ee', listId, title: 'Already archived note', type: 'note', archived: true, complete: false, createdAt: '2026-01-01', version: 0 });
+    await page.goto(`/${type === 'timeline' ? 'timeline' : 'tasks'}?listId=${listId}`);
+    await page.getByRole('button', { name: `${['notes', 'timeline'].includes(type) ? 'Note' : 'Task'} details Archive this item`, exact: true }).click();
+    const sheet = page.getByRole('dialog');
+    await sheet.getByText('Options', { exact: true }).click();
+    await sheet.getByRole('button', { name: ['notes', 'timeline'].includes(type) ? 'Archive note' : 'Archive task', exact: true }).click();
+    await expect(sheet).not.toBeVisible();
+    await expect(page.getByRole('button', { name: /^(Task|Note) details Archive this item$/ })).toHaveCount(0);
+    const archive = page.locator('details').filter({ has: page.locator('summary').filter({ hasText: 'Archived Items' }) });
+    await archive.locator('summary').click();
+    await expect(archive.getByRole('button', { name: /Open archived .* Archive this item/ })).toBeVisible();
+    if (type === 'mixed') {
+      await expect(archive.getByRole('button', { name: 'Open archived note Already archived note' })).toBeVisible();
+      await page.getByRole('tab', { name: 'Notes', exact: true }).click();
+      await expect(archive.getByRole('button')).toHaveCount(2);
+    }
+    await archive.getByRole('button', { name: /Open archived .* Archive this item/ }).click();
+    await sheet.getByText('Options', { exact: true }).click();
+    await sheet.getByRole('button', { name: ['notes', 'timeline'].includes(type) ? 'Restore note' : 'Restore task', exact: true }).click();
+    await expect(archive.getByRole('button', { name: /Open archived .* Archive this item/ })).toHaveCount(0);
+    if (type === 'mixed') await page.getByRole('tab', { name: 'Tasks', exact: true }).click();
+    await expect(page.getByRole('button', { name: /^(Task|Note) details Archive this item$/ })).toBeVisible();
+    await expect.poll(async () => (await device(page)).queue.length).toBe(0);
+  });
+}
+
+test('related tasks archive independently and restore to their parent', async ({ page, context }) => {
+  const server = await transport(context);
+  const parent = '64b2f7a9c1e6f9a1b2c3d4ef';
+  const child = '64b2f7a9c1e6f9a1b2c3d4ee';
+  server.snapshot.tasks.push({ _id: parent, listId, title: 'Parent', description: 'Parent contents', complete: false, createdAt: '2026-01-01', version: 0 });
+  server.snapshot.tasks.push({ _id: child, listId, parentTaskId: parent, title: 'Child', description: 'Child contents', complete: true, createdAt: '2026-01-01', version: 0 });
+  await page.goto(`/tasks?listId=${listId}`);
+  await page.getByRole('button', { name: 'Task details Parent', exact: true }).click();
+  let sheet = page.getByRole('dialog');
+  await sheet.getByRole('button', { name: 'Task details Child', exact: true }).click();
+  await expect(sheet.getByRole('heading', { name: 'Child', exact: true })).toBeVisible();
+  await expect(sheet.locator('.markdown-editor')).toContainText('Child contents');
+  await sheet.getByText('Options', { exact: true }).click();
+  await sheet.getByRole('button', { name: 'Archive task', exact: true }).click();
+  await page.getByRole('button', { name: 'Task details Parent', exact: true }).click();
+  await expect(sheet.getByRole('textbox', { name: 'Subtask Child', exact: true })).toHaveCount(0);
+  await sheet.getByRole('button', { name: 'Close panel' }).click();
+  await page.getByText('Archived Items', { exact: true }).click();
+  await page.getByRole('button', { name: 'Open archived task Child', exact: true }).click();
+  await sheet.getByText('Options', { exact: true }).click();
+  await sheet.getByRole('button', { name: 'Restore task', exact: true }).click();
+  await page.getByRole('button', { name: 'Task details Parent', exact: true }).click();
+  await expect(sheet.getByRole('textbox', { name: 'Subtask Child', exact: true })).toBeVisible();
+  await expect(sheet.getByRole('button', { name: 'Uncomplete subtask Child' })).toHaveAttribute('aria-pressed', 'true');
+});
+
+for (const type of ['tasks', 'notes']) {
+  test(`${type} list conversions protect archived entries and preserve them in mixed lists offline`, async ({ page, context }) => {
+    const server = await transport(context);
+    server.snapshot.lists[0].type = type;
+    server.snapshot.tasks.push({ _id: '64b2f7a9c1e6f9a1b2c3d4ef', listId, title: 'Saved archived entry', archived: true, complete: false, createdAt: '2026-01-01', version: 0 });
+    await page.goto(`/tasks?listId=${listId}`);
+    await page.getByRole('button', { name: 'List settings', exact: true }).click();
+    const select = page.getByRole('group', { name: 'List type', exact: true });
+    await expect(select.getByRole('radio')).toHaveCount(4);
+    await expect(select.getByRole('radio', { name: 'Timeline', exact: true })).toBeDisabled();
+    await expect(page.getByText(/Remove all (notes|tasks) before changing/)).toHaveCount(0);
+    await expect(select.getByRole('radio', { name: type === 'tasks' ? 'Notes' : 'Tasks', exact: true })).toBeDisabled();
+    await select.getByRole('radio', { name: 'Tasks & Notes', exact: true }).check();
+    await page.waitForURL(`**/tasks?listId=${listId}`);
+    if (await page.getByRole('dialog').isVisible()) await page.getByRole('button', { name: 'Close panel', exact: true }).click();
+    await expect(page.getByRole('tab', { name: 'Notes', exact: true })).toBeVisible();
+    await page.getByRole('button', { name: 'List settings', exact: true }).click();
+    await expect(select.getByRole('radio', { name: type === 'tasks' ? 'Notes' : 'Tasks', exact: true })).toBeDisabled();
+    await expect(select.getByRole('radio', { name: type === 'tasks' ? 'Tasks' : 'Notes', exact: true })).toBeEnabled();
+    await page.getByRole('button', { name: 'Close panel', exact: true }).click();
+    await expect.poll(async () => (await device(page)).queue.length).toBe(0);
+    await expect.poll(() => page.evaluate(() => !!navigator.serviceWorker.controller)).toBe(true);
+    await context.setOffline(true);
+    await page.reload();
+    await page.getByText('Archived Items', { exact: true }).click();
+    await expect(page.getByRole('button', { name: `Open archived ${type === 'notes' ? 'note' : 'task'} Saved archived entry`, exact: true })).toBeVisible();
+  });
+}
+
+test('empty lists can switch between Tasks and Notes', async ({ page, context }) => {
+  await transport(context);
+  await page.goto(`/tasks?listId=${listId}`);
+  await page.getByRole('button', { name: 'List settings', exact: true }).click();
+  await expect(page.getByRole('radio', { name: 'Timeline', exact: true })).toBeDisabled();
+  await page.getByRole('radio', { name: 'Notes', exact: true }).check();
+  await page.waitForURL(`**/tasks?listId=${listId}`);
+  await page.getByRole('button', { name: 'Close panel', exact: true }).click();
+  await page.getByRole('button', { name: 'List settings', exact: true }).click();
+  await page.getByRole('radio', { name: 'Tasks', exact: true }).check();
+  await page.waitForURL(`**/tasks?listId=${listId}`);
+  await expect(page.getByRole('textbox', { name: 'New task', exact: true })).toBeVisible();
+});
+
+test('Notes lists use note rows and details instead of a timeline', async ({ page, context }) => {
+  const server = await transport(context);
+  server.snapshot.lists[0].type = 'notes';
+  server.snapshot.tasks.push({ _id: '64b2f7a9c1e6f9a1b2c3d4ef', listId, title: 'Existing legacy note', complete: false, createdAt: '2026-01-01', version: 0 });
+  await page.goto('/');
+  await page.getByRole('link', { name: /Pilot list/ }).click();
+  await page.waitForURL(`**/tasks?listId=${listId}`);
+  await expect(page.getByRole('button', { name: 'Open note Existing legacy note', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'completeTask', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('combobox', { name: 'Date filter' })).toHaveCount(0);
+  await expect(page.getByRole('tab')).toHaveCount(0);
+  await page.getByRole('textbox', { name: 'New note', exact: true }).fill('New standalone note');
+  await page.getByRole('textbox', { name: 'New note', exact: true }).press('Enter');
+  await page.getByRole('button', { name: 'Open note New standalone note', exact: true }).click();
+  const sheet = page.getByRole('dialog');
+  await expect(sheet.getByRole('textbox', { name: 'Description', exact: true })).toBeVisible();
+  await expect(sheet.getByText('Open', { exact: true })).toHaveCount(0);
+  await sheet.getByText('Options', { exact: true }).click();
+  await sheet.getByRole('button', { name: 'Archive note', exact: true }).click();
+  await page.getByText('Archived Items', { exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Open archived note New standalone note', exact: true })).toBeVisible();
+  await page.goto(`/tasks?listId=${listId}`);
+  await expect(page.getByRole('button', { name: 'Open note Existing legacy note', exact: true })).toBeVisible();
+  await expect(page.getByRole('textbox', { name: 'New note', exact: true })).toHaveAttribute('placeholder', 'Add note…');
+});
+
+test('four square type tiles create distinct Notes and Timeline lists', async ({ page, context }) => {
+  await transport(context);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'New List', exact: true }).click();
+  const sheet = page.getByRole('dialog');
+  const types = sheet.getByRole('group', { name: 'List type', exact: true });
+  await expect(types.getByRole('radio')).toHaveCount(4);
+  for (const tile of await types.locator('.type-tile').all()) {
+    const box = await tile.boundingBox();
+    expect(Math.abs(box!.width - box!.height)).toBeLessThan(1);
+  }
+  await types.getByRole('radio', { name: 'Notes', exact: true }).check();
+  await expect(types.getByRole('radio', { name: 'Notes', exact: true })).toBeChecked();
+  await expect(types.locator('.type-tile.selected')).toHaveCSS('color', 'rgb(54, 100, 255)');
+  await page.screenshot({ path: '/tmp/maitu-list-type-tiles.png' });
+  await sheet.getByRole('textbox', { name: 'List name', exact: true }).fill('Standalone Notes');
+  await sheet.getByRole('button', { name: 'Add list', exact: true }).click();
+  await page.getByRole('link', { name: /Standalone Notes/ }).click();
+  await expect(page.getByRole('textbox', { name: 'New note', exact: true })).toBeVisible();
+  await page.getByRole('link', { name: 'Back to lists' }).click();
+  await page.getByRole('button', { name: 'New List', exact: true }).click();
+  await sheet.getByRole('radio', { name: 'Timeline', exact: true }).check();
+  await sheet.getByRole('textbox', { name: 'List name', exact: true }).fill('Separate Timeline');
+  await sheet.getByRole('button', { name: 'Add list', exact: true }).click();
+  await page.getByRole('link', { name: /Separate Timeline/ }).click();
+  await expect(page).toHaveURL(/\/timeline\?/);
+  await page.getByRole('textbox', { name: 'New entry', exact: true }).fill('Timeline entry');
+  await page.getByRole('button', { name: 'Add entry', exact: true }).click();
+  await expect(page.locator('article').getByText('Timeline entry', { exact: true })).toBeVisible();
+  await expect(page.locator('section h2')).toHaveCount(1);
+  await expect(page.locator('article time')).toHaveCount(1);
+  await page.getByRole('button', { name: 'List settings', exact: true }).click();
+  await expect(page.getByRole('radio', { name: 'Timeline', exact: true })).toBeChecked();
+  await expect(page.getByRole('radio', { name: 'Timeline', exact: true })).toBeDisabled();
+});
+
+test('task add-ons control scheduling and the tag input fills space after tags', async ({ page, context }) => {
+  const server = await transport(context);
+  const taskId = '64b2f7a9c1e6f9a1b2c3d4ef';
+  server.snapshot.tasks.push({ _id: taskId, listId, title: 'Existing schedule', complete: false, createdAt: '2026-01-01', version: 0, tags: ['one', 'two'], schedule: { date: '2026-10-20', timeZone: 'America/Recife' }, reminder: { id: 'old-reminder', at: '2026-10-20T12:00:00Z', timeZone: 'America/Recife' } });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(`/tasks?listId=${listId}&taskId=${taskId}`);
+  const drawer = page.getByRole('dialog');
+  await expect(drawer.locator('.scheduling')).toBeVisible();
+  await expect(drawer.getByRole('textbox', { name: 'Description', exact: true })).toBeVisible();
+  const tag = drawer.getByRole('textbox', { name: 'New tag', exact: true });
+  const { inputBox, formBox, lastTagBox, schedulingBox } = await tag.evaluate((input) => ({
+    inputBox: input.getBoundingClientRect().toJSON(),
+    formBox: input.parentElement!.getBoundingClientRect().toJSON(),
+    lastTagBox: Array.from(input.parentElement!.querySelectorAll(':scope > span')).at(-1)!.getBoundingClientRect().toJSON(),
+    schedulingBox: input.closest('dialog')!.querySelector('.scheduling')!.getBoundingClientRect().toJSON(),
+  }));
+  expect(schedulingBox!.y).toBeGreaterThan(formBox!.y + formBox!.height);
+  expect(inputBox!.x).toBeGreaterThan(lastTagBox!.x + lastTagBox!.width);
+  expect(Math.abs(inputBox!.y + inputBox!.height / 2 - lastTagBox!.y - lastTagBox!.height / 2)).toBeLessThan(2);
+  expect(inputBox!.x + inputBox!.width).toBeCloseTo(formBox!.x + formBox!.width, 0);
+  await page.screenshot({ path: '/tmp/maitu-inline-tags.png', animations: 'disabled' });
+  await expect(drawer.getByRole('alert')).toHaveCount(0);
+  await tag.fill('three');
+  await tag.press('Enter');
+  await expect(drawer.getByRole('button', { name: 'Remove tag three', exact: true })).toBeVisible();
+  await drawer.locator('.scheduling summary').click();
+  await drawer.getByRole('button', { name: 'Remove Schedule & Reminder', exact: true }).click();
+  await expect(drawer.locator('.scheduling')).toHaveCount(0);
+  await expect.poll(async () => (await device(page)).tasks.find((task: any) => task._id === taskId)?.reminder).toBeNull();
+  expect((await device(page)).tasks.find((task: any) => task._id === taskId)?.schedule).toBeNull();
+  await drawer.getByText('Options', { exact: true }).click();
+  await drawer.getByRole('button', { name: 'Schedule & Reminder', exact: true }).click();
+  await expect(drawer.locator('.scheduling')).toBeVisible();
+  await expect.poll(async () => (await device(page)).tasks.find((task: any) => task._id === taskId)?.addons).toContain('scheduling');
+  await page.screenshot({ path: '/tmp/maitu-task-addons.png' });
+});
+
+test('mixed list tabs use the list color beside the date filter', async ({ page, context }) => {
+  const server = await transport(context);
+  server.snapshot.lists[0].type = 'mixed';
+  server.snapshot.lists[0].color = 'redColor';
+  server.snapshot.tasks.push({ _id: '64b2f7a9c1e6f9a1b2c3d4ef', listId, title: 'Previously scheduled', complete: false, wasScheduled: true, createdAt: '2026-01-01', version: 0 });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(`/tasks?listId=${listId}`);
+  const tabs = page.getByRole('tablist', { name: 'Entry filter' });
+  const filter = page.getByRole('combobox', { name: 'Date filter' });
+  await expect(page.getByText('Show', { exact: true })).toHaveCount(0);
+  for (const tab of await tabs.getByRole('tab').all()) await expect(tab).toHaveCSS('color', 'rgb(245, 92, 48)');
+  const row = page.locator('.list-filters');
+  await expect(row).toHaveCSS('border-bottom-width', '1px');
+  const rowBox = await row.boundingBox();
+  expect(rowBox!.width).toBe(350);
+  const tabBox = await tabs.boundingBox();
+  const filterBox = await filter.boundingBox();
+  expect(Math.abs(tabBox!.y + tabBox!.height / 2 - filterBox!.y - filterBox!.height / 2)).toBeLessThan(2);
+  expect(tabBox!.x + tabBox!.width).toBeLessThanOrEqual(filterBox!.x);
+  await page.screenshot({ path: '/tmp/maitu-tabs-filter.png' });
+  await page.getByRole('tab', { name: 'Notes', exact: true }).click();
+  await expect(page.getByRole('tab', { name: 'Notes', exact: true })).toHaveCSS('border-bottom-color', 'rgb(245, 92, 48)');
+  await expect(filter).toHaveCount(0);
+  await expect(page.locator('.task-creation .scheduling')).toHaveCount(0);
+});
+
+test('the date filter appears after scheduling and stays after removing scheduling', async ({ page, context }) => {
+  await transport(context);
+  await page.goto(`/tasks?listId=${listId}`);
+  const filter = page.getByRole('combobox', { name: 'Date filter' });
+  await expect(filter).toHaveCount(0);
+  await page.getByRole('textbox', { name: 'New task', exact: true }).fill('Schedule history');
+  await page.getByRole('textbox', { name: 'New task', exact: true }).press('Enter');
+  await page.getByRole('button', { name: 'Task details Schedule history', exact: true }).click();
+  const drawer = page.getByRole('dialog');
+  await drawer.getByText('Options', { exact: true }).click();
+  await drawer.getByRole('button', { name: 'Schedule & Reminder', exact: true }).click();
+  await expect(filter).toHaveCount(0);
+  await drawer.locator('.scheduling summary').click();
+  await drawer.getByLabel('Scheduled date', { exact: true }).fill('2026-10-20');
+  await drawer.getByRole('button', { name: 'Save date', exact: true }).click();
+  await expect(filter).toHaveCount(1);
+  await drawer.getByRole('button', { name: 'Remove Schedule & Reminder', exact: true }).click();
+  await expect(drawer.locator('.scheduling')).toHaveCount(0);
+  await drawer.getByRole('button', { name: 'Close panel', exact: true }).click();
+  await expect(filter).toBeVisible();
+  await expect.poll(async () => (await device(page)).queue.length).toBe(0);
+  await expect.poll(() => page.evaluate(() => !!navigator.serviceWorker.controller)).toBe(true);
+  await context.setOffline(true);
+  await page.reload();
+  await expect(filter).toBeVisible();
+  await expect(page.getByRole('textbox', { name: 'Task Schedule history', exact: true })).toBeVisible();
 });

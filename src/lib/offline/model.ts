@@ -1,4 +1,5 @@
 import type { List, Task, UserObject } from '../../../types/main';
+import { entryType, listTypeError } from '../list-types';
 
 export type EntityKind = 'lists' | 'tasks';
 export type Entity = (List | Task) & {
@@ -34,7 +35,7 @@ export function enqueue(
   account: LocalAccount,
   operations: Omit<Operation, 'id' | 'baseVersion'>[],
 ): LocalAccount {
-  const next = structuredClone(account);
+  let next = structuredClone(account);
   for (const input of operations) {
     const entities = next[input.kind];
     const index = entities.findIndex((entity) => entity._id === input.entityId);
@@ -51,6 +52,26 @@ export function enqueue(
       throw new Error('Archived lists are read only.');
     if (input.action !== 'create' && (!entity || entity.deleted))
       throw new Error('This item is no longer available.');
+    if (input.kind === 'tasks' && input.action !== 'delete') {
+      const nextTask = { ...entity, ...input.data } as Task;
+      if (nextTask.wasScheduled || nextTask.schedule || (entity as Task | undefined)?.wasScheduled || (entity as Task | undefined)?.schedule)
+        input.data = { ...input.data, wasScheduled: true };
+      if (nextTask.type === 'note' || (!nextTask.parentTaskId && ['notes', 'timeline'].includes((parent as List | undefined)?.type ?? ''))) {
+        if (input.data.schedule || input.data.reminder) throw new Error('Only tasks can be scheduled.');
+        if (nextTask.schedule || nextTask.reminder) input.data = { ...input.data, schedule: null, reminder: null };
+      }
+    }
+    if (input.kind === 'lists' && input.action === 'patch' && typeof input.data.type === 'string') {
+      const currentType = (entity as List).type ?? 'tasks';
+      const items = next.tasks.filter((item) => !item.deleted && String((item as Task).listId) === input.entityId);
+      const error = listTypeError(items as Task[], currentType, input.data.type);
+      if (error) throw new Error(error);
+      if (['notes', 'timeline'].includes(currentType) && input.data.type !== currentType) {
+        next = enqueue(next, items.filter((item) => !(item as Task).type).map((item) => ({
+          kind: 'tasks', entityId: item._id, action: 'patch', data: { type: entryType(item as Task, currentType) },
+        })));
+      }
+    }
     if (input.kind === 'tasks' && (entity as Task | undefined)?.addons?.includes('relatedTasks') &&
       Array.isArray(input.data.addons) && !input.data.addons.includes('relatedTasks') &&
       next.tasks.some((task) => !task.deleted && String((task as Task).parentTaskId) === input.entityId))
@@ -67,7 +88,7 @@ export function enqueue(
       last.entityId === input.entityId
     ) {
       last.data = { ...last.data, ...input.data };
-      entities[index] = { ...entity, ...input.data } as Entity;
+      next[input.kind][index] = { ...entity, ...input.data } as Entity;
       continue;
     }
     const operation: Operation = {
@@ -82,8 +103,8 @@ export function enqueue(
       version: operation.baseVersion + 1,
       deleted: input.action === 'delete',
     } as Entity;
-    if (index < 0) entities.push(updated);
-    else entities[index] = updated;
+    if (index < 0) next[input.kind].push(updated);
+    else next[input.kind][index] = updated;
     next.queue.push(operation);
   }
   return next;

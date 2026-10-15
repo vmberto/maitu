@@ -5,6 +5,7 @@ import type { Colors } from './colors';
 export enum ListType {
   tasks = 'tasks',
   timeline = 'timeline',
+  notes = 'notes',
   mixed = 'mixed',
 }
 
@@ -38,7 +39,18 @@ export interface TaskLocation {
   placeId: string;
 }
 
-export type TaskAddon = 'location' | 'relatedTasks';
+export type TaskAddon = 'location' | 'relatedTasks' | 'scheduling';
+
+export interface TaskSchedule {
+  date: string;
+  time?: string;
+  timeZone: string;
+}
+export interface TaskReminder {
+  id: string;
+  at: string;
+  timeZone: string;
+}
 
 export interface Task {
   type?: 'task' | 'note';
@@ -52,6 +64,9 @@ export interface Task {
   description: string;
 
   complete: boolean;
+  schedule?: TaskSchedule | null;
+  wasScheduled?: boolean;
+  reminder?: TaskReminder | null;
 
   // Keep legacy text locations readable; new selections include coordinates.
   location?: TaskLocation | string | null;

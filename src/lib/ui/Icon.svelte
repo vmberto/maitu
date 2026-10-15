@@ -4,7 +4,7 @@
     size = 20,
   }: {
     name:
-      'map' | 'menu' | 'back' | 'dots' | 'clone' | 'trash' | 'chevron' | 'plus' | 'note' | 'archive' | 'close';
+      'calendar' | 'map' | 'menu' | 'back' | 'dots' | 'clone' | 'trash' | 'chevron' | 'plus' | 'note' | 'archive' | 'close';
     size?: number;
   } = $props();
 </script>
@@ -21,7 +21,8 @@
   stroke-linejoin="round"
   aria-hidden="true"
 >
-  {#if name === 'map'}<path
+  {#if name === 'calendar'}<rect x="3" y="5" width="18" height="16" rx="2" /><path d="M7 3v4M17 3v4M3 11h18M8 15h2M14 15h2" />
+  {:else if name === 'map'}<path
       d="m9 4-6 3v14l6-3 6 3 6-3V4l-6 3-6-3Zm0 0v14m6-11v14"
     />
   {:else if name === 'menu'}<path d="M4 6h16M4 12h16M4 18h16" />

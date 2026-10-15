@@ -1,6 +1,9 @@
 import type { Db, Document } from 'mongodb';
+import type { Task } from '../../types/main';
+import { listTypeError } from './list-types';
 import { ObjectId } from 'mongodb';
 import { normalizeLocation } from './location';
+import { validSchedule, validReminder } from './scheduling';
 
 import type { Entity, EntityKind, Operation, Snapshot } from './offline/model';
 
@@ -55,6 +58,7 @@ const listFields = [
   'archived',
 ];
 const taskFields = [
+  'wasScheduled',
   'type',
   'archived',
   'title',
@@ -68,6 +72,8 @@ const taskFields = [
   'createdAt',
   'listId',
   'parentTaskId',
+  'schedule',
+  'reminder',
 ];
 export function validateData(
   kind: EntityKind,
@@ -81,7 +87,14 @@ export function validateData(
   for (const field of fields) {
     if (!(field in input)) continue;
     const value = input[field];
-    if (field === 'index') {
+    if (field === 'schedule' || field === 'reminder') {
+      if (value !== null && !(field === 'schedule' ? validSchedule(value) : validReminder(value)))
+        throw new SyncError(`Invalid ${field}.`);
+      result[field] = value;
+      continue;
+    } else if (field === 'wasScheduled') {
+      if (value !== true) throw new SyncError('Invalid scheduling history.');
+    } else if (field === 'index') {
       if (!Number.isSafeInteger(value) || (value as number) < 0)
         throw new SyncError('Invalid order.');
     } else if (field === 'archived') {
@@ -93,9 +106,9 @@ export function validateData(
     } else if (field === 'addons') {
       if (
         !Array.isArray(value) ||
-        value.length > 2 ||
+        value.length > 3 ||
         new Set(value).size !== value.length ||
-        value.some((addon) => !['location', 'relatedTasks'].includes(addon))
+        value.some((addon) => !['location', 'relatedTasks', 'scheduling'].includes(addon))
       )
         throw new SyncError('Invalid add-ons.');
     } else if (field === 'location') {
@@ -139,7 +152,7 @@ export function validateData(
       !Number.isFinite(Date.parse(value))
     )
       throw new SyncError('Invalid date.');
-    if (field === 'type' && !(kind === 'lists' ? ['tasks', 'timeline', 'mixed'] : ['task', 'note']).includes(value as string))
+    if (field === 'type' && !(kind === 'lists' ? ['tasks', 'notes', 'timeline', 'mixed'] : ['task', 'note']).includes(value as string))
       throw new SyncError('Invalid list type.');
     if (
       field === 'color' &&
@@ -237,6 +250,17 @@ export async function applyOperation(
           operation.data,
           operation.action === 'create',
         );
+  if (operation.kind === 'lists' && operation.action === 'patch' && typeof data.type === 'string' && data.type !== existing?.type) {
+    const items = await db.collection('todos').find({ listId: id, deleted: { $ne: true } }).toArray();
+    const error = listTypeError(items as unknown as Task[], existing?.type ?? 'tasks', data.type);
+    if (error) throw new SyncError(error);
+    if (['notes', 'timeline'].includes(existing?.type)) {
+      await db.collection('todos').updateMany(
+        { listId: id, deleted: { $ne: true }, type: { $exists: false }, parentTaskId: null },
+        { $set: { type: 'note' } },
+      );
+    }
+  }
   if (operation.kind === 'tasks' && operation.action !== 'delete') {
     const listId = (data.listId ?? existing?.listId)?.toString();
     const list = await ownedList(db, userId, listId);
@@ -247,14 +271,18 @@ export async function applyOperation(
       if (child) throw new SyncError('Remove all related tasks before removing this add-on.');
     }
     const entry = { ...existing, ...data };
+    if (existing?.wasScheduled || existing?.schedule || data.schedule) data.wasScheduled = true;
+    if (entry.type === 'note' || (!entry.parentTaskId && ['notes', 'timeline'].includes(list.type))) {
+      if (data.schedule || data.reminder) throw new SyncError('Only tasks can be scheduled.');
+      if (entry.schedule || entry.reminder) { data.schedule = null; data.reminder = null; }
+    }
+    if (entry.complete && data.reminder) throw new SyncError('Completed tasks cannot have new reminders.');
     if (entry.type === 'note') {
       if (entry.parentTaskId) throw new SyncError('Notes cannot be subtasks.');
       if (data.complete === true || data.completedAt)
         throw new SyncError('Notes cannot be completed.');
       data.complete = false;
       data.completedAt = null;
-    } else if (entry.archived) {
-      throw new SyncError('Only notes can be archived.');
     }
     const parentId = entry.parentTaskId;
     if (parentId) {

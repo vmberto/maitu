@@ -5,11 +5,14 @@
   import Icon from '#lib/ui/Icon.svelte';
   import { autosize } from '#lib/autosize';
   import { sortable } from '#lib/reorder';
-  import { onDestroy } from 'svelte';
+  import { onDestroy, onMount } from 'svelte';
+  import Disclosure from '#lib/ui/Disclosure.svelte';
+  import { matchesDate, scheduleGroup, scheduleLabel, scheduledDate, zonedInstant, type DateFilter } from '../../lib/scheduling';
   import { page } from '$app/state';
   import { engine, offline } from '#lib/offline';
   import Tabs from '#lib/ui/Tabs.svelte';
-  import Disclosure from '#lib/ui/Disclosure.svelte';
+  import ArchivedItems from '#lib/ArchivedItems.svelte';
+  import { entryType } from '#lib/list-types';
   import { entriesForView } from '../../lib/entries';
   import ListHeader from '#lib/ListHeader.svelte';
   import { normalizeLocation } from '../../lib/location';
@@ -21,15 +24,25 @@
     ) as List | undefined,
   );
   const mixed = $derived(list?.type === 'mixed');
-  let filter = $state('tasks');
+  const notesOnly = $derived(list?.type === 'notes');
+  let selectedFilter = $state('tasks');
+  const filter = $derived(notesOnly ? 'notes' : selectedFilter);
+  let dateFilter = $state<DateFilter>('all');
+  let now = $state(new Date());
+  const zone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  onMount(() => {
+    const refresh = () => { now = new Date(); };
+    const timer = setInterval(refresh, 30000);
+    window.addEventListener('focus', refresh);
+    return () => { clearInterval(timer); window.removeEventListener('focus', refresh); };
+  });
   const listTasks = $derived(
     ($offline.account?.tasks.filter((item) => !item.deleted &&
-      String((item as Task).listId) === listId) ?? []) as Task[],
+      String((item as Task).listId) === listId) ?? []).map((item) => notesOnly ? { ...item, type: entryType(item as Task, 'notes') } : item) as Task[],
   );
-  const tasks = $derived(entriesForView(listTasks, mixed, filter, false));
-  const archivedEntries = $derived(entriesForView(listTasks, true, 'notes', true));
-  const parentNotes = $derived(new Map(listTasks.filter((task) => task.type === 'note').map((task) => [String(task._id), task])));
-  function parentNote(task: Task) { return parentNotes.get(String(task.parentTaskId)); }
+  const hasScheduledTasks = $derived(listTasks.some((task) => task.type !== 'note' && (task.schedule || task.wasScheduled)));
+  const tasks = $derived(entriesForView(listTasks, mixed, filter, false).filter((task) => filter === 'notes' || matchesDate(task, hasScheduledTasks ? dateFilter : 'all', now, zone)));
+  const archivedEntries = $derived(entriesForView(listTasks, mixed, filter, true));
   let listSettings = $state(false);
   let draft = $state('');
   let titleEdits = $state<Record<string, string>>({});
@@ -56,12 +69,25 @@
   );
   const active = $derived(
     ordered.filter(
-      (task) => !task.complete || pending.includes(String(task._id)),
+      (task) => task.type === 'note' || !task.complete || pending.includes(String(task._id)),
     ),
   );
+  const groups = $derived.by(() => {
+    const result = (filter === 'notes' ? ['unscheduled'] : ['overdue', 'unscheduled', 'today', 'upcoming']).map((kind) => ({
+      kind, title: kind === 'overdue' ? 'Overdue' : kind === 'today' ? 'Today' : 'Upcoming', items: [] as Task[],
+    }));
+    const order = new Map<Task, string>();
+    for (const task of active) {
+      const kind = filter === 'notes' ? 'unscheduled' : scheduleGroup(task, now, zone);
+      result.find((group) => group.kind === kind)!.items.push(task);
+      if (task.schedule) order.set(task, scheduledDate(task.schedule, zone) + (task.schedule.time ? zonedInstant(task.schedule.date, task.schedule.time, task.schedule.timeZone) : ''));
+    }
+    for (const group of result) if (group.kind !== 'unscheduled') group.items.sort((a, b) => order.get(a)!.localeCompare(order.get(b)!));
+    return result;
+  });
   const completed = $derived(
     ordered
-      .filter((task) => task.complete && !pending.includes(String(task._id)))
+      .filter((task) => task.type !== 'note' && task.complete && !pending.includes(String(task._id)))
       .sort(
         (a, b) =>
           (b.completedAt || b.createdAt).localeCompare(
@@ -107,7 +133,7 @@
         title: draft.trim(),
         description: '',
         complete: false,
-        ...(mixed ? { type: filter === 'notes' ? 'note' as const : 'task' as const } : {}),
+        ...(mixed || notesOnly ? { type: filter === 'notes' ? 'note' as const : 'task' as const } : {}),
         listId,
         index: Math.max(-1, ...listTasks.map((task) => task.index ?? 0)) + 1,
         parentTaskId: null,
@@ -164,29 +190,27 @@
 >
   {#if !list}<p class="py-5">This list is unavailable on this device.</p>
   {:else}
-    {#if mixed}
-      <Tabs label="Entry filter" appearance="underline" value={filter}
+    <div class="list-filters flex items-center justify-between gap-3 border-gray-200" class:border-b={mixed} class:py-1={!mixed}>
+      {#if mixed}<Tabs label="Entry filter" appearance="underline" value={filter}
         options={[{ value: 'tasks', label: 'Tasks' }, { value: 'notes', label: 'Notes' }]}
-        onchange={(value) => { filter = value; visible = 20; completeVisible = 20; }} />
-    {/if}
+        onchange={(value) => { selectedFilter = value; visible = 20; completeVisible = 20; }} />{/if}
+      {#if filter !== 'notes' && hasScheduledTasks}<select aria-label="Date filter" class="ml-auto max-w-[50%] rounded-lg border-0 bg-panel py-1 pl-3 pr-8 text-sm text-gray-500" bind:value={dateFilter} onchange={() => { visible = 20; completeVisible = 20; }}>
+        <option value="all">All Tasks</option><option value="today">Today</option><option value="week">This Week</option><option value="month">This Month</option><option value="upcoming">Upcoming</option>
+      </select>{/if}
+    </div>
     <div role={mixed ? 'tabpanel' : undefined} aria-label={mixed ? (filter === 'tasks' ? 'Tasks' : 'Notes') : undefined}>
     {#if list.archived}<p class="py-3 text-sm text-gray-500">
         Archived · Read only
       </p>{/if}
-    <div
-      use:sortable={{
-        ids: list.archived ? [] : active.map((task) => String(task._id)),
-        kind: 'tasks',
-        error: (message) => (error = message),
-      }}
-    >
-      {#each active.slice(0, visible) as task (String(task._id))}<div
+    {#snippet activeRows(items: Task[])}
+    <div use:sortable={{ ids: list.archived ? [] : items.filter((task) => !task.schedule).map((task) => String(task._id)), kind: 'tasks', error: (message) => error = message }}>
+      {#each items.slice(0, visible) as task (String(task._id))}<div
           animate:flip={{ duration: 180 }}
           data-sort-id={String(task._id)}
-          title="Hold to reorder; use arrow keys when the row is focused"
+          title={task.schedule ? undefined : 'Hold to reorder; use arrow keys when the row is focused'}
           class="task-row flex items-start gap-2 border-b border-gray-200 py-2"
         >
-          {#if !list.archived}<button
+          {#if !list.archived && !task.schedule}<button
               type="button"
               data-sort-key
               aria-label={`Reorder ${task.title}`}
@@ -228,7 +252,7 @@
                     () => (error = 'Could not save this task on your device.'),
                   );
               }}></textarea>
-            {#if mixed && parentNote(task)}<button class="block text-left text-xs text-gray-500" onclick={() => detailsId = String(task.parentTaskId)}>{parentNote(task)?.title}</button>{/if}
+            {#if task.schedule}<button type="button" class="my-1 text-left text-xs text-gray-500" aria-label={`Schedule ${task.title}`} onclick={() => detailsId = String(task._id)}>{scheduleLabel(task.schedule, now, zone)}</button>{/if}
             {#if task.tags?.length}<div
                 class="task-tags flex flex-wrap gap-1"
               >
@@ -247,40 +271,48 @@
               ><Icon name="map" size={16} /></a
             >{/if}
           <button
-            aria-label={`Task details ${task.title}`}
+            aria-label={`${filter === 'notes' ? 'Note' : 'Task'} details ${task.title}`}
             class="task-action rubber-button rubber-icon text-gray-500"
             onclick={() => (detailsId = String(task._id))}
             ><Icon name="dots" /></button
           >
         </div>{/each}
     </div>
+    {/snippet}
+    {#each groups as group (group.kind)}
+      {#if group.items.length}
+        {#if group.kind === 'unscheduled'}{@render activeRows(group.items)}
+        {:else}<Disclosure title={group.title} badge={group.items.length} open={group.kind !== 'upcoming'} class="my-3">{@render activeRows(group.items)}</Disclosure>{/if}
+      {/if}
+    {/each}
     {#if visible < active.length}<button
         bind:this={sentinel}
         class="rubber-button my-3 w-full"
         onclick={() => (visible += 20)}>More tasks</button
       >{/if}
-    {#if !list.archived}<form
+    {#if !list.archived}<div class="task-creation"><form
         onsubmit={addTask}
         class="task-row flex items-start gap-2 border-b border-gray-200 py-2"
       >
-        <span class:todo-check={!mixed} class="shrink-0 p-0.5 text-primary opacity-60" aria-hidden="true">{#if mixed}<Icon name="plus" size={24} />{/if}</span>
+        <span class:todo-check={!mixed && !notesOnly} class="shrink-0 p-0.5 text-primary opacity-60" aria-hidden="true">{#if mixed || notesOnly}<Icon name="plus" size={24} />{/if}</span>
         <textarea
-          aria-label={mixed && filter === 'notes' ? "New note" : "New task"}
-          placeholder={mixed ? (filter === 'notes' ? "Add note…" : "Add task…") : undefined}
+          aria-label={filter === 'notes' ? "New note" : "New task"}
+          placeholder={mixed || notesOnly ? (filter === 'notes' ? "Add note…" : "Add task…") : undefined}
           data-task-input
           bind:value={draft}
           use:autosize={draft}
           rows="1"
           class="todo-title w-full resize-none overflow-hidden border-0 bg-transparent"
-          onblur={() => void addTask()}
+          onblur={(event) => { if (!(event.relatedTarget instanceof Node) || !event.currentTarget.closest('.task-creation')?.contains(event.relatedTarget)) void addTask(); }}
           onkeydown={(event) => {
             if (event.key === 'Enter' && !event.isComposing) {
               event.preventDefault();
               void addTask();
             }
           }}></textarea>
-        <button type="submit" class="sr-only">{mixed && filter === 'notes' ? "Add note" : "Add task"}</button>
-      </form>{/if}
+        <button type="submit" class="sr-only">{filter === 'notes' ? "Add note" : "Add task"}</button>
+      </form>
+    </div>{/if}
     {#if completed.length}<h2
         class="mt-16 flex items-center justify-between border-b border-gray-200 py-3 font-semibold"
       >
@@ -342,7 +374,7 @@
             class="task-action rubber-touch text-gray-500"><Icon name="map" size={16} /></a
           >{/if}<button
           class="task-action rubber-button rubber-icon"
-          aria-label={`Task details ${task.title}`}
+          aria-label={`${filter === 'notes' ? 'Note' : 'Task'} details ${task.title}`}
           onclick={() => (detailsId = String(task._id))}
           ><Icon name="dots" /></button
         >
@@ -352,20 +384,17 @@
         class="h-2"
         aria-hidden="true"
       ></div>{/if}
-    {#if mixed && filter === 'notes'}<Disclosure title="Archived Notes" badge={archivedEntries.length} class="mt-6 text-gray-500">
-      <div class="mt-3">
-        {#each archivedEntries as note (String(note._id))}<button class="flex w-full items-start gap-3 py-3 text-left text-gray-500" aria-label={`Open archived note ${note.title}`} onclick={() => detailsId = String(note._id)}><Icon name="note" size={24} /><span class="min-w-0 break-words">{note.title}</span></button>{:else}<p class="py-3 text-sm text-gray-500">No archived notes.</p>{/each}
-      </div>
-    </Disclosure>{/if}
     </div>
+    <ArchivedItems items={archivedEntries} openItem={(id) => detailsId = id} />
     {#if error}<p role="alert" class="text-sm text-danger">{error}</p>{/if}
   {/if}
 </main>
-{#if detailsId}{#await import('#lib/TaskDetails.svelte') then module}{@const TaskDetails = module.default}<TaskDetails
+{#if detailsId}{#key detailsId}{#await import('#lib/TaskDetails.svelte') then module}{@const TaskDetails = module.default}<TaskDetails
     taskId={detailsId}
+    openItem={(id) => detailsId = id}
     readonly={!!list?.archived}
     close={() => (detailsId = null)}
-  />{/await}{/if}
+  />{/await}{/key}{/if}
 
 {#if listSettings && list}{#await import('#lib/ListDetails.svelte') then module}{@const ListDetails = module.default}<ListDetails
     {list}

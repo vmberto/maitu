@@ -4,6 +4,7 @@
   import Tabs from './ui/Tabs.svelte';
   import Button from './ui/Button.svelte';
   import Disclosure from './ui/Disclosure.svelte';
+  import TaskScheduling from './ui/TaskScheduling.svelte';
   import { autosize } from '#lib/autosize';
   import { HexColors } from './colors';
   import { drawerBehavior, closeDrawer } from '#lib/drawer';
@@ -15,8 +16,9 @@
   let {
     taskId,
     close,
+    openItem,
     readonly = false,
-  }: { taskId: string; close: () => void; readonly?: boolean } = $props();
+  }: { taskId: string; close: () => void; openItem: (id: string) => void; readonly?: boolean } = $props();
   let dialog: HTMLDialogElement;
   let error = $state('');
   let subtask = $state('');
@@ -41,7 +43,7 @@
   );
   const ownerList = $derived($offline.account?.lists.find((item) => item._id === String(task?.listId)) as List | undefined);
   const mixed = $derived(ownerList?.type === 'mixed');
-  const isNote = $derived(task?.type === 'note');
+  const isNote = $derived(task?.type === 'note' || (['notes', 'timeline'].includes(ownerList?.type ?? '') && !task?.parentTaskId));
   const destinations = $derived(($offline.account?.lists ?? []).filter(
     (list) => !list.deleted && !(list as List).archived && ((list as List).type === 'mixed' || (!isNote && (list as List).type === 'tasks')) && String(list._id) !== String(task?.listId),
   ) as List[]);
@@ -54,12 +56,15 @@
   );
   const addons = $derived(Array.from(new Set([
     ...(task?.addons ?? []),
+    ...(task?.schedule || task?.reminder ? ['scheduling' as const] : []),
     ...(children.length ? ['relatedTasks' as const] : []),
     ...(normalizeLocation(task?.location) ? ['location' as const] : []),
   ])));
   async function setAddon(addon: TaskAddon, enabled: boolean) {
     if (!enabled && addon === 'relatedTasks' && children.length) return;
-    await save({ addons: enabled ? [...addons, addon] : addons.filter((item) => item !== addon) });
+    await save({ addons: enabled ? [...addons, addon] : addons.filter((item) => item !== addon),
+      ...(!enabled && addon === 'scheduling' ? { schedule: null, reminder: null } : {}),
+    });
   }
   const listColor = $derived(
     HexColors.get(
@@ -151,6 +156,7 @@
         archived: false,
         complete: false,
         completedAt: null,
+        reminder: null,
         createdAt: new Date().toISOString(),
       });
       for (const child of children) {
@@ -160,6 +166,7 @@
           parentTaskId: cloned._id,
           complete: false,
           completedAt: null,
+          reminder: null,
           createdAt: new Date().toISOString(),
         });
       }
@@ -251,6 +258,7 @@
             rows="1"
             use:autosize={titleDraft ?? task?.title ?? ''}
             onblur={async (event) => {
+              if (!task) return;
               const title = titleDraft ?? event.currentTarget.value;
               try {
                 await commitTaskTitle(taskId, title, readonly);
@@ -290,11 +298,9 @@
         <RichTextEditor value={descriptionDraft ?? task?.description ?? ''} {readonly}
           onchange={(value) => { descriptionDraft = value; void save({ description: value }); }} />
       {/await}
-    </Section>
-    <Section title="Tags">
-      <form class="flex flex-wrap items-center gap-2" onsubmit={addTag}>
+      <form class="mt-4 flex flex-wrap items-center gap-2 border-t border-gray-200 pt-3" onsubmit={addTag}>
         {#each Array.from(new Set(task?.tags ?? [])) as value (value)}<span
-            class="inline-flex items-center gap-2 rounded-md bg-surface px-2.5 py-1 text-sm text-gray-700"
+            class="inline-flex items-center gap-2 rounded-md bg-surface px-2 py-0.5 text-xs text-gray-700"
             >{value}{#if !readonly}<button
                 type="button"
                 aria-label={`Remove tag ${value}`}
@@ -310,7 +316,7 @@
             placeholder="Add tag"
             bind:value={tag}
             maxlength="20"
-            class="min-w-0 flex-1 basis-28 border-0 bg-transparent text-sm"
+            class="min-w-0 flex-1 basis-24 border-0 bg-transparent px-0 py-1 text-xs"
             onblur={() => void addTag()}
             onkeydown={(event) => {
               if (event.key === 'Enter' && !event.isComposing) {
@@ -324,11 +330,15 @@
           </p>{/if}
       </form>
     </Section>
+    {#if task && !isNote && addons.includes('scheduling')}<TaskScheduling schedule={task.schedule} reminder={task.reminder}
+      accountId={String($offline.account?.user._id ?? '')} readonly={readonly || task.complete}
+      onremove={readonly ? undefined : () => void setAddon('scheduling', false)}
+      onsave={(data) => engine.update('tasks', taskId, data).then(() => {})} />{/if}
     {#if addons.includes('relatedTasks')}<Section title="Related Tasks">
       {#snippet actions()}{#if !readonly}<Button class="text-sm text-gray-500" aria-label="Remove Related Tasks" disabled={children.length > 0}
         title={children.length ? 'Remove all related tasks first' : 'Remove Related Tasks'} onclick={() => void setAddon('relatedTasks', false)}>Remove</Button>{/if}{/snippet}
       <div class="related-rows">
-        {#each children as child (String(child._id))}<div
+        {#each children.filter((child) => !child.archived) as child (String(child._id))}<div
             class="task-row subtask-row flex items-start gap-2 rounded-md"
           >
             <button
@@ -368,6 +378,7 @@
                   error = 'Could not save this subtask.';
                 }
               }}></textarea>
+            <button class="rubber-button rubber-icon" aria-label={`Task details ${child.title}`} onclick={() => openItem(String(child._id))}><Icon name="dots" /></button>
           </div>{/each}
       </div>
       {#if !readonly}<form
@@ -475,7 +486,7 @@
         <div class="entry-actions">
           <Section title="Actions">
             {#if mixed && !task?.parentTaskId}<Button variant="row" onclick={async () => { await save({ type: isNote ? 'task' : 'note', complete: false, completedAt: null, archived: false }); }}><Icon name="note" size={18} /><span>{isNote ? 'Convert to task' : 'Convert to note'}</span></Button>{/if}
-            {#if mixed && isNote}<Button variant="row" onclick={async () => { await save({ archived: !task?.archived }); if (!error) closeDrawer(dialog); }}><Icon name="archive" size={18} /><span>{task?.archived ? 'Restore note' : 'Archive note'}</span></Button>{/if}
+            <Button variant="row" onclick={async () => { await save({ archived: !task?.archived }); if (!error) closeDrawer(dialog); }}><Icon name="archive" size={18} /><span>{task?.archived ? (isNote ? 'Restore note' : 'Restore task') : (isNote ? 'Archive note' : 'Archive task')}</span></Button>
             <Button variant="row" onclick={() => moving = !moving}><Icon name="back" size={18} /><span>{isNote ? 'Move Note' : 'Move Task'}</span></Button>
             {#if moving}<form onsubmit={moveTask} class="my-2 space-y-2">
               <select aria-label="Destination list" bind:value={destination} class="drawer-input"><option value="">Choose a tasks list</option>{#each destinations as list (list._id)}<option value={String(list._id)}>{list.emoji} {list.title}</option>{/each}</select>
@@ -493,6 +504,10 @@
               }}><Icon name="trash" size={18} /><span>{isNote ? 'Delete Note' : 'Delete Task'}</span></Button>
           </Section>
           <Section title="Add-ons">
+            {#if !isNote}<Button variant="row" disabled={addons.includes('scheduling')} onclick={() => void setAddon('scheduling', true)}>
+              <Icon name="calendar" size={18} /><span class="flex-1">Schedule &amp; Reminder</span>
+              {#if addons.includes('scheduling')}<span class="text-xs text-gray-500">Added</span>{:else}<Icon name="plus" size={16} />{/if}
+            </Button>{/if}
             <Button variant="row"
               disabled={addons.includes('location')}
               onclick={() => void setAddon('location', true)}

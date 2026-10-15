@@ -226,3 +226,38 @@ it('protects Related Tasks offline and permits removing the add-on after deletin
   expect(next.tasks[0]).toHaveProperty('addons', ['location']);
   expect(next.tasks[1].deleted).toBe(true);
 });
+
+it('blocks incompatible list types including archives and preserves legacy notes when enabling mixed lists', () => {
+  const task = { _id: 'task', listId: list._id, archived: true, complete: true, version: 0 } as Entity;
+  const account = { ...initial, lists: [{ ...list, type: 'tasks' } as Entity], tasks: [task] };
+  const convert = (type: string) => ({ kind: 'lists' as const, entityId: list._id, action: 'patch' as const, data: { type } });
+  expect(() => enqueue(account, [convert('notes')])).toThrow('Remove all tasks');
+  expect(enqueue(account, [convert('mixed')]).lists[0].type).toBe('mixed');
+  const notes = { ...account, lists: [{ ...list, type: 'timeline' } as Entity], tasks: [{ ...task, complete: false }] };
+  expect(() => enqueue(notes, [convert('tasks')])).toThrow('Remove all notes');
+  const mixed = enqueue(notes, [convert('mixed')]);
+  expect(mixed.tasks[0].type).toBe('note');
+  expect(mixed.queue.map((op) => [op.kind, op.data.type])).toEqual([['tasks', 'note'], ['lists', 'mixed']]);
+  const deleted = { ...account, tasks: [{ ...task, deleted: true }] };
+  expect(enqueue(deleted, [convert('notes')]).lists[0].type).toBe('notes');
+  expect(account.tasks[0].type).toBeUndefined();
+});
+
+ it('requires Timeline to be chosen when creating a list, including for empty lists', () => {
+  for (const type of ['tasks', 'notes', 'mixed']) {
+    const account = { ...initial, lists: [{ ...list, type } as Entity] };
+    expect(() => enqueue(account, [{ kind: 'lists', entityId: list._id, action: 'patch', data: { type: 'timeline' } }])).toThrow('Timeline must be selected when creating');
+  }
+  expect(enqueue(initial, [{ kind: 'lists', entityId: 'new', action: 'create', data: { type: 'timeline', title: 'Timeline' } }]).lists[1].type).toBe('timeline');
+});
+
+it('keeps scheduling history when unsent scheduling changes are coalesced or its add-on is removed', () => {
+  const task = { _id: 'task', listId: list._id, version: 0 } as Entity;
+  const account = { ...initial, tasks: [task] };
+  const patch = (data: Record<string, unknown>) => ({ kind: 'tasks' as const, entityId: task._id, action: 'patch' as const, data });
+  const scheduled = enqueue(account, [patch({ schedule: { date: '2026-10-20', timeZone: 'America/Recife' } })]);
+  const removed = enqueue(scheduled, [patch({ schedule: null, reminder: null, addons: [] })]);
+  expect(removed.tasks[0]).toMatchObject({ schedule: null, wasScheduled: true });
+  expect(removed.queue).toHaveLength(1);
+  expect(removed.queue[0].data).toMatchObject({ schedule: null, wasScheduled: true });
+});

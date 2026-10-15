@@ -7,6 +7,21 @@ const userId = '507f191e810c19729de860ea';
 const listId = '64b2f7a9c1e6f9a1b2c3d4e5';
 const taskId = '64b2f7a9c1e6f9a1b2c3d4e6';
 const receipt = '00000000-0000-4000-8000-000000000001';
+it('rejects scheduling notes and permits scheduling related tasks in a Notes list', async () => {
+  lists.findOne.mockResolvedValue({ ...list, type: 'notes' });
+  const schedule = { date: '2026-10-21', timeZone: 'America/Recife' };
+  const existing = { _id: new ObjectId(taskId), listId: new ObjectId(listId), version: 2 };
+  tasks.findOne.mockResolvedValue({ ...existing, type: 'note' });
+  const edit = { ...operation, kind: 'tasks' as const, entityId: taskId, data: { schedule } };
+  await expect(applyOperation(db, userId, edit)).rejects.toThrow('Only tasks');
+  const parentId = '64b2f7a9c1e6f9a1b2c3d4ef';
+  tasks.findOne.mockImplementation(async (filter: { _id: ObjectId }) => filter._id.toString() === parentId
+    ? { _id: new ObjectId(parentId), listId: new ObjectId(listId), type: 'note' }
+    : { ...existing, parentTaskId: new ObjectId(parentId) });
+  tasks.updateOne.mockResolvedValue({ matchedCount: 1 });
+  await applyOperation(db, userId, edit);
+  expect(tasks.updateOne.mock.calls[0][1].$set.schedule).toEqual(schedule);
+});
 it('moves a task only into an owned active list', async () => {
   const destination = '64b2f7a9c1e6f9a1b2c3d4e7';
   const existing = { _id: new ObjectId(taskId), listId: new ObjectId(listId), version: 2 };
@@ -209,6 +224,8 @@ it('persists only supported add-ons and allows removing them', () => {
     addons: ['location'],
   });
   expect(validateData('tasks', { addons: [] }, false)).toEqual({ addons: [] });
+  const addons = ['location', 'relatedTasks', 'scheduling'];
+  expect(validateData('tasks', { addons }, false)).toEqual({ addons });
   expect(validateData('tasks', { addons: ['location', 'relatedTasks'] }, false)).toEqual({ addons: ['location', 'relatedTasks'] });
   for (const addons of ['location', ['unknown'], ['location', 'location']])
     expect(() => validateData('tasks', { addons }, false)).toThrow(
@@ -292,7 +309,8 @@ it('rejects editing and deleting tasks within archived lists', async () => {
 
 
 it('accepts the mixed list type and validates entry types and archive flags', () => {
-  expect(validateData('lists', { type: 'mixed' }, false)).toEqual({ type: 'mixed' });
+  for (const type of ['tasks', 'notes', 'mixed', 'timeline'])
+    expect(validateData('lists', { type }, false)).toEqual({ type });
   expect(validateData('tasks', { type: 'note', archived: true }, false)).toEqual({ type: 'note', archived: true });
   for (const data of [{ type: 'topic' }, { archived: 'true' }])
     expect(() => validateData('tasks', data, false)).toThrow();
@@ -309,7 +327,7 @@ it('converts completed tasks into notes and rejects completing or nesting notes'
   await expect(applyOperation(db, userId, { ...patch, data: { parentTaskId: listId } })).rejects.toThrow('Notes cannot be subtasks');
 });
 
-it('archives and restores notes, but rejects archiving tasks', async () => {
+it('archives and restores notes and tasks', async () => {
   tasks.findOne.mockResolvedValue({ _id: new ObjectId(taskId), listId: new ObjectId(listId), type: 'note', version: 2 });
   tasks.updateOne.mockResolvedValue({ matchedCount: 1 });
   const patch = { ...operation, kind: 'tasks' as const, entityId: taskId, data: { archived: true } };
@@ -319,7 +337,10 @@ it('archives and restores notes, but rejects archiving tasks', async () => {
   await applyOperation(db, userId, { ...patch, data: { archived: false } });
   expect(tasks.updateOne.mock.calls[1][1].$set).toMatchObject({ archived: false });
   tasks.findOne.mockResolvedValue({ _id: new ObjectId(taskId), listId: new ObjectId(listId), version: 2 });
-  await expect(applyOperation(db, userId, patch)).rejects.toThrow('Only notes can be archived');
+  await applyOperation(db, userId, patch);
+  expect(tasks.updateOne.mock.calls[2][1].$set).toMatchObject({ archived: true });
+  await applyOperation(db, userId, { ...patch, data: { archived: false } });
+  expect(tasks.updateOne.mock.calls[3][1].$set).toMatchObject({ archived: false });
 });
 
 
@@ -346,4 +367,43 @@ it('allows removing an empty Related Tasks add-on without losing Location', asyn
   tasks.updateOne.mockResolvedValue({ matchedCount: 1 });
   await applyOperation(db, userId, { ...operation, kind: 'tasks', entityId: taskId, data: { addons: ['location'] } });
   expect(tasks.updateOne.mock.calls[0][1].$set.addons).toEqual(['location']);
+});
+
+it('rejects changing a list to a type incompatible with its saved items', async () => {
+  const convert = (type: string) => ({ ...operation, data: { type } });
+  tasks.find.mockReturnValue({ toArray: vi.fn().mockResolvedValue([{ type: 'task', archived: true, complete: true }]) });
+  await expect(applyOperation(db, userId, convert('notes'))).rejects.toThrow('Remove all tasks');
+  expect(lists.updateOne).not.toHaveBeenCalled();
+  await applyOperation(db, userId, convert('mixed'));
+  tasks.find.mockReturnValue({ toArray: vi.fn().mockResolvedValue([{ type: 'note', archived: true }]) });
+  lists.findOne.mockResolvedValue({ ...list, type: 'mixed' });
+  await expect(applyOperation(db, userId, convert('tasks'))).rejects.toThrow('Remove all notes');
+  tasks.find.mockReturnValue({ toArray: vi.fn().mockResolvedValue([]) });
+  await applyOperation(db, userId, convert('tasks'));
+});
+
+it('preserves legacy Notes entries when converting their list to Tasks & Notes', async () => {
+  lists.findOne.mockResolvedValue({ ...list, type: 'timeline' });
+  tasks.find.mockReturnValue({ toArray: vi.fn().mockResolvedValue([{ title: 'Legacy note' }]) });
+  tasks.updateMany = vi.fn().mockResolvedValue({ modifiedCount: 1 });
+  await expect(applyOperation(db, userId, { ...operation, data: { type: 'tasks' } })).rejects.toThrow('Remove all notes');
+  await applyOperation(db, userId, { ...operation, data: { type: 'mixed' } });
+  expect(tasks.updateMany).toHaveBeenCalledWith(expect.objectContaining({ type: { $exists: false } }), { $set: { type: 'note' } });
+});
+
+it('rejects converting an existing list to Timeline even when empty', async () => {
+  for (const type of ['tasks', 'notes', 'mixed']) {
+    lists.findOne.mockResolvedValue({ ...list, type });
+    await expect(applyOperation(db, userId, { ...operation, data: { type: 'timeline' } })).rejects.toThrow('Timeline must be selected when creating');
+  }
+  expect(lists.updateOne).not.toHaveBeenCalled();
+});
+
+it('preserves scheduling history after removing a date and accepts coalesced history', async () => {
+  tasks.findOne.mockResolvedValue({ _id: new ObjectId(taskId), listId: new ObjectId(listId), schedule: { date: '2026-10-20', timeZone: 'America/Recife' }, version: 2 });
+  tasks.updateOne.mockResolvedValue({ matchedCount: 1 });
+  await applyOperation(db, userId, { ...operation, kind: 'tasks', entityId: taskId, data: { schedule: null } });
+  expect(tasks.updateOne.mock.calls[0][1].$set).toMatchObject({ schedule: null, wasScheduled: true });
+  expect(validateData('tasks', { schedule: null, wasScheduled: true }, false)).toMatchObject({ schedule: null, wasScheduled: true });
+  expect(() => validateData('tasks', { wasScheduled: false }, false)).toThrow('Invalid scheduling history');
 });

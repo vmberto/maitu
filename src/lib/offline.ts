@@ -1,6 +1,7 @@
 import { createOfflineEngine } from './offline/engine';
 export const engine = createOfflineEngine({
-  logout: async () => {
+  logout: async (accountId) => {
+    await import('./push').then(({ disconnectPush }) => disconnectPush(accountId)).catch(() => {});
     const response = await fetch('/api/auth/logout', { method: 'POST' });
     if (!response.ok) throw new Error('Could not sign out on the server');
   },

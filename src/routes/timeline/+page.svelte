@@ -1,4 +1,6 @@
 <script lang="ts">
+  import ArchivedItems from '#lib/ArchivedItems.svelte';
+  import Icon from '#lib/ui/Icon.svelte';
   import { autosize } from '#lib/autosize';
   import { page } from '$app/state';
   import { engine, offline } from '#lib/offline';
@@ -11,14 +13,15 @@
       (item) => !item.deleted && item._id === listId,
     ) as List | undefined,
   );
-  const tasks = $derived(
+  const listItems = $derived(
     ($offline.account?.tasks.filter(
       (item) =>
         !item.deleted &&
-        String((item as Task).listId) === listId &&
-        !(item as Task).parentTaskId,
+        String((item as Task).listId) === listId,
     ) ?? []) as Task[],
   );
+  const tasks = $derived(listItems.filter((item) => !item.archived && !item.parentTaskId));
+  let detailsId = $state<string | null>(null);
   const days = $derived(
     Array.from(new Set(tasks.map((task) => task.createdAt.slice(0, 10))))
       .sort()
@@ -35,6 +38,7 @@
         title: draft.trim(),
         description: '',
         complete: false,
+        type: 'note',
         listId,
         createdAt: new Date().toISOString(),
       });
@@ -82,15 +86,18 @@
                     hour: '2-digit',
                     minute: '2-digit',
                   })}</time
-                >
+                ><button class="rubber-button rubber-icon" aria-label={`Note details ${task.title}`} onclick={() => detailsId = String(task._id)}><Icon name="dots" /></button>
               </div>
               <p class="whitespace-pre-wrap leading-relaxed">{task.title}</p>
             </article>{/each}
         </div>
       </section>{/each}
+    <ArchivedItems notesOnly items={listItems.filter((item) => item.archived)} openItem={(id) => detailsId = id} />
   {/if}{#if error}<p role="alert" class="text-danger">{error}</p>{/if}
 </main>
 {#if settings && list}<ListDetails
     {list}
     close={() => (settings = false)}
   />{/if}
+
+{#if detailsId}{#key detailsId}{#await import('#lib/TaskDetails.svelte') then module}{@const TaskDetails = module.default}<TaskDetails taskId={detailsId} openItem={(id) => detailsId = id} readonly={!!list?.archived} close={() => detailsId = null} />{/await}{/key}{/if}

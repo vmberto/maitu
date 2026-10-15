@@ -1,14 +1,23 @@
 <script lang="ts">
   import Icon from './ui/Icon.svelte';
+  import ListTypePicker from '#lib/ListTypePicker.svelte';
   import ListAppearance from '#lib/ListAppearance.svelte';
   import { drawerBehavior, closeDrawer } from '#lib/drawer';
-  import { engine } from '#lib/offline';
+  import { engine, offline } from '#lib/offline';
   import { lockBody } from './scroll-lock';
-  import type { List } from '../../types/main';
+  import type { List, Task } from '../../types/main';
+  import { listTypeError } from './list-types';
+  import { goto } from '$app/navigation';
   let { list, close }: { list: List; close: () => void } = $props();
   let dialog: HTMLDialogElement;
   let error = $state('');
   let confirmation = $state('');
+  const items = $derived(($offline.account?.tasks ?? []).filter((item) => !item.deleted && String((item as Task).listId) === String(list._id)) as Task[]);
+  async function changeType(type: List['type']) {
+    await save({ type });
+    if (error) return;
+    await goto(`/${type === 'timeline' ? 'timeline' : 'tasks'}?listId=${encodeURIComponent(String(list._id))}`);
+  }
   $effect(() => {
     dialog?.showModal();
     return lockBody();
@@ -17,8 +26,8 @@
     try {
       await engine.update('lists', String(list._id), data);
       error = '';
-    } catch {
-      error = 'Could not save this list.';
+    } catch (cause) {
+      error = cause instanceof Error ? cause.message : 'Could not save this list.';
     }
   }
 </script>
@@ -51,9 +60,7 @@
           oninput={(event) => void save({ title: event.currentTarget.value })}
         /></label
       ></div>
-      {#if list.type !== 'timeline'}<label class="mt-4 block text-sm">List type<select aria-label="List type" value={list.type} class="drawer-input mt-1" onchange={(event) => void save({ type: event.currentTarget.value as List['type'] })}>
-        <option value="tasks" disabled={list.type === 'mixed'}>Tasks</option><option value="mixed">Tasks &amp; Notes</option>
-      </select></label>{/if}
+      <ListTypePicker value={list.type} onchange={(type) => void changeType(type)} isDisabled={(type) => type === 'timeline' || !!listTypeError(items, list.type, type)} />
       <ListAppearance color={list.color} emoji={list.emoji} onchange={save} />
       <button
         class="rubber-button mt-5 text-danger"

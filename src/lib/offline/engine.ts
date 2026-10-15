@@ -55,7 +55,7 @@ export type OfflineSnapshot = {
 };
 
 export function createOfflineEngine(options: {
-  logout: () => Promise<unknown>;
+  logout: (accountId?: string) => Promise<unknown>;
   redirect?: (path: string) => void;
 }) {
   let state: OfflineSnapshot = {
@@ -460,6 +460,7 @@ export function createOfflineEngine(options: {
       });
     },
     signOut: async () => {
+      const accountId = String(current?.user._id ?? '');
       stopped = true;
       await change<boolean>('signedOut', () => true);
       await clearActiveAccount();
@@ -472,7 +473,7 @@ export function createOfflineEngine(options: {
             .map((key) => caches.delete(key)),
         );
       try {
-        await options.logout();
+        await options.logout(accountId);
       } finally {
         redirect('/login');
       }

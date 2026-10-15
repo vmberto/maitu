@@ -1,5 +1,6 @@
 <script lang="ts">
   import { flip } from 'svelte/animate';
+  import ListTypePicker from '#lib/ListTypePicker.svelte';
   import Icon from '#lib/ui/Icon.svelte';
   import { drawerBehavior, closeDrawer } from '#lib/drawer';
   import { sortable } from '#lib/reorder';
@@ -214,16 +215,7 @@
         /></label
       >
     </form>
-    <label class="mt-4 block text-sm"
-      >List type<select
-        aria-label="List type"
-        bind:value={type}
-        class="drawer-input mt-1"
-        ><option value={ListType.tasks}>Tasks</option><option value={ListType.mixed}>Tasks &amp; Notes</option><option
-          value={ListType.timeline}>Timeline</option
-        ></select
-      ></label
-    >
+    <ListTypePicker value={type} onchange={(value) => type = value} />
     {#if newListOpen}{#await import('#lib/ListAppearance.svelte') then module}{@const ListAppearance = module.default}<ListAppearance
       {color}
       {emoji}

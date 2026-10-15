@@ -2,6 +2,7 @@
 import { immutable, assets } from '$app/manifest';
 import { version } from '$app/env';
 import { isLegacyCache } from '../lib/offline/model';
+import { readStartup, change } from '../lib/offline/storage';
 import { self } from '$app/service-worker';
 const name = `maitu-svelte-shell-${version}`;
 const routes = [
@@ -80,22 +81,44 @@ self.addEventListener('push', (event) => {
   } catch {
     return;
   }
-  event.waitUntil(
-    self.registration.showNotification(data.title || 'Maitu', {
-      body: data.message,
-      icon: '/icons/icon-192x192.png?v=4',
-    }),
-  );
+  event.waitUntil((async () => {
+    const { account } = await readStartup();
+    if (!account || String(account.user._id) !== data.accountId || typeof data.deliveryId !== 'string') return;
+    const task = account.tasks.find((item) => item._id === data.taskId);
+    const list = account.lists.find((item) => item._id === String(task?.listId));
+    const pendingTask = account.queue.some((op) => op.kind === 'tasks' && op.entityId === data.taskId);
+    const pendingReminder = account.queue.some((op) => op.kind === 'tasks' && op.entityId === data.taskId && 'reminder' in op.data);
+    const pendingList = account.queue.some((op) => op.kind === 'lists' && op.entityId === String(task?.listId));
+    // Closed devices may have stale snapshots. Trust the server except for this device's unsynced changes.
+    if ((pendingTask && (task?.deleted || (task as any)?.complete || (task as any)?.archived || (task as any)?.type === 'note')) ||
+      (pendingReminder && (task as any)?.reminder?.id !== data.reminderId) ||
+      (pendingList && (list?.deleted || (list as any)?.archived))) return;
+    let duplicate = false;
+    await change<string[]>('pushSeen', (seen = []) => {
+      duplicate = seen.includes(data.deliveryId);
+      return duplicate ? seen : [...seen.slice(-199), data.deliveryId];
+    });
+    if (duplicate) return;
+    try {
+      await self.registration.showNotification(data.title || 'Maitu', {
+        body: data.message, icon: '/icons/icon-192x192.png?v=4', tag: data.deliveryId,
+        data: { url: data.url },
+      });
+    } catch (error) {
+      await change<string[]>('pushSeen', (seen = []) => seen.filter((id) => id !== data.deliveryId));
+      throw error;
+    }
+  })());
 });
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-  event.waitUntil(
-    self.clients
-      .matchAll({ type: 'window' })
-      .then((clients) =>
-        clients[0] ? clients[0].focus() : self.clients.openWindow('/'),
-      ),
-  );
+  const target = new URL(event.notification.data?.url ?? '/', self.location.origin);
+  if (target.origin !== self.location.origin || !['/', '/tasks'].includes(target.pathname)) return;
+  event.waitUntil(self.clients.matchAll({ type: 'window' }).then(async (clients) => {
+    const client = clients[0];
+    if (client) { await client.navigate(target.href); return client.focus(); }
+    return self.clients.openWindow(target.href);
+  }));
 });
 
 // Retire old shells only after every open app window confirms the new build.

@@ -29,8 +29,8 @@
   button { flex: 1; padding: 6px 8px; border-radius: 5px; font-size: 12px; font-weight: 500; transition: background-color 150ms ease, color 150ms ease; }
   button[aria-selected='true'] { background: rgb(var(--surface)); color: #3664ff; box-shadow: 0 1px 2px #0001; }
   button:focus-visible { outline: 2px solid #3664ff; outline-offset: 2px; }
-  .underline-tabs { gap: 16px; padding: 0; border-radius: 0; background: transparent; border-bottom: 1px solid rgb(var(--gray-200)); }
-  .underline-tabs button { flex: none; padding: 12px 10px; border-radius: 0; border-bottom: 2px solid transparent; font-size: 14px; color: rgb(var(--gray-500)); }
-  .underline-tabs button[aria-selected='true'] { background: transparent; border-bottom-color: #3664ff; color: #3664ff; box-shadow: none; }
+  .underline-tabs { gap: 16px; padding: 0; border-radius: 0; background: transparent; margin-bottom: -1px; }
+  .underline-tabs button { flex: none; padding: 12px 10px; border-radius: 0; border-bottom: 2px solid transparent; font-size: 14px; color: var(--list-color, rgb(var(--gray-500))); }
+  .underline-tabs button[aria-selected='true'] { background: transparent; border-bottom-color: var(--list-color, #3664ff); color: var(--list-color, #3664ff); box-shadow: none; }
   @media (prefers-reduced-motion: reduce) { button { transition: none; } }
 </style>
