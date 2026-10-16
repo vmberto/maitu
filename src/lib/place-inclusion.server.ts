@@ -46,11 +46,12 @@ export async function includePlace(input: string, env: Record<string, string | u
     const url = publicPlaceUrl(links[0]!.replace(/[),.;]+$/, ''));
     try {
       // A fixed public reader handles external pages; the app never fetches user-selected hosts.
+      // Workers requires manual redirects; response.ok below rejects redirect responses.
       const response = await request(`https://r.jina.ai/${url.href}`, {
         headers: { Accept: 'application/json', 'X-Timeout': '15',
           ...(env.JINA_API_KEY ? { Authorization: `Bearer ${env.JINA_API_KEY}` } : {}),
         },
-        redirect: 'error', signal: AbortSignal.timeout(20000),
+        redirect: 'manual', signal: AbortSignal.timeout(20000),
       });
       if (!response.ok) throw new Error('Reader unavailable');
       const body = await readPlaceJson(response);
@@ -88,7 +89,7 @@ export async function includePlace(input: string, env: Record<string, string | u
     const endpoint = new URL('api/', env.PHOTON_URL || 'https://photon.komoot.io/');
     endpoint.searchParams.set('q', query);
     endpoint.searchParams.set('limit', '6');
-    const response = await request(endpoint, { headers: { Accept: 'application/json' }, redirect: 'error', signal: AbortSignal.timeout(8000) });
+    const response = await request(endpoint, { headers: { Accept: 'application/json' }, redirect: 'manual', signal: AbortSignal.timeout(8000) });
     if (!response.ok) throw new Error('Search unavailable');
     return photonPlaces(await readPlaceJson(response));
   }));

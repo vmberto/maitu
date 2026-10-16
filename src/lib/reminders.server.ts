@@ -19,7 +19,7 @@ export function validateSubscription(value: unknown): Subscription {
 }
 export async function sendPush(subscription: Subscription, payload: object, config: PushConfig) {
   const request = await buildPushPayload({ data: JSON.stringify(payload), options: { ttl: 86400 } }, subscription, config);
-  return fetch(subscription.endpoint, { ...request, redirect: 'error', signal: AbortSignal.timeout(10000) });
+  return fetch(subscription.endpoint, { ...request, redirect: 'manual', signal: AbortSignal.timeout(10000) });
 }
 
 // Mongo leases serialize concurrent cron runs; the browser also deduplicates delivery IDs.

@@ -94,6 +94,7 @@ it('encrypts an actual Web Push request and signs it with VAPID', async () => {
     await sendPush({ ...subscription, keys: { p256dh, auth: Buffer.from(crypto.getRandomValues(new Uint8Array(16))).toString('base64url') } }, { title: 'Encrypted task' }, { ...config, publicKey, privateKey });
     const request = fetchMock.mock.calls[0][1] as any;
     expect(request.method.toUpperCase()).toBe('POST');
+    expect(request.redirect).toBe('manual');
     expect(request.headers['content-encoding']).toBe('aes128gcm');
     expect(request.headers.authorization).toMatch(/^vapid /);
     expect(Buffer.from(request.body).includes(Buffer.from('Encrypted task'))).toBe(false);

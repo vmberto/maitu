@@ -65,3 +65,28 @@ it('keeps blocked pages, provider failures and oversized responses recoverable',
   await expect(includePlace('x'.repeat(4097), {}, vi.fn())).rejects.toMatchObject({ status: 400 });
   await expect(includePlace('https://venue.com', {}, vi.fn().mockResolvedValue(new Response('x'.repeat(256001))))).rejects.toMatchObject({ status: 422 });
 });
+
+it('uses Workers-compatible redirect handling for both place discovery providers', async () => {
+  const request = vi.fn<typeof fetch>(async (url, options) => {
+    if (options?.redirect !== 'manual') throw new TypeError('Workers only supports follow or manual redirects.');
+    return String(url).startsWith('https://r.jina.ai/')
+      ? Response.json({ data: { title: 'Marco Zero', content: '📍 Marco Zero, Recife' } })
+      : results();
+  });
+  const searchLink = 'https://www.google.com/search?q=terraco+da+praca&oq=terraco+da+praca&sourceid=chrome&ie=UTF-8';
+  await expect(includePlace(searchLink, {}, request)).resolves.toHaveLength(1);
+  expect(new URL(String(request.mock.calls[0][0])).searchParams.get('q')).toBe('terraco da praca');
+  await expect(includePlace('https://www.instagram.com/p/public-post/', {}, request)).resolves.toHaveLength(1);
+  expect(request.mock.calls.every(([, options]) => options?.redirect === 'manual')).toBe(true);
+});
+
+it('rejects provider redirects without forwarding requests or credentials', async () => {
+  const redirected = () => new Response(null, { status: 302, headers: { Location: 'http://127.0.0.1/private' } });
+  const request = vi.fn().mockImplementation(async () => redirected());
+  await expect(includePlace('Museum Recife', {}, request)).rejects.toMatchObject({ status: 503 });
+  expect(request).toHaveBeenCalledTimes(1);
+  request.mockClear();
+  await expect(includePlace('https://www.instagram.com/p/public-post/', { JINA_API_KEY: 'private-reader-key' }, request)).rejects.toMatchObject({ status: 422 });
+  expect(request).toHaveBeenCalledTimes(1);
+  expect(String(request.mock.calls[0][0])).toMatch(/^https:\/\/r\.jina\.ai\//);
+});
