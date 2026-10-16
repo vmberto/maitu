@@ -85,9 +85,9 @@ it('drops unsupported tags and safely normalizes task metadata', async () => {
 it('asks for more context when identity is ambiguous or web research fails', async () => {
   expect(await smartPlace(input, {}, providers(), engine({ resolution: 'ambiguous' }))).toMatchObject({ autoAdd: false, places: [] });
   const ai = engine();
-  await expect(smartPlace(input, {}, vi.fn().mockResolvedValue(new Response('', { status: 403 })), ai)).rejects.toThrow('Web research is unavailable');
+  await expect(smartPlace(input, {}, vi.fn().mockResolvedValue(new Response('', { status: 403 })), ai)).rejects.toThrow('WEB-HTTP-403');
   expect(ai.run).not.toHaveBeenCalled();
-  await expect(smartPlace('https://instagram.com/p/private', {}, vi.fn().mockResolvedValue(new Response('', { status: 403 })), ai)).rejects.toMatchObject({ status: 422 });
+  await expect(smartPlace('https://instagram.com/p/private', {}, vi.fn().mockResolvedValue(new Response('', { status: 403 })), ai)).rejects.toMatchObject({ status: 503 });
 });
 
 it('keeps explicit map pins and coordinates usable without AI or research', async () => {

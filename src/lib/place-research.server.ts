@@ -1,6 +1,7 @@
 import { parseCoordinates, placeInput } from './location';
 import { placeQueries, publicPlaceUrl } from './place-inclusion';
 import { PlaceInclusionError, readPlaceJson } from './place-inclusion.server';
+import { logger } from './logger';
 
 export type PlacePage = { id: string; url: string; title: string; text: string; links: string[] };
 export function folded(value: string): string {
@@ -17,24 +18,46 @@ export function nameTerms(query: string): string[] {
   return folded(query).split(' ').filter((word) => word.length > 2 && !['restaurant', 'restaurante', 'bistro', 'bistrot', 'cafe', 'coffee', 'the', 'and', 'com', 'www', 'https'].includes(word));
 }
 
+function webFailure(reference: string): PlaceInclusionError {
+  const reason = reference.startsWith('WEB-HTTP-429') ? 'The public page reader is rate-limiting research. Try again later.'
+    : reference.startsWith('WEB-HTTP-403') ? 'The public page reader blocked this research request.'
+    : reference === 'WEB-TIMEOUT' ? 'The public page reader timed out. Try the lookup again.'
+    : reference.startsWith('WEB-TARGET-') ? 'The source website blocked the public reader or returned an error.'
+    : reference === 'WEB-RESPONSE' ? 'The public page reader returned an unreadable response.'
+    : 'The public page reader could not complete this research request.';
+  logger.warn({ event: 'place_research_failure', reference }, 'Public place research failed');
+  return new PlaceInclusionError(`${reason} (${reference})`, 503);
+}
+
 async function readPage(url: string, id: string, request: typeof fetch, signal: AbortSignal): Promise<PlacePage> {
   const target = publicPlaceUrl(url).href;
-  const response = await request(`https://r.jina.ai/${target}`, {
-    headers: { Accept: 'application/json', 'X-Timeout': '10', 'X-With-Links-Summary': 'all' },
-    redirect: 'manual', signal: AbortSignal.any([signal, AbortSignal.timeout(12000)]),
-  });
-  if (!response.ok) throw new Error('Public page unavailable');
-  const data = (await readPlaceJson(response))?.data;
-  if (!data || typeof data.content !== 'string' || data.httpStatus >= 400) throw new Error('Unreadable page');
-  const title = typeof data.title === 'string' ? data.title.slice(0, 250) : 'Place source';
-  const text = [title, data.description, data.content].filter((part) => typeof part === 'string').join('\n').replace(/\*{4}/g, ' ').replace(/\*\*/g, '').slice(0, 16000);
-  const rawLinks = [...(data.content.match(/https?:\/\/[^\s<>"\])]+/gi) ?? []),
-    ...(Array.isArray(data.links) ? data.links.flatMap((link: unknown) => Array.isArray(link) && typeof link[1] === 'string' ? [link[1]] : []) : [])];
-  const links: string[] = [];
-  for (const raw of rawLinks.slice(0, 250)) {
-    try { const safe = publicPlaceUrl(raw).href; if (!links.includes(safe)) links.push(safe); } catch { /* Ignore private and non-web links. */ }
+  try {
+    const response = await request(`https://r.jina.ai/${target}`, {
+      headers: { Accept: 'application/json', 'X-Timeout': '15', 'X-With-Links-Summary': 'all' },
+      redirect: 'manual', signal: AbortSignal.any([signal, AbortSignal.timeout(20000)]),
+    });
+    if (!response.ok) {
+      const failure = await readPlaceJson(response, 16000).catch(() => null);
+      const code = String(failure?.code ?? '').match(/^\d{3,6}$/)?.[0];
+      throw webFailure(`WEB-HTTP-${response.status}${code ? `-${code}` : ''}`);
+    }
+    const data = (await readPlaceJson(response).catch(() => { throw webFailure('WEB-RESPONSE'); }))?.data;
+    if (!data || typeof data.content !== 'string') throw webFailure('WEB-RESPONSE');
+    if (typeof data.httpStatus === 'number' && data.httpStatus >= 400) throw webFailure(`WEB-TARGET-${data.httpStatus}`);
+    const title = typeof data.title === 'string' ? data.title.slice(0, 250) : 'Place source';
+    const text = [title, data.description, data.content].filter((part) => typeof part === 'string').join('\n').replace(/\*{4}/g, ' ').replace(/\*\*/g, '').slice(0, 16000);
+    const rawLinks = [...(data.content.match(/https?:\/\/[^\s<>"\])]+/gi) ?? []),
+      ...(Array.isArray(data.links) ? data.links.flatMap((link: unknown) => Array.isArray(link) && typeof link[1] === 'string' ? [link[1]] : []) : [])];
+    const links: string[] = [];
+    for (const raw of rawLinks.slice(0, 250)) {
+      try { const safe = publicPlaceUrl(raw).href; if (!links.includes(safe)) links.push(safe); } catch { /* Ignore private and non-web links. */ }
+    }
+    return { id, url: typeof data.url === 'string' ? publicPlaceUrl(data.url).href : target, title, text, links };
+  } catch (cause) {
+    if (cause instanceof PlaceInclusionError) throw cause;
+    const name = cause instanceof Error ? cause.name : '';
+    throw webFailure(signal.aborted || name === 'TimeoutError' || name === 'AbortError' ? 'WEB-TIMEOUT' : 'WEB-CONNECTION');
   }
-  return { id, url: typeof data.url === 'string' ? publicPlaceUrl(data.url).href : target, title, text, links };
 }
 
 export async function researchPlace(input: string, request = fetch): Promise<{ pages: PlacePage[]; query: string }> {
@@ -55,13 +78,14 @@ export async function researchPlace(input: string, request = fetch): Promise<{ p
         if (parsed.location) return { pages, query: parsed.query };
       } catch { /* A venue page may still need a research search. */ }
       query = placeQueries([page.title, text].join('\n'))[0] || '';
-    } catch {
-      if (!text) throw new PlaceInclusionError('Could not read this page. Paste its caption or the place name and city.', 422);
+    } catch (cause) {
+      if (!text) throw cause;
     }
   }
   query = (query || placeQueries(text)[0] || '').slice(0, 300);
   if (!query) throw new PlaceInclusionError('Paste a place name, caption or a readable public link.', 422);
   const searchUrl = `https://duckduckgo.com/?q=${encodeURIComponent(query)}`;
+  let searchFailure: unknown;
   try {
     const search = await readPage(searchUrl, 'search', request, signal);
     pages.push(search);
@@ -74,8 +98,8 @@ export async function researchPlace(input: string, request = fetch): Promise<{ p
       .filter((item) => item.score > 0).sort((a, b) => b.score - a.score).slice(0, 2);
     const followed = await Promise.allSettled(targets.map((item, i) => readPage(item.url, `source${i + 1}`, request, signal)));
     for (const result of followed) if (result.status === 'fulfilled') pages.push(result.value);
-  } catch { /* A readable shared venue page can stand on its own. */ }
-  if (!pages.length) throw new PlaceInclusionError('Web research is unavailable right now. Try a venue website or paste its address and city.', 503);
+  } catch (cause) { searchFailure = cause; /* A readable shared venue page can stand on its own. */ }
+  if (!pages.length) throw searchFailure instanceof PlaceInclusionError ? searchFailure : webFailure('WEB-CONNECTION');
   return { pages: pages.filter((page, index) => pages.findIndex((other) => other.url === page.url) === index), query };
 }
 
