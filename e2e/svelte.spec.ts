@@ -1707,7 +1707,7 @@ test('all add-ons share a top-right options menu without colliding with the sche
   await expect(drawer.getByRole('heading', { name: 'Related Tasks', exact: true })).toHaveCount(0);
 });
 
-test('Places List keeps the map visible and normal tasks default to Location offline', async ({ page, context }) => {
+test('Places List opens the map on demand and normal tasks default to Location offline', async ({ page, context }) => {
   await transport(context);
   await page.goto('/');
   await page.getByRole('button', { name: 'New List', exact: true }).click();
@@ -1715,8 +1715,11 @@ test('Places List keeps the map visible and normal tasks default to Location off
   await page.getByRole('radio', { name: 'Places List', exact: true }).check();
   await page.getByRole('button', { name: 'Create list', exact: true }).click();
   await page.getByRole('link', { name: /Places to visit/ }).click();
-  await expect(page.locator('[aria-label="Task locations map"] .leaflet-map-pane')).toHaveCount(1);
+  await expect(page.locator('[aria-label="Task locations map"]')).toHaveCount(0);
+  await page.getByRole('link', { name: 'Show map', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Locations (0)', exact: true })).toBeVisible();
+  await page.getByRole('link', { name: 'Show tasks', exact: true }).click();
+  await expect(page.locator('[aria-label="Task locations map"]')).toHaveCount(0);
   await page.getByLabel('New task', { exact: true }).fill('Visit the museum');
   await page.getByLabel('New task', { exact: true }).press('Enter');
   await expect.poll(async () => (await device(page)).tasks.find((task: any) => task.title === 'Visit the museum')?.addons).toEqual(['location']);
@@ -1728,7 +1731,7 @@ test('Places List keeps the map visible and normal tasks default to Location off
   await context.setOffline(true);
   await page.reload();
   await expect(page.getByLabel('Task Visit the museum', { exact: true })).toBeVisible();
-  await expect(page.locator('[aria-label="Task locations map"] .leaflet-map-pane')).toHaveCount(1);
+  await expect(page.locator('[aria-label="Task locations map"]')).toHaveCount(0);
   await page.getByRole('button', { name: 'completeTask', exact: true }).click();
   await expect.poll(async () => (await device(page)).tasks.find((task: any) => task.title === 'Visit the museum')?.complete).toBe(true);
 });
@@ -1751,7 +1754,8 @@ test('Places URL import previews candidates and saves a normal task with coordin
   await page.getByRole('button', { name: 'Add Marco Zero', exact: true }).click();
   await expect.poll(async () => (await device(page)).tasks[0]?.location).toEqual(location);
   expect((await device(page)).tasks[0]).toMatchObject({ title: 'Marco Zero', complete: false, addons: ['location'] });
-  await expect(page.locator('.location-marker')).toHaveCount(1);
+  await expect(page.locator('[aria-label="Task locations map"]')).toHaveCount(0);
+  await expect(page.getByRole('link', { name: 'Show map', exact: true })).toBeVisible();
   await expect(page.getByLabel('New task', { exact: true })).toHaveValue('');
   await page.screenshot({ path: '/tmp/maitu-places-list.png' });
 });
@@ -1783,7 +1787,8 @@ test('Smart Place inclusion resolves pasted captions and keeps failed input edit
   await smart.getByRole('button', { name: 'Add Cafe do Sol', exact: true }).click();
   await expect.poll(async () => (await device(page)).tasks[0]?.location).toEqual(location);
   await expect(field).toHaveValue('');
-  await expect(page.locator('.location-marker')).toHaveCount(1);
+  await expect(page.locator('[aria-label="Task locations map"]')).toHaveCount(0);
+  await expect(page.getByRole('link', { name: 'Show map', exact: true })).toBeVisible();
   await field.fill('https://instagram.com/p/private-post/');
   await smart.getByRole('button', { name: 'Find place', exact: true }).click();
   await expect(smart.getByRole('alert')).toContainText('Paste its caption');
@@ -1814,4 +1819,22 @@ test('Smart Place inclusion ignores stale candidates after the pasted input chan
   release!();
   await expect(page.getByRole('button', { name: 'Add Old result', exact: true })).toHaveCount(0);
   expect((await device(page)).tasks).toHaveLength(0);
+});
+
+test('Smart Place inclusion auto-adds one verified match and shows its source', async ({ page, context }) => {
+  const server = await transport(context);
+  server.snapshot.lists[0].type = 'places';
+  const location = { name: 'Terraço da Praça', address: 'Recife, Brazil', latitude: -8.063, longitude: -34.871, source: 'manual', placeId: 'manual' };
+  await page.route('**/api/places', (route) => route.fulfill({ json: { places: [location], autoAdd: true, message: '', sources: [{ url: 'https://venue.com/contact', title: 'Venue location' }] } }));
+  await page.goto(`/tasks?listId=${listId}`);
+  const field = page.getByRole('textbox', { name: 'Place info', exact: true });
+  await field.fill('https://www.google.com/search?q=terraco+da+praca');
+  await page.getByRole('button', { name: 'Find place', exact: true }).click();
+  await expect(page.getByRole('status')).toHaveText('Added Terraço da Praça');
+  await expect.poll(async () => (await device(page)).tasks[0]?.location).toEqual(location);
+  await expect(field).toHaveValue('');
+  await expect(page.getByRole('link', { name: 'Venue location', exact: true })).toHaveAttribute('href', 'https://venue.com/contact');
+  await expect(page.getByRole('button', { name: 'Add Terraço da Praça', exact: true })).toHaveCount(0);
+  await expect(page.getByLabel('Task locations map')).toHaveCount(0);
+  await page.screenshot({ path: '/tmp/maitu-gpt-place-inclusion.png' });
 });

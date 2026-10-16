@@ -8,7 +8,7 @@ import { copyFile, readFile, rename, writeFile, appendFile } from 'node:fs/promi
 const root = process.cwd();
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, root, '');
-  for (const key of ['SECRET_KEY', 'MONGODB_URI', 'E2E_TEST', 'PHOTON_URL', 'JINA_API_KEY', 'VAPID_PUBLIC_KEY', 'VAPID_PRIVATE_KEY', 'VAPID_SUBJECT', 'CRON_SECRET'])
+  for (const key of ['SECRET_KEY', 'MONGODB_URI', 'E2E_TEST', 'PHOTON_URL', 'JINA_API_KEY', 'OPENAI_API_KEY', 'OPENAI_PLACE_MODEL', 'VAPID_PUBLIC_KEY', 'VAPID_PRIVATE_KEY', 'VAPID_SUBJECT', 'CRON_SECRET'])
     if (!process.env[key] && env[key]) process.env[key] = env[key];
   const deployment = process.env.VERCEL
     ? vercel({ runtime: 'nodejs24.x' })

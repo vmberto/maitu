@@ -1,5 +1,6 @@
 import { session, headers } from '#lib/session.server';
 import { includePlace, PlaceInclusionError, readPlaceJson } from '../../../lib/place-inclusion.server';
+import { smartPlace } from '../../../lib/smart-place.server';
 import type { RequestHandler } from './$types';
 
 const resolve: RequestHandler = async (event) => {
@@ -16,7 +17,7 @@ const resolve: RequestHandler = async (event) => {
       : event.url.searchParams.get('q');
     if (typeof input !== 'string') throw new PlaceInclusionError('Paste some place info first.');
     const env = { ...process.env, ...(event.platform as { env?: Record<string, string> } | undefined)?.env };
-    return Response.json({ places: await includePlace(input, env) }, { headers });
+    return Response.json(event.request.method === 'POST' ? await smartPlace(input, env) : { places: await includePlace(input, env) }, { headers });
   } catch (cause) {
     return Response.json({ error: cause instanceof PlaceInclusionError ? cause.message : 'Could not find this place. Try its name and city or coordinates.' },
       { status: cause instanceof PlaceInclusionError ? cause.status : 400, headers });

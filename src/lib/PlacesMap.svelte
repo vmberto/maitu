@@ -8,7 +8,6 @@
   import type { List, Task, TaskLocation } from '../../types/main';
   import type * as Leaflet from 'leaflet';
   import 'leaflet/dist/leaflet.css';
-  let { embedded = false }: { embedded?: boolean } = $props();
   const listId = $derived(page.url.searchParams.get('listId'));
   const list = $derived(
     $offline.account?.lists.find(
@@ -159,7 +158,7 @@
   }
 </script>
 
-<div class="map-page relative" class:embedded style:height={embedded ? 'clamp(240px, 35dvh, 360px)' : 'calc(100dvh - 3rem)'}>
+<div class="map-page relative h-[calc(100dvh-3rem)]">
   <div
     bind:this={container}
     class="h-full w-full"
@@ -252,7 +251,6 @@
 </dialog>
 
 <style>
-  .embedded { isolation: isolate; }
   .map-cards { --card-width: min(390px, 85vw); display: flex; gap: 12px; overflow-x: auto; padding: 8px calc((100% - var(--card-width)) / 2); scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; }
   .map-cards::-webkit-scrollbar { display: none; }
   .map-card { --status-color: #3664ff; position: relative; flex: 0 0 var(--card-width); min-width: 0; border-top: 3px solid var(--status-color); scroll-snap-align: center; opacity: 0.4; transform: scale(0.97); transition: opacity 220ms ease, transform 220ms ease; }

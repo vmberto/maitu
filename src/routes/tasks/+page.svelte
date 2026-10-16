@@ -195,7 +195,6 @@
 </script>
 
 <ListHeader {list} settings={() => (listSettings = true)} />
-{#if list?.type === 'places'}<div class="sticky top-12 z-10 mx-auto max-w-xl">{#await import('#lib/PlacesMap.svelte') then module}{@const PlacesMap = module.default}<PlacesMap embedded />{/await}</div>{/if}
 <main
   class="task-list mx-auto max-w-xl px-5 pb-28"
   style:--list-color={HexColors.get(list?.color ?? 'primary')}
