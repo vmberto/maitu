@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Button from '#lib/ui/Button.svelte';
   import type { Snippet } from 'svelte';
   import Icon from './Icon.svelte';
   let { name, onremove, disabled = false, reason = '', removeLabel = `Remove ${name}`, children }: {
@@ -16,7 +17,7 @@
   <summary aria-label={`${name} options`} class="rubber-button rubber-icon"><Icon name="dots" size={18} /></summary>
   <div class="menu-items">
     {#if children}{@render children()}{/if}
-    <button class="rubber-button w-full text-left text-danger" {disabled} title={reason} onclick={async () => { const element = menu; await onremove(); element.open = false; }}>{removeLabel}</button>
+    <Button class="w-full text-left text-danger" {disabled} title={reason} onclick={async () => { const element = menu; await onremove(); element.open = false; }}>{removeLabel}</Button>
   </div>
 </details>
 

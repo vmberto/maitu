@@ -1,4 +1,6 @@
 <script lang="ts">
+  import Button from '#lib/ui/Button.svelte';
+  import LinkButton from '#lib/ui/LinkButton.svelte';
   import { drawerBehavior, closeDrawer } from '#lib/drawer';
   import { onMount, onDestroy } from 'svelte';
   import { page } from '$app/state';
@@ -164,12 +166,12 @@
     class="h-full w-full"
     aria-label="Task locations map"
   ></div>
-  <button
-    class="rubber-button absolute right-4 top-4 z-[500] bg-surface text-gray-900 shadow-sm"
+  <Button
+    class="absolute right-4 top-4 z-[500] bg-surface text-gray-900 shadow-sm"
     onclick={() => {
       drawer.showModal();
       unlock = lockBody();
-    }}>Locations ({tasks.length})</button
+    }}>Locations ({tasks.length})</Button
   >
   {#if selected && place}<div role="region" bind:this={cards} onpointerdown={interruptCentering} onwheel={interruptCentering} onscrollend={() => centering = false} onscroll={scrollCards} class="map-cards absolute bottom-5 left-0 right-0 z-[500]" aria-label="Task location cards">
     {#each tasks as task (String(task._id))}{@const location = normalizeLocation(task.location)!}<section
@@ -180,10 +182,10 @@
       class="map-card rounded-xl bg-surface p-4 text-gray-900 shadow-lg"
     >
       {#if String(task._id) !== selectedId}<button type="button" class="map-card-select" aria-label={`Focus ${task.title} on map`} onclick={() => selectedId = String(task._id)}></button>{/if}
-      <button
+      <Button icon
         aria-label="Close map card"
-        class="rubber-button rubber-icon float-right"
-        onclick={() => (selectedId = null)}>×</button
+        class="float-right"
+        onclick={() => (selectedId = null)}>×</Button
       >
       <h2 class="font-semibold">{task.title}</h2>
       {#if location.name !== task.title}<p class="text-sm text-gray-500">
@@ -192,12 +194,12 @@
       <p class="text-sm text-gray-500">
         {location.address || `${location.latitude}, ${location.longitude}`}
       </p>
-      <a
-        class="rubber-button mt-3 inline-block text-primary"
+      <LinkButton
+        class="mt-3 inline-block text-primary"
         href={`/${list?.type === 'timeline' ? 'timeline' : 'tasks'}?listId=${listId}&taskId=${task._id}`}
-        >{task.type === 'note' ? 'Open note' : 'Open task'}</a
+        >{task.type === 'note' ? 'Open note' : 'Open task'}</LinkButton
       >
-      <a class="rubber-button ml-2 mt-3 inline-block text-primary" href={`https://www.google.com/maps/dir/?api=1&destination=${location.latitude},${location.longitude}`} target="_blank" rel="noopener noreferrer">Directions</a>
+      <LinkButton class="ml-2 mt-3 inline-block text-primary" href={`https://www.google.com/maps/dir/?api=1&destination=${location.latitude},${location.longitude}`} target="_blank" rel="noopener noreferrer">Directions</LinkButton>
     </section>{/each}</div>{/if}
   {#if error}<p
       role="alert"
@@ -221,10 +223,10 @@
 >
   <header class="drawer-header" data-drawer-header>
     <h2 class="mb-5 font-semibold">Locations</h2>
-    <button
-      class="rubber-button rubber-icon float-right"
+    <Button icon
+      class="float-right"
       aria-label="Close locations"
-      onclick={() => closeDrawer(drawer)}>×</button
+      onclick={() => closeDrawer(drawer)}>×</Button
     >
   </header>
   <div class="drawer-body">
@@ -235,8 +237,8 @@
       placeholder="Search locations"
     />
     <div class="space-y-3">
-      {#each filtered as task (String(task._id))}<button
-          class="rubber-button w-full text-left"
+      {#each filtered as task (String(task._id))}<Button
+          class="w-full text-left"
           onclick={() => {
             selectedId = String(task._id);
             closeDrawer(drawer);
@@ -244,7 +246,7 @@
           ><span
             class="mr-2 inline-block size-2 rounded-full"
             style:background={task.complete ? '#16a34a' : '#3664FF'}
-          ></span>{task.title}</button
+          ></span>{task.title}</Button
         >{/each}
     </div>
   </div>

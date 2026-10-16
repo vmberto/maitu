@@ -11,7 +11,7 @@
 </details>
 
 <style>
-  details { padding: 16px; border-radius: 12px; background: rgb(var(--panel)); interpolate-size: allow-keywords; }
+  details { padding: 16px; border: 1px solid rgb(var(--gray-200)); border-radius: 12px; background: rgb(var(--surface)); box-shadow: var(--ui-raised-shadow); interpolate-size: allow-keywords; }
   summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; cursor: pointer; list-style: none; font-weight: 600; }
   summary::-webkit-details-marker { display: none; }
   .indicators { display: flex; align-items: center; gap: 8px; }

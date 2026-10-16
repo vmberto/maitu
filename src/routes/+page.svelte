@@ -1,6 +1,7 @@
 <script lang="ts">
+  import Button from '#lib/ui/Button.svelte';
+  import LinkButton from '#lib/ui/LinkButton.svelte';
   import { flip } from 'svelte/animate';
-  import ListTypePicker from '#lib/ListTypePicker.svelte';
   import Icon from '#lib/ui/Icon.svelte';
   import { drawerBehavior, closeDrawer } from '#lib/drawer';
   import { sortable } from '#lib/reorder';
@@ -22,10 +23,7 @@
   );
   let error = $state('');
   let menu: HTMLDialogElement;
-  let newList: HTMLDialogElement;
   let newListOpen = $state(false);
-  let newListUnlock: (() => void) | undefined;
-  onDestroy(() => newListUnlock?.());
   let unlock: (() => void) | undefined;
   let dark = $state(false);
   onDestroy(() => unlock?.());
@@ -43,38 +41,24 @@
       ) ?? []
     ).sort((a, b) => (a as List).index - (b as List).index) as List[],
   );
-  async function addList(event: SubmitEvent) {
-    event.preventDefault();
-    if (!title.trim()) return;
-    try {
-      await engine.add('lists', {
-        title: title.trim(),
-        id: '',
-        emoji,
-        color,
-        index: lists.length,
-        type,
-        createdAt: new Date().toISOString(),
-      } as List);
-      title = '';
-      error = '';
-      closeDrawer(newList);
-    } catch {
-      error = 'Could not save this list on your device.';
-    }
+  async function addList(data: Pick<List, 'title' | 'emoji' | 'color' | 'type'>) {
+    await engine.add('lists', {
+      ...data, id: '', index: lists.length, createdAt: new Date().toISOString(),
+    } as List);
   }
+
 </script>
 
 <header class="sticky top-0 z-20 bg-gray-100">
   <div class="mx-auto flex h-12 max-w-xl items-center justify-between px-5">
     <h1 class="text-xl font-semibold text-primary">maitu</h1>
-    <button
+    <Button icon
       aria-label="user-settings-menu"
-      class="rubber-button rubber-icon text-primary"
+      class="text-primary"
       onclick={() => {
         menu.showModal();
         unlock = lockBody();
-      }}><Icon name="menu" /></button
+      }}><Icon name="menu" /></Button
     >
   </div>
 </header>
@@ -106,21 +90,17 @@
           style:color={HexColors.get(list.color)}
           ><span class="text-4xl">{list.emoji}</span><span>{list.title}</span
           ></a
-        ><button
+        ><Button icon
           aria-label={`List settings ${list.title}`}
-          class="rubber-button rubber-icon relative z-10 text-gray-500"
+          class="relative z-10 text-gray-500"
           onclick={() => (settingsId = String(list._id))}
-          ><Icon name="dots" /></button
+          ><Icon name="dots" /></Button
         >
       </div>{/each}
   </div>
-  <button
-    class="rubber-button mt-4 w-full text-primary"
-    onclick={() => {
-      newListOpen = true;
-      newList.showModal();
-      newListUnlock = lockBody();
-    }}>New List</button
+  <Button
+    class="mt-4 w-full text-primary"
+    onclick={() => newListOpen = true}>New List</Button
   >
   {#if error}<p role="alert" class="text-sm text-danger">{error}</p>{/if}
 </main>
@@ -140,10 +120,10 @@
 >
   <header data-drawer-header class="drawer-header">
     <h2>Account</h2>
-    <button
-      class="rubber-button rubber-icon float-right"
+    <Button icon
+      class="float-right"
       aria-label="Close panel"
-      onclick={() => closeDrawer(menu)}><Icon name="close" size={20} /></button
+      onclick={() => closeDrawer(menu)}><Icon name="close" size={20} /></Button
     >
   </header>
   <div class="drawer-body">
@@ -152,8 +132,8 @@
       <p class="text-sm text-gray-500">{$offline.account?.user.email}</p>
     </div>
     <div class="mt-5 space-y-3">
-      <button
-        class="rubber-button flex w-full items-center justify-between"
+      <Button
+        class="flex w-full items-center justify-between"
         role="switch"
         aria-label="Dark Mode"
         aria-checked={dark}
@@ -170,68 +150,20 @@
             class="absolute left-0.5 top-0.5 size-5 rounded-full bg-white shadow-sm transition-transform"
             style:transform={dark ? 'translateX(20px)' : 'translateX(0)'}
           ></span></span
-        ></button
-      ><a href="/archived/items" class="rubber-button block w-full">Archived Items</a
-      ><a href="/archived" class="rubber-button block w-full">Archived Lists</a
-      ><button
-        class="rubber-button block w-full"
-        onclick={() => engine.signOut()}>Logout</button
+        ></Button
+      ><LinkButton href="/archived/items" class="block w-full">Archived Items</LinkButton
+      ><LinkButton href="/archived" class="block w-full">Archived Lists</LinkButton
+      ><Button
+        class="block w-full"
+        onclick={() => engine.signOut()}>Logout</Button
       >
     </div>
   </div>
 </dialog>
 
-<dialog
-  bind:this={newList}
-  use:drawerBehavior
-  oncancel={(event) => {
-    event.preventDefault();
-    closeDrawer(newList);
-  }}
-  onclose={() => {
-    newListUnlock?.();
-    newListUnlock = undefined;
-  }}
-  class="list-editor text-gray-900" style={`--editor-accent: ${HexColors.get(color)}`}
->
-  <header data-drawer-header class="drawer-header">
-    <h2>New List</h2>
-    <button
-      class="rubber-button rubber-icon"
-      aria-label="Close panel"
-      onclick={() => closeDrawer(newList)}><Icon name="close" size={20} /></button
-    >
-  </header>
-  <div class="drawer-body">
-    <form id="new-list-form" onsubmit={addList} class="list-identity">
-      <span class="list-avatar">{emoji}</span>
-      <label class="min-w-0 flex-1"
-        ><input
-          bind:value={title}
-          aria-label="List name"
-          placeholder="Name your list"
-          class="list-name-input"
-          maxlength="30"
-          required
-        /></label
-      >
-    </form>
-    <div class="list-options"><ListTypePicker value={type} onchange={(value) => type = value} />
-    {#if newListOpen}{#await import('#lib/ListAppearance.svelte') then module}{@const ListAppearance = module.default}<ListAppearance
-      {color}
-      {emoji}
-      onchange={(data) => {
-        color = data.color ?? color;
-        emoji = data.emoji ?? emoji;
-      }}
-    />{/await}{/if}</div>
-  </div>
-  <footer class="list-create-footer"><button
-      form="new-list-form"
-      type="submit"
-      class="rubber-button rubber-primary list-primary">Create list</button
-    ></footer>
-</dialog>
+{#if newListOpen}{#await import('#lib/ui/NewListDialog.svelte') then module}{@const NewListDialog = module.default}<NewListDialog
+  bind:title bind:type bind:emoji bind:color oncreate={addList} close={() => newListOpen = false}
+/>{/await}{/if}
 {#if settingsList}{#await import('#lib/ListDetails.svelte') then module}{@const ListDetails = module.default}<ListDetails
     list={settingsList}
     close={() => (settingsId = null)}

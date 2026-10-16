@@ -9,17 +9,29 @@ const user = {
 };
 const listId = '64b2f7a9c1e6f9a1b2c3d4e5';
 test('adds scheduling after creation, filters calendar ranges, reschedules and removes dates offline', async ({ page, context }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
   await page.clock.setFixedTime(new Date('2026-10-14T15:00:00Z'));
   const server = await transport(context);
   for (const [index, title, date] of [[0, 'Undated', null], [1, 'Late task', '2026-10-12'], [2, 'Today task', '2026-10-14'], [3, 'Next week task', '2026-10-21'], [4, 'Next month task', '2026-11-02']] as const)
     server.snapshot.tasks.push({ _id: (100 + index).toString(16).padStart(24, '0'), listId, title, complete: false, createdAt: '2026-01-01', version: 0, schedule: date ? { date, timeZone: 'America/Recife' } : null });
+  server.snapshot.tasks.find((task) => task.title === 'Next week task').location = { name: 'Next venue', address: '', latitude: -8.0476, longitude: -34.877, source: 'manual', placeId: 'manual' };
   await page.goto(`/tasks?listId=${listId}`);
   await expect(page.getByRole('textbox', { name: 'Task Undated', exact: true })).toBeVisible();
   await expect(page.getByText('Overdue', { exact: true })).toBeVisible();
   await expect(page.getByRole('textbox', { name: 'Task Today task', exact: true })).toBeVisible();
-  await expect(page.getByRole('textbox', { name: 'Task Next week task', exact: true })).not.toBeVisible();
-  await page.getByText('Upcoming', { exact: true }).last().click();
   await expect(page.getByRole('textbox', { name: 'Task Next week task', exact: true })).toBeVisible();
+  const schedule = page.getByRole('button', { name: 'Schedule Next week task', exact: true });
+  await expect(schedule).toHaveText('Oct 21');
+  expect(await schedule.evaluate((button) => button.closest('details') === null)).toBe(true);
+  const dateBox = await schedule.boundingBox();
+  const mapBox = await page.getByRole('link', { name: 'See Next week task on map', exact: true }).boundingBox();
+  expect(Math.abs(dateBox!.y - mapBox!.y)).toBeLessThan(1);
+  expect(dateBox!.x + dateBox!.width).toBeLessThanOrEqual(mapBox!.x);
+  await page.screenshot({ path: '/tmp/maitu-inline-task-dates.png', animations: 'disabled' });
+  await schedule.click();
+  await expect(page.getByRole('dialog')).toBeVisible();
+  await page.getByRole('button', { name: 'Close panel', exact: true }).click();
+  await expect(page.getByRole('dialog')).toHaveCount(0);
   await page.getByLabel('Date filter').selectOption('today');
   await expect(page.getByRole('textbox', { name: 'Task Today task', exact: true })).toBeVisible();
   await expect(page.getByRole('textbox', { name: 'Task Undated', exact: true })).toHaveCount(0);
@@ -32,6 +44,7 @@ test('adds scheduling after creation, filters calendar ranges, reschedules and r
   await page.getByLabel('Date filter').selectOption('all');
   await expect(page.locator('.task-creation').getByText('Schedule & Reminder', { exact: true })).toHaveCount(0);
   await page.getByLabel('New task', { exact: true }).fill('Created scheduled');
+  await expect(page.getByLabel('New task', { exact: true })).toHaveValue('Created scheduled');
   await page.getByLabel('New task', { exact: true }).press('Enter');
   await page.getByRole('button', { name: 'Task details Created scheduled', exact: true }).click();
   const initialDrawer = page.getByRole('dialog');
@@ -950,6 +963,7 @@ test('todo keyboard creation, clear-on-blur deletion, floating drag and bottom s
   const server = await transport(context);
   await page.goto('/tasks?listId=' + listId);
   const input = page.getByRole('textbox', { name: 'New task', exact: true });
+  await expect(input).toHaveCSS('box-shadow', 'none');
   await input.fill('Keyboard task');
   await input.press('Enter');
   await expect(input).toBeFocused();
@@ -961,6 +975,7 @@ test('todo keyboard creation, clear-on-blur deletion, floating drag and bottom s
       exact: true,
     }),
   });
+  await expect(handle.getByRole('button', { name: 'completeTask', exact: true })).not.toHaveCSS('box-shadow', 'none');
   expect(
     await handle.evaluate((row) => {
       const circle = row.querySelector('.todo-check')!.getBoundingClientRect();
@@ -1505,6 +1520,7 @@ test('segmented list types create distinct Notes and Timeline lists', async ({ p
   const types = sheet.getByRole('group', { name: 'List type', exact: true });
   await expect(types.getByRole('radio')).toHaveCount(5);
   const boxes = await types.locator('.type-tile').evaluateAll((tiles) => tiles.map((tile) => tile.getBoundingClientRect().toJSON()));
+  expect(boxes.every((box) => box.height <= 44)).toBe(true);
   expect(new Set(boxes.map((box) => box.y)).size).toBe(1);
   expect(boxes.at(-1)!.right).toBeLessThanOrEqual(390);
   await expect(sheet.locator('.list-options')).toHaveCSS('border-top-width', '1px');

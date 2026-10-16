@@ -1,4 +1,7 @@
 <script lang="ts">
+  import Button from '#lib/ui/Button.svelte';
+  import CompletionToggle from '#lib/ui/CompletionToggle.svelte';
+  import LinkButton from '#lib/ui/LinkButton.svelte';
   import { flip } from 'svelte/animate';
   import { commitTaskTitle } from '#lib/task-title';
   import { HexColors } from '#lib/colors';
@@ -73,12 +76,13 @@
     ),
   );
   const groups = $derived.by(() => {
-    const result = (filter === 'notes' ? ['unscheduled'] : ['overdue', 'unscheduled', 'today', 'upcoming']).map((kind) => ({
-      kind, title: kind === 'overdue' ? 'Overdue' : kind === 'today' ? 'Today' : 'Upcoming', items: [] as Task[],
+    const result = (filter === 'notes' ? ['unscheduled'] : ['overdue', 'unscheduled', 'today']).map((kind) => ({
+      kind, title: kind === 'overdue' ? 'Overdue' : 'Today', items: [] as Task[],
     }));
     const order = new Map<Task, string>();
     for (const task of active) {
-      const kind = filter === 'notes' ? 'unscheduled' : scheduleGroup(task, now, zone);
+      const scheduledGroup = filter === 'notes' ? 'unscheduled' : scheduleGroup(task, now, zone);
+      const kind = scheduledGroup === 'upcoming' ? 'unscheduled' : scheduledGroup;
       result.find((group) => group.kind === kind)!.items.push(task);
       if (task.schedule) order.set(task, scheduledDate(task.schedule, zone) + (task.schedule.time ? zonedInstant(task.schedule.date, task.schedule.time, task.schedule.timeZone) : ''));
     }
@@ -219,13 +223,12 @@
               class="sr-only focus:not-sr-only"
               title="Use arrow keys to reorder">Reorder</button
             >{/if}
-          {#if task.type === 'note'}<button class="rubber-touch shrink-0 p-1 text-primary" aria-label={`Open note ${task.title}`} onclick={() => detailsId = String(task._id)}><Icon name="note" size={24} /></button>{:else}<button
-            class="rubber-touch todo-check"
+          {#if task.type === 'note'}<Button variant="touch" class="shrink-0 p-1 text-primary" aria-label={`Open note ${task.title}`} onclick={() => detailsId = String(task._id)}><Icon name="note" size={24} /></Button>{:else}<CompletionToggle
             aria-label="completeTask"
             aria-pressed={task.complete}
             disabled={list.archived}
             onclick={() => complete(task)}
-          ></button>{/if}
+          ></CompletionToggle>{/if}
           <div class="min-w-0 flex-1">
             <textarea
               use:autosize={task.title}
@@ -254,7 +257,6 @@
                     () => (error = 'Could not save this task on your device.'),
                   );
               }}></textarea>
-            {#if task.schedule}<button type="button" class="my-1 text-left text-xs text-gray-500" aria-label={`Schedule ${task.title}`} onclick={() => detailsId = String(task._id)}>{scheduleLabel(task.schedule, now, zone)}</button>{/if}
             {#if task.tags?.length}<div
                 class="task-tags flex flex-wrap gap-1"
               >
@@ -265,18 +267,18 @@
                   >{/each}
               </div>{/if}
           </div>
-          <!-- Location is a lightweight link beside task actions. -->
-          {#if normalizeLocation(task.location)}<a
+          {#if task.schedule}<Button variant="touch" class="max-w-[40%] shrink-0 truncate px-1 text-xs leading-7 text-gray-500" aria-label={`Schedule ${task.title}`} title={scheduleLabel(task.schedule, now, zone)} onclick={() => detailsId = String(task._id)}>{scheduleLabel(task.schedule, now, zone)}</Button>{/if}
+          {#if normalizeLocation(task.location)}<LinkButton variant="touch"
               href={`/tasks/map?listId=${listId}&taskId=${task._id}`}
               aria-label={`See ${task.title} on map`}
-              class="task-action rubber-touch text-sm text-gray-500"
-              ><Icon name="map" size={16} /></a
+              class="task-action text-sm text-gray-500"
+              ><Icon name="map" size={16} /></LinkButton
             >{/if}
-          <button
+          <Button icon
             aria-label={`${filter === 'notes' ? 'Note' : 'Task'} details ${task.title}`}
-            class="task-action rubber-button rubber-icon text-gray-500"
+            class="task-action text-gray-500"
             onclick={() => (detailsId = String(task._id))}
-            ><Icon name="dots" /></button
+            ><Icon name="dots" /></Button
           >
         </div>{/each}
     </div>
@@ -284,13 +286,13 @@
     {#each groups as group (group.kind)}
       {#if group.items.length}
         {#if group.kind === 'unscheduled'}{@render activeRows(group.items)}
-        {:else}<Disclosure title={group.title} badge={group.items.length} open={group.kind !== 'upcoming'} class="my-3">{@render activeRows(group.items)}</Disclosure>{/if}
+        {:else}<Disclosure title={group.title} badge={group.items.length} open class="my-3">{@render activeRows(group.items)}</Disclosure>{/if}
       {/if}
     {/each}
-    {#if visible < active.length}<button
-        bind:this={sentinel}
-        class="rubber-button my-3 w-full"
-        onclick={() => (visible += 20)}>More tasks</button
+    {#if visible < active.length}<Button
+        bind:element={sentinel}
+        class="my-3 w-full"
+        onclick={() => (visible += 20)}>More tasks</Button
       >{/if}
     {#if !list.archived}<div class="task-creation"><form
         onsubmit={(event) => void addTask(event)}
@@ -326,13 +328,12 @@
     {#each completed.slice(0, completeVisible) as task (String(task._id))}<div
         class="task-row completed-row flex items-start gap-2 border-b border-gray-200 py-2"
       >
-        <button
-          class="rubber-touch todo-check"
+        <CompletionToggle
           aria-label="completeTask"
           aria-pressed="true"
           disabled
           title="Completed tasks cannot be reopened"
-        ></button>
+        ></CompletionToggle>
         <div class="min-w-0 flex-1">
           <textarea
             aria-label={`Task ${task.title}`}
@@ -370,15 +371,15 @@
                 >{/each}
             </div>{/if}
         </div>
-        {#if normalizeLocation(task.location)}<a
+        {#if normalizeLocation(task.location)}<LinkButton variant="touch"
             href={`/tasks/map?listId=${listId}&taskId=${task._id}`}
             aria-label={`See ${task.title} on map`}
-            class="task-action rubber-touch text-gray-500"><Icon name="map" size={16} /></a
-          >{/if}<button
-          class="task-action rubber-button rubber-icon"
+            class="task-action text-gray-500"><Icon name="map" size={16} /></LinkButton
+          >{/if}<Button icon
+          class="task-action"
           aria-label={`${filter === 'notes' ? 'Note' : 'Task'} details ${task.title}`}
           onclick={() => (detailsId = String(task._id))}
-          ><Icon name="dots" /></button
+          ><Icon name="dots" /></Button
         >
       </div>{/each}
     {#if completeVisible < completed.length}<div

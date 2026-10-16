@@ -1,4 +1,5 @@
 <script lang="ts">
+  import LinkButton from '#lib/ui/LinkButton.svelte';
   import { page } from '$app/state';
   import { offline } from '#lib/offline';
   import ArchivedItems from '#lib/ArchivedItems.svelte';
@@ -21,7 +22,7 @@
 
 <header class="sticky top-0 z-20 bg-gray-100">
   <div class="mx-auto flex h-12 max-w-xl items-center gap-3 px-5">
-    <a href={back} class="rubber-button rubber-icon" aria-label={listId ? 'Back to list' : 'Back to lists'}><Icon name="back" /></a>
+    <LinkButton icon href={back}  aria-label={listId ? 'Back to list' : 'Back to lists'}><Icon name="back" /></LinkButton>
     <h1 class="text-xl font-semibold">Archived Items</h1>
   </div>
 </header>

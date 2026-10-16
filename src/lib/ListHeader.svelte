@@ -1,4 +1,6 @@
 <script lang="ts">
+  import LinkButton from '#lib/ui/LinkButton.svelte';
+  import Button from '#lib/ui/Button.svelte';
   import Icon from '#lib/ui/Icon.svelte';
   import { page } from '$app/state';
   import { offline } from '#lib/offline';
@@ -21,27 +23,27 @@
 
 <header class="sticky top-0 z-20 bg-gray-100">
   <div class="mx-auto flex h-12 max-w-xl items-center gap-3 px-5">
-    <a
+    <LinkButton icon
       href="/"
       aria-label="Back to lists"
-      class="rubber-button rubber-icon"
-      style:color><Icon name="back" /></a
+
+      style={`color: ${color}`}><Icon name="back" /></LinkButton
     >
     <h1 class="min-w-0 flex-1 truncate text-xl font-semibold" style:color>
       {list?.title ?? 'Tasks'}
     </h1>
-    {#if list}<a href={`/archived/items?listId=${encodeURIComponent(String(list._id))}`} aria-label="Archived Items" class="rubber-button rubber-icon" style:color><Icon name="archive" /></a>{/if}
-    {#if located || list?.type === 'places'}<a
+    {#if list}<LinkButton icon href={`/archived/items?listId=${encodeURIComponent(String(list._id))}`} aria-label="Archived Items"  style={`color: ${color}`}><Icon name="archive" /></LinkButton>{/if}
+    {#if located || list?.type === 'places'}<LinkButton icon
         href={`${map ? (list?.type === 'timeline' ? '/timeline' : '/tasks') : '/tasks/map'}?listId=${encodeURIComponent(String(list?._id))}`}
         aria-label={map ? 'Show tasks' : 'Show map'}
-        class="rubber-button rubber-icon"
-        style:color
+
+        style={`color: ${color}`}
         aria-current={map ? 'page' : undefined}
-        ><Icon name={map ? 'menu' : 'map'} /></a
-      >{/if}{#if settings}<button
-        class="rubber-button rubber-icon text-2xl"
+        ><Icon name={map ? 'menu' : 'map'} /></LinkButton
+      >{/if}{#if settings}<Button icon
+        class="text-2xl"
         aria-label="List settings"
-        onclick={settings}>{list?.emoji}</button
+        onclick={settings}>{list?.emoji}</Button
       >{:else}<span class="text-2xl">{list?.emoji}</span>{/if}
   </div>
 </header>

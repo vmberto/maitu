@@ -9,7 +9,7 @@
 </section>
 
 <style>
-  section { min-width: 0; padding: 16px; background: rgb(var(--panel)); border-radius: 12px; }
+  section { min-width: 0; padding: 16px; border: 1px solid rgb(var(--gray-200)); background: rgb(var(--surface)); border-radius: 12px; box-shadow: var(--ui-raised-shadow); }
   header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
   h3 { margin: 0; color: rgb(var(--gray-900)); font-size: 16px; font-weight: 600; line-height: 1.5; }
 </style>

@@ -1,4 +1,6 @@
 <script lang="ts">
+  import CompletionToggle from '#lib/ui/CompletionToggle.svelte';
+  import LinkButton from '#lib/ui/LinkButton.svelte';
   import AddonMenu from './ui/AddonMenu.svelte';
   import Section from './ui/Section.svelte';
   import Icon from '#lib/ui/Icon.svelte';
@@ -284,10 +286,10 @@
         <p><span class="task-date-label">Created</span> <time datetime={task?.createdAt}>{dateLabel(task?.createdAt)}</time></p>
       </div>
     </div>
-    <button
-      class="rubber-touch task-header-close"
+    <Button variant="touch"
+      class="task-header-close"
       aria-label="Close panel"
-      onclick={() => closeDrawer(dialog)}><Icon name="close" size={20} /></button
+      onclick={() => closeDrawer(dialog)}><Icon name="close" size={20} /></Button
     >
   </header>
   <div class="drawer-body">
@@ -302,14 +304,14 @@
       <form class="mt-4 flex flex-wrap items-center gap-2 border-t border-gray-200 pt-3" onsubmit={addTag}>
         {#each Array.from(new Set(task?.tags ?? [])) as value (value)}<span
             class="inline-flex items-center gap-2 rounded-md bg-surface px-2 py-0.5 text-xs text-gray-700"
-            >{value}{#if !readonly}<button
+            >{value}{#if !readonly}<Button variant="touch"
                 type="button"
                 aria-label={`Remove tag ${value}`}
-                class="rubber-touch text-gray-400 hover:text-danger"
+                class="text-gray-400 hover:text-danger"
                 onclick={() =>
                   void save({
                     tags: task?.tags?.filter((item) => item !== value),
-                  })}>×</button
+                  })}>×</Button
               >{/if}</span
           >{/each}
         {#if !readonly}<input
@@ -341,14 +343,13 @@
         {#each children.filter((child) => !child.archived) as child (String(child._id))}<div
             class="task-row subtask-row flex items-start gap-2 rounded-md"
           >
-            <button
+            <CompletionToggle
               type="button"
-              class="todo-check rubber-touch"
               aria-label={`${child.complete ? 'Uncomplete' : 'Complete'} subtask ${child.title}`}
               aria-pressed={child.complete}
               disabled={readonly}
               onclick={() => toggleChild(child)}
-            ></button>
+            ></CompletionToggle>
             <textarea
               aria-label={`Subtask ${child.title}`}
               value={childDrafts[String(child._id)] ?? child.title}
@@ -378,7 +379,7 @@
                   error = 'Could not save this subtask.';
                 }
               }}></textarea>
-            <button class="rubber-button rubber-icon" aria-label={`Task details ${child.title}`} onclick={() => openItem(String(child._id))}><Icon name="dots" /></button>
+            <Button icon aria-label={`Task details ${child.title}`} onclick={() => openItem(String(child._id))}><Icon name="dots" /></Button>
           </div>{/each}
       </div>
       {#if !readonly}<form
@@ -406,24 +407,24 @@
     {#if addons.includes('location') || place}<Section title="Location">
         {#snippet actions()}
           {#if !readonly}<AddonMenu name="Location" removeLabel="Remove location" onremove={() => save({ addons: addons.filter((addon) => addon !== 'location'), location: null })}>
-            <button class="rubber-button w-full text-left" onclick={async (event) => {
+            <Button class="w-full text-left" onclick={async (event) => {
               const menu = event.currentTarget.closest('details');
               await save({ location: null });
               if (error) return;
               editLocation = true; locationTab = 'search'; search = task?.title ?? '';
               coordinates = ''; locationName = ''; results = []; selectedPlace = null;
               menu?.removeAttribute('open');
-            }}>Change location</button>
+            }}>Change location</Button>
           </AddonMenu>{/if}
         {/snippet}
         {#if place}<p class="mt-2">{place.name}</p>
           <p class="text-sm text-gray-500">
             {place.address || `${place.latitude}, ${place.longitude}`}
           </p>
-          <a
-            class="rubber-button mt-3 inline-block text-primary"
+          <LinkButton
+            class="mt-3 inline-block text-primary"
             href={`/tasks/map?listId=${encodeURIComponent(String(task?.listId))}&taskId=${taskId}`}
-            >See on Map</a
+            >See on Map</LinkButton
           >{/if}
         {#if !readonly && (!place || editLocation)}
           <div class="mt-4"><Tabs label="Location entry method" value={locationTab} options={[{ value: 'search', label: 'Search Place' }, { value: 'coordinates', label: 'Latitude / Longitude' }]} onchange={(value) => { locationTab = value; error = ''; }} /></div>
@@ -469,7 +470,7 @@
             <Button variant="row" onclick={() => moving = !moving}><Icon name="back" size={18} /><span>{isNote ? 'Move Note' : 'Move Task'}</span></Button>
             {#if moving}<form onsubmit={moveTask} class="my-2 space-y-2">
               <select aria-label="Destination list" bind:value={destination} class="drawer-input"><option value="">Choose a tasks list</option>{#each destinations as list (list._id)}<option value={String(list._id)}>{list.emoji} {list.title}</option>{/each}</select>
-              <button class="rubber-button rubber-primary w-full" disabled={!destination}>Move task</button>
+              <Button tone="primary" type="submit" class="w-full" disabled={!destination}>Move task</Button>
             </form>{/if}
             <Button variant="row" onclick={clone}
               ><Icon name="clone" size={18} /><span>{isNote ? 'Clone Note' : 'Clone Task'}</span></Button><Button variant="row" class="text-danger"

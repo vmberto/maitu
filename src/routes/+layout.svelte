@@ -1,10 +1,12 @@
 <script lang="ts">
+  import Button from '#lib/ui/Button.svelte';
   import { blockPageZoom } from '../lib/page-zoom';
   import { version } from '$app/env';
   import { onMount } from 'svelte';
   import { page } from '$app/state';
   import { engine, offline } from '#lib/offline';
   import '../styles/app.css';
+  import '../lib/ui/tokens.css';
   import '../lib/ui/buttons.css';
   import '../lib/ui/drawer.css';
   let { children } = $props();
@@ -52,9 +54,9 @@
       role="status"
       class="p-4 text-sm"
     >
-      {$offline.status}<button
-        class="rubber-button ml-3"
-        onclick={() => engine.sync(true)}>Retry sync</button
+      {$offline.status}<Button
+        class="ml-3"
+        onclick={() => engine.sync(true)}>Retry sync</Button
       >
     </p>{/if}
   {#if conflict}<section
@@ -63,21 +65,21 @@
     >
       <h2 class="font-semibold">A change needs your attention</h2>
       <p>{conflict.conflict?.message}</p>
-      {#if conflict.conflict?.server && !conflict.conflict.server.deleted && conflict.action !== 'create'}<button
-          class="rubber-button mr-3"
-          onclick={() => engine.resolve(conflict, true)}>Keep my change</button
+      {#if conflict.conflict?.server && !conflict.conflict.server.deleted && conflict.action !== 'create'}<Button
+          class="mr-3"
+          onclick={() => engine.resolve(conflict, true)}>Keep my change</Button
         >{/if}
-      <button
-        class="rubber-button"
+      <Button
+
         onclick={() => engine.resolve(conflict, false)}
         >{conflict.conflict?.server
           ? 'Use server version'
-          : 'Discard this device change'}</button
+          : 'Discard this device change'}</Button
       >
     </section>{/if}
   {#if $offline.updateWaiting}<p class="p-3 text-sm">
-      A new version is ready. <button
-        class="rubber-button"
+      A new version is ready. <Button
+
         onclick={() => {
           navigator.serviceWorker.addEventListener(
             'controllerchange',
@@ -85,7 +87,7 @@
             { once: true },
           );
           $offline.updateWaiting?.postMessage({ type: 'SKIP_WAITING' });
-        }}>Update app</button
+        }}>Update app</Button
       >
     </p>{/if}
   {#if !$offline.ready}<div

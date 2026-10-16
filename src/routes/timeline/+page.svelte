@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Button from '#lib/ui/Button.svelte';
   import ArchivedItems from '#lib/ArchivedItems.svelte';
   import Icon from '#lib/ui/Icon.svelte';
   import { autosize } from '#lib/autosize';
@@ -68,10 +69,9 @@
           placeholder="what's up?"
           use:autosize={draft}
           class="todo-title min-w-0 flex-1 resize-none overflow-hidden border-0 bg-transparent"
-          rows="1"></textarea><button
+          rows="1"></textarea><Button icon tone="primary" type="submit"
           aria-label="Add entry"
-          class="rubber-button rubber-icon rubber-primary"
-          ><span aria-hidden="true">→</span></button
+          ><span aria-hidden="true">→</span></Button
         >
       </form>{/if}
     {#each days as [day, entries] (day)}<section>
@@ -88,7 +88,7 @@
                     hour: '2-digit',
                     minute: '2-digit',
                   })}</time
-                ><button class="rubber-button rubber-icon" aria-label={`Note details ${task.title}`} onclick={() => detailsId = String(task._id)}><Icon name="dots" /></button>
+                ><Button icon aria-label={`Note details ${task.title}`} onclick={() => detailsId = String(task._id)}><Icon name="dots" /></Button>
               </div>
               <p class="whitespace-pre-wrap leading-relaxed">{task.title}</p>
             </article>{/each}

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Button from '#lib/ui/Button.svelte';
   import { onDestroy } from 'svelte';
   import { autosize } from './autosize';
   import { normalizeSmartPlace, type SmartPlace } from './smart-place';
@@ -92,7 +93,7 @@
     ></textarea>
     <div class="flex items-center justify-between gap-3">
       <p class="text-xs text-gray-500">Paste a link or caption. We research the venue, map pin and useful tags.</p>
-      <button type="submit" disabled={!input.trim() || busy || adding} class="rubber-button shrink-0 text-sm text-primary">{busy ? 'Finding place…' : 'Find place'}</button>
+      <Button type="submit" disabled={!input.trim() || busy || adding} class="shrink-0 text-sm text-primary">{busy ? 'Finding place…' : 'Find place'}</Button>
     </div>
   </form>
   {#if busy}<p role="status" class="mt-3 text-sm text-gray-500">Researching the venue, checking its map pin and suggesting tags…</p>{/if}
@@ -100,11 +101,11 @@
   {#if error}<p role="alert" class="mt-3 text-sm text-danger">{error}</p>{/if}
   {#if results.length}<div aria-label="Places to add" class="mt-3 overflow-hidden rounded-lg bg-surface">
     <p class="px-3 pt-3 text-xs text-gray-500">{message || 'Choose a place to add'}</p>
-    {#each results as place (`${place.source}:${place.placeId}:${place.latitude}:${place.longitude}`)}<button type="button" disabled={adding} aria-label={`Add ${place.name}`} class="rubber-button block w-full border-b border-gray-200 px-3 py-3 text-left last:border-0" onclick={() => void add(place)}>
+    {#each results as place (`${place.source}:${place.placeId}:${place.latitude}:${place.longitude}`)}<Button type="button" disabled={adding} aria-label={`Add ${place.name}`} class="block w-full border-b border-gray-200 px-3 py-3 text-left last:border-0" onclick={() => void add(place)}>
       <span class="block text-sm font-semibold">{place.name}</span>
       <span class="block text-xs text-gray-500">{place.address || `${place.latitude}, ${place.longitude}`}</span>
       {#if place.tags.length}<span class="mt-2 flex flex-wrap gap-1" aria-label="Suggested tags">{#each place.tags as tag}<span class="rounded-full bg-panel px-2 py-0.5 text-xs">{tag}</span>{/each}</span>{/if}
-    </button>{/each}
+    </Button>{/each}
   </div>{/if}
   {#if sources.length}<div aria-label="Place sources" class="mt-2 flex flex-wrap gap-2 text-xs">
     {#each sources as source (source.url)}<a href={source.url} target="_blank" rel="noopener noreferrer" class="text-primary underline">{source.title}</a>{/each}

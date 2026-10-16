@@ -1,4 +1,5 @@
 <script lang="ts">
+  import LinkButton from '#lib/ui/LinkButton.svelte';
   import Icon from '#lib/ui/Icon.svelte';
   import { offline } from '#lib/offline';
   import type { List } from '../../../types/main';
@@ -11,8 +12,8 @@
 
 <header class="sticky top-0 bg-gray-100">
   <div class="mx-auto flex h-12 max-w-xl items-center gap-3 px-5">
-    <a href="/" class="rubber-button rubber-icon" aria-label="Back to lists"
-      ><Icon name="back" /></a
+    <LinkButton icon href="/"  aria-label="Back to lists"
+      ><Icon name="back" /></LinkButton
     >
     <h1 class="text-xl font-semibold">Archived Lists</h1>
   </div>

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Button from '#lib/ui/Button.svelte';
   import { change } from '../../lib/offline/storage';
   let error = $state('');
   let busy = $state(false);
@@ -46,11 +47,11 @@
         required
         class="drawer-input mt-1"
       /></label
-    ><button
+    ><Button tone="primary"
       type="submit"
       disabled={busy}
-      class="rubber-button rubber-primary w-full"
-      >{busy ? 'Signing in…' : 'Login'}</button
+      class="w-full"
+      >{busy ? 'Signing in…' : 'Login'}</Button
     >{#if error}<p role="alert" class="text-sm text-danger">{error}</p>{/if}
   </form>
 </main>
