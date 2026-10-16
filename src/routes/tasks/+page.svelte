@@ -15,8 +15,9 @@
   import { entryType } from '#lib/list-types';
   import { entriesForView } from '../../lib/entries';
   import ListHeader from '#lib/ListHeader.svelte';
+  import SmartPlaceInput from '#lib/SmartPlaceInput.svelte';
   import { normalizeLocation } from '../../lib/location';
-  import type { List, Task } from '../../../types/main';
+  import type { List, Task, TaskLocation } from '../../../types/main';
   const listId = $derived(page.url.searchParams.get('listId') ?? '');
   const list = $derived(
     $offline.account?.lists.find(
@@ -46,7 +47,8 @@
   let listSettings = $state(false);
   let draft = $state('');
   let titleEdits = $state<Record<string, string>>({});
-  let creating = false;
+  let creating = $state(false);
+  let smartPlace = $state<{ include: (value: string) => void }>();
   let error = $state('');
   let detailsId = $state<string | null>(null);
   $effect(() => {
@@ -124,13 +126,20 @@
     });
     return () => observers.forEach((observer) => observer.disconnect());
   });
-  async function addTask(event?: Event) {
+  async function addTask(event?: Event, location?: TaskLocation) {
     event?.preventDefault();
-    if (!draft.trim() || creating) return;
+    if ((!draft.trim() && !location) || creating) return false;
+    if (list?.type === 'places' && /^https?:\/\//i.test(draft.trim()) && !location) {
+      creating = true;
+      smartPlace?.include(draft);
+      creating = false;
+      return false;
+    }
     creating = true;
     try {
       await engine.add('tasks', {
-        title: draft.trim(),
+        title: location?.name ?? draft.trim(),
+        ...(location ? { location: normalizeLocation(location) } : {}),
         description: '',
         complete: false,
         ...(mixed || notesOnly ? { type: filter === 'notes' ? 'note' as const : 'task' as const } : {}),
@@ -139,10 +148,12 @@
         parentTaskId: null,
         createdAt: new Date().toISOString(),
       });
-      draft = '';
+      if (!location) draft = '';
       error = '';
-    } catch {
-      error = 'Could not save this task on your device.';
+      return true;
+    } catch (cause) {
+      error = cause instanceof Error ? cause.message : 'Could not save this task on your device.';
+      return false;
     } finally {
       creating = false;
     }
@@ -184,12 +195,18 @@
 </script>
 
 <ListHeader {list} settings={() => (listSettings = true)} />
+{#if list?.type === 'places'}<div class="sticky top-12 z-10 mx-auto max-w-xl">{#await import('#lib/PlacesMap.svelte') then module}{@const PlacesMap = module.default}<PlacesMap embedded />{/await}</div>{/if}
 <main
   class="task-list mx-auto max-w-xl px-5 pb-28"
   style:--list-color={HexColors.get(list?.color ?? 'primary')}
 >
   {#if !list}<p class="py-5">This list is unavailable on this device.</p>
   {:else}
+    {#if list.type === 'places' && !list.archived}<SmartPlaceInput bind:this={smartPlace} onadd={async (place, source) => {
+      const saved = await addTask(undefined, place);
+      if (saved && draft.trim() === source.trim()) draft = '';
+      return saved;
+    }} />{/if}
     <div class="list-filters flex items-center justify-between gap-3 border-gray-200" class:border-b={mixed} class:py-1={!mixed}>
       {#if mixed}<Tabs label="Entry filter" appearance="underline" value={filter}
         options={[{ value: 'tasks', label: 'Tasks' }, { value: 'notes', label: 'Notes' }]}
@@ -291,13 +308,13 @@
         onclick={() => (visible += 20)}>More tasks</button
       >{/if}
     {#if !list.archived}<div class="task-creation"><form
-        onsubmit={addTask}
+        onsubmit={(event) => void addTask(event)}
         class="task-row flex items-start gap-2 border-b border-gray-200 py-2"
       >
         <span class:todo-check={!mixed && !notesOnly} class="shrink-0 p-0.5 text-primary opacity-60" aria-hidden="true">{#if mixed || notesOnly}<Icon name="plus" size={24} />{/if}</span>
         <textarea
           aria-label={filter === 'notes' ? "New note" : "New task"}
-          placeholder={mixed || notesOnly ? (filter === 'notes' ? "Add note…" : "Add task…") : undefined}
+          placeholder={list.type === 'places' ? 'Add task or paste a place URL…' : mixed || notesOnly ? (filter === 'notes' ? "Add note…" : "Add task…") : undefined}
           data-task-input
           bind:value={draft}
           use:autosize={draft}
@@ -385,7 +402,7 @@
         aria-hidden="true"
       ></div>{/if}
     </div>
-    <ArchivedItems items={archivedEntries} openItem={(id) => detailsId = id} />
+    {#if filter !== 'notes'}<ArchivedItems items={archivedEntries} openItem={(id) => detailsId = id} />{/if}
     {#if error}<p role="alert" class="text-sm text-danger">{error}</p>{/if}
   {/if}
 </main>

@@ -4,6 +4,7 @@ import type { Colors } from './colors';
 
 export enum ListType {
   tasks = 'tasks',
+  places = 'places',
   timeline = 'timeline',
   notes = 'notes',
   mixed = 'mixed',
@@ -79,5 +80,3 @@ export interface Task {
 
   tags?: string[];
 }
-
-export type TasksResponse = List & { tasks: Task[] };

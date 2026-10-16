@@ -31,7 +31,7 @@
       {list?.title ?? 'Tasks'}
     </h1>
     {#if list}<a href={`/archived/items?listId=${encodeURIComponent(String(list._id))}`} aria-label="Archived Items" class="rubber-button rubber-icon" style:color><Icon name="archive" /></a>{/if}
-    {#if located}<a
+    {#if located || list?.type === 'places'}<a
         href={`${map ? (list?.type === 'timeline' ? '/timeline' : '/tasks') : '/tasks/map'}?listId=${encodeURIComponent(String(list?._id))}`}
         aria-label={map ? 'Show tasks' : 'Show map'}
         class="rubber-button rubber-icon"

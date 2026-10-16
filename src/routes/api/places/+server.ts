@@ -1,41 +1,26 @@
 import { session, headers } from '#lib/session.server';
-import { photonPlaces } from '../../../lib/location';
+import { includePlace, PlaceInclusionError, readPlaceJson } from '../../../lib/place-inclusion.server';
 import type { RequestHandler } from './$types';
-export const GET: RequestHandler = async ({ cookies, url }) => {
-  if (!(await session(cookies)))
-    return Response.json(
-      { error: 'Sign in to search places.' },
-      { status: 401, headers },
-    );
-  const query = url.searchParams.get('q')?.trim() ?? '';
-  if (query.length < 3 || query.length > 200)
-    return Response.json(
-      { error: 'Enter a place name and city (3–200 characters).' },
-      { status: 400, headers },
-    );
+
+const resolve: RequestHandler = async (event) => {
+  if (!(await session(event.cookies)))
+    return Response.json({ error: 'Sign in to search places.' }, { status: 401, headers });
   try {
-    const endpoint = new URL(
-      'api/',
-      process.env.PHOTON_URL || 'https://photon.komoot.io/',
-    );
-    endpoint.searchParams.set('q', query);
-    endpoint.searchParams.set('limit', '6');
-    const response = await fetch(endpoint, {
-      headers: { Accept: 'application/json' },
-      signal: AbortSignal.timeout(8000),
-    });
-    if (!response.ok) throw new Error('Search unavailable');
-    return Response.json(
-      { places: photonPlaces(await response.json()) },
-      { headers },
-    );
-  } catch {
-    return Response.json(
-      {
-        error:
-          'Place search is unavailable. You can paste coordinates instead.',
-      },
-      { status: 503, headers },
-    );
+    if (event.request.method === 'POST') {
+      const origin = event.request.headers.get('origin');
+      if (origin && origin !== event.url.origin) return Response.json({ error: 'Invalid origin.' }, { status: 403, headers });
+      if (Number(event.request.headers.get('content-length')) > 24_000) throw new PlaceInclusionError('Place info is too long.');
+    }
+    const input = event.request.method === 'POST'
+      ? (await readPlaceJson(event.request, 24_000).catch(() => null))?.input
+      : event.url.searchParams.get('q');
+    if (typeof input !== 'string') throw new PlaceInclusionError('Paste some place info first.');
+    const env = { ...process.env, ...(event.platform as { env?: Record<string, string> } | undefined)?.env };
+    return Response.json({ places: await includePlace(input, env) }, { headers });
+  } catch (cause) {
+    return Response.json({ error: cause instanceof PlaceInclusionError ? cause.message : 'Could not find this place. Try its name and city or coordinates.' },
+      { status: cause instanceof PlaceInclusionError ? cause.status : 400, headers });
   }
 };
+export const GET = resolve;
+export const POST = resolve;

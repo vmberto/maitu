@@ -192,7 +192,7 @@
     newListUnlock?.();
     newListUnlock = undefined;
   }}
-  class="bg-surface text-gray-900"
+  class="list-editor text-gray-900" style={`--editor-accent: ${HexColors.get(color)}`}
 >
   <header data-drawer-header class="drawer-header">
     <h2>New List</h2>
@@ -203,20 +203,20 @@
     >
   </header>
   <div class="drawer-body">
-    <form id="new-list-form" onsubmit={addList} class="flex items-end gap-3">
-      <span class="flex size-14 shrink-0 items-center justify-center rounded-xl bg-panel text-3xl">{emoji}</span>
+    <form id="new-list-form" onsubmit={addList} class="list-identity">
+      <span class="list-avatar">{emoji}</span>
       <label class="min-w-0 flex-1"
-        ><span class="mb-2 block text-xs font-semibold uppercase tracking-wide text-gray-600">Name</span><input
+        ><input
           bind:value={title}
           aria-label="List name"
           placeholder="Name your list"
-          class="drawer-input"
+          class="list-name-input"
           maxlength="30"
           required
         /></label
       >
     </form>
-    <ListTypePicker value={type} onchange={(value) => type = value} />
+    <div class="list-options"><ListTypePicker value={type} onchange={(value) => type = value} />
     {#if newListOpen}{#await import('#lib/ListAppearance.svelte') then module}{@const ListAppearance = module.default}<ListAppearance
       {color}
       {emoji}
@@ -224,12 +224,13 @@
         color = data.color ?? color;
         emoji = data.emoji ?? emoji;
       }}
-    />{/await}{/if}<button
+    />{/await}{/if}</div>
+  </div>
+  <footer class="list-create-footer"><button
       form="new-list-form"
       type="submit"
-      class="rubber-button rubber-primary mt-5 w-full">Add list</button
-    >
-  </div>
+      class="rubber-button rubber-primary list-primary">Create list</button
+    ></footer>
 </dialog>
 {#if settingsList}{#await import('#lib/ListDetails.svelte') then module}{@const ListDetails = module.default}<ListDetails
     list={settingsList}

@@ -152,7 +152,7 @@ export function validateData(
       !Number.isFinite(Date.parse(value))
     )
       throw new SyncError('Invalid date.');
-    if (field === 'type' && !(kind === 'lists' ? ['tasks', 'notes', 'timeline', 'mixed'] : ['task', 'note']).includes(value as string))
+    if (field === 'type' && !(kind === 'lists' ? ['tasks', 'places', 'notes', 'timeline', 'mixed'] : ['task', 'note']).includes(value as string))
       throw new SyncError('Invalid list type.');
     if (
       field === 'color' &&
@@ -270,6 +270,8 @@ export async function applyOperation(
       const child = await db.collection('todos').findOne({ parentTaskId: id, deleted: { $ne: true } });
       if (child) throw new SyncError('Remove all related tasks before removing this add-on.');
     }
+    if (list.type === 'places' && operation.action === 'create' && data.addons === undefined)
+      data.addons = ['location'];
     const entry = { ...existing, ...data };
     if (existing?.wasScheduled || existing?.schedule || data.schedule) data.wasScheduled = true;
     if (entry.type === 'note' || (!entry.parentTaskId && ['notes', 'timeline'].includes(list.type))) {

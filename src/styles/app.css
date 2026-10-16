@@ -7,16 +7,6 @@ body {
   overscroll-behavior: none;
   touch-action: pan-x pan-y;
 }
-.location-options-toggle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: rgb(var(--gray-100));
-}
-.location-options-toggle::-webkit-details-marker { display: none; }
 .list-card-link::after {
   content: '';
   position: absolute;

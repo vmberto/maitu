@@ -53,6 +53,8 @@ export function enqueue(
     if (input.action !== 'create' && (!entity || entity.deleted))
       throw new Error('This item is no longer available.');
     if (input.kind === 'tasks' && input.action !== 'delete') {
+      if ((parent as List | undefined)?.type === 'places' && input.action === 'create' && input.data.addons === undefined)
+        input.data = { ...input.data, addons: ['location'] };
       const nextTask = { ...entity, ...input.data } as Task;
       if (nextTask.wasScheduled || nextTask.schedule || (entity as Task | undefined)?.wasScheduled || (entity as Task | undefined)?.schedule)
         input.data = { ...input.data, wasScheduled: true };

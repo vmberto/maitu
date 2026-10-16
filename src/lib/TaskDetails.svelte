@@ -46,7 +46,7 @@
   const mixed = $derived(ownerList?.type === 'mixed');
   const isNote = $derived(task?.type === 'note' || (['notes', 'timeline'].includes(ownerList?.type ?? '') && !task?.parentTaskId));
   const destinations = $derived(($offline.account?.lists ?? []).filter(
-    (list) => !list.deleted && !(list as List).archived && ((list as List).type === 'mixed' || (!isNote && (list as List).type === 'tasks')) && String(list._id) !== String(task?.listId),
+    (list) => !list.deleted && !(list as List).archived && ((list as List).type === 'mixed' || (!isNote && ['tasks', 'places'].includes((list as List).type))) && String(list._id) !== String(task?.listId),
   ) as List[]);
   const detectedCoordinates = $derived(parseCoordinates(coordinates));
   let editLocation = $state(false);
@@ -56,7 +56,7 @@
     ) ?? []) as Task[],
   );
   const addons = $derived(Array.from(new Set([
-    ...(task?.addons ?? []),
+    ...(task?.addons ?? (ownerList?.type === 'places' ? ['location' as const] : [])),
     ...(task?.schedule || task?.reminder ? ['scheduling' as const] : []),
     ...(children.length ? ['relatedTasks' as const] : []),
     ...(normalizeLocation(task?.location) ? ['location' as const] : []),
@@ -186,7 +186,7 @@
     try {
       const response = await fetch(
         `/api/places?q=${encodeURIComponent(search.trim())}`,
-        { signal: AbortSignal.timeout(12000) },
+        { signal: AbortSignal.timeout(32000) },
       );
       const body = await response.json().catch(() => null);
       if (!response.ok || !body) throw new Error(body?.error || 'Place search is unavailable.');
@@ -403,7 +403,7 @@
           No related tasks
         </p>{/if}
     </Section>{/if}
-    {#if task?.addons?.includes('location') || place}<Section title="Location">
+    {#if addons.includes('location') || place}<Section title="Location">
         {#snippet actions()}
           {#if !readonly}<AddonMenu name="Location" removeLabel="Remove location" onremove={() => save({ addons: addons.filter((addon) => addon !== 'location'), location: null })}>
             <button class="rubber-button w-full text-left" onclick={async (event) => {
@@ -436,10 +436,10 @@
               aria-label="Search places"
               bind:value={search}
               oninput={() => { selectedPlace = null; results = []; }}
-              placeholder="Place name and city"
+              placeholder="Place name, Google URL or Instagram location URL"
               class="location-search drawer-input min-w-0 flex-1"
               minlength="3"
-              maxlength="200"
+              maxlength="4096"
               required
             /><Button type="submit" disabled={searching}
               >{searching ? 'Searching…' : 'Search'}</Button

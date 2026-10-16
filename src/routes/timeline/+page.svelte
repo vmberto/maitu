@@ -5,7 +5,6 @@
   import { page } from '$app/state';
   import { engine, offline } from '#lib/offline';
   import ListHeader from '#lib/ListHeader.svelte';
-  import ListDetails from '#lib/ListDetails.svelte';
   import type { List, Task } from '../../../types/main';
   const listId = $derived(page.url.searchParams.get('listId') ?? '');
   const list = $derived(
@@ -22,11 +21,16 @@
   );
   const tasks = $derived(listItems.filter((item) => !item.archived && !item.parentTaskId));
   let detailsId = $state<string | null>(null);
-  const days = $derived(
-    Array.from(new Set(tasks.map((task) => task.createdAt.slice(0, 10))))
-      .sort()
-      .reverse(),
-  );
+  const days = $derived.by(() => {
+    const grouped = new Map<string, Task[]>();
+    for (const task of [...tasks].sort((a, b) => b.createdAt.localeCompare(a.createdAt))) {
+      const day = task.createdAt.slice(0, 10);
+      const entries = grouped.get(day);
+      if (entries) entries.push(task);
+      else grouped.set(day, [task]);
+    }
+    return [...grouped];
+  });
   let draft = $state(''),
     error = $state('');
   let settings = $state(false);
@@ -70,14 +74,12 @@
           ><span aria-hidden="true">→</span></button
         >
       </form>{/if}
-    {#each days as day (day)}<section>
+    {#each days as [day, entries] (day)}<section>
         <h2 class="mb-4 font-semibold">
           {new Date(`${day}T12:00:00`).toLocaleDateString()}
         </h2>
         <div class="space-y-4">
-          {#each tasks
-            .filter((task) => task.createdAt.startsWith(day))
-            .sort( (a, b) => b.createdAt.localeCompare(a.createdAt) ) as task (String(task._id))}<article
+          {#each entries as task (String(task._id))}<article
               class="max-w-prose"
             >
               <div class="flex items-center justify-between">
@@ -95,9 +97,9 @@
     <ArchivedItems notesOnly items={listItems.filter((item) => item.archived)} openItem={(id) => detailsId = id} />
   {/if}{#if error}<p role="alert" class="text-danger">{error}</p>{/if}
 </main>
-{#if settings && list}<ListDetails
+{#if settings && list}{#await import('#lib/ListDetails.svelte') then module}{@const ListDetails = module.default}<ListDetails
     {list}
     close={() => (settings = false)}
-  />{/if}
+  />{/await}{/if}
 
 {#if detailsId}{#key detailsId}{#await import('#lib/TaskDetails.svelte') then module}{@const TaskDetails = module.default}<TaskDetails taskId={detailsId} openItem={(id) => detailsId = id} readonly={!!list?.archived} close={() => detailsId = null} />{/await}{/key}{/if}

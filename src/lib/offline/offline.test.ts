@@ -261,3 +261,14 @@ it('keeps scheduling history when unsent scheduling changes are coalesced or its
   expect(removed.queue).toHaveLength(1);
   expect(removed.queue[0].data).toMatchObject({ schedule: null, wasScheduled: true });
 });
+
+
+it('defaults Places items to tasks with Location and keeps add-ons removable', () => {
+  const account = { ...initial, lists: [{ ...list, type: 'places' } as Entity] };
+  const created = enqueue(account, [{ kind: 'tasks', entityId: 'place', action: 'create', data: { title: 'Museum', listId: list._id } }]);
+  expect(created.tasks[0]).toMatchObject({ title: 'Museum', addons: ['location'] });
+  const removed = enqueue(created, [{ kind: 'tasks', entityId: 'place', action: 'patch', data: { addons: ['scheduling'] } }]);
+  expect(removed.tasks[0]).toHaveProperty('addons', ['scheduling']);
+  const notes = { ...account, tasks: [{ _id: 'note', listId: list._id, type: 'note', version: 0 } as Entity], lists: [{ ...list, type: 'mixed' } as Entity] };
+  expect(() => enqueue(notes, [{ kind: 'lists', entityId: list._id, action: 'patch', data: { type: 'places' } }])).toThrow('Remove all notes');
+});

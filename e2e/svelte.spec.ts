@@ -587,6 +587,31 @@ test('Svelte coordinates, list map, black theme, zoom controls and archived read
   await expect(page.getByRole('link', { name: '📝 Pilot list' })).toBeVisible();
 });
 
+test('timeline groups entries newest first and loads settings offline', async ({ page, context }) => {
+  const server = await transport(context);
+  server.snapshot.lists[0].type = 'timeline';
+  const entries = [
+    ['Earlier day', '2026-01-01T12:00:00Z'],
+    ['Earlier time', '2026-01-02T10:00:00Z'],
+    ['Latest entry', '2026-01-02T15:00:00Z'],
+  ];
+  entries.forEach(([title, createdAt], index) => server.snapshot.tasks.push({
+    _id: (index + 100).toString(16).padStart(24, '0'), listId, title, createdAt, type: 'note', complete: false, version: 0,
+  }));
+  await page.goto(`/timeline?listId=${listId}`);
+  await expect(page.locator('main article p')).toHaveText(['Latest entry', 'Earlier time', 'Earlier day']);
+  await expect(page.locator('main section')).toHaveCount(2);
+  await expect(page.locator('main section').first().locator('article')).toHaveCount(2);
+  await page.evaluate(async () => { await navigator.serviceWorker.ready; });
+  await expect.poll(() => page.evaluate(() => !!navigator.serviceWorker.controller)).toBe(true);
+  await context.setOffline(true);
+  await page.reload();
+  await expect(page.locator('main article p')).toHaveText(['Latest entry', 'Earlier time', 'Earlier day']);
+  await page.getByRole('button', { name: 'List settings', exact: true }).click();
+  await expect(page.getByRole('dialog')).toBeVisible();
+  await expect(page.getByRole('textbox', { name: 'List title', exact: true })).toHaveValue('Pilot list');
+});
+
 test('timeline, tags, subtasks and cloning preserve their data offline', async ({
   page,
   context,
@@ -599,7 +624,7 @@ test('timeline, tags, subtasks and cloning preserve their data offline', async (
   await page.getByRole('textbox', { name: 'List name' }).fill('Journal');
   await page
     .getByRole('radio', { name: 'Timeline', exact: true }).check();
-  await page.getByRole('button', { name: 'Add list', exact: true }).click();
+  await page.getByRole('button', { name: 'Create list', exact: true }).click();
   await page.getByRole('link', { name: '📝 Journal' }).click();
   await expect(page).toHaveURL(/\/timeline\?/);
   await page
@@ -1056,7 +1081,7 @@ test('mixed lists keep related tasks inside notes through archive, restore and o
   await page.getByRole('button', { name: 'New List', exact: true }).click();
   await page.getByRole('textbox', { name: 'List name' }).fill('Diário');
   await page.getByRole('radio', { name: 'Tasks & Notes', exact: true }).check();
-  await page.getByRole('button', { name: 'Add list', exact: true }).click();
+  await page.getByRole('button', { name: 'Create list', exact: true }).click();
   await page.getByRole('link', { name: '📝 Diário' }).click();
   await expect(page.getByRole('tab', { name: 'Tasks', exact: true })).toHaveAttribute('aria-selected', 'true');
   await page.getByRole('tab', { name: 'Notes', exact: true }).click();
@@ -1093,11 +1118,14 @@ test('mixed lists keep related tasks inside notes through archive, restore and o
   await expect(page.getByRole('textbox', { name: 'Task Contact the agent', exact: true })).toHaveCount(0);
   await page.getByRole('tab', { name: 'Notes', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Open note Searching for a Home', exact: true })).toHaveCount(0);
-  await page.getByText('Archived Items', { exact: false }).click();
+  await expect(page.locator('summary').filter({ hasText: 'Archived Items' })).toHaveCount(0);
+  await page.getByRole('link', { name: 'Archived Items', exact: true }).click();
   await page.getByRole('button', { name: 'Open archived note Searching for a Home', exact: true }).click();
   await expect(sheet.getByRole('textbox', { name: 'Subtask Contact the agent', exact: true })).toBeVisible();
   await sheet.getByText('Options', { exact: true }).click();
   await sheet.getByRole('button', { name: 'Restore note', exact: true }).click();
+  await page.getByRole('link', { name: 'Back to list', exact: true }).click();
+  await page.getByRole('tab', { name: 'Notes', exact: true }).click();
   await page.getByRole('button', { name: 'Open note Searching for a Home', exact: true }).click();
   await sheet.getByText('Options', { exact: true }).click();
   await sheet.getByRole('button', { name: 'Convert to task', exact: true }).click();
@@ -1132,7 +1160,7 @@ test('existing task lists can enable Tasks & Notes without losing entries', asyn
   await page.goto(`/tasks?listId=${listId}`);
   await page.getByRole('button', { name: 'List settings', exact: true }).click();
   await page.getByRole('radio', { name: 'Tasks & Notes', exact: true }).check();
-  await page.getByRole('button', { name: 'Done', exact: true }).click();
+  await page.getByRole('button', { name: 'Save changes', exact: true }).click();
   await expect(page.getByRole('tab', { name: 'Tasks', exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Task details Existing', exact: true }).click();
   const sheet = page.getByRole('dialog');
@@ -1154,7 +1182,7 @@ test('existing task lists can enable Tasks & Notes without losing entries', asyn
   expect(server.snapshot.tasks.find((task) => task.title === 'Existing').description).toBe('Keep my notes');
 });
 
-test('item details scroll together, edit bold and bullet lists live and expand every archived note', async ({ page, context }) => {
+test('item details scroll together, edit bold and bullet lists live and open archived notes on their page', async ({ page, context }) => {
   const server = await transport(context);
   server.snapshot.lists[0].type = 'mixed';
   const parent = '64b2f7a9c1e6f9a1b2c3d4ef';
@@ -1168,9 +1196,9 @@ test('item details scroll together, edit bold and bullet lists live and expand e
   await expect(page.getByRole('textbox', { name: 'New task', exact: true })).toHaveAttribute('placeholder', 'Add task…');
   await expect(page.locator('summary').filter({ hasText: 'Archived Items' })).toHaveCount(1);
   await page.getByRole('tab', { name: 'Notes', exact: true }).click();
-  const archive = page.locator('details').filter({ has: page.locator('summary').filter({ hasText: 'Archived Items' }) });
-  await expect(archive.getByRole('button', { name: /^Open archived note Archived 34 / })).not.toBeVisible();
-  await archive.locator('summary').click();
+  await expect(page.locator('summary').filter({ hasText: 'Archived Items' })).toHaveCount(0);
+  await page.getByRole('link', { name: 'Archived Items', exact: true }).click();
+  const archive = page.getByRole('region', { name: 'Pilot list archive', exact: true });
   await expect(archive.getByRole('button')).toHaveCount(35);
   await expect(archive.getByRole('button', { name: /^Open archived note Archived 34 / })).toBeVisible();
   const archivedIcon = await archive.getByRole('button', { name: /^Open archived note Archived 34 / }).locator('svg').boundingBox();
@@ -1178,7 +1206,7 @@ test('item details scroll together, edit bold and bullet lists live and expand e
   await archive.getByRole('button', { name: /^Open archived note Archived 34 / }).click();
   await page.getByRole('button', { name: 'Close panel', exact: true }).click();
   await expect(page.getByRole('dialog')).not.toBeVisible();
-  await page.getByRole('tab', { name: 'Tasks', exact: true }).click();
+  await page.getByRole('link', { name: 'Back to list', exact: true }).click();
   await page.getByRole('button', { name: 'Task details A task with a long title that wraps naturally on mobile', exact: true }).click();
   const sheet = page.getByRole('dialog');
   await expect(sheet.locator('.entry-kind-line')).toHaveCount(0);
@@ -1253,6 +1281,21 @@ test('item details scroll together, edit bold and bullet lists live and expand e
   await expect(sheet.getByRole('textbox', { name: 'Description', exact: true }).locator('ul li strong').first()).toHaveText('New priorities');
   await expect(sheet.getByRole('textbox', { name: 'Description', exact: true }).locator('ul li')).toHaveCount(2);
 
+});
+
+test('a newly added Related Tasks add-on can be removed immediately', async ({ page, context }) => {
+  await transport(context);
+  await page.goto(`/tasks?listId=${listId}`);
+  await page.getByRole('textbox', { name: 'New task', exact: true }).fill('Remove new add-on');
+  await page.getByRole('textbox', { name: 'New task', exact: true }).press('Enter');
+  await page.getByRole('button', { name: 'Task details Remove new add-on', exact: true }).click();
+  const sheet = page.getByRole('dialog');
+  await sheet.getByText('Options', { exact: true }).click();
+  await sheet.getByRole('button', { name: 'Related Tasks', exact: true }).click();
+  await sheet.getByLabel('Related Tasks options', { exact: true }).click();
+  await sheet.getByRole('button', { name: 'Remove Related Tasks', exact: true }).click();
+  await expect(sheet.getByRole('heading', { name: 'Related Tasks', exact: true })).toHaveCount(0);
+  await expect.poll(async () => (await device(page)).tasks.find((task: any) => task.title === 'Remove new add-on').addons).toEqual([]);
 });
 
 test('Related Tasks is optional, protects its children and preserves Location independently', async ({ page, context }) => {
@@ -1341,19 +1384,18 @@ for (const type of ['tasks', 'mixed', 'notes', 'timeline']) {
     await sheet.getByRole('button', { name: ['notes', 'timeline'].includes(type) ? 'Archive note' : 'Archive task', exact: true }).click();
     await expect(sheet).not.toBeVisible();
     await expect(page.getByRole('button', { name: /^(Task|Note) details Archive this item$/ })).toHaveCount(0);
-    const archive = page.locator('details').filter({ has: page.locator('summary').filter({ hasText: 'Archived Items' }) });
-    await archive.locator('summary').click();
-    await expect(archive.getByRole('button', { name: /Open archived .* Archive this item/ })).toBeVisible();
+    if (type === 'notes') await expect(page.locator('summary').filter({ hasText: 'Archived Items' })).toHaveCount(0);
     if (type === 'mixed') {
-      await expect(archive.getByRole('button', { name: 'Open archived note Already archived note' })).toBeVisible();
       await page.getByRole('tab', { name: 'Notes', exact: true }).click();
-      await expect(archive.getByRole('button')).toHaveCount(2);
+      await expect(page.locator('summary').filter({ hasText: 'Archived Items' })).toHaveCount(0);
     }
-    await archive.getByRole('button', { name: /Open archived .* Archive this item/ }).click();
+    await page.getByRole('link', { name: 'Archived Items', exact: true }).click();
+    if (type === 'mixed') await expect(page.getByRole('button', { name: 'Open archived note Already archived note' })).toBeVisible();
+    await page.getByRole('button', { name: /Open archived .* Archive this item/ }).click();
     await sheet.getByText('Options', { exact: true }).click();
     await sheet.getByRole('button', { name: ['notes', 'timeline'].includes(type) ? 'Restore note' : 'Restore task', exact: true }).click();
-    await expect(archive.getByRole('button', { name: /Open archived .* Archive this item/ })).toHaveCount(0);
-    if (type === 'mixed') await page.getByRole('tab', { name: 'Tasks', exact: true }).click();
+    await expect(page.getByRole('button', { name: /Open archived .* Archive this item/ })).toHaveCount(0);
+    await page.getByRole('link', { name: 'Back to list', exact: true }).click();
     await expect(page.getByRole('button', { name: /^(Task|Note) details Archive this item$/ })).toBeVisible();
     await expect.poll(async () => (await device(page)).queue.length).toBe(0);
   });
@@ -1393,7 +1435,7 @@ for (const type of ['tasks', 'notes']) {
     await page.goto(`/tasks?listId=${listId}`);
     await page.getByRole('button', { name: 'List settings', exact: true }).click();
     const select = page.getByRole('group', { name: 'List type', exact: true });
-    await expect(select.getByRole('radio')).toHaveCount(4);
+    await expect(select.getByRole('radio')).toHaveCount(5);
     await expect(select.getByRole('radio', { name: 'Timeline', exact: true })).toBeDisabled();
     await expect(page.getByText(/Remove all (notes|tasks) before changing/)).toHaveCount(0);
     await expect(select.getByRole('radio', { name: type === 'tasks' ? 'Notes' : 'Tasks', exact: true })).toBeDisabled();
@@ -1447,38 +1489,49 @@ test('Notes lists use note rows and details instead of a timeline', async ({ pag
   await expect(sheet.getByText('Open', { exact: true })).toHaveCount(0);
   await sheet.getByText('Options', { exact: true }).click();
   await sheet.getByRole('button', { name: 'Archive note', exact: true }).click();
-  await page.getByText('Archived Items', { exact: true }).click();
+  await page.getByRole('link', { name: 'Archived Items', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Open archived note New standalone note', exact: true })).toBeVisible();
   await page.goto(`/tasks?listId=${listId}`);
   await expect(page.getByRole('button', { name: 'Open note Existing legacy note', exact: true })).toBeVisible();
   await expect(page.getByRole('textbox', { name: 'New note', exact: true })).toHaveAttribute('placeholder', 'Add note…');
 });
 
-test('four square type tiles create distinct Notes and Timeline lists', async ({ page, context }) => {
+test('segmented list types create distinct Notes and Timeline lists', async ({ page, context }) => {
   await transport(context);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
   await page.getByRole('button', { name: 'New List', exact: true }).click();
   const sheet = page.getByRole('dialog');
   const types = sheet.getByRole('group', { name: 'List type', exact: true });
-  await expect(types.getByRole('radio')).toHaveCount(4);
-  for (const tile of await types.locator('.type-tile').all()) {
-    const box = await tile.boundingBox();
-    expect(Math.abs(box!.width - box!.height)).toBeLessThan(1);
-  }
+  await expect(types.getByRole('radio')).toHaveCount(5);
+  const boxes = await types.locator('.type-tile').evaluateAll((tiles) => tiles.map((tile) => tile.getBoundingClientRect().toJSON()));
+  expect(new Set(boxes.map((box) => box.y)).size).toBe(1);
+  expect(boxes.at(-1)!.right).toBeLessThanOrEqual(390);
+  await expect(sheet.locator('.list-options')).toHaveCSS('border-top-width', '1px');
+  await sheet.getByRole('button', { name: 'More emojis', exact: true }).click();
+  await sheet.getByRole('searchbox', { name: 'Search emojis', exact: true }).fill('Travel');
+  await sheet.getByRole('button', { name: 'Travel', exact: true }).click();
+  await expect(sheet.locator('.list-avatar')).toHaveText('✈️');
+  await sheet.getByRole('button', { name: 'More emojis', exact: true }).click();
   await types.getByRole('radio', { name: 'Notes', exact: true }).check();
   await expect(types.getByRole('radio', { name: 'Notes', exact: true })).toBeChecked();
-  await expect(types.locator('.type-tile.selected')).toHaveCSS('color', 'rgb(54, 100, 255)');
+  await expect(types.locator('.type-tile.selected')).toHaveCSS('background-color', 'rgb(255, 255, 255)');
   await page.screenshot({ path: '/tmp/maitu-list-type-tiles.png' });
+  const iconRows = await sheet.locator('.list-favorite-icons button').evaluateAll((buttons) => buttons.map((button) => button.getBoundingClientRect().y));
+  expect(new Set(iconRows).size).toBe(1);
+  await page.setViewportSize({ width: 320, height: 740 });
+  expect(await sheet.evaluate((dialog) => dialog.scrollWidth <= dialog.clientWidth)).toBe(true);
+  await page.screenshot({ path: '/tmp/maitu-new-list-small.png', animations: 'disabled' });
+  await page.setViewportSize({ width: 390, height: 844 });
   await sheet.getByRole('textbox', { name: 'List name', exact: true }).fill('Standalone Notes');
-  await sheet.getByRole('button', { name: 'Add list', exact: true }).click();
+  await sheet.getByRole('button', { name: 'Create list', exact: true }).click();
   await page.getByRole('link', { name: /Standalone Notes/ }).click();
   await expect(page.getByRole('textbox', { name: 'New note', exact: true })).toBeVisible();
   await page.getByRole('link', { name: 'Back to lists' }).click();
   await page.getByRole('button', { name: 'New List', exact: true }).click();
   await sheet.getByRole('radio', { name: 'Timeline', exact: true }).check();
   await sheet.getByRole('textbox', { name: 'List name', exact: true }).fill('Separate Timeline');
-  await sheet.getByRole('button', { name: 'Add list', exact: true }).click();
+  await sheet.getByRole('button', { name: 'Create list', exact: true }).click();
   await page.getByRole('link', { name: /Separate Timeline/ }).click();
   await expect(page).toHaveURL(/\/timeline\?/);
   await page.getByRole('textbox', { name: 'New entry', exact: true }).fill('Timeline entry');
@@ -1489,6 +1542,13 @@ test('four square type tiles create distinct Notes and Timeline lists', async ({
   await page.getByRole('button', { name: 'List settings', exact: true }).click();
   await expect(page.getByRole('radio', { name: 'Timeline', exact: true })).toBeChecked();
   await expect(page.getByRole('radio', { name: 'Timeline', exact: true })).toBeDisabled();
+  await page.screenshot({ path: '/tmp/maitu-edit-list-styles.png', animations: 'disabled' });
+  await page.evaluate(() => document.documentElement.classList.add('dark'));
+  await page.screenshot({ path: '/tmp/maitu-edit-list-dark.png', animations: 'disabled' });
+  await page.evaluate(() => document.documentElement.classList.remove('dark'));
+  await page.getByRole('textbox', { name: 'Confirm list name', exact: true }).scrollIntoViewIfNeeded();
+  await expect(page.getByRole('button', { name: 'Delete list permanently', exact: true })).toBeDisabled();
+  await page.screenshot({ path: '/tmp/maitu-edit-list-delete.png', animations: 'disabled' });
 });
 
 test('task add-ons control scheduling and the tag input fills space after tags', async ({ page, context }) => {
@@ -1645,4 +1705,113 @@ test('all add-ons share a top-right options menu without colliding with the sche
   await expect(drawer.locator('.scheduling')).toHaveCount(0);
   await expect(drawer.getByRole('heading', { name: 'Location', exact: true })).toHaveCount(0);
   await expect(drawer.getByRole('heading', { name: 'Related Tasks', exact: true })).toHaveCount(0);
+});
+
+test('Places List keeps the map visible and normal tasks default to Location offline', async ({ page, context }) => {
+  await transport(context);
+  await page.goto('/');
+  await page.getByRole('button', { name: 'New List', exact: true }).click();
+  await page.getByRole('textbox', { name: 'List name', exact: true }).fill('Places to visit');
+  await page.getByRole('radio', { name: 'Places List', exact: true }).check();
+  await page.getByRole('button', { name: 'Create list', exact: true }).click();
+  await page.getByRole('link', { name: /Places to visit/ }).click();
+  await expect(page.locator('[aria-label="Task locations map"] .leaflet-map-pane')).toHaveCount(1);
+  await expect(page.getByRole('button', { name: 'Locations (0)', exact: true })).toBeVisible();
+  await page.getByLabel('New task', { exact: true }).fill('Visit the museum');
+  await page.getByLabel('New task', { exact: true }).press('Enter');
+  await expect.poll(async () => (await device(page)).tasks.find((task: any) => task.title === 'Visit the museum')?.addons).toEqual(['location']);
+  await page.getByRole('button', { name: 'Task details Visit the museum', exact: true }).click();
+  await expect(page.getByRole('textbox', { name: 'Search places', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Close panel', exact: true }).click();
+  await page.evaluate(async () => { await navigator.serviceWorker.ready; });
+  await expect.poll(() => page.evaluate(() => !!navigator.serviceWorker.controller)).toBe(true);
+  await context.setOffline(true);
+  await page.reload();
+  await expect(page.getByLabel('Task Visit the museum', { exact: true })).toBeVisible();
+  await expect(page.locator('[aria-label="Task locations map"] .leaflet-map-pane')).toHaveCount(1);
+  await page.getByRole('button', { name: 'completeTask', exact: true }).click();
+  await expect.poll(async () => (await device(page)).tasks.find((task: any) => task.title === 'Visit the museum')?.complete).toBe(true);
+});
+
+test('Places URL import previews candidates and saves a normal task with coordinates', async ({ page, context }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const server = await transport(context);
+  server.snapshot.lists[0].type = 'places';
+  const location = { name: 'Marco Zero', address: 'Recife, Brazil', latitude: -8.063, longitude: -34.871, source: 'openstreetmap', placeId: 'N123' };
+  await page.route('**/api/places', async (route) => {
+    const input = route.request().postDataJSON().input;
+    expect(input).toBe('https://www.google.com/search?q=Marco+Zero+Recife');
+    await route.fulfill({ json: { places: [location] } });
+  });
+  await page.goto(`/tasks?listId=${listId}`);
+  await page.getByLabel('New task', { exact: true }).fill('https://www.google.com/search?q=Marco+Zero+Recife');
+  await page.getByLabel('New task', { exact: true }).press('Enter');
+  await expect(page.getByText('Choose a place to add', { exact: true })).toBeVisible();
+  expect((await device(page)).tasks).toHaveLength(0);
+  await page.getByRole('button', { name: 'Add Marco Zero', exact: true }).click();
+  await expect.poll(async () => (await device(page)).tasks[0]?.location).toEqual(location);
+  expect((await device(page)).tasks[0]).toMatchObject({ title: 'Marco Zero', complete: false, addons: ['location'] });
+  await expect(page.locator('.location-marker')).toHaveCount(1);
+  await expect(page.getByLabel('New task', { exact: true })).toHaveValue('');
+  await page.screenshot({ path: '/tmp/maitu-places-list.png' });
+});
+
+test('Smart Place inclusion resolves pasted captions and keeps failed input editable', async ({ page, context }) => {
+  const server = await transport(context);
+  server.snapshot.lists[0].type = 'places';
+  await page.setViewportSize({ width: 390, height: 844 });
+  const location = { name: 'Cafe do Sol', address: 'Rua das Flores 12, Recife', latitude: -8.063, longitude: -34.871, source: 'openstreetmap', placeId: 'N789' };
+  const inputs: string[] = [];
+  await page.route('**/api/places', async (route) => {
+    const input = route.request().postDataJSON().input;
+    inputs.push(input);
+    await route.fulfill(input.includes('private-post')
+      ? { status: 422, json: { error: 'Could not identify a place from this page. Paste its caption, place name or address instead.' } }
+      : { json: { places: [location] } });
+  });
+  await page.goto(`/tasks?listId=${listId}`);
+  const smart = page.getByRole('region', { name: 'Smart Place inclusion', exact: true });
+  const field = smart.getByRole('textbox', { name: 'Place info', exact: true });
+  const caption = '📍 Cafe do Sol\nRua das Flores 12, Recife\n@travel #recife';
+  await field.evaluate((node, text) => {
+    const transfer = new DataTransfer(); transfer.setData('text/plain', text);
+    node.dispatchEvent(new ClipboardEvent('paste', { bubbles: true, cancelable: true, clipboardData: transfer }));
+  }, caption);
+  await expect(smart.getByRole('button', { name: 'Add Cafe do Sol', exact: true })).toBeVisible();
+  expect(inputs).toEqual([caption]);
+  expect((await device(page)).tasks).toHaveLength(0);
+  await smart.getByRole('button', { name: 'Add Cafe do Sol', exact: true }).click();
+  await expect.poll(async () => (await device(page)).tasks[0]?.location).toEqual(location);
+  await expect(field).toHaveValue('');
+  await expect(page.locator('.location-marker')).toHaveCount(1);
+  await field.fill('https://instagram.com/p/private-post/');
+  await smart.getByRole('button', { name: 'Find place', exact: true }).click();
+  await expect(smart.getByRole('alert')).toContainText('Paste its caption');
+  await expect(field).toHaveValue('https://instagram.com/p/private-post/');
+  expect((await device(page)).tasks).toHaveLength(1);
+  await page.screenshot({ path: '/tmp/maitu-smart-place.png' });
+});
+
+test('Smart Place inclusion ignores stale candidates after the pasted input changes', async ({ page, context }) => {
+  const server = await transport(context);
+  server.snapshot.lists[0].type = 'places';
+  let release: () => void;
+  const pending = new Promise<void>((resolve) => release = resolve);
+  await page.route('**/api/places', async (route) => {
+    const first = route.request().postDataJSON().input === 'First place';
+    if (first) await pending;
+    await route.fulfill({ json: { places: [{ name: first ? 'Old result' : 'New result', address: 'Recife', latitude: -8, longitude: -34, source: 'manual', placeId: 'manual' }] } }).catch(() => {});
+  });
+  await page.goto(`/tasks?listId=${listId}`);
+  const field = page.getByRole('textbox', { name: 'Place info', exact: true });
+  await field.fill('First place');
+  const request = page.waitForRequest((request) => request.url().endsWith('/api/places'));
+  await page.getByRole('button', { name: 'Find place', exact: true }).click();
+  await request;
+  await field.fill('Second place');
+  await page.getByRole('button', { name: 'Find place', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Add New result', exact: true })).toBeVisible();
+  release!();
+  await expect(page.getByRole('button', { name: 'Add Old result', exact: true })).toHaveCount(0);
+  expect((await device(page)).tasks).toHaveLength(0);
 });

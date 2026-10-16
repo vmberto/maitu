@@ -7,7 +7,8 @@
   let menu: HTMLDetailsElement;
 </script>
 
-<svelte:window onfocusin={(event) => { if (menu && !menu.contains(event.target as Node)) menu.open = false; }} onclick={(event) => { if (menu && !menu.contains(event.target as Node)) menu.open = false; }}
+<!-- Safari focuses the containing dialog when a menu button is pressed. -->
+<svelte:window onfocusin={(event) => { if (menu && !menu.contains(event.target as Node) && !(event.target as Node).contains(menu)) menu.open = false; }} onclick={(event) => { if (menu && !menu.contains(event.target as Node)) menu.open = false; }}
   onkeydown={(event) => {
     if (event.key === 'Escape' && menu?.open && menu.contains(event.target as Node)) { event.preventDefault(); event.stopPropagation(); menu.open = false; menu.querySelector('summary')?.focus(); }
   }} />

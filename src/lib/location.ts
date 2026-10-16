@@ -97,3 +97,46 @@ export function parseCoordinates(
     ? { latitude, longitude }
     : null;
 }
+
+// Read map information encoded in shared URLs before requesting page metadata.
+export function placeInput(input: string): { query: string; location?: TaskLocation } {
+  const text = input.trim();
+  if (!/^https?:\/\//i.test(text)) {
+    if (text.length < 3 || text.length > 200) throw new Error('Enter a place name and city (3–200 characters).');
+    return { query: text };
+  }
+  let url: URL;
+  try { url = new URL(text); } catch { throw new Error('Paste a valid place URL.'); }
+  const host = url.hostname.replace(/^www\./, '');
+  let query = '';
+  let coordinates: ReturnType<typeof parseCoordinates> = null;
+  if (/^(?:maps\.)?google\.(?:com|[a-z]{2}|com\.[a-z]{2}|co\.[a-z]{2})$/.test(host)) {
+    query = url.searchParams.get('query') || url.searchParams.get('q') || '';
+    const place = url.pathname.match(/\/maps\/(?:place|search)\/([^/]+)/);
+    if (!query && place) {
+      try { query = decodeURIComponent(place[1]).replace(/\+/g, ' '); }
+      catch { throw new Error('Paste a valid place URL.'); }
+    }
+    coordinates = parseCoordinates(query);
+    // @lat,lng is the map camera, not necessarily the place's position.
+    const pin = url.pathname.match(/!3d([+-]?[\d.]+)!4d([+-]?[\d.]+)/);
+    if (pin) coordinates = parseCoordinates(`${pin[1]}, ${pin[2]}`);
+  } else if (host === 'instagram.com') {
+    const place = url.pathname.match(/^\/explore\/locations\/\d+\/([^/]+)/);
+    if (place) {
+      try { query = decodeURIComponent(place[1]).replace(/-/g, ' '); }
+      catch { throw new Error('Paste a valid place URL.'); }
+    } else {
+      throw new Error('This Instagram link does not identify a place. Enter the place name and city, or paste a Google search or Maps link.');
+    }
+  } else {
+    throw new Error('Use a full Google search or Maps link, an Instagram location link, or a place name and city.');
+  }
+  query = query.trim();
+  if (!query || query.length > 200) throw new Error('This link does not contain a place name. Enter the place name and city instead.');
+  if (coordinates) {
+    const name = parseCoordinates(query) ? `Location (${coordinates.latitude}, ${coordinates.longitude})` : query;
+    return { query, location: { ...coordinates, name, address: '', source: 'manual', placeId: 'manual' } };
+  }
+  return { query };
+}

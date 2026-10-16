@@ -309,7 +309,7 @@ it('rejects editing and deleting tasks within archived lists', async () => {
 
 
 it('accepts the mixed list type and validates entry types and archive flags', () => {
-  for (const type of ['tasks', 'notes', 'mixed', 'timeline'])
+  for (const type of ['tasks', 'places', 'notes', 'mixed', 'timeline'])
     expect(validateData('lists', { type }, false)).toEqual({ type });
   expect(validateData('tasks', { type: 'note', archived: true }, false)).toEqual({ type: 'note', archived: true });
   for (const data of [{ type: 'topic' }, { archived: 'true' }])
@@ -406,4 +406,22 @@ it('preserves scheduling history after removing a date and accepts coalesced his
   expect(tasks.updateOne.mock.calls[0][1].$set).toMatchObject({ schedule: null, wasScheduled: true });
   expect(validateData('tasks', { schedule: null, wasScheduled: true }, false)).toMatchObject({ schedule: null, wasScheduled: true });
   expect(() => validateData('tasks', { wasScheduled: false }, false)).toThrow('Invalid scheduling history');
+});
+
+
+it('defaults new Places tasks to Location without overriding explicit add-ons', async () => {
+  lists.findOne.mockResolvedValue({ ...list, type: 'places' });
+  tasks.insertOne.mockImplementation(async (doc: unknown) => { tasks.findOne.mockResolvedValue(doc); });
+  const create = { ...operation, kind: 'tasks' as const, entityId: taskId, action: 'create' as const, baseVersion: 0, data: { title: 'Museum', listId } };
+  await applyOperation(db, userId, create);
+  expect(tasks.insertOne.mock.calls[0][0]).toMatchObject({ title: 'Museum', addons: ['location'] });
+  tasks.findOne.mockResolvedValue(null);
+  await applyOperation(db, userId, { ...create, data: { ...create.data, addons: [] } });
+  expect(tasks.insertOne.mock.calls[1][0]).toHaveProperty('addons', []);
+});
+
+it('rejects converting a list with notes into Places', async () => {
+  lists.findOne.mockResolvedValue({ ...list, type: 'mixed' });
+  tasks.find.mockReturnValue({ toArray: async () => [{ type: 'note' }] });
+  await expect(applyOperation(db, userId, { ...operation, data: { type: 'places' } })).rejects.toThrow('Remove all notes');
 });

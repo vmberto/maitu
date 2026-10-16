@@ -1,5 +1,6 @@
 <script lang="ts">
   import Icon from './ui/Icon.svelte';
+  import { HexColors } from './colors';
   import ListTypePicker from '#lib/ListTypePicker.svelte';
   import ListAppearance from '#lib/ListAppearance.svelte';
   import { drawerBehavior, closeDrawer } from '#lib/drawer';
@@ -40,10 +41,11 @@
     closeDrawer(dialog);
   }}
   onclose={close}
-  class="w-[calc(100%-1rem)] max-w-xl rounded-xl bg-surface p-5 text-gray-900"
+  class="list-editor text-gray-900"
+  style={`--editor-accent: ${HexColors.get(list.color)}`}
 >
   <header data-drawer-header class="drawer-header">
-    <h2 class="mb-5 font-semibold">List settings</h2>
+    <h2 class="mb-5 font-semibold">Edit list</h2>
     <button
       class="rubber-button rubber-icon float-right"
       aria-label="Close panel"
@@ -52,26 +54,29 @@
   </header>
   <div class="drawer-body">
     {#if list.archived}<p>Archived · Read only</p>
-      <h3>{list.title}</h3>{:else}<div class="flex items-end gap-3"><span class="flex size-14 shrink-0 items-center justify-center rounded-xl bg-panel text-3xl">{list.emoji}</span><label class="min-w-0 flex-1"
-        ><span class="mb-2 block text-xs font-semibold uppercase tracking-wide text-gray-600">Name</span><input
+      <h3>{list.title}</h3>{:else}<div class="list-identity"><span class="list-avatar">{list.emoji}</span><label class="min-w-0 flex-1"
+        ><input
           aria-label="List title"
           value={list.title}
-          class="drawer-input"
+          class="list-name-input"
           oninput={(event) => void save({ title: event.currentTarget.value })}
         /></label
       ></div>
-      <ListTypePicker value={list.type} onchange={(type) => void changeType(type)} isDisabled={(type) => type === 'timeline' || !!listTypeError(items, list.type, type)} />
-      <ListAppearance color={list.color} emoji={list.emoji} onchange={save} />
+      <div class="list-options"><ListTypePicker value={list.type} onchange={(type) => void changeType(type)} isDisabled={(type) => type === 'timeline' || !!listTypeError(items, list.type, type)} />
+      <ListAppearance color={list.color} emoji={list.emoji} onchange={save} /></div>
+      <button class="rubber-button rubber-primary list-primary" onclick={() => closeDrawer(dialog)}>Save changes</button>
       <button
-        class="rubber-button mt-5 text-danger"
+        class="rubber-button list-archive"
         onclick={async () => {
           await save({ archived: true });
           if (!error) closeDrawer(dialog);
-        }}>Archive list</button
+        }}><Icon name="archive" size={20} />Archive list</button
       >
-      <details class="mt-5">
+      <p class="list-archive-help">Hide it from your lists. Restore it anytime.</p>
+      <details class="list-delete" open>
         <summary class="cursor-pointer text-sm text-danger">Delete list</summary
         >
+        <p class="list-delete-description">This permanently deletes the list and its {items.length} {items.length === 1 ? 'item' : 'items'}. This can’t be undone.</p>
         <form
           class="mt-3 space-y-3"
           onsubmit={async (event) => {
@@ -92,12 +97,12 @@
               class="drawer-input mt-1"
             /></label
           ><button
-            class="rubber-button text-danger"
+            class="rubber-button rubber-danger list-primary"
             disabled={confirmation !== list.title}
             >Delete list permanently</button
           >
         </form>
-      </details><button class="rubber-button rubber-primary mt-5 w-full py-3" onclick={() => closeDrawer(dialog)}>Done</button>{/if}
+      </details>{/if}
     {#if error}<p role="alert" class="mt-3 text-danger">{error}</p>{/if}
   </div>
 </dialog>

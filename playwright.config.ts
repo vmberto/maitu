@@ -8,7 +8,10 @@ export default defineConfig({
   timeout: 30000,
   outputDir: 'test-results/svelte',
   use: { baseURL, trace: 'retain-on-failure' },
-  projects: [{ name: 'Chrome', use: devices['Desktop Chrome'] }],
+  projects: [
+    { name: 'Chrome', use: devices['Desktop Chrome'] },
+    { name: 'Safari add-on menus', use: devices['Desktop Safari'], grep: /newly added Related Tasks|all add-ons share/ },
+  ],
   webServer: {
     command: `E2E_TEST=true npm run build && PORT=${port} HOST=127.0.0.1 E2E_TEST=true npm run start`,
     url: baseURL,
