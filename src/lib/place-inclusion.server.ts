@@ -22,6 +22,15 @@ export async function readPlaceJson(response: { body: ReadableStream<Uint8Array>
   } finally { await reader.cancel(); }
 }
 
+export async function searchPlaces(query: string, env: Record<string, string | undefined> = {}, request = fetch) {
+  const endpoint = new URL('api/', env.PHOTON_URL || 'https://photon.komoot.io/');
+  endpoint.searchParams.set('q', query);
+  endpoint.searchParams.set('limit', '6');
+  const response = await request(endpoint, { headers: { Accept: 'application/json' }, redirect: 'manual', signal: AbortSignal.timeout(8000) });
+  if (!response.ok) throw new PlaceInclusionError('Place search is unavailable. Try again or paste coordinates.', 503);
+  return photonPlaces(await readPlaceJson(response));
+}
+
 export async function includePlace(input: string, env: Record<string, string | undefined> = {}, request = fetch) {
   if (!input.trim() || input.length > 4096) throw new PlaceInclusionError('Paste a place name, address, coordinates, shared text or URL (up to 4,096 characters).');
   if (/^[a-z][a-z0-9+.-]*:\/\//i.test(input.trim()) && !/^https?:/i.test(input.trim())) throw new PlaceInclusionError('Use an HTTP or HTTPS public URL.');
@@ -85,14 +94,7 @@ export async function includePlace(input: string, env: Record<string, string | u
   }
   queries = [...new Set(queries)].filter(Boolean).slice(0, 3);
   if (!queries.length) throw new PlaceInclusionError('Add the place name or address, including the city if possible.');
-  const results = await Promise.allSettled(queries.map(async (query) => {
-    const endpoint = new URL('api/', env.PHOTON_URL || 'https://photon.komoot.io/');
-    endpoint.searchParams.set('q', query);
-    endpoint.searchParams.set('limit', '6');
-    const response = await request(endpoint, { headers: { Accept: 'application/json' }, redirect: 'manual', signal: AbortSignal.timeout(8000) });
-    if (!response.ok) throw new Error('Search unavailable');
-    return photonPlaces(await readPlaceJson(response));
-  }));
+  const results = await Promise.allSettled(queries.map((query) => searchPlaces(query, env, request)));
   const places = results.flatMap((result) => result.status === 'fulfilled' ? result.value : []);
   if (!results.some((result) => result.status === 'fulfilled'))
     throw new PlaceInclusionError('Place search is unavailable. Try again or paste coordinates.', 503);

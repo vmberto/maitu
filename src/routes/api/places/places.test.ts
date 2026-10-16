@@ -36,21 +36,19 @@ it('reads provider configuration from Cloudflare bindings and keeps reader crede
 });
 
 
-it('routes Smart Place inclusion through GPT using Cloudflare secrets', async () => {
-  const source = 'https://venue.com/contact';
-  const pin = 'https://google.com/maps/search/?query=-8.063,-34.871';
-  const fetcher = vi.fn().mockResolvedValue(Response.json({ status: 'completed', output: [
-    { type: 'web_search_call', status: 'completed', action: { sources: [{ url: source }, { url: pin }] } },
-    { type: 'message', role: 'assistant', content: [{ type: 'output_text', text: JSON.stringify({ resolution: 'resolved', message: '', places: [{ name: 'Museum', address: 'Recife, Brazil', latitude: -8.063, longitude: -34.871, source_url: source, coordinate_url: pin }] }) }] },
-  ] }));
+it('uses the Cloudflare AI binding and geocoder for Smart Place inclusion', async () => {
+  const run = vi.fn().mockResolvedValue({ response: { name: 'Museum', address: '', city: 'Recife' } });
+  const fetcher = vi.fn().mockResolvedValue(Response.json({ features: [{ geometry: { type: 'Point', coordinates: [-34.871, -8.063] }, properties: { name: 'Museum', city: 'Recife', country: 'Brazil', osm_type: 'N', osm_id: 123 } }] }));
   vi.stubGlobal('fetch', fetcher);
-  const request = event('Museum website: https://venue.com');
-  request.platform = { env: { OPENAI_API_KEY: 'private-worker-key', OPENAI_PLACE_MODEL: 'gpt-5.4-mini' } };
+  const request = event('Museum Recife');
+  request.platform = { env: { AI: { run }, OPENAI_API_KEY: 'unused-private-key', PHOTON_URL: 'https://geo.maitu.app/' } };
   const response = await POST(request);
   expect(response.status).toBe(200);
   const body = await response.json();
   expect(body.autoAdd).toBe(true);
   expect(body.places[0].name).toBe('Museum');
-  expect(JSON.stringify(body)).not.toContain('private-worker-key');
-  expect(fetcher.mock.calls[0][1].headers.Authorization).toBe('Bearer private-worker-key');
+  expect(JSON.stringify(body)).not.toContain('unused-private-key');
+  expect(run).toHaveBeenCalledTimes(1);
+  expect(fetcher).toHaveBeenCalledTimes(1);
+  expect(fetcher.mock.calls[0][0].origin).toBe('https://geo.maitu.app');
 });

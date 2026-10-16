@@ -1836,5 +1836,5 @@ test('Smart Place inclusion auto-adds one verified match and shows its source', 
   await expect(page.getByRole('link', { name: 'Venue location', exact: true })).toHaveAttribute('href', 'https://venue.com/contact');
   await expect(page.getByRole('button', { name: 'Add Terraço da Praça', exact: true })).toHaveCount(0);
   await expect(page.getByLabel('Task locations map')).toHaveCount(0);
-  await page.screenshot({ path: '/tmp/maitu-gpt-place-inclusion.png' });
+  await page.screenshot({ path: '/tmp/maitu-smart-place-inclusion.png' });
 });

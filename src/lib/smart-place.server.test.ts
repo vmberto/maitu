@@ -1,84 +1,114 @@
 import { smartPlace } from './smart-place.server';
 
-const source = 'https://terracodapraca.com.br/contact';
-const pin = 'https://www.google.com/maps/place/Terraco+da+Praca/data=!3d-8.063!4d-34.871';
-const candidate = { name: 'Terraço da Praça', address: 'Praça Example, Recife, Brazil', latitude: -8.063, longitude: -34.871, source_url: source, coordinate_url: pin };
-const env = { OPENAI_API_KEY: 'server-only-key' };
-function response(places = [candidate], resolution = 'resolved', sourceUrls = [source, pin]) {
-  return Response.json({ status: 'completed', output: [
-    { type: 'web_search_call', status: 'completed', action: { sources: sourceUrls.map((url) => ({ url, title: 'Venue location' })) } },
-    { type: 'message', role: 'assistant', content: [{ type: 'output_text', text: JSON.stringify({ resolution, message: '', places }) }] },
-  ] });
-}
+const extracted = { name: 'Terraço da Praça', address: '', city: 'Recife' };
+const input = 'https://www.google.com/search?q=terraco+da+praca+recife&sourceid=chrome';
+const feature = { type: 'Feature', geometry: { type: 'Point', coordinates: [-34.871, -8.063] }, properties: { name: 'Terraço da Praça', city: 'Recife', country: 'Brazil', osm_type: 'N', osm_id: 123 } };
+const engine = (fields: unknown = extracted) => ({ run: vi.fn().mockResolvedValue({ response: fields }) });
+const geocoder = (features = [feature]) => vi.fn().mockResolvedValue(Response.json({ features }));
+afterEach(() => { vi.useRealTimers(); });
 
-it('uses the original URL with a bounded grounded GPT request and server-only credentials', async () => {
-  const request = vi.fn().mockResolvedValue(response());
-  const input = 'https://www.google.com/search?q=terraco+da+praca&sourceid=chrome';
-  const result = await smartPlace(input, env, request);
+it('extracts supplied venue text with Llama and takes coordinates only from OpenStreetMap', async () => {
+  const ai = engine({ ...extracted, latitude: 50, longitude: 50 });
+  const request = geocoder();
+  const result = await smartPlace(input, {}, request, ai);
+  expect(ai.run).toHaveBeenCalledTimes(1);
+  expect(ai.run.mock.calls[0]).toMatchObject(['@cf/meta/llama-3.1-8b-instruct-fp8', { max_tokens: 400, temperature: 0, response_format: { type: 'json_schema' } }]);
+  expect(ai.run.mock.calls[0][1].messages[1].content).toContain('terraco da praca recife');
   expect(request).toHaveBeenCalledTimes(1);
-  const [url, options] = request.mock.calls[0];
-  expect(url).toBe('https://api.openai.com/v1/responses');
-  expect(options.redirect).toBe('manual');
-  expect(options.headers.Authorization).toBe('Bearer server-only-key');
-  expect(JSON.parse(options.body)).toMatchObject({ model: 'gpt-5.4-mini', input, store: false, max_tool_calls: 3, tool_choice: 'required', text: { format: { type: 'json_schema', strict: true } } });
-  expect(result).toMatchObject({ autoAdd: true, places: [{ name: candidate.name, latitude: -8.063, longitude: -34.871, source: 'manual', placeId: 'manual' }] });
-  expect(result.sources.map((item) => item.url)).toContain(source);
-  expect(JSON.stringify(result)).not.toContain(env.OPENAI_API_KEY);
+  expect(request.mock.calls[0][0].hostname).toBe('photon.komoot.io');
+  expect(request.mock.calls[0][0].searchParams.get('q')).toBe('Terraço da Praça, Recife');
+  expect(result).toMatchObject({ autoAdd: true, places: [{ latitude: -8.063, longitude: -34.871, source: 'openstreetmap', placeId: 'N123' }] });
+  expect(result.sources).toContainEqual({ url: 'https://www.openstreetmap.org/node/123', title: 'OpenStreetMap: Terraço da Praça' });
 });
 
-it('asks for configuration before paid requests and bypasses GPT for explicit coordinates', async () => {
+it('bypasses AI and external requests for pasted coordinates and full map pins', async () => {
   const request = vi.fn();
-  await expect(smartPlace('Terraco da Praca', {}, request)).rejects.toMatchObject({ status: 503 });
   expect(await smartPlace('Marco Zero\n-8.063, -34.871', {}, request)).toMatchObject({ autoAdd: true, places: [{ name: 'Marco Zero', latitude: -8.063 }] });
-  expect(await smartPlace('https://www.google.com/maps/search/?query=-8.063,-34.871', {}, request)).toMatchObject({ autoAdd: true, places: [{ latitude: -8.063 }] });
-  await expect(smartPlace('https://127.0.0.1/private', env, request)).rejects.toThrow();
+  expect(await smartPlace('https://google.com/maps/search/?query=-8.063,-34.871', {}, request)).toMatchObject({ autoAdd: true, places: [{ latitude: -8.063 }] });
   expect(request).not.toHaveBeenCalled();
 });
 
-it('never auto-adds ambiguous matches, invented pin links or camera coordinates', async () => {
-  const ambiguous = await smartPlace('Terraco', env, vi.fn().mockResolvedValue(response([candidate], 'ambiguous')));
-  expect(ambiguous.autoAdd).toBe(false);
-  const notRetrieved = await smartPlace('Terraco', env, vi.fn().mockResolvedValue(response([candidate], 'resolved', [source])));
-  expect(notRetrieved.autoAdd).toBe(false);
-  expect(notRetrieved.places).toHaveLength(1);
-  const camera = 'https://www.google.com/maps/place/Terraco/@-8.063,-34.871,16z';
-  expect((await smartPlace('Terraco', env, vi.fn().mockResolvedValue(response([{ ...candidate, coordinate_url: camera }], 'resolved', [source, camera])))).autoAdd).toBe(false);
-  expect((await smartPlace('Terraco', env, vi.fn().mockResolvedValue(response([{ ...candidate, latitude: -8.1 }])))).autoAdd).toBe(false);
+it('requires the AI binding and never falls back to an OpenAI key', async () => {
+  const request = vi.fn();
+  await expect(smartPlace(input, { OPENAI_API_KEY: 'unused-private-key' }, request)).rejects.toThrow('binding named AI');
+  expect(request).not.toHaveBeenCalled();
 });
 
-it('rejects unsourced identities and malformed coordinates even when the model claims success', async () => {
-  for (const patch of [{ source_url: 'https://invented.com' }, { latitude: 91 }, { longitude: -181 }, { name: '' }, { address: '' }]) {
-    const result = await smartPlace('Terraco', env, vi.fn().mockResolvedValue(response([{ ...candidate, ...patch }])));
-    expect(result.places).toEqual([]);
+it('reads public page text through a fixed reader without paid reader credentials', async () => {
+  const ai = engine();
+  const request = vi.fn()
+    .mockResolvedValueOnce(Response.json({ data: { title: 'Terraço da Praça', content: 'Visit us in Recife.' } }))
+    .mockResolvedValueOnce(Response.json({ features: [feature] }));
+  const result = await smartPlace('https://www.instagram.com/reel/public-post/?igsh=tracking', { JINA_API_KEY: 'unused-secret' }, request, ai);
+  expect(request.mock.calls[0][0]).toBe('https://r.jina.ai/https://www.instagram.com/reel/public-post/');
+  expect(request.mock.calls[0][1]).toMatchObject({ redirect: 'manual', headers: { Accept: 'application/json' } });
+  expect(request.mock.calls[0][1].headers.Authorization).toBeUndefined();
+  expect(ai.run.mock.calls[0][1].messages[1].content).toContain('Visit us in Recife.');
+  expect(result.autoAdd).toBe(true);
+  expect(result.sources[0].url).toBe('https://www.instagram.com/reel/public-post/');
+});
+
+it('resolves short map URLs from reader evidence without asking the model', async () => {
+  const ai = engine();
+  const request = vi.fn().mockResolvedValue(Response.json({ data: { url: 'https://google.com/maps/search/?query=-8.063,-34.871' } }));
+  expect(await smartPlace('https://maps.app.goo.gl/short', {}, request, ai)).toMatchObject({ autoAdd: true, places: [{ latitude: -8.063 }] });
+  expect(ai.run).not.toHaveBeenCalled();
+});
+
+it('requires review for multiple matches, missing city, different names or different cities', async () => {
+  const scenarios = [
+    { ai: extracted, features: [feature, { ...feature, properties: { ...feature.properties, osm_id: 124 } }] },
+    { ai: { ...extracted, city: '' }, features: [feature] },
+    { ai: extracted, features: [{ ...feature, properties: { ...feature.properties, name: 'Praça' } }] },
+    { ai: extracted, features: [{ ...feature, properties: { ...feature.properties, city: 'Olinda' } }] },
+  ];
+  for (const scenario of scenarios) {
+    const result = await smartPlace(input, {}, geocoder(scenario.features), engine(scenario.ai));
     expect(result.autoAdd).toBe(false);
+    expect(result.places.length).toBeGreaterThan(0);
+    expect(result.message).toContain('Review');
   }
 });
 
-it('keeps failed, incomplete and refused engine responses recoverable without leaking credentials', async () => {
-  for (const mocked of [new Response('', { status: 429 }), new Response('', { status: 401 }), Response.json({ status: 'incomplete', output: [] }), Response.json({ status: 'completed', output: [] })]) {
-    await expect(smartPlace('Terraco', env, vi.fn().mockResolvedValue(mocked))).rejects.toMatchObject({ status: 503 });
+it('rejects invented names, cities, addresses and malformed model responses before geocoding', async () => {
+  for (const fields of [{ ...extracted, city: 'Lisbon' }, { ...extracted, name: 'Another place' }, { ...extracted, address: 'Rua invented 12' }, { ...extracted, city: null }, { ...extracted, name: 'x'.repeat(301) }, null]) {
+    const request = vi.fn();
+    await expect(smartPlace(input, {}, request, engine(fields))).rejects.toThrow();
+    expect(request).not.toHaveBeenCalled();
   }
-  await expect(smartPlace('Terraco', env, vi.fn().mockRejectedValue(new Error('server-only-key failed')))).rejects.toThrow('could not finish');
 });
 
-it('distinguishes API billing failures from temporary rate limits without exposing provider text', async () => {
-  for (const [code, expected] of [
-    ['credit_balance_exhausted', 'credits are exhausted'],
-    ['project_spend_limit_exceeded', 'spending limit reached'],
-    ['organization_spend_limit_exceeded', 'spending limit reached'],
-    ['organization_usage_limit_exceeded', 'organization usage limit reached'],
-    ['insufficient_quota', 'quota is unavailable'],
-    ['usage_limit_exceeded', 'quota is unavailable'],
-    ['rate_limit_exceeded', 'temporarily rate-limiting'],
-    ['slow_down', 'temporarily rate-limiting'],
-    ['unknown', 'HTTP 429'],
-  ]) {
-    const request = vi.fn().mockResolvedValue(Response.json({ error: { code, message: 'server-only-key sensitive provider text' } }, { status: 429 }));
-    const error = await smartPlace('Terraco', env, request).catch((cause) => cause);
-    expect(error.status).toBe(503);
-    expect(error.message).toContain(expected);
-    expect(error.message).not.toContain('server-only-key');
-    expect(request).toHaveBeenCalledTimes(1);
+it('keeps missing venues and empty or invalid geocoder results from creating tasks', async () => {
+  const request = vi.fn();
+  expect(await smartPlace('Just a caption', {}, request, engine({ name: '', address: '', city: '' }))).toMatchObject({ autoAdd: false, places: [] });
+  expect(request).not.toHaveBeenCalled();
+  expect(await smartPlace(input, {}, geocoder([]), engine())).toMatchObject({ autoAdd: false, places: [] });
+  expect(await smartPlace(input, {}, geocoder([{ ...feature, geometry: { type: 'Point', coordinates: [181, 91] } }]), engine())).toMatchObject({ autoAdd: false, places: [] });
+});
+
+it('handles inaccessible pages, malformed readers, redirects and failed AI or geocoding without leaking details', async () => {
+  for (const response of [new Response('', { status: 403 }), new Response('', { status: 302 }), Response.json({}), new Response('x'.repeat(256001))]) {
+    const ai = engine();
+    await expect(smartPlace('https://instagram.com/p/private', {}, vi.fn().mockResolvedValue(response), ai)).rejects.toMatchObject({ status: 422 });
+    expect(ai.run).not.toHaveBeenCalled();
   }
-  await expect(smartPlace('Terraco', env, vi.fn().mockResolvedValue(Response.json({ error: { type: 'insufficient_quota' } }, { status: 429 })))).rejects.toThrow('quota is unavailable');
+  const request = geocoder();
+  await expect(smartPlace(input, {}, request, { run: vi.fn().mockRejectedValue(new Error('private-provider-detail')) })).rejects.toThrow('Cloudflare AI could not finish');
+  expect(request).not.toHaveBeenCalled();
+  await expect(smartPlace(input, {}, request, { run: vi.fn().mockResolvedValue({ response: 'invalid json' }) })).rejects.toMatchObject({ status: 503 });
+  await expect(smartPlace(input, {}, vi.fn().mockResolvedValue(new Response('', { status: 429 })), engine())).rejects.toThrow('Place search is unavailable');
+});
+
+it('bounds AI time and rejects invalid inputs before any provider call', async () => {
+  vi.useFakeTimers();
+  const ai = { run: vi.fn().mockReturnValue(new Promise(() => {})) };
+  const request = vi.fn();
+  const pending = expect(smartPlace(input, {}, request, ai)).rejects.toMatchObject({ status: 503 });
+  await vi.advanceTimersByTimeAsync(20000);
+  await pending;
+  expect(request).not.toHaveBeenCalled();
+  expect(vi.getTimerCount()).toBe(0);
+  for (const invalid of ['', 'x'.repeat(4097), 'https://127.0.0.1/private']) {
+    await expect(smartPlace(invalid, {}, request, engine())).rejects.toThrow();
+  }
 });

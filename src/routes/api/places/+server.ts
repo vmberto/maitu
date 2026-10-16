@@ -1,6 +1,6 @@
 import { session, headers } from '#lib/session.server';
 import { includePlace, PlaceInclusionError, readPlaceJson } from '../../../lib/place-inclusion.server';
-import { smartPlace } from '../../../lib/smart-place.server';
+import { smartPlace, type PlaceAI } from '../../../lib/smart-place.server';
 import type { RequestHandler } from './$types';
 
 const resolve: RequestHandler = async (event) => {
@@ -16,8 +16,9 @@ const resolve: RequestHandler = async (event) => {
       ? (await readPlaceJson(event.request, 24_000).catch(() => null))?.input
       : event.url.searchParams.get('q');
     if (typeof input !== 'string') throw new PlaceInclusionError('Paste some place info first.');
-    const env = { ...process.env, ...(event.platform as { env?: Record<string, string> } | undefined)?.env };
-    return Response.json(event.request.method === 'POST' ? await smartPlace(input, env) : { places: await includePlace(input, env) }, { headers });
+    const bindings = (event.platform as { env?: Record<string, string> & { AI?: PlaceAI } } | undefined)?.env;
+    const env = { ...process.env, ...bindings };
+    return Response.json(event.request.method === 'POST' ? await smartPlace(input, env, fetch, bindings?.AI) : { places: await includePlace(input, env) }, { headers });
   } catch (cause) {
     return Response.json({ error: cause instanceof PlaceInclusionError ? cause.message : 'Could not find this place. Try its name and city or coordinates.' },
       { status: cause instanceof PlaceInclusionError ? cause.status : 400, headers });
