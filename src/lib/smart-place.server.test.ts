@@ -112,3 +112,30 @@ it('bounds AI time and rejects invalid inputs before any provider call', async (
     await expect(smartPlace(invalid, {}, request, engine())).rejects.toThrow();
   }
 });
+
+it('separates provider errors from response parsing without exposing raw error details', async () => {
+  for (const [message, expected] of [
+    ['3036: private-provider-detail', 'daily free allowance is exhausted'],
+    ['3040: private-provider-detail', 'temporarily at capacity'],
+    ['5016: private-provider-detail', 'denied this account access'],
+    ['5007: private-provider-detail', 'could not find the configured place model'],
+    ['JSON mode could not be met: private-provider-detail', 'structured place request'],
+    ['3007: private-provider-detail', 'timed out'],
+    ['private-provider-detail', 'AI-REQUEST'],
+  ]) {
+    const error = await smartPlace(input, {}, vi.fn(), { run: vi.fn().mockRejectedValue(new Error(message)) }).catch((cause) => cause);
+    expect(error.status).toBe(503);
+    expect(error.message).toContain(expected);
+    expect(error.message).not.toContain('private-provider-detail');
+  }
+  await expect(smartPlace(input, {}, vi.fn(), { run: vi.fn().mockRejectedValue({ code: 3042 }) })).rejects.toThrow('AI-3042');
+  await expect(smartPlace(input, {}, vi.fn(), { run: vi.fn().mockResolvedValue({ response: 'invalid json' }) })).rejects.toThrow('AI-RESPONSE');
+  await expect(smartPlace(input, {}, vi.fn(), { run: vi.fn().mockResolvedValue({}) })).rejects.toThrow('AI-RESPONSE');
+});
+
+it('accepts JSON string responses including a code fence without accepting arbitrary prose', async () => {
+  for (const response of [JSON.stringify(extracted), '```json\n' + JSON.stringify(extracted) + '\n```']) {
+    expect(await smartPlace(input, {}, geocoder(), { run: vi.fn().mockResolvedValue({ response }) })).toMatchObject({ autoAdd: true });
+  }
+  await expect(smartPlace(input, {}, vi.fn(), { run: vi.fn().mockResolvedValue({ response: 'Here is a place: ' + JSON.stringify(extracted) }) })).rejects.toThrow('AI-RESPONSE');
+});
