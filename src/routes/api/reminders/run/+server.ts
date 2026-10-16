@@ -3,8 +3,9 @@ import { timingSafeEqual } from 'node:crypto';
 import { getMongoDb } from '../../../../lib/mongodb';
 import { deliverReminders } from '../../../../lib/reminders.server';
 import { logger } from '../../../../lib/logger';
+import { runtimeEnv } from '../../../../lib/runtime-env.server';
 export async function GET({ request, platform }: import('./$types').RequestEvent) {
-  const env = { ...process.env, ...(platform as { env?: NodeJS.ProcessEnv } | undefined)?.env };
+  const env = await runtimeEnv(platform);
   const expected = `Bearer ${env.CRON_SECRET ?? ''}`, supplied = request.headers.get('authorization') ?? '';
   if (!env.CRON_SECRET || Buffer.byteLength(supplied) !== Buffer.byteLength(expected) || !timingSafeEqual(Buffer.from(supplied), Buffer.from(expected)))
     return json({ error: 'Unauthorized.' }, { status: 401 });

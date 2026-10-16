@@ -3,6 +3,7 @@ import { session, headers } from '../../../lib/session.server';
 import { getMongoDb } from '../../../lib/mongodb';
 import { subscriptionId, validateSubscription } from '../../../lib/reminders.server';
 import { ObjectId } from 'mongodb';
+import { runtimeEnv } from '../../../lib/runtime-env.server';
 import type { RequestEvent } from './$types';
 
 async function handle(event: RequestEvent) {
@@ -12,7 +13,7 @@ async function handle(event: RequestEvent) {
   if (!user || event.request.headers.get('X-Maitu-Account') !== user._id)
     return json({ error: 'Sign in to manage notifications.' }, { status: 401, headers });
   if (event.request.method === 'GET') {
-    const env = { ...process.env, ...(event.platform as { env?: NodeJS.ProcessEnv } | undefined)?.env };
+    const env = await runtimeEnv(event.platform);
     const missing = ['VAPID_PUBLIC_KEY', 'VAPID_PRIVATE_KEY', 'VAPID_SUBJECT', 'CRON_SECRET'].filter((name) => !env[name]?.trim());
     if (missing.length) return json({ error: `Reminder delivery is not configured. Missing server settings: ${missing.join(', ')}.`, missing }, { status: 503, headers });
     return json({ publicKey: env.VAPID_PUBLIC_KEY }, { headers });
