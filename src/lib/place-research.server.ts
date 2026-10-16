@@ -18,6 +18,17 @@ export function nameTerms(query: string): string[] {
   return folded(query).split(' ').filter((word) => word.length > 2 && !['restaurant', 'restaurante', 'bistro', 'bistrot', 'cafe', 'coffee', 'the', 'and', 'com', 'www', 'https'].includes(word));
 }
 
+export function instagramProfileHandle(input: string): string | undefined {
+  for (const link of input.match(/https?:\/\/[^\s<>"“”]+/gi) ?? []) {
+    try {
+      const url = publicPlaceUrl(link.replace(/[),.;]+$/, ''));
+      if (!/^(?:www\.)?instagram\.com$/i.test(url.hostname)) continue;
+      const handle = url.pathname.match(/^\/([a-z0-9._]{1,30})\/?$/i)?.[1];
+      if (handle && !/^(?:p|reel|reels|tv|stories|explore|accounts|direct|about|legal|help|developer|web)$/i.test(handle)) return handle.toLowerCase();
+    } catch { /* Only validated public profile links are search leads. */ }
+  }
+}
+
 function webFailure(reference: string): PlaceInclusionError {
   const reason = reference.startsWith('WEB-HTTP-429') ? 'The public reader rate limit was reached. Set the Worker secret JINA_API_KEY to use your own Jina account allowance, or try later.'
     : reference.startsWith('WEB-HTTP-401') ? 'The public reader rejected its API key. Check the Worker secret JINA_API_KEY.'
@@ -67,6 +78,7 @@ export async function researchPlace(input: string, request = fetch, env: Record<
   const signal = AbortSignal.timeout(35000);
   const pages: PlacePage[] = [];
   let query = '';
+  const profile = instagramProfileHandle(input);
   for (const link of links.slice(0, 3)) {
     try { query = placeInput(link).query; break; } catch { /* A post needs page content. */ }
   }
@@ -78,12 +90,13 @@ export async function researchPlace(input: string, request = fetch, env: Record<
         const parsed = placeInput(page.url);
         if (parsed.location) return { pages, query: parsed.query };
       } catch { /* A venue page may still need a research search. */ }
-      query = placeQueries([page.title, text].join('\n'))[0] || '';
+      query = placeQueries([page.title, text].join('\n'))[0] || profile || placeQueries(page.text)[0] || '';
     } catch (cause) {
-      if (!text) throw cause;
+      if (!text && !profile) throw cause;
     }
   }
-  query = (query || placeQueries(text)[0] || '').slice(0, 300);
+  // A profile handle is a research lead, never proof of a venue's identity.
+  query = (query || placeQueries(text)[0] || profile || '').slice(0, 300);
   if (!query) throw new PlaceInclusionError('Paste a place name, caption or a readable public link.', 422);
   const searchUrl = `https://duckduckgo.com/?q=${encodeURIComponent(query)}`;
   let searchFailure: unknown;
@@ -95,7 +108,10 @@ export async function researchPlace(input: string, request = fetch, env: Record<
       const url = new URL(link);
       return !/(^|\.)(duckduckgo\.com|google\.com|bing\.com|apple\.com|microsoft\.com)$/.test(url.hostname)
         && !/\.(?:png|jpe?g|svg|webp|gif|ico|pdf)(?:\?|$)/i.test(link);
-    }).map((url) => ({ url, score: terms.filter((term) => folded(decodeURI(url)).includes(term)).length }))
+    }).map((url) => ({ url, score: terms.filter((term) => {
+      const words = folded(decodeURI(url));
+      return words.includes(term) || (profile && words.replace(/ /g, '').includes(term.replace(/[._]/g, '')));
+    }).length }))
       .filter((item) => item.score > 0).sort((a, b) => b.score - a.score).slice(0, 2);
     const followed = await Promise.allSettled(targets.map((item, i) => readPage(item.url, `source${i + 1}`, request, signal, env.JINA_API_KEY)));
     for (const result of followed) if (result.status === 'fulfilled') pages.push(result.value);

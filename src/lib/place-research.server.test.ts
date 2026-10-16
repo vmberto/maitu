@@ -36,3 +36,25 @@ it('authenticates research using the configured server key without exposing it i
   expect(request.mock.calls[0][1].headers.Authorization).toBe('Bearer private-reader-key');
   expect(JSON.stringify(result)).not.toContain('private-reader-key');
 });
+
+it('researches an Instagram profile when its readable title is generic or its page is blocked', async () => {
+  for (const profileResponse of [
+    Response.json({ data: { title: 'Instagram', content: 'Log in\nSign up' } }),
+    new Response('', { status: 403 }),
+  ]) {
+    const request = vi.fn()
+      .mockResolvedValueOnce(profileResponse)
+      .mockResolvedValueOnce(Response.json({ data: { title: 'Search results', content: 'Clarice Bistrô e Café, Recife' } }));
+    const result = await researchPlace('https://www.instagram.com/claricebistroecafe', request, { JINA_API_KEY: 'private-reader-key' });
+    expect(result.query).toBe('claricebistroecafe');
+    expect(request.mock.calls[1][0]).toContain('https://duckduckgo.com/?q=claricebistroecafe');
+    expect(request.mock.calls[1][1].headers.Authorization).toBe('Bearer private-reader-key');
+    expect(result.pages.some((page) => page.id === 'search')).toBe(true);
+  }
+});
+
+it('does not treat Instagram post IDs, reserved paths or unrelated domains as profile handles', async () => {
+  const { instagramProfileHandle } = await import('./place-research.server');
+  for (const input of ['https://instagram.com/p/abc', 'https://instagram.com/reel/abc', 'https://instagram.com/accounts', 'https://instagram.com/explore', 'https://notinstagram.com/claricebistroecafe']) expect(instagramProfileHandle(input)).toBeUndefined();
+  expect(instagramProfileHandle('https://instagram.com/clarice.bistro_e_cafe/')).toBe('clarice.bistro_e_cafe');
+});

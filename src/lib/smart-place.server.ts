@@ -1,5 +1,5 @@
 import type { SmartPlace } from './smart-place';
-import { researchPlace, contains, containsAddress, folded, nameTerms, pagePins } from './place-research.server';
+import { researchPlace, contains, containsAddress, folded, nameTerms, pagePins, instagramProfileHandle } from './place-research.server';
 import { placeInput } from './location';
 import { pastedLocation, publicPlaceUrl } from './place-inclusion';
 import { PlaceInclusionError, searchPlaces } from './place-inclusion.server';
@@ -82,7 +82,9 @@ export async function smartPlace(input: string, env: Record<string, string | und
   }
   const name = fields.name.trim(), address = fields.address.trim(), city = fields.city.trim();
   const intended = nameTerms(query);
-  if (intended.length && !intended.some((term) => contains(name, term))) return unresolved('The search found a different venue. Add the intended place’s city.');
+  const profile = instagramProfileHandle(input);
+  const profileMatches = profile && folded(name).replace(/ /g, '') === profile.replace(/[._]/g, '');
+  if (intended.length && !intended.some((term) => contains(name, term)) && !profileMatches) return unresolved('The search found a different venue. Add the intended place’s city.');
   const tags: string[] = [];
   for (const tag of Array.isArray(fields.tags) ? fields.tags.slice(0, 5) : []) {
     const source = pages.find((page) => page.id === tag?.source);

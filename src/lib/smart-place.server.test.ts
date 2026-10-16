@@ -4,7 +4,7 @@ import { pagePins } from './place-research.server';
 
 const name = 'Clarice Bistrô e Café';
 const address = 'Avenida Doutor Seixas 48';
-const source = 'https://clarice.com/contact';
+const source = 'https://clarice.com/clarice-bistro-e-cafe';
 const pin = new URL('https://external-content.duckduckgo.com/ssv2/');
 pin.searchParams.set('annotations', JSON.stringify([{ point: '-8.030953,-34.924978' }]));
 pin.searchParams.set('center', '50,50');
@@ -120,4 +120,16 @@ it('bounds model waiting time without automatically retrying paid inference', as
   await vi.advanceTimersByTimeAsync(25000); await pending;
   expect(ai.run).toHaveBeenCalledTimes(1);
   expect(vi.getTimerCount()).toBe(0);
+});
+
+it('resolves a profile handle to its sourced canonical name without using the handle as venue evidence', async () => {
+  const fetcher = providers();
+  const request = vi.fn(async (url: Parameters<typeof fetch>[0]) => {
+    if (String(url).includes('r.jina.ai/https://www.instagram.com/')) return Response.json({ data: { title: 'Instagram', content: 'Log in\nSign up' } });
+    return fetcher(url);
+  });
+  const result = await smartPlace('https://www.instagram.com/claricebistroecafe', {}, request, engine());
+  expect(result).toMatchObject({ autoAdd: true, places: [{ name, tags: ['Breakfast', 'Dinner'] }] });
+  const wrong = await smartPlace('https://www.instagram.com/foodreviewer', {}, request, engine({ ...fields, source: 'search', tags: [] }));
+  expect(wrong).toMatchObject({ autoAdd: false, places: [] });
 });
