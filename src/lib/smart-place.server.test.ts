@@ -60,3 +60,25 @@ it('keeps failed, incomplete and refused engine responses recoverable without le
   }
   await expect(smartPlace('Terraco', env, vi.fn().mockRejectedValue(new Error('server-only-key failed')))).rejects.toThrow('could not finish');
 });
+
+it('distinguishes API billing failures from temporary rate limits without exposing provider text', async () => {
+  for (const [code, expected] of [
+    ['credit_balance_exhausted', 'credits are exhausted'],
+    ['project_spend_limit_exceeded', 'spending limit reached'],
+    ['organization_spend_limit_exceeded', 'spending limit reached'],
+    ['organization_usage_limit_exceeded', 'organization usage limit reached'],
+    ['insufficient_quota', 'quota is unavailable'],
+    ['usage_limit_exceeded', 'quota is unavailable'],
+    ['rate_limit_exceeded', 'temporarily rate-limiting'],
+    ['slow_down', 'temporarily rate-limiting'],
+    ['unknown', 'HTTP 429'],
+  ]) {
+    const request = vi.fn().mockResolvedValue(Response.json({ error: { code, message: 'server-only-key sensitive provider text' } }, { status: 429 }));
+    const error = await smartPlace('Terraco', env, request).catch((cause) => cause);
+    expect(error.status).toBe(503);
+    expect(error.message).toContain(expected);
+    expect(error.message).not.toContain('server-only-key');
+    expect(request).toHaveBeenCalledTimes(1);
+  }
+  await expect(smartPlace('Terraco', env, vi.fn().mockResolvedValue(Response.json({ error: { type: 'insufficient_quota' } }, { status: 429 })))).rejects.toThrow('quota is unavailable');
+});

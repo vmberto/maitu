@@ -60,7 +60,16 @@ export async function smartPlace(input: string, env: Record<string, string | und
       }),
     });
     if (!response.ok) {
-      if (response.status === 429) throw new PlaceInclusionError('Smart place discovery has reached its usage limit. Please try again later.', 503);
+      if (response.status === 429) {
+        const failure = await readPlaceJson(response, 16_000).catch(() => null);
+        const code = failure?.error?.code;
+        if (code === 'credit_balance_exhausted') throw new PlaceInclusionError('OpenAI API credits are exhausted. Add credits in OpenAI API billing, then try again.', 503);
+        if (code === 'project_spend_limit_exceeded' || code === 'organization_spend_limit_exceeded') throw new PlaceInclusionError('OpenAI API spending limit reached. Check the project or organization spending limit in OpenAI API settings.', 503);
+        if (code === 'organization_usage_limit_exceeded') throw new PlaceInclusionError('OpenAI API organization usage limit reached. Request a higher usage limit in OpenAI API settings.', 503);
+        if (code === 'insufficient_quota' || code === 'usage_limit_exceeded' || (!code && failure?.error?.type === 'insufficient_quota')) throw new PlaceInclusionError('OpenAI API quota is unavailable. Check API credits and usage limits in OpenAI API billing before retrying.', 503);
+        if (code === 'rate_limit_exceeded' || code === 'slow_down' || failure?.error?.type === 'rate_limit_error') throw new PlaceInclusionError('OpenAI is temporarily rate-limiting place discovery. Wait a minute before trying again.', 503);
+        throw new PlaceInclusionError('OpenAI rejected place discovery with HTTP 429. Check API billing and rate limits before retrying.', 503);
+      }
       throw new PlaceInclusionError('Smart place discovery is unavailable. Please try again later.', 503);
     }
     body = await readPlaceJson(response, 512_000);
