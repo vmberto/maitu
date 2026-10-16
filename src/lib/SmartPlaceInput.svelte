@@ -1,11 +1,10 @@
 <script lang="ts">
   import { onDestroy } from 'svelte';
   import { autosize } from './autosize';
-  import { normalizeLocation } from './location';
-  import type { TaskLocation } from '../../types/main';
-  let { onadd }: { onadd: (place: TaskLocation, source: string) => Promise<boolean> } = $props();
+  import { normalizeSmartPlace, type SmartPlace } from './smart-place';
+  let { onadd }: { onadd: (place: SmartPlace, source: string) => Promise<boolean> } = $props();
   let input = $state('');
-  let results = $state<TaskLocation[]>([]);
+  let results = $state<SmartPlace[]>([]);
   let busy = $state(false);
   let adding = $state(false);
   let error = $state('');
@@ -47,12 +46,12 @@
     try {
       const response = await fetch('/api/places', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ input: source }), signal: AbortSignal.any([active.signal, AbortSignal.timeout(50000)]),
+        body: JSON.stringify({ input: source }), signal: AbortSignal.any([active.signal, AbortSignal.timeout(80000)]),
       });
       const body = await response.json();
       if (active.signal.aborted || input.trim() !== source) return;
       if (!response.ok) throw new Error(body?.error || 'Could not find this place.');
-      results = (body.places ?? []).map(normalizeLocation).filter((place: TaskLocation | null): place is TaskLocation => !!place);
+      results = (body.places ?? []).map(normalizeSmartPlace).filter((place: SmartPlace | null): place is SmartPlace => !!place);
       sources = Array.isArray(body.sources) ? body.sources.filter((source: {url?: unknown; title?: unknown}) => typeof source.url === 'string' && /^https?:\/\//i.test(source.url) && typeof source.title === 'string') : [];
       message = typeof body.message === 'string' ? body.message : '';
       if (body.autoAdd === true && results.length === 1) await add(results[0]);
@@ -63,11 +62,11 @@
       if (controller === active) busy = false;
     }
   }
-  async function add(place: TaskLocation) {
+  async function add(place: SmartPlace) {
     if (adding) return;
     adding = true;
     try {
-      if (await onadd(normalizeLocation(place)!, input)) {
+      if (await onadd(normalizeSmartPlace(place)!, input)) {
         input = '';
         results = [];
         error = '';
@@ -92,11 +91,11 @@
       onkeydown={(event) => { if (event.key === 'Enter' && !event.shiftKey && !event.isComposing) { event.preventDefault(); void find(); } }}
     ></textarea>
     <div class="flex items-center justify-between gap-3">
-      <p class="text-xs text-gray-500">Paste a link. Clear, verified matches are added automatically.</p>
+      <p class="text-xs text-gray-500">Paste a link or caption. We research the venue, map pin and useful tags.</p>
       <button type="submit" disabled={!input.trim() || busy || adding} class="rubber-button shrink-0 text-sm text-primary">{busy ? 'Finding place…' : 'Find place'}</button>
     </div>
   </form>
-  {#if busy}<p role="status" class="mt-3 text-sm text-gray-500">Reading the link and searching for the exact place…</p>{/if}
+  {#if busy}<p role="status" class="mt-3 text-sm text-gray-500">Researching the venue, checking its map pin and suggesting tags…</p>{/if}
   {#if success}<p role="status" class="mt-3 text-sm text-primary">{success}</p>{/if}
   {#if error}<p role="alert" class="mt-3 text-sm text-danger">{error}</p>{/if}
   {#if results.length}<div aria-label="Places to add" class="mt-3 overflow-hidden rounded-lg bg-surface">
@@ -104,6 +103,7 @@
     {#each results as place (`${place.source}:${place.placeId}:${place.latitude}:${place.longitude}`)}<button type="button" disabled={adding} aria-label={`Add ${place.name}`} class="rubber-button block w-full border-b border-gray-200 px-3 py-3 text-left last:border-0" onclick={() => void add(place)}>
       <span class="block text-sm font-semibold">{place.name}</span>
       <span class="block text-xs text-gray-500">{place.address || `${place.latitude}, ${place.longitude}`}</span>
+      {#if place.tags.length}<span class="mt-2 flex flex-wrap gap-1" aria-label="Suggested tags">{#each place.tags as tag}<span class="rounded-full bg-panel px-2 py-0.5 text-xs">{tag}</span>{/each}</span>{/if}
     </button>{/each}
   </div>{/if}
   {#if sources.length}<div aria-label="Place sources" class="mt-2 flex flex-wrap gap-2 text-xs">

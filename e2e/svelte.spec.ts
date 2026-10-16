@@ -1825,13 +1825,15 @@ test('Smart Place inclusion auto-adds one verified match and shows its source', 
   const server = await transport(context);
   server.snapshot.lists[0].type = 'places';
   const location = { name: 'Terraço da Praça', address: 'Recife, Brazil', latitude: -8.063, longitude: -34.871, source: 'manual', placeId: 'manual' };
-  await page.route('**/api/places', (route) => route.fulfill({ json: { places: [location], autoAdd: true, message: '', sources: [{ url: 'https://venue.com/contact', title: 'Venue location' }] } }));
+  await page.route('**/api/places', (route) => route.fulfill({ json: { places: [{ ...location, tags: ['Breakfast', 'Dinner'] }], autoAdd: true, message: '', sources: [{ url: 'https://venue.com/contact', title: 'Venue location' }] } }));
   await page.goto(`/tasks?listId=${listId}`);
   const field = page.getByRole('textbox', { name: 'Place info', exact: true });
   await field.fill('https://www.google.com/search?q=terraco+da+praca');
   await page.getByRole('button', { name: 'Find place', exact: true }).click();
   await expect(page.getByRole('status')).toHaveText('Added Terraço da Praça');
   await expect.poll(async () => (await device(page)).tasks[0]?.location).toEqual(location);
+  await expect.poll(async () => (await device(page)).tasks[0]?.tags).toEqual(['Breakfast', 'Dinner']);
+  await expect.poll(async () => (await device(page)).tasks[0]?.title).toBe('Terraço da Praça');
   await expect(field).toHaveValue('');
   await expect(page.getByRole('link', { name: 'Venue location', exact: true })).toHaveAttribute('href', 'https://venue.com/contact');
   await expect(page.getByRole('button', { name: 'Add Terraço da Praça', exact: true })).toHaveCount(0);

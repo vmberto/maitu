@@ -126,7 +126,7 @@
     });
     return () => observers.forEach((observer) => observer.disconnect());
   });
-  async function addTask(event?: Event, location?: TaskLocation) {
+  async function addTask(event?: Event, location?: TaskLocation, tags: string[] = []) {
     event?.preventDefault();
     if ((!draft.trim() && !location) || creating) return false;
     if (list?.type === 'places' && /^https?:\/\//i.test(draft.trim()) && !location) {
@@ -139,7 +139,7 @@
     try {
       await engine.add('tasks', {
         title: location?.name ?? draft.trim(),
-        ...(location ? { location: normalizeLocation(location) } : {}),
+        ...(location ? { location: normalizeLocation(location), tags } : {}),
         description: '',
         complete: false,
         ...(mixed || notesOnly ? { type: filter === 'notes' ? 'note' as const : 'task' as const } : {}),
@@ -202,7 +202,7 @@
   {#if !list}<p class="py-5">This list is unavailable on this device.</p>
   {:else}
     {#if list.type === 'places' && !list.archived}<SmartPlaceInput bind:this={smartPlace} onadd={async (place, source) => {
-      const saved = await addTask(undefined, place);
+      const saved = await addTask(undefined, place, place.tags);
       if (saved && draft.trim() === source.trim()) draft = '';
       return saved;
     }} />{/if}

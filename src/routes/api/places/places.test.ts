@@ -36,19 +36,18 @@ it('reads provider configuration from Cloudflare bindings and keeps reader crede
 });
 
 
-it('uses the Cloudflare AI binding and geocoder for Smart Place inclusion', async () => {
-  const run = vi.fn().mockResolvedValue({ response: { name: 'Museum', address: '', city: 'Recife' } });
-  const fetcher = vi.fn().mockResolvedValue(Response.json({ features: [{ geometry: { type: 'Point', coordinates: [-34.871, -8.063] }, properties: { name: 'Museum', city: 'Recife', country: 'Brazil', osm_type: 'N', osm_id: 123 } }] }));
+it('researches a place through the Worker AI binding and returns tags with a sourced pin', async () => {
+  const run = vi.fn().mockResolvedValue({ response: { resolution: 'resolved', name: 'Museum', address: 'Rua Example 1', city: 'Recife', source: 'search', tags: [{ name: 'Museum', evidence: 'Museum exhibits', source: 'search' }] } });
+  const fetcher = vi.fn().mockResolvedValue(Response.json({ data: { title: 'Museum', content: 'Museum exhibits. Rua Example 1, Recife. [Map](https://google.com/maps/search/?query=-8.063,-34.871)' } }));
   vi.stubGlobal('fetch', fetcher);
   const request = event('Museum Recife');
-  request.platform = { env: { AI: { run }, OPENAI_API_KEY: 'unused-private-key', PHOTON_URL: 'https://geo.maitu.app/' } };
+  request.platform = { env: { AI: { run }, OPENAI_API_KEY: 'unused-private-key' } };
   const response = await POST(request);
   expect(response.status).toBe(200);
   const body = await response.json();
   expect(body.autoAdd).toBe(true);
-  expect(body.places[0].name).toBe('Museum');
+  expect(body.places[0]).toMatchObject({ name: 'Museum', tags: ['Museum'], latitude: -8.063 });
   expect(JSON.stringify(body)).not.toContain('unused-private-key');
   expect(run).toHaveBeenCalledTimes(1);
-  expect(fetcher).toHaveBeenCalledTimes(1);
-  expect(fetcher.mock.calls[0][0].origin).toBe('https://geo.maitu.app');
+  expect(String(fetcher.mock.calls[0][0])).toContain('r.jina.ai/https://duckduckgo.com/');
 });
