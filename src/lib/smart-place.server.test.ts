@@ -12,7 +12,8 @@ it('extracts supplied venue text with Llama and takes coordinates only from Open
   const request = geocoder();
   const result = await smartPlace(input, {}, request, ai);
   expect(ai.run).toHaveBeenCalledTimes(1);
-  expect(ai.run.mock.calls[0]).toMatchObject(['@cf/meta/llama-3.1-8b-instruct-fp8', { max_tokens: 400, temperature: 0, response_format: { type: 'json_schema' } }]);
+  expect(ai.run.mock.calls[0]).toMatchObject(['@cf/meta/llama-3.1-8b-instruct-fp8', { max_tokens: 400, temperature: 0, response_format: { type: 'json_object' } }]);
+  expect(ai.run.mock.calls[0][1].response_format).not.toHaveProperty('json_schema');
   expect(ai.run.mock.calls[0][1].messages[1].content).toContain('terraco da praca recife');
   expect(request).toHaveBeenCalledTimes(1);
   expect(request.mock.calls[0][0].hostname).toBe('photon.komoot.io');
