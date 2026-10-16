@@ -52,6 +52,8 @@ Places List (`type: places`) keeps the existing task model and completion behavi
 
 ### Smart Place inclusion
 
+The Smart Place form and automatic URL import are currently hidden pending research-provider reliability fixes. Places Lists remain available, with an “Add place…” field, Location enabled by default, and the map accessible from the header. Pasted URLs currently save as ordinary item titles. See [the handoff report](docs/smart-places-handoff.md) for implementation details, known failures and resumption steps.
+
 Places lists keep normal tasks with Location enabled by default. The map opens from the list header; it is not shown above the list.
 
 Smart Place inclusion researches pasted venue text, captions and public URLs. Instagram profile handles are used only as public research leads when a profile page is blocked or has a generic title; venue details still require retrieved evidence. Google search links contribute their query; public search results are read through Jina Reader, and up to two relevant source pages are followed. The public reader uses `JINA_API_KEY` when configured; otherwise it uses the lower anonymous IP-based allowance. For production, add a free Jina key as a Worker secret named `JINA_API_KEY`. No credentials are sent to the client, model or destination websites. Llama receives those retrieved pages and resolves a canonical venue name, street address, city and up to five relevant tags. Each field and tag quote must be supported by its cited retrieved page. Saved tags use the existing task tags field; the canonical venue name becomes the task title.

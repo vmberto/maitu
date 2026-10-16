@@ -1736,6 +1736,28 @@ test('Places List opens the map on demand and normal tasks default to Location o
   await expect.poll(async () => (await device(page)).tasks.find((task: any) => task.title === 'Visit the museum')?.complete).toBe(true);
 });
 
+test('Places List hides Smart Place discovery and saves pasted URLs as ordinary items', async ({ page, context }) => {
+  const server = await transport(context);
+  server.snapshot.lists[0].type = 'places';
+  const requests: string[] = [];
+  await page.route('**/api/places', async (route) => {
+    requests.push(route.request().method());
+    await route.fulfill({ json: { places: [] } });
+  });
+  await page.goto(`/tasks?listId=${listId}`);
+  await expect(page.getByRole('region', { name: 'Smart Place inclusion', exact: true })).toHaveCount(0);
+  const input = page.getByPlaceholder('Add place…', { exact: true });
+  const url = 'https://www.instagram.com/claricebistroecafe';
+  await input.fill(url);
+  await input.press('Enter');
+  await expect.poll(async () => (await device(page)).tasks[0]?.title).toBe(url);
+  expect((await device(page)).tasks[0]).toMatchObject({ addons: ['location'], complete: false });
+  await expect(input).toHaveValue('');
+  expect(requests).toEqual([]);
+});
+
+// Retained for restoring the entry point once live research is reliable.
+test.describe.skip('Smart Place discovery UI is hidden pending provider reliability fixes', () => {
 test('Places URL import previews candidates and saves a normal task with coordinates', async ({ page, context }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   const server = await transport(context);
@@ -1839,4 +1861,6 @@ test('Smart Place inclusion auto-adds one verified match and shows its source', 
   await expect(page.getByRole('button', { name: 'Add Terraço da Praça', exact: true })).toHaveCount(0);
   await expect(page.getByLabel('Task locations map')).toHaveCount(0);
   await page.screenshot({ path: '/tmp/maitu-smart-place-inclusion.png' });
+});
+
 });

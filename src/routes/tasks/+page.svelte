@@ -15,9 +15,8 @@
   import { entryType } from '#lib/list-types';
   import { entriesForView } from '../../lib/entries';
   import ListHeader from '#lib/ListHeader.svelte';
-  import SmartPlaceInput from '#lib/SmartPlaceInput.svelte';
   import { normalizeLocation } from '../../lib/location';
-  import type { List, Task, TaskLocation } from '../../../types/main';
+  import type { List, Task } from '../../../types/main';
   const listId = $derived(page.url.searchParams.get('listId') ?? '');
   const list = $derived(
     $offline.account?.lists.find(
@@ -48,7 +47,6 @@
   let draft = $state('');
   let titleEdits = $state<Record<string, string>>({});
   let creating = $state(false);
-  let smartPlace = $state<{ include: (value: string) => void }>();
   let error = $state('');
   let detailsId = $state<string | null>(null);
   $effect(() => {
@@ -126,20 +124,13 @@
     });
     return () => observers.forEach((observer) => observer.disconnect());
   });
-  async function addTask(event?: Event, location?: TaskLocation, tags: string[] = []) {
+  async function addTask(event?: Event) {
     event?.preventDefault();
-    if ((!draft.trim() && !location) || creating) return false;
-    if (list?.type === 'places' && /^https?:\/\//i.test(draft.trim()) && !location) {
-      creating = true;
-      smartPlace?.include(draft);
-      creating = false;
-      return false;
-    }
+    if (!draft.trim() || creating) return false;
     creating = true;
     try {
       await engine.add('tasks', {
-        title: location?.name ?? draft.trim(),
-        ...(location ? { location: normalizeLocation(location), tags } : {}),
+        title: draft.trim(),
         description: '',
         complete: false,
         ...(mixed || notesOnly ? { type: filter === 'notes' ? 'note' as const : 'task' as const } : {}),
@@ -148,7 +139,7 @@
         parentTaskId: null,
         createdAt: new Date().toISOString(),
       });
-      if (!location) draft = '';
+      draft = '';
       error = '';
       return true;
     } catch (cause) {
@@ -201,11 +192,6 @@
 >
   {#if !list}<p class="py-5">This list is unavailable on this device.</p>
   {:else}
-    {#if list.type === 'places' && !list.archived}<SmartPlaceInput bind:this={smartPlace} onadd={async (place, source) => {
-      const saved = await addTask(undefined, place, place.tags);
-      if (saved && draft.trim() === source.trim()) draft = '';
-      return saved;
-    }} />{/if}
     <div class="list-filters flex items-center justify-between gap-3 border-gray-200" class:border-b={mixed} class:py-1={!mixed}>
       {#if mixed}<Tabs label="Entry filter" appearance="underline" value={filter}
         options={[{ value: 'tasks', label: 'Tasks' }, { value: 'notes', label: 'Notes' }]}
@@ -313,7 +299,7 @@
         <span class:todo-check={!mixed && !notesOnly} class="shrink-0 p-0.5 text-primary opacity-60" aria-hidden="true">{#if mixed || notesOnly}<Icon name="plus" size={24} />{/if}</span>
         <textarea
           aria-label={filter === 'notes' ? "New note" : "New task"}
-          placeholder={list.type === 'places' ? 'Add task or paste a place URL…' : mixed || notesOnly ? (filter === 'notes' ? "Add note…" : "Add task…") : undefined}
+          placeholder={list.type === 'places' ? 'Add place…' : mixed || notesOnly ? (filter === 'notes' ? "Add note…" : "Add task…") : undefined}
           data-task-input
           bind:value={draft}
           use:autosize={draft}
