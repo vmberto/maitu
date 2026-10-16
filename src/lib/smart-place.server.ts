@@ -43,7 +43,7 @@ export async function smartPlace(input: string, env: Record<string, string | und
     } catch { /* Research opaque links below. */ }
   }
   if (!ai || typeof ai.run !== 'function') throw new PlaceInclusionError('Smart place discovery needs the Cloudflare Workers AI binding named AI. You can still paste coordinates or use Location search in task details.', 503);
-  const { pages, query } = await researchPlace(input, request);
+  const { pages, query } = await researchPlace(input, request, env);
   const sources = pages.map(({ url, title }) => ({ url, title }));
   for (const page of pages.filter((page) => page.id === 'page')) {
     try {

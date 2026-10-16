@@ -32,7 +32,7 @@
   }
   async function find(event?: SubmitEvent) {
     event?.preventDefault();
-    if (!input.trim() || adding) return;
+    if (!input.trim() || adding || busy) return;
     controller?.abort();
     const active = new AbortController();
     controller = active;

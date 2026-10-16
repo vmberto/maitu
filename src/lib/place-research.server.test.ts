@@ -28,3 +28,11 @@ it('keeps a readable venue source when the search reader is unavailable', async 
     .mockResolvedValueOnce(new Response('', { status: 429 }));
   expect((await researchPlace('https://clarice.com/contact', request)).pages).toHaveLength(1);
 });
+
+it('authenticates research using the configured server key without exposing it in results', async () => {
+  const request = vi.fn().mockResolvedValue(Response.json({ data: { title: 'Clarice', content: 'Clarice Bistro Recife' } }));
+  const result = await researchPlace('clarice bistro recife', request, { JINA_API_KEY: 'private-reader-key' });
+  expect(request.mock.calls[0][0]).toContain('https://r.jina.ai/');
+  expect(request.mock.calls[0][1].headers.Authorization).toBe('Bearer private-reader-key');
+  expect(JSON.stringify(result)).not.toContain('private-reader-key');
+});

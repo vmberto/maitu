@@ -19,7 +19,8 @@ export function nameTerms(query: string): string[] {
 }
 
 function webFailure(reference: string): PlaceInclusionError {
-  const reason = reference.startsWith('WEB-HTTP-429') ? 'The public page reader is rate-limiting research. Try again later.'
+  const reason = reference.startsWith('WEB-HTTP-429') ? 'The public reader rate limit was reached. Set the Worker secret JINA_API_KEY to use your own Jina account allowance, or try later.'
+    : reference.startsWith('WEB-HTTP-401') ? 'The public reader rejected its API key. Check the Worker secret JINA_API_KEY.'
     : reference.startsWith('WEB-HTTP-403') ? 'The public page reader blocked this research request.'
     : reference === 'WEB-TIMEOUT' ? 'The public page reader timed out. Try the lookup again.'
     : reference.startsWith('WEB-TARGET-') ? 'The source website blocked the public reader or returned an error.'
@@ -29,11 +30,11 @@ function webFailure(reference: string): PlaceInclusionError {
   return new PlaceInclusionError(`${reason} (${reference})`, 503);
 }
 
-async function readPage(url: string, id: string, request: typeof fetch, signal: AbortSignal): Promise<PlacePage> {
+async function readPage(url: string, id: string, request: typeof fetch, signal: AbortSignal, apiKey?: string): Promise<PlacePage> {
   const target = publicPlaceUrl(url).href;
   try {
     const response = await request(`https://r.jina.ai/${target}`, {
-      headers: { Accept: 'application/json', 'X-Timeout': '15', 'X-With-Links-Summary': 'all' },
+      headers: { Accept: 'application/json', 'X-Timeout': '15', 'X-With-Links-Summary': 'all', ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}) },
       redirect: 'manual', signal: AbortSignal.any([signal, AbortSignal.timeout(20000)]),
     });
     if (!response.ok) {
@@ -60,7 +61,7 @@ async function readPage(url: string, id: string, request: typeof fetch, signal: 
   }
 }
 
-export async function researchPlace(input: string, request = fetch): Promise<{ pages: PlacePage[]; query: string }> {
+export async function researchPlace(input: string, request = fetch, env: Record<string, string | undefined> = {}): Promise<{ pages: PlacePage[]; query: string }> {
   const links = (input.match(/https?:\/\/[^\s<>"“”]+/gi) ?? []).map((link) => publicPlaceUrl(link.replace(/[),.;]+$/, '')).href);
   const text = input.replace(/https?:\/\/\S+/gi, '').trim();
   const signal = AbortSignal.timeout(35000);
@@ -71,7 +72,7 @@ export async function researchPlace(input: string, request = fetch): Promise<{ p
   }
   if (!query && links.length) {
     try {
-      const page = await readPage(links[0], 'page', request, signal);
+      const page = await readPage(links[0], 'page', request, signal, env.JINA_API_KEY);
       pages.push(page);
       try {
         const parsed = placeInput(page.url);
@@ -87,7 +88,7 @@ export async function researchPlace(input: string, request = fetch): Promise<{ p
   const searchUrl = `https://duckduckgo.com/?q=${encodeURIComponent(query)}`;
   let searchFailure: unknown;
   try {
-    const search = await readPage(searchUrl, 'search', request, signal);
+    const search = await readPage(searchUrl, 'search', request, signal, env.JINA_API_KEY);
     pages.push(search);
     const terms = nameTerms(query);
     const targets = search.links.filter((link) => {
@@ -96,7 +97,7 @@ export async function researchPlace(input: string, request = fetch): Promise<{ p
         && !/\.(?:png|jpe?g|svg|webp|gif|ico|pdf)(?:\?|$)/i.test(link);
     }).map((url) => ({ url, score: terms.filter((term) => folded(decodeURI(url)).includes(term)).length }))
       .filter((item) => item.score > 0).sort((a, b) => b.score - a.score).slice(0, 2);
-    const followed = await Promise.allSettled(targets.map((item, i) => readPage(item.url, `source${i + 1}`, request, signal)));
+    const followed = await Promise.allSettled(targets.map((item, i) => readPage(item.url, `source${i + 1}`, request, signal, env.JINA_API_KEY)));
     for (const result of followed) if (result.status === 'fulfilled') pages.push(result.value);
   } catch (cause) { searchFailure = cause; /* A readable shared venue page can stand on its own. */ }
   if (!pages.length) throw searchFailure instanceof PlaceInclusionError ? searchFailure : webFailure('WEB-CONNECTION');

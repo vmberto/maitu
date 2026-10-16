@@ -41,13 +41,15 @@ it('researches a place through the Worker AI binding and returns tags with a sou
   const fetcher = vi.fn().mockResolvedValue(Response.json({ data: { title: 'Museum', content: 'Museum exhibits. Rua Example 1, Recife. [Map](https://google.com/maps/search/?query=-8.063,-34.871)' } }));
   vi.stubGlobal('fetch', fetcher);
   const request = event('Museum Recife');
-  request.platform = { env: { AI: { run }, OPENAI_API_KEY: 'unused-private-key' } };
+  request.platform = { env: { AI: { run }, OPENAI_API_KEY: 'unused-private-key', JINA_API_KEY: 'private-reader-key' } };
   const response = await POST(request);
   expect(response.status).toBe(200);
   const body = await response.json();
   expect(body.autoAdd).toBe(true);
   expect(body.places[0]).toMatchObject({ name: 'Museum', tags: ['Museum'], latitude: -8.063 });
   expect(JSON.stringify(body)).not.toContain('unused-private-key');
+  expect(JSON.stringify(body)).not.toContain('private-reader-key');
+  expect(fetcher.mock.calls[0][1].headers.Authorization).toBe('Bearer private-reader-key');
   expect(run).toHaveBeenCalledTimes(1);
   expect(String(fetcher.mock.calls[0][0])).toContain('r.jina.ai/https://duckduckgo.com/');
 });
