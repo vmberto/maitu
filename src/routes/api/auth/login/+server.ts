@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { compare } from 'bcryptjs';
-import { getMongoDb } from '../../../../lib/mongodb';
+import { withMongoDb } from '../../../../lib/mongodb';
 import { encrypt, publicUser } from '../../../../lib/auth';
 import { headers } from '#lib/session.server';
 export async function POST({
@@ -26,11 +26,7 @@ export async function POST({
         { status: 400, headers },
       );
     stage = 'database';
-    const user = await (
-      await getMongoDb()
-    )
-      .collection('users')
-      .findOne({ email });
+    const user = await withMongoDb((db) => db.collection('users').findOne({ email }));
     stage = 'password verification';
     if (!user?.password || !(await compare(password, user.password)))
       return json(

@@ -3,7 +3,7 @@ import { ObjectId } from 'mongodb';
 const userId = '507f191e810c19729de860ea';
 const mocks = vi.hoisted(() => ({ session: vi.fn(), getDb: vi.fn(), update: vi.fn(), remove: vi.fn(), find: vi.fn(), count: vi.fn() }));
 vi.mock('../../../lib/session.server', () => ({ session: mocks.session, headers: { 'Cache-Control': 'private, no-store' } }));
-vi.mock('../../../lib/mongodb', () => ({ getMongoDb: mocks.getDb }));
+vi.mock('../../../lib/mongodb', () => ({ withMongoDb: async (operation: (db: any) => unknown) => operation(await mocks.getDb()) }));
 const subscription = { endpoint: 'https://fcm.googleapis.com/fcm/send/device', keys: { p256dh: 'A'.repeat(87), auth: 'B'.repeat(22) } };
 function event(method: string, body = subscription, account = userId, origin = 'https://maitu.test') {
   return { request: new Request('https://maitu.test/api/push', { method, headers: { origin, 'X-Maitu-Account': account }, ...(method !== 'GET' ? { body: JSON.stringify(body) } : {}) }), url: new URL('https://maitu.test/api/push'), cookies: {} } as any;

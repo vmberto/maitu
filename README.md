@@ -74,6 +74,8 @@ Logout locks device access while preserving pending edits for the next sign-in. 
 
 ## Deployment and checks
 
+Cloudflare database operations use a fresh MongoDB client per request and close it afterward. Workers cannot reuse sockets or pending connection promises across requests; Node deployments retain the existing shared pool. Direct Worker connections add connection setup latency.
+
 Builds use adapter-node locally and adapter-vercel with Node 24 when `VERCEL` is set. `vercel.json` selects SvelteKit and the root build command. The existing CI workflow uses the same root checks. No deployment is performed by the migration itself.
 
 Unit tests exercise IndexedDB transactions, sync validation, account ownership, conflict/version handling, location parsing and real password/JWT login behavior with MongoDB mocked. Browser tests use real IndexedDB, service workers and production routing with mocked API transport, including a classic-worker upgrade with pending edits and multiple app windows. They do not write to production MongoDB.

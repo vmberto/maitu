@@ -2,7 +2,7 @@ import { ObjectId } from 'mongodb';
 import { hash } from 'bcryptjs';
 const findOne = vi.hoisted(() => vi.fn());
 vi.mock('../../../../lib/mongodb', () => ({
-  getMongoDb: async () => ({ collection: () => ({ findOne }) }),
+  withMongoDb: async (operation: (db: any) => unknown) => operation({ collection: () => ({ findOne }) }),
 }));
 beforeAll(() => {
   process.env.SECRET_KEY = 'a-test-only-secret-with-at-least-32-bytes';

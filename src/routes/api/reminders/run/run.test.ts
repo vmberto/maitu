@@ -1,6 +1,6 @@
 import { GET } from './+server';
 const mocks = vi.hoisted(() => ({ db: vi.fn(), deliver: vi.fn() }));
-vi.mock('../../../../lib/mongodb', () => ({ getMongoDb: mocks.db }));
+vi.mock('../../../../lib/mongodb', () => ({ withMongoDb: async (operation: (db: any) => unknown) => operation(await mocks.db()) }));
 vi.mock('../../../../lib/reminders.server', () => ({ deliverReminders: mocks.deliver }));
 function event(secret: string) { return { request: new Request('https://maitu.test/api/reminders/run', { headers: { authorization: secret } }) } as any; }
 beforeEach(() => {

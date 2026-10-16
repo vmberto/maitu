@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { session, headers } from '#lib/session.server';
-import { getMongoDb } from '../../../lib/mongodb';
+import { withMongoDb } from '../../../lib/mongodb';
 import { applyOperation, snapshot, SyncError } from '../../../lib/sync-server';
 import { logger } from '../../../lib/logger';
 import type { RequestEvent } from './$types';
@@ -11,8 +11,7 @@ async function respond(event: RequestEvent, write: boolean) {
     const user = await session(event.cookies);
     if (!user || event.request.headers.get('X-Maitu-Account') !== user._id)
       return json({ error: 'Sign in to sync.' }, { status: 401, headers });
-    const db = await getMongoDb();
-    if (!write) return json(await snapshot(db, user._id), { headers });
+    if (!write) return json(await withMongoDb((db) => snapshot(db, user._id)), { headers });
     const text = await event.request.text();
     if (text.length > 100000)
       throw new SyncError('Operation is too large.', 413);
@@ -22,7 +21,7 @@ async function respond(event: RequestEvent, write: boolean) {
     } catch {
       throw new SyncError('Invalid JSON.');
     }
-    return json(await applyOperation(db, user._id, operation), { headers });
+    return json(await withMongoDb((db) => applyOperation(db, user._id, operation)), { headers });
   } catch (error) {
     if (error instanceof SyncError)
       return json({ error: error.message }, { status: error.status, headers });
