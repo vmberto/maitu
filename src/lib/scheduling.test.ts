@@ -1,17 +1,18 @@
-import { calendarDate, zonedInstant, validSchedule, validReminder, matchesDate, scheduleGroup, scheduleLabel } from './scheduling';
+import { calendarDate, zonedInstant, validSchedule, validReminder, matchesDate, schedulePriority, scheduleLabel } from './scheduling';
 import { validateData, publicEntity } from './sync-server';
 import type { Task } from '../../types/main';
 const task = (date?: string, time?: string, timeZone = 'America/Recife') => ({ schedule: date ? { date, ...(time ? { time } : {}), timeZone } : null }) as Task;
 
-it('keeps undated tasks in All and separates future, today and overdue tasks', () => {
+it('prioritizes today then tomorrow, leaving other dates in normal order', () => {
   const now = new Date('2026-10-14T15:00:00Z'), zone = 'America/Recife';
   expect(matchesDate(task(), 'all', now, zone)).toBe(true);
   expect(matchesDate(task(), 'today', now, zone)).toBe(false);
-  expect(scheduleGroup(task(), now, zone)).toBe('unscheduled');
-  expect(scheduleGroup(task('2026-10-21'), now, zone)).toBe('upcoming');
-  expect(scheduleGroup(task('2026-10-14'), now, zone)).toBe('today');
-  expect(scheduleGroup(task('2026-10-14', '11:00'), now, zone)).toBe('overdue');
-  expect(scheduleGroup(task('2026-10-13'), now, zone)).toBe('overdue');
+  expect(schedulePriority(task(), now, zone)).toBe(2);
+  expect(schedulePriority(task('2026-10-21'), now, zone)).toBe(2);
+  expect(schedulePriority(task('2026-10-14'), now, zone)).toBe(0);
+  expect(schedulePriority(task('2026-10-14', '11:00'), now, zone)).toBe(0);
+  expect(schedulePriority(task('2026-10-13'), now, zone)).toBe(2);
+  expect(schedulePriority(task('2026-10-15'), now, zone)).toBe(1);
   expect(scheduleLabel(task('2026-10-15').schedule!, now, zone)).toBe('Tomorrow');
 });
 it('uses calendar weeks and months across year boundaries, rather than rolling windows', () => {
@@ -27,6 +28,7 @@ it('preserves date-only days but converts timed tasks into the viewer timezone',
   const now = new Date('2026-10-14T15:00:00Z');
   expect(matchesDate(task('2026-10-15'), 'today', now, 'America/Recife')).toBe(false);
   expect(matchesDate(task('2026-10-15', '00:30', 'Asia/Tokyo'), 'today', now, 'America/Recife')).toBe(true);
+  expect(schedulePriority(task('2026-10-15', '00:30', 'Asia/Tokyo'), now, 'America/Recife')).toBe(0);
   expect(zonedInstant('2026-10-14', '09:00', 'America/Recife')).toBe('2026-10-14T12:00:00.000Z');
 });
 it('rejects nonexistent DST times and deterministically picks the earlier repeated time', () => {

@@ -9,8 +9,7 @@
   import { autosize } from '#lib/autosize';
   import { sortable } from '#lib/reorder';
   import { onDestroy, onMount } from 'svelte';
-  import Disclosure from '#lib/ui/Disclosure.svelte';
-  import { matchesDate, scheduleGroup, scheduleLabel, scheduledDate, zonedInstant, type DateFilter } from '../../lib/scheduling';
+  import { matchesDate, schedulePriority, scheduleLabel, type DateFilter } from '../../lib/scheduling';
   import { page } from '$app/state';
   import { engine, offline } from '#lib/offline';
   import Tabs from '#lib/ui/Tabs.svelte';
@@ -73,22 +72,8 @@
   const active = $derived(
     ordered.filter(
       (task) => task.type === 'note' || !task.complete || pending.includes(String(task._id)),
-    ),
+    ).sort((a, b) => schedulePriority(a, now, zone) - schedulePriority(b, now, zone)),
   );
-  const groups = $derived.by(() => {
-    const result = (filter === 'notes' ? ['unscheduled'] : ['overdue', 'unscheduled', 'today']).map((kind) => ({
-      kind, title: kind === 'overdue' ? 'Overdue' : 'Today', items: [] as Task[],
-    }));
-    const order = new Map<Task, string>();
-    for (const task of active) {
-      const scheduledGroup = filter === 'notes' ? 'unscheduled' : scheduleGroup(task, now, zone);
-      const kind = scheduledGroup === 'upcoming' ? 'unscheduled' : scheduledGroup;
-      result.find((group) => group.kind === kind)!.items.push(task);
-      if (task.schedule) order.set(task, scheduledDate(task.schedule, zone) + (task.schedule.time ? zonedInstant(task.schedule.date, task.schedule.time, task.schedule.timeZone) : ''));
-    }
-    for (const group of result) if (group.kind !== 'unscheduled') group.items.sort((a, b) => order.get(a)!.localeCompare(order.get(b)!));
-    return result;
-  });
   const completed = $derived(
     ordered
       .filter((task) => task.type !== 'note' && task.complete && !pending.includes(String(task._id)))
@@ -209,14 +194,14 @@
         Archived · Read only
       </p>{/if}
     {#snippet activeRows(items: Task[])}
-    <div use:sortable={{ ids: list.archived ? [] : items.filter((task) => !task.schedule).map((task) => String(task._id)), kind: 'tasks', error: (message) => error = message }}>
+    <div use:sortable={{ ids: list.archived ? [] : items.filter((task) => schedulePriority(task, now, zone) === 2).map((task) => String(task._id)), kind: 'tasks', error: (message) => error = message }}>
       {#each items.slice(0, visible) as task (String(task._id))}<div
           animate:flip={{ duration: 180 }}
           data-sort-id={String(task._id)}
-          title={task.schedule ? undefined : 'Hold to reorder; use arrow keys when the row is focused'}
+          title={schedulePriority(task, now, zone) < 2 ? undefined : 'Hold to reorder; use arrow keys when the row is focused'}
           class="task-row flex items-start gap-2 border-b border-gray-200 py-2"
         >
-          {#if !list.archived && !task.schedule}<button
+          {#if !list.archived && schedulePriority(task, now, zone) === 2}<button
               type="button"
               data-sort-key
               aria-label={`Reorder ${task.title}`}
@@ -267,7 +252,7 @@
                   >{/each}
               </div>{/if}
           </div>
-          {#if task.schedule}<Button variant="touch" class="max-w-[40%] shrink-0 truncate px-1 text-xs leading-7 text-gray-500" aria-label={`Schedule ${task.title}`} title={scheduleLabel(task.schedule, now, zone)} onclick={() => detailsId = String(task._id)}>{scheduleLabel(task.schedule, now, zone)}</Button>{/if}
+          {#if task.schedule}<Button variant="touch" class={`max-w-[40%] shrink-0 truncate px-2 text-xs leading-7 ${schedulePriority(task, now, zone) < 2 ? 'rounded-full bg-primary/10 font-semibold text-primary' : 'text-gray-500'}`} aria-label={`Schedule ${task.title}`} title={scheduleLabel(task.schedule, now, zone)} onclick={() => detailsId = String(task._id)}>{scheduleLabel(task.schedule, now, zone)}</Button>{/if}
           {#if normalizeLocation(task.location)}<LinkButton variant="touch"
               href={`/tasks/map?listId=${listId}&taskId=${task._id}`}
               aria-label={`See ${task.title} on map`}
@@ -283,12 +268,7 @@
         </div>{/each}
     </div>
     {/snippet}
-    {#each groups as group (group.kind)}
-      {#if group.items.length}
-        {#if group.kind === 'unscheduled'}{@render activeRows(group.items)}
-        {:else}<Disclosure title={group.title} badge={group.items.length} open class="my-3">{@render activeRows(group.items)}</Disclosure>{/if}
-      {/if}
-    {/each}
+    {@render activeRows(active)}
     {#if visible < active.length}<Button
         bind:element={sentinel}
         class="my-3 w-full"

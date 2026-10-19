@@ -464,6 +464,23 @@
       </Section>{/if}
     {#if !readonly}<Disclosure title="Options" class="task-options">
         <div class="entry-actions">
+          <Section title="Add-ons">
+            {#if !isNote}<Button variant="row" disabled={addons.includes('scheduling')} onclick={() => void setAddon('scheduling', true)}>
+              <Icon name="calendar" size={18} /><span class="flex-1">Schedule &amp; Reminder</span>
+              {#if addons.includes('scheduling')}<span class="text-xs text-gray-500">Added</span>{:else}<Icon name="plus" size={16} />{/if}
+            </Button>{/if}
+            <Button variant="row"
+              disabled={addons.includes('location')}
+              onclick={() => void setAddon('location', true)}
+              ><Icon name="map" size={18} /><span class="flex-1">Location</span
+              >{#if addons.includes('location')}<span
+                  class="text-xs text-gray-500">Added</span
+                >{:else}<Icon name="plus" size={16} />{/if}</Button>
+            <Button variant="row" disabled={addons.includes('relatedTasks')} onclick={() => void setAddon('relatedTasks', true)}>
+              <Icon name="menu" size={18} /><span class="flex-1">Related Tasks</span>
+              {#if addons.includes('relatedTasks')}<span class="text-xs text-gray-500">Added</span>{:else}<Icon name="plus" size={16} />{/if}
+            </Button>
+          </Section>
           <Section title="Actions">
             {#if mixed && !task?.parentTaskId}<Button variant="row" onclick={async () => { await save({ type: isNote ? 'task' : 'note', complete: false, completedAt: null, archived: false }); }}><Icon name="note" size={18} /><span>{isNote ? 'Convert to task' : 'Convert to note'}</span></Button>{/if}
             <Button variant="row" onclick={async () => { await save({ archived: !task?.archived }); if (!error) closeDrawer(dialog); }}><Icon name="archive" size={18} /><span>{task?.archived ? (isNote ? 'Restore note' : 'Restore task') : (isNote ? 'Archive note' : 'Archive task')}</span></Button>
@@ -482,23 +499,6 @@
                   error = 'Could not delete this task.';
                 }
               }}><Icon name="trash" size={18} /><span>{isNote ? 'Delete Note' : 'Delete Task'}</span></Button>
-          </Section>
-          <Section title="Add-ons">
-            {#if !isNote}<Button variant="row" disabled={addons.includes('scheduling')} onclick={() => void setAddon('scheduling', true)}>
-              <Icon name="calendar" size={18} /><span class="flex-1">Schedule &amp; Reminder</span>
-              {#if addons.includes('scheduling')}<span class="text-xs text-gray-500">Added</span>{:else}<Icon name="plus" size={16} />{/if}
-            </Button>{/if}
-            <Button variant="row"
-              disabled={addons.includes('location')}
-              onclick={() => void setAddon('location', true)}
-              ><Icon name="map" size={18} /><span class="flex-1">Location</span
-              >{#if addons.includes('location')}<span
-                  class="text-xs text-gray-500">Added</span
-                >{:else}<Icon name="plus" size={16} />{/if}</Button>
-            <Button variant="row" disabled={addons.includes('relatedTasks')} onclick={() => void setAddon('relatedTasks', true)}>
-              <Icon name="menu" size={18} /><span class="flex-1">Related Tasks</span>
-              {#if addons.includes('relatedTasks')}<span class="text-xs text-gray-500">Added</span>{:else}<Icon name="plus" size={16} />{/if}
-            </Button>
           </Section>
         </div>
       </Disclosure>{/if}

@@ -12,12 +12,19 @@ test('adds scheduling after creation, filters calendar ranges, reschedules and r
   await page.setViewportSize({ width: 390, height: 844 });
   await page.clock.setFixedTime(new Date('2026-10-14T15:00:00Z'));
   const server = await transport(context);
-  for (const [index, title, date] of [[0, 'Undated', null], [1, 'Late task', '2026-10-12'], [2, 'Today task', '2026-10-14'], [3, 'Next week task', '2026-10-21'], [4, 'Next month task', '2026-11-02']] as const)
+  for (const [index, title, date] of [[0, 'Undated', null], [1, 'Late task', '2026-10-12'], [2, 'Today task', '2026-10-14'], [3, 'Next week task', '2026-10-21'], [4, 'Next month task', '2026-11-02'], [5, 'Tomorrow task', '2026-10-15']] as const)
     server.snapshot.tasks.push({ _id: (100 + index).toString(16).padStart(24, '0'), listId, title, complete: false, createdAt: '2026-01-01', version: 0, schedule: date ? { date, timeZone: 'America/Recife' } : null });
   server.snapshot.tasks.find((task) => task.title === 'Next week task').location = { name: 'Next venue', address: '', latitude: -8.0476, longitude: -34.877, source: 'manual', placeId: 'manual' };
   await page.goto(`/tasks?listId=${listId}`);
   await expect(page.getByRole('textbox', { name: 'Task Undated', exact: true })).toBeVisible();
-  await expect(page.getByText('Overdue', { exact: true })).toBeVisible();
+  await expect(page.getByText('Overdue', { exact: true })).toHaveCount(0);
+  expect(await page.locator('[data-sort-id] textarea').evaluateAll((rows) => rows.map((row) => (row as HTMLTextAreaElement).value))).toEqual(['Today task', 'Tomorrow task', 'Undated', 'Late task', 'Next week task', 'Next month task']);
+  for (const title of ['Today task', 'Tomorrow task', 'Late task']) {
+    const date = page.getByRole('button', { name: `Schedule ${title}`, exact: true });
+    expect(await date.evaluate((button) => button.closest('details') === null)).toBe(true);
+  }
+  await expect(page.getByRole('button', { name: 'Schedule Today task', exact: true })).toHaveClass(/text-primary/);
+  await expect(page.getByRole('button', { name: 'Schedule Tomorrow task', exact: true })).toHaveText('Tomorrow');
   await expect(page.getByRole('textbox', { name: 'Task Today task', exact: true })).toBeVisible();
   await expect(page.getByRole('textbox', { name: 'Task Next week task', exact: true })).toBeVisible();
   const schedule = page.getByRole('button', { name: 'Schedule Next week task', exact: true });

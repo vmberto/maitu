@@ -62,11 +62,10 @@ export function validReminder(value: unknown): value is TaskReminder {
 export function scheduledDate(schedule: TaskSchedule, zone: string) {
   return schedule.time ? calendarDate(new Date(zonedInstant(schedule.date, schedule.time, schedule.timeZone)), zone) : schedule.date;
 }
-export function scheduleGroup(task: Task, now: Date, zone: string) {
-  if (!task.schedule) return 'unscheduled';
+export function schedulePriority(task: Task, now: Date, zone: string) {
+  if (!task.schedule || task.type === 'note') return 2;
   const date = scheduledDate(task.schedule, zone), today = calendarDate(now, zone);
-  if (date < today || (task.schedule.time && Date.parse(zonedInstant(task.schedule.date, task.schedule.time, task.schedule.timeZone)) < now.getTime())) return 'overdue';
-  return date === today ? 'today' : 'upcoming';
+  return date === today ? 0 : date === shiftDate(today, 1) ? 1 : 2;
 }
 export function matchesDate(task: Task, filter: DateFilter, now: Date, zone: string) {
   if (filter === 'all') return true;
