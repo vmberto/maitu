@@ -23,7 +23,7 @@
   let detailsId = $state<string | null>(null);
   const days = $derived.by(() => {
     const grouped = new Map<string, Task[]>();
-    for (const task of [...tasks].sort((a, b) => b.createdAt.localeCompare(a.createdAt))) {
+    for (const task of [...tasks].sort((a, b) => a.createdAt.localeCompare(b.createdAt))) {
       const day = task.createdAt.slice(0, 10);
       const entries = grouped.get(day);
       if (entries) entries.push(task);

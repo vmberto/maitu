@@ -608,7 +608,7 @@ test('Svelte coordinates, list map, black theme, zoom controls and archived read
   await expect(page.getByRole('link', { name: '📝 Pilot list' })).toBeVisible();
 });
 
-test('timeline groups entries newest first and loads settings offline', async ({ page, context }) => {
+test('timeline groups entries oldest first and loads settings offline', async ({ page, context }) => {
   const server = await transport(context);
   server.snapshot.lists[0].type = 'timeline';
   const entries = [
@@ -616,22 +616,22 @@ test('timeline groups entries newest first and loads settings offline', async ({
     ['Earlier time', '2026-01-02T10:00:00Z'],
     ['Latest entry', '2026-01-02T15:00:00Z'],
   ];
-  entries.forEach(([title, createdAt], index) => server.snapshot.tasks.push({
+  entries.reverse().forEach(([title, createdAt], index) => server.snapshot.tasks.push({
     _id: (index + 100).toString(16).padStart(24, '0'), listId, title, createdAt, type: 'note', complete: false, version: 0,
   }));
   await page.goto(`/timeline?listId=${listId}`);
-  await expect(page.locator('main article p')).toHaveText(['Latest entry', 'Earlier time', 'Earlier day']);
+  await expect(page.locator('main article p')).toHaveText(['Earlier day', 'Earlier time', 'Latest entry']);
   await expect(page.locator('main article svg')).toHaveCount(0);
   await page.getByRole('button', { name: 'Note details Latest entry', exact: true }).click();
   await expect(page.getByRole('dialog').getByRole('heading', { name: 'Latest entry', exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Close panel', exact: true }).click();
   await expect(page.locator('main section')).toHaveCount(2);
-  await expect(page.locator('main section').first().locator('article')).toHaveCount(2);
+  await expect(page.locator('main section').last().locator('article')).toHaveCount(2);
   await page.evaluate(async () => { await navigator.serviceWorker.ready; });
   await expect.poll(() => page.evaluate(() => !!navigator.serviceWorker.controller)).toBe(true);
   await context.setOffline(true);
   await page.reload();
-  await expect(page.locator('main article p')).toHaveText(['Latest entry', 'Earlier time', 'Earlier day']);
+  await expect(page.locator('main article p')).toHaveText(['Earlier day', 'Earlier time', 'Latest entry']);
   await page.getByRole('button', { name: 'List settings', exact: true }).click();
   await expect(page.getByRole('dialog')).toBeVisible();
   await expect(page.getByRole('textbox', { name: 'List title', exact: true })).toHaveValue('Pilot list');
