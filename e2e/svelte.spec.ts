@@ -2152,3 +2152,105 @@ test('renames and deletes folder badges offline without deleting active or archi
   expect(server.snapshot.lists.every((list) => !list.deleted && list.folderId === null)).toBe(true);
   expect(server.snapshot.tasks[0].deleted).not.toBe(true);
 });
+
+test('mobile list touch events survive pointer cancellation, cancel safely and preserve taps', async ({ page, context, browserName }) => {
+  const server = await transport(context);
+  const secondId = '64b2f7a9c1e6f9a1b2c3d4f5';
+  server.snapshot.lists.push({ ...server.snapshot.lists[0], _id: secondId, title: 'Second list', index: 1 });
+  await page.goto('/');
+  const link = page.getByRole('link', { name: '📝 Pilot list', exact: true });
+  await expect(link).toBeVisible();
+  await expect(link).toHaveAttribute('draggable', 'false');
+  await expect(link).toHaveCSS('user-select', 'none');
+  if (await page.evaluate(() => CSS.supports('-webkit-touch-callout', 'none'))) {
+    await expect(link).toHaveCSS('-webkit-touch-callout', 'none');
+  } else {
+    const css = await page.locator('link[rel="stylesheet"]').evaluateAll(async (links) =>
+      (await Promise.all(links.map((link) => fetch((link as HTMLLinkElement).href).then((response) => response.text())))).join('\n'));
+    expect(css).toMatch(/-webkit-touch-callout:\s*none/);
+  }
+  const box = (await link.boundingBox())!;
+  const next = (await page.locator(`[data-sort-id="${secondId}"]`).boundingBox())!;
+  const x = box.x + box.width / 2, y = box.y + box.height / 2;
+  const start = () => link.dispatchEvent('pointerdown', { pointerId: 7, pointerType: 'touch', isPrimary: true, button: 0, clientX: x, clientY: y });
+  const touch = (type: string, pointY: number) => link.evaluate((node, { type, x, pointY }) => {
+    const finger = { identifier: 12, target: node, clientX: x, clientY: pointY };
+    const event = new Event(type, { bubbles: true, cancelable: true });
+    Object.defineProperties(event, {
+      touches: { value: type === 'touchend' || type === 'touchcancel' ? [] : [finger] },
+      changedTouches: { value: [finger] },
+    });
+    node.dispatchEvent(event);
+    return event.defaultPrevented;
+  }, { type, x, pointY });
+  await touch('touchstart', y);
+  await start();
+  expect(await touch('touchmove', y - 30)).toBe(false);
+  await page.waitForTimeout(400);
+  await expect(page.locator('[data-sort-ghost]')).toHaveCount(0);
+  await touch('touchend', y - 30);
+  await start();
+  await touch('touchstart', y);
+  await expect(page.locator('[data-sort-ghost]')).toBeVisible();
+  await link.dispatchEvent('pointercancel', { pointerId: 7, pointerType: 'touch', isPrimary: true });
+  await expect(page.locator('[data-sort-ghost]')).toBeVisible();
+  expect(await link.evaluate((node) => {
+    const event = new Event('contextmenu', { bubbles: true, cancelable: true });
+    node.dispatchEvent(event);
+    return event.defaultPrevented;
+  })).toBe(true);
+  expect(await touch('touchmove', next.y + next.height / 2)).toBe(true);
+  await touch('touchcancel', next.y + next.height / 2);
+  await expect(page.locator('[data-sort-ghost]')).toHaveCount(0);
+  expect((await device(page)).lists.find((list: any) => list._id === listId).index).toBe(0);
+  expect((await device(page)).queue).toHaveLength(0);
+  await touch('touchstart', y);
+  await expect(page.locator('[data-sort-ghost]')).toBeVisible();
+  expect(await touch('touchmove', next.y + next.height / 2)).toBe(true);
+  expect(await touch('touchend', next.y + next.height / 2)).toBe(true);
+  await expect(page.locator('[data-sort-ghost]')).toHaveCount(0);
+  await expect.poll(async () => (await device(page)).lists.find((list: any) => list._id === listId).index).toBe(1);
+  await link.scrollIntoViewIfNeeded();
+  const tapBox = (await link.boundingBox())!;
+  if (browserName === 'chromium') {
+    const input = await context.newCDPSession(page);
+    await input.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: tapBox.x + 20, y: tapBox.y + tapBox.height / 2 }] });
+    await input.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+    await input.detach();
+  } else await page.touchscreen.tap(tapBox.x + 20, tapBox.y + tapBox.height / 2);
+  await expect(page).toHaveURL(new RegExp(`/tasks\\?listId=${listId}`));
+});
+
+test('mobile list swipes scroll while held drags reorder without navigating', async ({ page, context }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const server = await transport(context);
+  for (let index = 1; index < 25; index++)
+    server.snapshot.lists.push({ ...server.snapshot.lists[0], _id: (index + 100).toString(16).padStart(24, '0'), title: `List ${index}`, index });
+  await page.goto('/');
+  const link = page.getByRole('link', { name: '📝 Pilot list', exact: true });
+  await expect(link).toBeVisible();
+  const input = await context.newCDPSession(page);
+  const box = (await link.boundingBox())!;
+  const x = box.x + box.width / 2, y = box.y + box.height / 2;
+  await input.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y }] });
+  for (let step = 1; step <= 6; step++)
+    await input.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x, y: y - step * 12 }] });
+  await input.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
+  await page.waitForTimeout(400);
+  await expect(page.locator('[data-sort-ghost]')).toHaveCount(0);
+  await link.scrollIntoViewIfNeeded();
+  const row = (await link.boundingBox())!;
+  const second = (await page.locator(`[data-sort-id="${server.snapshot.lists[1]._id}"]`).boundingBox())!;
+  const startY = row.y + row.height / 2, endY = second.y + second.height / 2;
+  await input.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y: startY }] });
+  await expect(page.locator('[data-sort-ghost]')).toBeVisible();
+  for (let step = 1; step <= 10; step++)
+    await input.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x, y: startY + (endY - startY) * step / 10 }] });
+  await expect(page.locator('[data-sort-ghost]')).toBeVisible();
+  await input.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  await expect(page.locator('[data-sort-ghost]')).toHaveCount(0);
+  await expect.poll(async () => (await device(page)).lists.find((list: any) => list._id === listId).index).toBe(1);
+  await expect(page).toHaveURL(/\/$/);
+  await input.detach();
+});

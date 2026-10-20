@@ -93,6 +93,7 @@
         <a
           href={`/${list.type === ListType.timeline ? 'timeline' : 'tasks'}?listId=${encodeURIComponent(String(list._id))}`}
           data-sveltekit-preload-code="hover"
+          draggable="false"
           class="list-card-link flex min-w-0 flex-1 items-center gap-3 font-medium"
           style:color={HexColors.get(list.color)}
           ><span class="text-4xl">{list.emoji}</span><span>{list.title}</span

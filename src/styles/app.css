@@ -7,6 +7,13 @@ body {
   overscroll-behavior: none;
   touch-action: pan-x pan-y;
 }
+.list-card,
+.list-card * {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
 .list-card-link::after {
   content: '';
   position: absolute;

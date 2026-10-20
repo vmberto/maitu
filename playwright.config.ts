@@ -10,6 +10,7 @@ export default defineConfig({
   use: { baseURL, trace: 'retain-on-failure' },
   projects: [
     { name: 'Chrome', use: devices['Desktop Chrome'] },
+    { name: 'Mobile Safari lists', use: devices['iPhone 13'], grep: /mobile list touch events/ },
     { name: 'Safari add-on menus', use: devices['Desktop Safari'], grep: /newly added Related Tasks|all add-ons share/ },
   ],
   webServer: {

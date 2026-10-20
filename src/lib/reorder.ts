@@ -56,9 +56,10 @@ export function sortable(
     }
   }
   let hold: ReturnType<typeof setTimeout> | undefined;
-  let pending: { id: number; x: number; y: number } | null = null;
+  let pending: { id: number; x: number; y: number; type: string } | null = null;
+  let touchId: number | null = null;
   let suppressClick = false;
-  const down = (event: PointerEvent) => {
+  const down = (event: Pick<PointerEvent, 'button' | 'isPrimary' | 'target' | 'pointerId' | 'clientX' | 'clientY' | 'pointerType'>) => {
     suppressClick = false;
     if (settling) return;
     if (
@@ -71,7 +72,7 @@ export function sortable(
       '[data-sort-id]',
     );
     if (!item || !options.ids.includes(item.dataset.sortId ?? '')) return;
-    pending = { id: event.pointerId, x: event.clientX, y: event.clientY };
+    pending = { id: event.pointerId, x: event.clientX, y: event.clientY, type: event.pointerType };
     startDrag = () => {
       if (!pending) return;
       source = item.dataset.sortId ?? '';
@@ -103,13 +104,13 @@ export function sortable(
       ghost.style.transform = 'rotate(1deg)';
       origin = { x: pending.x, y: pending.y };
       suppressClick = true;
-      node.setPointerCapture(pending.id);
+      if (options.kind !== 'lists' || pending.type !== 'touch') node.setPointerCapture(pending.id);
     };
     if ((event.target as Element).closest('[data-sort-key]')) startDrag();
     else hold = setTimeout(startDrag, 350);
   };
   const drag = (event: PointerEvent) => {
-    if (settling) return;
+    if (settling || (options.kind === 'lists' && event.pointerType === 'touch')) return;
     if (!source) {
       if (pending && event.pointerType === 'mouse' &&
         Math.hypot(event.clientX - pending.x, event.clientY - pending.y) > 6) {
@@ -125,7 +126,10 @@ export function sortable(
       if (!source) return;
     }
     event.preventDefault();
-    const hit = document.elementFromPoint(event.clientX, event.clientY);
+    updateDrag(event.clientX, event.clientY);
+  };
+  function updateDrag(clientX: number, clientY: number) {
+    const hit = document.elementFromPoint(clientX, clientY);
     const badge = options.drop ? hit?.closest<HTMLElement>('[data-folder-drop]') : null;
     const nextDrop = badge && node.contains(badge) ? badge : null;
     if (nextDrop !== dropTarget) {
@@ -138,7 +142,7 @@ export function sortable(
       }
     }
     if (ghost) {
-      const dx = event.clientX - origin.x;
+      const dx = clientX - origin.x;
       if (dropTarget) {
         const badgeRect = dropTarget.getBoundingClientRect();
         const x = badgeRect.left + badgeRect.width / 2 - parseFloat(ghost.style.left) - ghost.offsetWidth / 2;
@@ -146,7 +150,7 @@ export function sortable(
         ghost.style.translate = `${x}px ${y}px`;
         ghost.style.transform = 'rotate(0deg)';
       } else {
-        ghost.style.translate = `${options.preview ? Math.max(-12, Math.min(12, dx)) : dx}px ${event.clientY - origin.y}px`;
+        ghost.style.translate = `${options.preview ? Math.max(-12, Math.min(12, dx)) : dx}px ${clientY - origin.y}px`;
         ghost.style.transform = 'rotate(1deg)';
       }
     }
@@ -155,8 +159,8 @@ export function sortable(
     if (dropTarget) nextTarget = source;
     else if (options.preview && listBounds) {
       // Use fixed slots, not the moving cards; keep an 8px buffer at each boundary.
-      const y = event.clientY + window.scrollY + node.scrollTop - scrollTop;
-      if (event.clientX >= listBounds.left && event.clientX <= listBounds.right && y >= listBounds.top && y <= listBounds.bottom) {
+      const y = clientY + window.scrollY + node.scrollTop - scrollTop;
+      if (clientX >= listBounds.left && clientX <= listBounds.right && y >= listBounds.top && y <= listBounds.bottom) {
         let index = slots.findIndex((slot) => slot.id === target);
         while (index < slots.length - 1 && y > (slots[index].center + slots[index + 1].center) / 2 + 8) index++;
         while (index > 0 && y < (slots[index - 1].center + slots[index].center) / 2 - 8) index--;
@@ -169,9 +173,9 @@ export function sortable(
       ids.splice(ids.indexOf(target), 0, ids.splice(ids.indexOf(source), 1)[0]);
       options.preview?.(ids);
     }
-    if (event.clientY < 64) window.scrollBy(0, -12);
-    else if (event.clientY > window.innerHeight - 64) window.scrollBy(0, 12);
-  };
+    if (clientY < 64) window.scrollBy(0, -12);
+    else if (clientY > window.innerHeight - 64) window.scrollBy(0, 12);
+  }
   const up = async () => {
     if (settling) return;
     const pendingPointer = pending?.id ?? -1;
@@ -239,8 +243,41 @@ export function sortable(
       suppressClick = false;
     }
   };
-  const touch = (event: TouchEvent) => {
-    if (source) event.preventDefault();
+  const touchStart = (event: TouchEvent) => {
+    if (options.kind !== 'lists') return;
+    if (event.touches.length !== 1) { cancel(); touchId = null; return; }
+    const finger = event.changedTouches[0];
+    down({ target: event.target, button: 0, isPrimary: true, pointerId: finger.identifier, pointerType: 'touch', clientX: finger.clientX, clientY: finger.clientY });
+    touchId = pending ? finger.identifier : null;
+  };
+  const touchMove = (event: TouchEvent) => {
+    if (options.kind !== 'lists') { if (source) event.preventDefault(); return; }
+    if (touchId === null || settling) return;
+    const finger = Array.from(event.changedTouches).find((touch) => touch.identifier === touchId);
+    if (!finger) return;
+    if (source) {
+      if (event.cancelable) event.preventDefault();
+      updateDrag(finger.clientX, finger.clientY);
+    } else if (pending && Math.hypot(finger.clientX - pending.x, finger.clientY - pending.y) > 10) {
+      cancel();
+    }
+  };
+  const touchEnd = (event: TouchEvent) => {
+    if (touchId === null || !Array.from(event.changedTouches).some((touch) => touch.identifier === touchId)) return;
+    touchId = null;
+    if (source && event.cancelable) event.preventDefault();
+    void up();
+  };
+  const touchCancel = () => { if (touchId !== null) { touchId = null; cancel(); } };
+  const pointerDown = (event: PointerEvent) => {
+    if (options.kind !== 'lists' || event.pointerType !== 'touch') down(event);
+  };
+  const pointerUp = (event: PointerEvent) => {
+    if (options.kind !== 'lists' || event.pointerType !== 'touch') void up();
+  };
+  const pointerCancel = (event: PointerEvent) => {
+    // A browser can cancel pointer events while the corresponding touch stream continues.
+    if (options.kind !== 'lists' || event.pointerType !== 'touch') cancel();
   };
   const nativeDrag = (event: DragEvent) => event.preventDefault();
   const context = (event: Event) => {
@@ -248,12 +285,15 @@ export function sortable(
   };
   node.addEventListener('dragstart', nativeDrag);
   node.addEventListener('click', click, true);
-  node.addEventListener('touchmove', touch, { passive: false });
+  node.addEventListener('touchstart', touchStart, { passive: true });
+  node.addEventListener('touchmove', touchMove, { passive: false });
+  node.addEventListener('touchend', touchEnd, { passive: false });
+  node.addEventListener('touchcancel', touchCancel);
   node.addEventListener('contextmenu', context);
-  node.addEventListener('pointerdown', down);
+  node.addEventListener('pointerdown', pointerDown);
   window.addEventListener('pointermove', drag, { passive: false });
-  window.addEventListener('pointerup', up, { passive: false });
-  window.addEventListener('pointercancel', cancel, { passive: false });
+  window.addEventListener('pointerup', pointerUp, { passive: false });
+  window.addEventListener('pointercancel', pointerCancel, { passive: false });
   window.addEventListener('keydown', key);
   return {
     update(value: typeof options) {
@@ -265,12 +305,15 @@ export function sortable(
       cleanup();
       node.removeEventListener('dragstart', nativeDrag);
       node.removeEventListener('click', click, true);
-      node.removeEventListener('touchmove', touch);
+      node.removeEventListener('touchstart', touchStart);
+      node.removeEventListener('touchmove', touchMove);
+      node.removeEventListener('touchend', touchEnd);
+      node.removeEventListener('touchcancel', touchCancel);
       node.removeEventListener('contextmenu', context);
-      node.removeEventListener('pointerdown', down);
+      node.removeEventListener('pointerdown', pointerDown);
       window.removeEventListener('pointermove', drag);
-      window.removeEventListener('pointerup', up);
-      window.removeEventListener('pointercancel', cancel);
+      window.removeEventListener('pointerup', pointerUp);
+      window.removeEventListener('pointercancel', pointerCancel);
       window.removeEventListener('keydown', key);
     },
   };
