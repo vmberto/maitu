@@ -67,6 +67,15 @@
       ></ListIdentity>
       <Surface class="list-options"><ListTypePicker value={list.type} onchange={(type) => void changeType(type)} isDisabled={(type) => type === 'timeline' || !!listTypeError(items, list.type, type)} />
       <ListAppearance color={list.color} emoji={list.emoji} onchange={save} /></Surface>
+      <label class="mt-4 block text-sm">Folder
+        <select aria-label="List folder" class="drawer-input mt-2" value={list.folderId ?? ''}
+          onchange={(event) => void save({ folderId: event.currentTarget.value || null })}>
+          <option value="">No folder</option>
+          {#each ($offline.account?.folders ?? []).filter((folder) => !folder.deleted) as folder}
+            <option value={folder._id}>{folder.title}</option>
+          {/each}
+        </select>
+      </label>
       <Button tone="primary" class="list-primary" onclick={() => closeDrawer(dialog)}>Save changes</Button>
       <Button
         class="list-archive"

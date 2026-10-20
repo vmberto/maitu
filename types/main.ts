@@ -16,6 +16,12 @@ export interface UserObject {
   email: string;
 }
 
+export interface Folder {
+  type?: never;
+  _id: string;
+  title: string;
+}
+
 export interface List {
   _id: string | any;
   id: string;
@@ -29,6 +35,7 @@ export interface List {
 
   type: ListType;
   archived?: boolean;
+  folderId?: string | null;
 }
 
 export interface TaskLocation {

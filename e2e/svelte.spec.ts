@@ -322,7 +322,7 @@ async function pasteDescription(page: Page, text: string) {
   }, text);
 }
 async function transport(context: BrowserContext) {
-  const snapshot: { lists: any[]; tasks: any[] } = {
+  const snapshot: { lists: any[]; tasks: any[]; folders: any[] } = {
     lists: [
       {
         _id: listId,
@@ -337,6 +337,7 @@ async function transport(context: BrowserContext) {
       },
     ],
     tasks: [],
+    folders: [],
   };
   let loseResponse = false;
   let writes = 0;
@@ -349,7 +350,7 @@ async function transport(context: BrowserContext) {
     if (route.request().method() === 'GET')
       return route.fulfill({ json: snapshot });
     const op = route.request().postDataJSON();
-    const entities = snapshot[op.kind as 'lists' | 'tasks'];
+    const entities = snapshot[op.kind as 'lists' | 'tasks' | 'folders'];
     let entity = entities.find((item) => item._id === op.entityId);
     if (!receipts.has(op.id)) {
       if ((entity?.version ?? 0) !== op.baseVersion)
@@ -1886,4 +1887,108 @@ test('Smart Place inclusion auto-adds one verified match and shows its source', 
   await page.screenshot({ path: '/tmp/maitu-smart-place-inclusion.png' });
 });
 
+});
+
+
+test('folder badges keep every list on the home screen and support drag ordering and offline moves', async ({ page, context }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const server = await transport(context);
+  const secondId = '64b2f7a9c1e6f9a1b2c3d4f5';
+  const thirdId = '64b2f7a9c1e6f9a1b2c3d4f6';
+  server.snapshot.lists.push({ ...server.snapshot.lists[0], _id: secondId, title: 'Second list', index: 1 }, { ...server.snapshot.lists[0], _id: thirdId, title: 'Third list', index: 2 });
+  await page.goto('/');
+  const home = page.locator('main');
+  const folder = page.getByRole('dialog', { name: 'Work', exact: true });
+  await expect(page.getByRole('button', { name: 'All', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('navigation', { name: 'List folders' }).getByRole('button')).toHaveCount(1);
+  await expect(page.getByRole('button', { name: 'New folder', exact: true })).toHaveText('+');
+  await page.getByRole('button', { name: 'New folder', exact: true }).click();
+  await page.getByLabel('Folder name', { exact: true }).fill('Work');
+  await page.getByRole('button', { name: 'Create folder', exact: true }).click();
+  const badge = page.getByRole('button', { name: 'Work', exact: true });
+  await expect(home.locator('[data-sort-id]')).toHaveCount(3);
+  await badge.click();
+  await expect(folder.getByText('This folder is empty.', { exact: false })).toBeVisible();
+  await page.getByRole('button', { name: 'Close folder', exact: true }).click();
+  await expect(folder).toHaveCount(0);
+  const dragTo = async (title: string, target: ReturnType<Page['locator']>, scope = home) => {
+    const grip = scope.getByRole('button', { name: `Reorder ${title}`, exact: true });
+    await grip.hover();
+    const handle = await grip.boundingBox();
+    const dest = await target.boundingBox();
+    await page.mouse.move(handle!.x + handle!.width / 2, handle!.y + handle!.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(handle!.x + handle!.width / 2 + 12, handle!.y + handle!.height / 2);
+    await expect(page.locator('[data-sort-ghost]')).toHaveCount(1);
+    await page.mouse.move(dest!.x + dest!.width / 2, dest!.y + dest!.height / 2, { steps: 10 });
+    await page.mouse.up();
+    await expect(page.locator('[data-sort-ghost]')).toHaveCount(0);
+  };
+  await dragTo('Third list', home.locator(`[data-sort-id="${secondId}"]`));
+  await expect.poll(async () => (await device(page)).lists.find((list: any) => list._id === thirdId).index).toBe(1);
+  await dragTo('Pilot list', badge);
+  const folderId = (await device(page)).folders[0]._id;
+  await expect.poll(async () => (await device(page)).lists.find((list: any) => list._id === listId).folderId).toBe(folderId);
+  await dragTo('Third list', badge);
+  await expect(home.locator('[data-sort-id]')).toHaveCount(3);
+  await badge.click();
+  await expect(folder.locator('[data-sort-id]')).toHaveCount(2);
+  await expect(folder.getByRole('link', { name: '📝 Second list' })).toHaveCount(0);
+  await dragTo('Third list', folder.locator(`[data-sort-id="${listId}"]`), folder);
+  await expect.poll(async () => (await device(page)).lists.find((list: any) => list._id === thirdId).index).toBe(0);
+  expect((await device(page)).lists.find((list: any) => list._id === secondId).index).toBe(2);
+  await page.getByRole('button', { name: 'Close folder', exact: true }).click();
+  await expect(folder).toHaveCount(0);
+  await expect.poll(async () => home.locator('[data-sort-id]').evaluateAll((rows) => rows.map((row) => (row as HTMLElement).dataset.sortId))).toEqual([thirdId, listId, secondId]);
+  await expect.poll(() => server.snapshot.folders.length).toBe(1);
+  await expect.poll(async () => (await device(page)).queue.length).toBe(0);
+  await page.evaluate(async () => { await navigator.serviceWorker.ready; });
+  await expect.poll(() => page.evaluate(() => !!navigator.serviceWorker.controller)).toBe(true);
+  await context.setOffline(true);
+  await home.getByRole('button', { name: 'List settings Pilot list' }).click();
+  await page.getByLabel('List folder', { exact: true }).selectOption('');
+  await expect.poll(async () => (await device(page)).lists.find((list: any) => list._id === listId).folderId).toBeNull();
+  await page.getByRole('button', { name: 'Close panel', exact: true }).click();
+  await page.reload();
+  await badge.click();
+  await expect(folder.locator('[data-sort-id]')).toHaveCount(1);
+  await expect(folder.getByRole('link', { name: '📝 Third list' })).toBeVisible();
+  await folder.getByRole('button', { name: 'List settings Third list' }).click();
+  await page.getByLabel('List folder', { exact: true }).selectOption('');
+  await expect.poll(async () => (await device(page)).lists.find((list: any) => list._id === thirdId).folderId).toBeNull();
+  await page.getByRole('button', { name: 'Close panel', exact: true }).click();
+  await page.getByRole('button', { name: 'Close folder', exact: true }).click();
+  await expect(folder).toHaveCount(0);
+  await context.setOffline(false);
+  await expect.poll(async () => (await device(page)).queue.length).toBe(0);
+  expect(server.snapshot.lists.find((list) => list._id === listId).folderId).toBeNull();
+  expect(server.snapshot.lists.find((list) => list._id === thirdId).folderId).toBeNull();
+  await page.screenshot({ path: '/tmp/maitu-list-folders.png' });
+});
+
+test('touch dragging onto a folder badge and creating a list inside a folder', async ({ page, context }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const server = await transport(context);
+  const folderId = '64b2f7a9c1e6f9a1b2c3d4ff';
+  server.snapshot.folders.push({ _id: folderId, title: 'Personal', version: 1 });
+  await page.goto('/');
+  const row = page.locator(`[data-sort-id="${listId}"]`);
+  await expect(row).toBeVisible();
+  const box = (await row.boundingBox())!;
+  const badge = page.getByRole('button', { name: 'Personal', exact: true });
+  const dest = (await badge.boundingBox())!;
+  const touch = await context.newCDPSession(page);
+  await touch.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: box.x + 15, y: box.y + box.height / 2 }] });
+  await expect(page.locator('[data-sort-ghost]')).toHaveCount(1);
+  await touch.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: dest.x + dest.width / 2, y: dest.y + dest.height / 2 }] });
+  await expect(badge).toHaveAttribute('data-drag-over', '');
+  await touch.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  await expect.poll(async () => (await device(page)).lists[0].folderId).toBe(folderId);
+  await badge.click();
+  await page.getByRole('dialog', { name: 'Personal', exact: true }).getByRole('button', { name: 'New List', exact: true }).click();
+  await page.getByLabel('List name', { exact: true }).fill('Home projects');
+  await page.getByRole('button', { name: 'Create list', exact: true }).click();
+  await expect(page.getByRole('dialog', { name: 'Personal', exact: true }).getByRole('link', { name: '📝 Home projects' })).toBeVisible();
+  expect((await device(page)).lists.find((list: any) => list.title === 'Home projects').folderId).toBe(folderId);
+  await touch.detach();
 });

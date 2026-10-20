@@ -14,7 +14,7 @@ import type {
   Operation,
   Snapshot,
 } from './model';
-import type { List, Task, UserObject } from '../../../types/main';
+import type { Folder, List, Task, UserObject } from '../../../types/main';
 
 class HttpError extends Error {
   constructor(
@@ -159,7 +159,7 @@ export function createOfflineEngine(options: {
           (saved) =>
             saved
               ? { ...saved, user }
-              : { user, lists: [], tasks: [], queue: [] },
+              : { user, lists: [], tasks: [], folders: [], queue: [] },
         );
         await change<string>('active', () => userId);
         publish(loaded);
@@ -216,7 +216,7 @@ export function createOfflineEngine(options: {
                   op.entityId === operation.entityId,
               )
             ) {
-              next[operation.kind] = next[operation.kind].map((item) =>
+              next[operation.kind] = (next[operation.kind] ?? []).map((item) =>
                 item._id === operation.entityId ? result.entity : item,
               );
             }
@@ -378,7 +378,7 @@ export function createOfflineEngine(options: {
               baseVersion: version++,
             };
           }),
-          [operation.kind]: saved[operation.kind].map((item) =>
+          [operation.kind]: (saved[operation.kind] ?? []).map((item) =>
             item._id === operation.entityId
               ? {
                   ...item,
@@ -400,7 +400,7 @@ export function createOfflineEngine(options: {
           (op) =>
             op.kind !== operation.kind || op.entityId !== operation.entityId,
         ),
-        [operation.kind]: saved[operation.kind].flatMap((item) =>
+        [operation.kind]: (saved[operation.kind] ?? []).flatMap((item) =>
           item._id === operation.entityId ? (server ? [server] : []) : [item],
         ),
       };
@@ -410,17 +410,17 @@ export function createOfflineEngine(options: {
 
   const actions = {
     commit,
-    add: async (kind: EntityKind, data: List | Task) => {
+    add: async (kind: EntityKind, data: List | Task | Folder) => {
       const id = newId();
       const next = await commit(() => [
         { kind, entityId: id, action: 'create', data: { ...data, _id: id } },
       ]);
-      return next[kind].find((item) => item._id === id)!;
+      return next[kind]!.find((item) => item._id === id)!;
     },
     update: async (
       kind: EntityKind,
       id: string,
-      data: Partial<List> | Partial<Task>,
+      data: Partial<List> | Partial<Task> | Partial<Folder>,
     ) => {
       const patch = Object.fromEntries(
         Object.entries(data).filter(
@@ -437,7 +437,7 @@ export function createOfflineEngine(options: {
       await commit((saved) => {
         const children = saved.tasks.filter(
           (task) =>
-            !task.deleted &&
+            !task.deleted && kind !== 'folders' &&
             (kind === 'lists'
               ? String((task as Task).listId) === id
               : String((task as Task).parentTaskId) === id),

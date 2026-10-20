@@ -1,8 +1,8 @@
-import type { List, Task, UserObject } from '../../../types/main';
+import type { Folder, List, Task, UserObject } from '../../../types/main';
 import { entryType, listTypeError } from '../list-types';
 
-export type EntityKind = 'lists' | 'tasks';
-export type Entity = (List | Task) & {
+export type EntityKind = 'lists' | 'tasks' | 'folders';
+export type Entity = (List | Task | Folder) & {
   _id: string;
   version: number;
   deleted?: boolean;
@@ -17,7 +17,7 @@ export type Operation = {
   sent?: boolean;
   conflict?: { server: Entity | null; message: string };
 };
-export type Snapshot = { lists: Entity[]; tasks: Entity[] };
+export type Snapshot = { lists: Entity[]; tasks: Entity[]; folders?: Entity[] };
 export type LocalAccount = Snapshot & {
   user: UserObject;
   queue: Operation[];
@@ -37,13 +37,13 @@ export function enqueue(
 ): LocalAccount {
   let next = structuredClone(account);
   for (const input of operations) {
-    const entities = next[input.kind];
+    const entities = input.kind === 'folders' ? (next.folders ??= []) : next[input.kind];
     const index = entities.findIndex((entity) => entity._id === input.entityId);
     const entity = entities[index];
     const parent =
       input.kind === 'lists'
         ? entity
-        : next.lists.find(
+        : input.kind === 'folders' ? undefined : next.lists.find(
             (list) =>
               list._id ===
               String((entity as Task | undefined)?.listId ?? input.data.listId),
@@ -90,7 +90,7 @@ export function enqueue(
       last.entityId === input.entityId
     ) {
       last.data = { ...last.data, ...input.data };
-      next[input.kind][index] = { ...entity, ...input.data } as Entity;
+      next[input.kind]![index] = { ...entity, ...input.data } as Entity;
       continue;
     }
     const operation: Operation = {
@@ -105,8 +105,8 @@ export function enqueue(
       version: operation.baseVersion + 1,
       deleted: input.action === 'delete',
     } as Entity;
-    if (index < 0) next[input.kind].push(updated);
-    else next[input.kind][index] = updated;
+    if (index < 0) next[input.kind]!.push(updated);
+    else next[input.kind]![index] = updated;
     next.queue.push(operation);
   }
   return next;
@@ -118,22 +118,22 @@ export function mergeSnapshot(
   snapshot: Snapshot,
 ): LocalAccount {
   const next = { ...account };
-  for (const kind of ['lists', 'tasks'] as const) {
+  for (const kind of ['lists', 'tasks', 'folders'] as const) {
     const pending = new Set(
       account.queue.filter((op) => op.kind === kind).map((op) => op.entityId),
     );
     const remote = new Map(
-      snapshot[kind].map((entity) => [entity._id, entity]),
+      (snapshot[kind] ?? []).map((entity) => [entity._id, entity]),
     );
-    const seen = new Set(account[kind].map((entity) => entity._id));
+    const seen = new Set((account[kind] ?? []).map((entity) => entity._id));
     // Replace existing items in place; pending edits must never change their positions.
     next[kind] = [
-      ...account[kind].flatMap((entity) => {
+      ...(account[kind] ?? []).flatMap((entity) => {
         if (pending.has(entity._id)) return [entity];
         const updated = remote.get(entity._id);
         return updated ? [updated] : [];
       }),
-      ...snapshot[kind].filter((entity) => !seen.has(entity._id)),
+      ...(snapshot[kind] ?? []).filter((entity) => !seen.has(entity._id)),
     ];
   }
   return next;

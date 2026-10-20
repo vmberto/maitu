@@ -48,6 +48,7 @@ const operation: Operation = {
 };
 let lists: any;
 let tasks: any;
+let folders: any;
 let db: Db;
 beforeEach(() => {
   lists = {
@@ -64,8 +65,14 @@ beforeEach(() => {
     insertOne: vi.fn(),
     find: vi.fn().mockReturnValue({ toArray: vi.fn().mockResolvedValue([]) }),
   };
+  folders = {
+    findOne: vi.fn().mockResolvedValue(null),
+    updateOne: vi.fn().mockResolvedValue({ matchedCount: 1 }),
+    insertOne: vi.fn(),
+    find: vi.fn().mockReturnValue({ toArray: vi.fn().mockResolvedValue([]) }),
+  };
   db = {
-    collection: (name: string) => (name === 'lists' ? lists : tasks),
+    collection: (name: string) => (name === 'lists' ? lists : name === 'folders' ? folders : tasks),
   } as unknown as Db;
 });
 
@@ -424,4 +431,38 @@ it('rejects converting a list with notes into Places', async () => {
   lists.findOne.mockResolvedValue({ ...list, type: 'mixed' });
   tasks.find.mockReturnValue({ toArray: async () => [{ type: 'note' }] });
   await expect(applyOperation(db, userId, { ...operation, data: { type: 'places' } })).rejects.toThrow('Remove all notes');
+});
+
+
+it('validates folder names and folder assignments', () => {
+  for (const title of ['', '   ', 'a'.repeat(51), 123])
+    expect(() => validateData('folders', { title }, true)).toThrow();
+  expect(validateData('folders', { title: 'Work', owner: userId }, true)).toEqual({ title: 'Work' });
+  expect(() => validateData('lists', { folderId: 'bad' }, false)).toThrow();
+  expect(validateData('lists', { folderId: null }, false)).toEqual({ folderId: null });
+});
+
+it('creates owned folders, includes them in snapshots, and hides private metadata', async () => {
+  const folder = { _id: new ObjectId(taskId), title: 'Work', owner: new ObjectId(userId), version: 1 };
+  folders.findOne.mockResolvedValueOnce(null).mockResolvedValue(folder);
+  const result = await applyOperation(db, userId, { ...operation, kind: 'folders', entityId: taskId, action: 'create', baseVersion: 0, data: { title: 'Work' } });
+  expect(folders.insertOne).toHaveBeenCalledWith(expect.objectContaining({ title: 'Work', owner: new ObjectId(userId) }));
+  expect(result).toMatchObject({ entity: { title: 'Work', version: 1 } });
+  folders.find.mockReturnValue({ toArray: async () => [folder] });
+  expect((await snapshot(db, userId)).folders).toEqual([{ _id: taskId, title: 'Work', version: 1 }]);
+  expect(folders.find).toHaveBeenCalledWith({ owner: new ObjectId(userId) });
+  await expect(applyOperation(db, listId, { ...operation, kind: 'folders', entityId: taskId })).rejects.toThrow('not found');
+  expect(folders.updateOne).not.toHaveBeenCalled();
+});
+
+it('assigns lists only to owned live folders and allows removing assignments', async () => {
+  const edit = { ...operation, data: { folderId: taskId } };
+  await expect(applyOperation(db, userId, edit)).rejects.toThrow('Folder not found');
+  expect(folders.findOne).toHaveBeenCalledWith({ _id: new ObjectId(taskId), owner: new ObjectId(userId), deleted: { $ne: true } });
+  expect(lists.updateOne).not.toHaveBeenCalled();
+  folders.findOne.mockResolvedValue({ _id: new ObjectId(taskId), owner: new ObjectId(userId) });
+  await applyOperation(db, userId, edit);
+  expect(lists.updateOne.mock.calls[0][1].$set.folderId).toBe(taskId);
+  await applyOperation(db, userId, { ...operation, data: { folderId: null } });
+  expect(lists.updateOne.mock.calls[1][1].$set.folderId).toBeNull();
 });

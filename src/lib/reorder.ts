@@ -5,12 +5,19 @@ export function sortable(
     ids: string[];
     kind: 'lists' | 'tasks';
     error: (message: string) => void;
+    orderIds?: string[];
+    drop?: (id: string, folderId: string) => Promise<void>;
   },
 ) {
   let ghost: HTMLElement | null = null;
   let dragged: HTMLElement | null = null;
+  let dropTarget: HTMLElement | null = null;
+  let startDrag: (() => void) | undefined;
   let origin = { x: 0, y: 0 };
   const cleanup = () => {
+    dropTarget?.removeAttribute('data-drag-over');
+    dropTarget = null;
+    startDrag = undefined;
     ghost?.remove();
     ghost = null;
     dragged?.style.removeProperty('opacity');
@@ -25,8 +32,11 @@ export function sortable(
     if (start < 0 || end < 0 || start === end) return;
     ids.splice(end, 0, ids.splice(start, 1)[0]);
     try {
+      const visible = new Set(ids);
+      let position = 0;
+      const ordered = options.orderIds?.map((id) => visible.has(id) ? ids[position++] : id) ?? ids;
       await engine.commit(() =>
-        ids.map((entityId, index) => ({
+        ordered.map((entityId, index) => ({
           kind: options.kind,
           entityId,
           action: 'patch' as const,
@@ -45,7 +55,7 @@ export function sortable(
     if (
       event.button !== 0 ||
       !event.isPrimary ||
-      (event.target as Element).closest('button,select')
+      (event.target as Element).closest('button:not([data-sort-key]),select')
     )
       return;
     const item = (event.target as Element).closest<HTMLElement>(
@@ -53,7 +63,7 @@ export function sortable(
     );
     if (!item || !options.ids.includes(item.dataset.sortId ?? '')) return;
     pending = { id: event.pointerId, x: event.clientX, y: event.clientY };
-    hold = setTimeout(() => {
+    startDrag = () => {
       if (!pending) return;
       source = item.dataset.sortId ?? '';
       target = source;
@@ -68,38 +78,57 @@ export function sortable(
         '--list-color',
         getComputedStyle(item).getPropertyValue('--list-color'),
       );
-      document.body.appendChild(ghost);
+      (node.closest('dialog') ?? document.body).appendChild(ghost);
       item.style.opacity = '.25';
       origin = { x: pending.x, y: pending.y };
       suppressClick = true;
       node.setPointerCapture(pending.id);
-      event.preventDefault();
-    }, 350);
+    };
+    hold = setTimeout(startDrag, 350);
   };
   const drag = (event: PointerEvent) => {
     if (!source) {
-      if (
+      if (pending && event.pointerType === 'mouse' &&
+        Math.hypot(event.clientX - pending.x, event.clientY - pending.y) > 6) {
+        clearTimeout(hold);
+        startDrag?.();
+      } else if (
         pending &&
         Math.hypot(event.clientX - pending.x, event.clientY - pending.y) > 24
       ) {
         clearTimeout(hold);
         pending = null;
       }
-      return;
+      if (!source) return;
     }
     event.preventDefault();
     if (ghost)
       ghost.style.transform = `translate(${event.clientX - origin.x}px,${event.clientY - origin.y}px) scale(1.02)`;
-    const item = document
-      .elementFromPoint(event.clientX, event.clientY)
-      ?.closest<HTMLElement>('[data-sort-id]');
-    if (item && node.contains(item)) target = item.dataset.sortId ?? source;
+    const hit = document.elementFromPoint(event.clientX, event.clientY);
+    const badge = options.drop ? hit?.closest<HTMLElement>('[data-folder-drop]') : null;
+    const nextDrop = badge && node.contains(badge) ? badge : null;
+    if (nextDrop !== dropTarget) {
+      dropTarget?.removeAttribute('data-drag-over');
+      dropTarget = nextDrop;
+      dropTarget?.setAttribute('data-drag-over', '');
+    }
+    const item = hit?.closest<HTMLElement>('[data-sort-id]');
+    target = item && node.contains(item) ? item.dataset.sortId ?? source : source;
+    if (event.clientY < 64) window.scrollBy(0, -12);
+    else if (event.clientY > window.innerHeight - 64) window.scrollBy(0, 12);
   };
   const up = () => {
+    const pendingPointer = pending?.id ?? -1;
     clearTimeout(hold);
     pending = null;
+    if (source) {
+      if (dropTarget && options.drop) {
+        void options.drop(source, dropTarget.dataset.folderDrop ?? '').catch(() =>
+          options.error('Could not move this list on your device.'));
+      } else void move(source, target);
+    }
+    if (node.hasPointerCapture?.(pendingPointer)) node.releasePointerCapture(pendingPointer);
     cleanup();
-    if (source) void move(source, target);
     source = '';
     target = '';
   };
@@ -111,6 +140,7 @@ export function sortable(
     target = '';
   };
   const key = (event: KeyboardEvent) => {
+    if (event.key === 'Escape' && source) { cancel(); return; }
     if (
       !['ArrowUp', 'ArrowDown'].includes(event.key) ||
       !(event.target as Element).matches('[data-sort-key]')
@@ -134,9 +164,11 @@ export function sortable(
   const touch = (event: TouchEvent) => {
     if (source) event.preventDefault();
   };
+  const nativeDrag = (event: DragEvent) => event.preventDefault();
   const context = (event: Event) => {
     if (pending || source) event.preventDefault();
   };
+  node.addEventListener('dragstart', nativeDrag);
   node.addEventListener('click', click, true);
   node.addEventListener('touchmove', touch, { passive: false });
   node.addEventListener('contextmenu', context);
@@ -153,6 +185,7 @@ export function sortable(
       clearTimeout(hold);
       pending = null;
       cleanup();
+      node.removeEventListener('dragstart', nativeDrag);
       node.removeEventListener('click', click, true);
       node.removeEventListener('touchmove', touch);
       node.removeEventListener('contextmenu', context);

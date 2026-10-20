@@ -272,3 +272,18 @@ it('defaults Places items to tasks with Location and keeps add-ons removable', (
   const notes = { ...account, tasks: [{ _id: 'note', listId: list._id, type: 'note', version: 0 } as Entity], lists: [{ ...list, type: 'mixed' } as Entity] };
   expect(() => enqueue(notes, [{ kind: 'lists', entityId: list._id, action: 'patch', data: { type: 'places' } }])).toThrow('Remove all notes');
 });
+
+
+it('adds folders to legacy device accounts and preserves pending offline moves during sync', () => {
+  const folderId = '64b2f7a9c1e6f9a1b2c3d4ef';
+  const account = enqueue(initial, [
+    { kind: 'folders', entityId: folderId, action: 'create', data: { title: 'Work' } },
+    { kind: 'lists', entityId: list._id, action: 'patch', data: { folderId } },
+  ]);
+  expect(account.folders).toMatchObject([{ _id: folderId, title: 'Work' }]);
+  const merged = mergeSnapshot(account, { lists: [list], tasks: [], folders: [] });
+  expect(merged.folders).toEqual(account.folders);
+  expect(merged.lists[0]).toMatchObject({ folderId });
+  expect(enqueue(merged, [{ kind: 'lists', entityId: list._id, action: 'patch', data: { folderId: null } }]).lists[0]).toMatchObject({ folderId: null });
+  expect(initial).not.toHaveProperty('folders');
+});

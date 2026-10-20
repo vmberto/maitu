@@ -21,7 +21,7 @@ export function objectId(value: unknown) {
   return new ObjectId(value);
 }
 export function collectionName(kind: EntityKind) {
-  return kind === 'lists' ? 'lists' : 'todos';
+  return kind === 'tasks' ? 'todos' : kind;
 }
 export function publicEntity(doc: Document): Entity {
   const fields = new Set([...listFields, ...taskFields, '_id', 'deleted']);
@@ -56,6 +56,7 @@ const listFields = [
   'createdAt',
   'type',
   'archived',
+  'folderId',
 ];
 const taskFields = [
   'wasScheduled',
@@ -82,11 +83,18 @@ export function validateData(
 ) {
   if (!input || typeof input !== 'object' || Array.isArray(input))
     throw new SyncError('Invalid item.');
-  const fields = kind === 'lists' ? listFields : taskFields;
+  const fields = kind === 'folders' ? ['title'] : kind === 'lists' ? listFields : taskFields;
   const result: Record<string, unknown> = {};
   for (const field of fields) {
     if (!(field in input)) continue;
     const value = input[field];
+    if (field === 'folderId') {
+      if (value !== null) objectId(value);
+      result[field] = value;
+      continue;
+    }
+    if (kind === 'folders' && field === 'title' && (typeof value !== 'string' || !value.trim() || value.length > 50))
+      throw new SyncError('Folder names must be 1–50 characters.');
     if (field === 'schedule' || field === 'reminder') {
       if (value !== null && !(field === 'schedule' ? validSchedule(value) : validReminder(value)))
         throw new SyncError(`Invalid ${field}.`);
@@ -187,7 +195,8 @@ export async function snapshot(db: Db, userId: string): Promise<Snapshot> {
     .collection('todos')
     .find({ listId: { $in: lists.map((list) => list._id) } })
     .toArray();
-  return { lists: lists.map(publicEntity), tasks: tasks.map(publicEntity) };
+  const folders = await db.collection('folders').find({ owner: objectId(userId) }).toArray();
+  return { lists: lists.map(publicEntity), tasks: tasks.map(publicEntity), folders: folders.map(publicEntity) };
 }
 
 export async function applyOperation(
@@ -197,7 +206,7 @@ export async function applyOperation(
 ) {
   if (
     !operation ||
-    !['lists', 'tasks'].includes(operation.kind) ||
+    !['lists', 'tasks', 'folders'].includes(operation.kind) ||
     !['create', 'patch', 'delete'].includes(operation.action) ||
     typeof operation.id !== 'string' ||
     !/^[a-f0-9-]{36}$/i.test(operation.id) ||
@@ -211,8 +220,8 @@ export async function applyOperation(
   const existing = await collection.findOne({ _id: id });
   let archived = false;
   if (existing) {
-    if (operation.kind === 'lists') {
-      archived = !!existing.archived;
+    if (operation.kind !== 'tasks') {
+      archived = operation.kind === 'lists' && !!existing.archived;
       if (existing.owner?.toString() !== userId)
         throw new SyncError('Item not found.', 404);
     } else {
@@ -250,6 +259,10 @@ export async function applyOperation(
           operation.data,
           operation.action === 'create',
         );
+  if (operation.kind === 'lists' && data.folderId) {
+    const folder = await db.collection('folders').findOne({ _id: objectId(data.folderId), owner, deleted: { $ne: true } });
+    if (!folder) throw new SyncError('Folder not found.', 404);
+  }
   if (operation.kind === 'lists' && operation.action === 'patch' && typeof data.type === 'string' && data.type !== existing?.type) {
     const items = await db.collection('todos').find({ listId: id, deleted: { $ne: true } }).toArray();
     const error = listTypeError(items as unknown as Task[], existing?.type ?? 'tasks', data.type);
@@ -311,8 +324,8 @@ export async function applyOperation(
       const result = await collection.updateOne(
         {
           _id: id,
-          ...(operation.kind === 'lists'
-            ? { owner, archived: { $ne: true } }
+          ...(operation.kind !== 'tasks'
+            ? { owner, ...(operation.kind === 'lists' ? { archived: { $ne: true } } : {}) }
             : { listId: existing.listId }),
           deleted: { $ne: true },
           ...(operation.baseVersion === 0

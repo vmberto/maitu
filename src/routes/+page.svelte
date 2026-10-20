@@ -8,7 +8,7 @@
   import { HexColors } from '../lib/colors';
   import { engine, offline } from '#lib/offline';
   import { Colors } from '../../types/colors';
-  import { ListType, type List } from '../../types/main';
+  import { ListType, type List, type Folder } from '../../types/main';
   import { onMount, onDestroy } from 'svelte';
   import { lockBody } from '../lib/scroll-lock';
   import { setTheme } from '../lib/theme';
@@ -24,6 +24,10 @@
   let error = $state('');
   let menu: HTMLDialogElement;
   let newListOpen = $state(false);
+  let newFolderOpen = $state(false);
+  let activeFolder = $state('');
+  let announcement = $state('');
+  const folders = $derived(($offline.account?.folders ?? []).filter((folder) => !folder.deleted) as Folder[]);
   let unlock: (() => void) | undefined;
   let dark = $state(false);
   onDestroy(() => unlock?.());
@@ -41,48 +45,34 @@
       ) ?? []
     ).sort((a, b) => (a as List).index - (b as List).index) as List[],
   );
+  const folderLists = $derived(lists.filter((list) => list.folderId === activeFolder));
+  const openFolder = $derived(folders.find((folder) => folder._id === activeFolder));
+  async function moveToFolder(id: string, folderId: string) {
+    await engine.update('lists', id, { folderId: folderId || null });
+    error = '';
+    announcement = `List moved to ${folders.find((folder) => folder._id === folderId)?.title ?? 'no folder'}.`;
+  }
   async function addList(data: Pick<List, 'title' | 'emoji' | 'color' | 'type'>) {
     await engine.add('lists', {
-      ...data, id: '', index: lists.length, createdAt: new Date().toISOString(),
+      ...data, folderId: openFolder?._id ?? null, id: '', index: lists.length, createdAt: new Date().toISOString(),
     } as List);
   }
 
 </script>
 
-<header class="sticky top-0 z-20 bg-gray-100">
-  <div class="mx-auto flex h-12 max-w-xl items-center justify-between px-5">
-    <h1 class="text-xl font-semibold text-primary">maitu</h1>
-    <Button icon
-      aria-label="user-settings-menu"
-      class="text-primary"
-      onclick={() => {
-        menu.showModal();
-        unlock = lockBody();
-      }}><Icon name="menu" /></Button
-    >
-  </div>
-</header>
-<main class="mx-auto max-w-xl space-y-3 p-5">
-  <div
-    class="space-y-3"
-    use:sortable={{
-      ids: lists.map((list) => String(list._id)),
-      kind: 'lists',
-      error: (message) => (error = message),
-    }}
-  >
-    {#each lists as list (list._id)}<div
+{#snippet listCards(items: List[])}
+  <div class="space-y-3">
+    {#each items as list (list._id)}<div
         animate:flip={{ duration: 180 }}
         data-sort-id={String(list._id)}
-        title="Hold to reorder; use arrow keys when the row is focused"
+        title="Drag to reorder or move to a folder; on touch, hold first"
         class="list-card relative flex items-center gap-3 rounded-md border-2 border-gray-200 bg-surface p-4 shadow-sm"
       >
-        <button
-          type="button"
+        <Button variant="touch"
           data-sort-key
           aria-label={`Reorder ${list.title}`}
-          class="sr-only focus:not-sr-only"
-          title="Use arrow keys to reorder">Reorder</button
+          class="relative z-10 cursor-grab touch-none p-1 text-gray-400 active:cursor-grabbing"
+          title="Drag to reorder, or use the up and down arrow keys"><Icon name="grip" /></Button
         ><a
           href={`/${list.type === ListType.timeline ? 'timeline' : 'tasks'}?listId=${encodeURIComponent(String(list._id))}`}
           data-sveltekit-preload-code="hover"
@@ -98,6 +88,40 @@
         >
       </div>{/each}
   </div>
+{/snippet}
+
+<header class="sticky top-0 z-20 bg-gray-100">
+  <div class="mx-auto flex h-12 max-w-xl items-center justify-between px-5">
+    <h1 class="text-xl font-semibold text-primary">maitu</h1>
+    <Button icon
+      aria-label="user-settings-menu"
+      class="text-primary"
+      onclick={() => {
+        menu.showModal();
+        unlock = lockBody();
+      }}><Icon name="menu" /></Button
+    >
+  </div>
+</header>
+<main class="mx-auto max-w-xl space-y-3 p-5"
+  use:sortable={{
+    ids: lists.map((list) => String(list._id)),
+    orderIds: lists.map((list) => String(list._id)),
+    kind: 'lists',
+    drop: moveToFolder,
+    error: (message) => (error = message),
+  }}
+>
+  <nav aria-label="List folders" class="folder-badges flex gap-2 overflow-x-auto pb-2">
+    {#each folders as folder (folder._id)}
+      <button type="button" class="folder-badge" aria-haspopup="dialog" data-folder-drop={folder._id}
+        title={`Show ${folder.title}; drop a list here to move it`}
+        onclick={() => activeFolder = folder._id}>{folder.title}</button>
+    {/each}
+    <button type="button" class="folder-badge folder-add" aria-label="New folder" onclick={() => newFolderOpen = true}>+</button>
+  </nav>
+  <p class="sr-only" role="status">{announcement}</p>
+  {@render listCards(lists)}
   <Button
     class="mt-4 w-full text-primary"
     onclick={() => newListOpen = true}>New List</Button
@@ -164,12 +188,41 @@
 {#if newListOpen}{#await import('#lib/ui/NewListDialog.svelte') then module}{@const NewListDialog = module.default}<NewListDialog
   bind:title bind:type bind:emoji bind:color oncreate={addList} close={() => newListOpen = false}
 />{/await}{/if}
+{#if newFolderOpen}{#await import('#lib/ui/NewFolderDialog.svelte') then module}{@const NewFolderDialog = module.default}<NewFolderDialog
+  oncreate={async (title) => {
+    await engine.add('folders', { _id: '', title });
+  }} close={() => newFolderOpen = false}
+/>{/await}{/if}
+{#if openFolder}{#await import('#lib/ui/FolderDialog.svelte') then module}{@const FolderDialog = module.default}<FolderDialog
+  title={openFolder.title} close={() => activeFolder = ''} oncreate={() => newListOpen = true}
+  ids={folderLists.map((list) => String(list._id))} orderIds={lists.map((list) => String(list._id))}
+>
+  {@render listCards(folderLists)}
+</FolderDialog>{/await}{/if}
 {#if settingsList}{#await import('#lib/ListDetails.svelte') then module}{@const ListDetails = module.default}<ListDetails
     list={settingsList}
     close={() => (settingsId = null)}
   />{/await}{/if}
 
 <style>
+  .folder-badge {
+    flex-shrink: 0;
+    max-width: 16rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    border: 1.5px solid rgb(var(--gray-300));
+    border-radius: 999px;
+    padding: 6px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    color: rgb(var(--gray-500));
+    transition: background 120ms, border-color 120ms;
+  }
+  .folder-badge:focus-visible { outline: 2px solid rgb(54 100 255); outline-offset: 2px; }
+  .folder-badge:global([data-drag-over]) { background: rgb(54 100 255 / 0.2); border-color: rgb(54 100 255); box-shadow: 0 0 0 2px rgb(54 100 255 / 0.2); }
+  .folder-add { width: 34px; height: 34px; padding: 0; border-style: dashed; font-size: 22px; font-weight: 400; line-height: 1; }
+  @media (prefers-reduced-motion: reduce) { .folder-badge { transition: none; } }
   dialog::backdrop {
     background: rgb(0 0 0 / 0.5);
   }
