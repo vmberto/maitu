@@ -608,7 +608,7 @@ test('Svelte coordinates, list map, black theme, zoom controls and archived read
   await expect(page.getByRole('link', { name: '📝 Pilot list' })).toBeVisible();
 });
 
-test('timeline groups entries newest first without item drawers and loads settings offline', async ({ page, context }) => {
+test('timeline reads chronologically without item drawers and loads settings offline', async ({ page, context }) => {
   const server = await transport(context);
   server.snapshot.lists[0].type = 'timeline';
   const entries = [
@@ -620,24 +620,24 @@ test('timeline groups entries newest first without item drawers and loads settin
     _id: (index + 100).toString(16).padStart(24, '0'), listId, title, createdAt, type: 'note', complete: false, version: 0,
   }));
   await page.goto(`/timeline?listId=${listId}`);
-  await expect(page.locator('main article p')).toHaveText(['Latest entry', 'Earlier time', 'Earlier day']);
+  await expect(page.locator('main article p')).toHaveText(['Earlier day', 'Earlier time', 'Latest entry']);
   await expect(page.locator('main article svg')).toHaveCount(0);
   await page.getByText('Latest entry', { exact: true }).click();
   await expect(page.getByRole('dialog')).toHaveCount(0);
   await expect(page.locator('main article button')).toHaveCount(0);
   await expect(page.locator('main section')).toHaveCount(2);
-  await expect(page.locator('main section').first().locator('article')).toHaveCount(2);
+  await expect(page.locator('main section').last().locator('article')).toHaveCount(2);
   await page.evaluate(async () => { await navigator.serviceWorker.ready; });
   await expect.poll(() => page.evaluate(() => !!navigator.serviceWorker.controller)).toBe(true);
   await context.setOffline(true);
   await page.reload();
-  await expect(page.locator('main article p')).toHaveText(['Latest entry', 'Earlier time', 'Earlier day']);
+  await expect(page.locator('main article p')).toHaveText(['Earlier day', 'Earlier time', 'Latest entry']);
   await page.getByRole('button', { name: 'List settings', exact: true }).click();
   await expect(page.getByRole('dialog')).toBeVisible();
   await expect(page.getByRole('textbox', { name: 'List title', exact: true })).toHaveValue('Pilot list');
 });
 
-test('timeline paginates entries and keeps the input at the bottom', async ({ page, context }) => {
+test('timeline opens at the newest message, loads history upwards and sends at the bottom', async ({ page, context }) => {
   const server = await transport(context);
   server.snapshot.lists[0].type = 'timeline';
   await page.setViewportSize({ width: 390, height: 844 });
@@ -647,28 +647,44 @@ test('timeline paginates entries and keeps the input at the bottom', async ({ pa
   });
   await page.goto(`/timeline?listId=${listId}`);
   const rows = page.locator('main article p');
+  const history = page.getByRole('region', { name: 'Timeline messages' });
   await expect(rows).toHaveCount(20);
-  await expect(rows.first()).toHaveText('Entry 54');
-  await expect(rows.last()).toHaveText('Entry 35');
+  await expect(rows.first()).toHaveText('Entry 35');
+  await expect(rows.last()).toHaveText('Entry 54');
+  await expect(rows.last()).toBeInViewport();
+  await expect(rows.first()).not.toBeInViewport();
   const input = page.getByRole('textbox', { name: 'New entry', exact: true });
   await expect(input).toBeInViewport();
+  // Stop before the sentinel to check that adding history preserves the reading position.
+  await history.evaluate((node) => { node.scrollTop = -(node.scrollHeight - node.clientHeight - 300); });
+  const anchor = page.getByText('Entry 38', { exact: true });
+  const anchorBefore = await anchor.boundingBox();
+  await history.evaluate((node) => {
+    const button = node.querySelector('button')!;
+    (button as HTMLButtonElement).click();
+  });
+  await expect(rows).toHaveCount(40);
+  const anchorAfter = await anchor.boundingBox();
+  expect(Math.abs(anchorAfter!.y - anchorBefore!.y)).toBeLessThan(2);
   for (let attempt = 0; attempt < 4 && await rows.count() < 55; attempt++) {
-    await rows.last().scrollIntoViewIfNeeded();
-    await page.mouse.wheel(0, 600);
+    await history.evaluate((node) => { node.scrollTop = -node.scrollHeight; });
     await page.waitForTimeout(150);
   }
   await expect(rows).toHaveCount(55);
-  await expect(rows.last()).toHaveText('Entry 0');
-  await expect(page.getByRole('button', { name: 'More entries', exact: true })).toHaveCount(0);
+  await expect(rows.first()).toHaveText('Entry 0');
+  await expect(rows.last()).toHaveText('Entry 54');
+  await expect(page.getByRole('button', { name: 'Older entries', exact: true })).toHaveCount(0);
   await expect(input).toBeInViewport();
   const composer = await page.locator('main form').boundingBox();
-  expect(composer!.y + composer!.height).toBeCloseTo(844, 0);
+  expect(844 - (composer!.y + composer!.height)).toBeCloseTo(24, 0);
   await input.fill('Newest entry');
   await page.getByRole('button', { name: 'Add entry', exact: true }).click();
-  await expect(rows.first()).toHaveText('Newest entry');
+  await expect(rows.last()).toHaveText('Newest entry');
+  await expect(rows.last()).toBeInViewport();
   await expect(input).toHaveValue('');
-  await rows.first().click();
+  await rows.last().click();
   await expect(page.getByRole('dialog')).toHaveCount(0);
+  await page.screenshot({ path: test.info().outputPath('timeline-chat-mobile.png') });
 });
 
 test('timeline, tags, subtasks and cloning preserve their data offline', async ({

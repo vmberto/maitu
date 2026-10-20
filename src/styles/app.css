@@ -114,4 +114,4 @@ a {
   .todo-check[aria-pressed='true']::after { animation: none; }
 }
 /* Leave room below the final item on scrollable content pages. */
-.route-content main:not(.map-page) { padding-bottom: calc(112px + env(safe-area-inset-bottom)); }
+.route-content main:not(.map-page):not(.timeline-chat) { padding-bottom: calc(112px + env(safe-area-inset-bottom)); }
