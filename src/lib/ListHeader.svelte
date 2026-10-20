@@ -24,7 +24,7 @@
 <header class="sticky top-0 z-20 bg-gray-100">
   <div class="mx-auto flex h-12 max-w-xl items-center gap-3 px-5">
     <LinkButton icon
-      href="/"
+      href={list?.folderId ? `/?folderId=${encodeURIComponent(list.folderId)}` : '/'}
       aria-label="Back to lists"
 
       style={`color: ${color}`}><Icon name="back" /></LinkButton

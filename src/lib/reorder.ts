@@ -13,6 +13,7 @@ export function sortable(
 ) {
   let settling = false;
   let slots: { id: string; center: number }[] = [];
+  let listBounds: DOMRect | null = null;
   let scrollTop = 0;
   let ghost: HTMLElement | null = null;
   let dragged: HTMLElement | null = null;
@@ -76,13 +77,14 @@ export function sortable(
       source = item.dataset.sortId ?? '';
       target = source;
       dragged = item;
-      scrollTop = window.scrollY - node.scrollTop;
+      scrollTop = window.scrollY + node.scrollTop;
       slots = options.preview ? Array.from(node.querySelectorAll<HTMLElement>('[data-sort-id]'))
         .filter((row) => options.ids.includes(row.dataset.sortId ?? ''))
         .map((row) => {
           const rect = row.getBoundingClientRect();
           return { id: row.dataset.sortId!, center: rect.top + rect.height / 2 };
         }) : [];
+      listBounds = item.parentElement!.getBoundingClientRect();
       const rect = item.getBoundingClientRect();
       ghost = item.cloneNode(true) as HTMLElement;
       ghost.inert = true;
@@ -96,8 +98,9 @@ export function sortable(
       (node.closest('dialog') ?? document.body).appendChild(ghost);
       item.style.opacity = '.25';
       item.dataset.sortDragging = '';
-      ghost.style.transition = 'none';
-      ghost.style.transform = 'scale(1.025) rotate(1deg)';
+      ghost.style.transition = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'none' : 'scale 160ms cubic-bezier(.2,.8,.2,1), opacity 160ms';
+      ghost.style.scale = '1.025';
+      ghost.style.transform = 'rotate(1deg)';
       origin = { x: pending.x, y: pending.y };
       suppressClick = true;
       node.setPointerCapture(pending.id);
@@ -122,10 +125,6 @@ export function sortable(
       if (!source) return;
     }
     event.preventDefault();
-    if (ghost) {
-      const dx = event.clientX - origin.x;
-      ghost.style.transform = `translate(${options.preview ? Math.max(-12, Math.min(12, dx)) : dx}px,${event.clientY - origin.y}px) scale(1.025) rotate(1deg)`;
-    }
     const hit = document.elementFromPoint(event.clientX, event.clientY);
     const badge = options.drop ? hit?.closest<HTMLElement>('[data-folder-drop]') : null;
     const nextDrop = badge && node.contains(badge) ? badge : null;
@@ -133,13 +132,37 @@ export function sortable(
       dropTarget?.removeAttribute('data-drag-over');
       dropTarget = nextDrop;
       dropTarget?.setAttribute('data-drag-over', '');
+      if (ghost) {
+        ghost.style.scale = dropTarget ? '.12' : '1.025';
+        ghost.style.opacity = dropTarget ? '.65' : '1';
+      }
+    }
+    if (ghost) {
+      const dx = event.clientX - origin.x;
+      if (dropTarget) {
+        const badgeRect = dropTarget.getBoundingClientRect();
+        const x = badgeRect.left + badgeRect.width / 2 - parseFloat(ghost.style.left) - ghost.offsetWidth / 2;
+        const y = badgeRect.top + badgeRect.height / 2 - parseFloat(ghost.style.top) - ghost.offsetHeight / 2;
+        ghost.style.translate = `${x}px ${y}px`;
+        ghost.style.transform = 'rotate(0deg)';
+      } else {
+        ghost.style.translate = `${options.preview ? Math.max(-12, Math.min(12, dx)) : dx}px ${event.clientY - origin.y}px`;
+        ghost.style.transform = 'rotate(1deg)';
+      }
     }
     const item = hit?.closest<HTMLElement>('[data-sort-id]');
-    let nextTarget = item && node.contains(item) ? item.dataset.sortId ?? source : source;
-    if (options.preview && item && node.contains(item) && !dropTarget) {
-      const y = event.clientY + window.scrollY - node.scrollTop - scrollTop;
-      nextTarget = slots.reduce((nearest, slot) => Math.abs(slot.center - y) < Math.abs(nearest.center - y) ? slot : nearest).id;
-    }
+    let nextTarget = target;
+    if (dropTarget) nextTarget = source;
+    else if (options.preview && listBounds) {
+      // Use fixed slots, not the moving cards; keep an 8px buffer at each boundary.
+      const y = event.clientY + window.scrollY + node.scrollTop - scrollTop;
+      if (event.clientX >= listBounds.left && event.clientX <= listBounds.right && y >= listBounds.top && y <= listBounds.bottom) {
+        let index = slots.findIndex((slot) => slot.id === target);
+        while (index < slots.length - 1 && y > (slots[index].center + slots[index + 1].center) / 2 + 8) index++;
+        while (index > 0 && y < (slots[index - 1].center + slots[index].center) / 2 - 8) index--;
+        nextTarget = slots[index].id;
+      }
+    } else nextTarget = item && node.contains(item) ? item.dataset.sortId ?? source : source;
     if (nextTarget !== target) {
       target = nextTarget;
       const ids = [...options.ids];
@@ -166,8 +189,8 @@ export function sortable(
     }
     const animation = options.preview && ghost && destination && !window.matchMedia('(prefers-reduced-motion: reduce)').matches
       ? ghost.animate([
-          { transform: ghost.style.transform, opacity: 1 },
-          { transform: `translate(${destination.left - parseFloat(ghost.style.left)}px,${destination.top - parseFloat(ghost.style.top)}px) scale(${dropTarget ? 0.2 : 1}) rotate(0deg)`, opacity: dropTarget ? 0 : 1 },
+          { translate: getComputedStyle(ghost).translate, transform: getComputedStyle(ghost).transform, scale: getComputedStyle(ghost).scale, opacity: getComputedStyle(ghost).opacity },
+          { translate: `${destination.left - parseFloat(ghost.style.left)}px ${destination.top - parseFloat(ghost.style.top)}px`, transform: 'rotate(0deg)', scale: dropTarget ? 0.01 : 1, opacity: dropTarget ? 0 : 1 },
         ], { duration: 200, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'forwards' })
       : null;
     const save = dropTarget && options.drop

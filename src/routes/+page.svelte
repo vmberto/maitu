@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { page } from '$app/state';
   import Button from '#lib/ui/Button.svelte';
   import LinkButton from '#lib/ui/LinkButton.svelte';
   import { flip } from 'svelte/animate';
@@ -25,7 +26,7 @@
   let menu: HTMLDialogElement;
   let newListOpen = $state(false);
   let newFolderOpen = $state(false);
-  let activeFolder = $state('');
+  const folderId = $derived(page.url.searchParams.get('folderId') ?? '');
   let announcement = $state('');
   const folders = $derived(($offline.account?.folders ?? []).filter((folder) => !folder.deleted) as Folder[]);
   let unlock: (() => void) | undefined;
@@ -60,14 +61,15 @@
     let index = 0;
     return lists.map((list) => previewIds!.includes(String(list._id)) ? reordered[index++] : list);
   });
-  const folderLists = $derived(lists.filter((list) => list.folderId === activeFolder));
-  const openFolder = $derived(folders.find((folder) => folder._id === activeFolder));
+  const viewLists = $derived(lists.filter((list) => folderId ? list.folderId === folderId : !list.folderId));
+  const openFolder = $derived(folders.find((folder) => folder._id === folderId));
   async function moveToFolder(id: string, folderId: string) {
     await engine.update('lists', id, { folderId: folderId || null });
     error = '';
     announcement = `List moved to ${folders.find((folder) => folder._id === folderId)?.title ?? 'no folder'}.`;
   }
   async function addList(data: Pick<List, 'title' | 'emoji' | 'color' | 'type'>) {
+    if (folderId && !openFolder) throw new Error('Folder not found.');
     await engine.add('lists', {
       ...data, folderId: openFolder?._id ?? null, id: '', index: lists.length, createdAt: new Date().toISOString(),
     } as List);
@@ -83,12 +85,10 @@
         title="Drag to reorder or move to a folder; on touch, hold first"
         class="list-card relative flex items-center gap-3 rounded-md border-2 border-gray-200 bg-surface p-4 shadow-sm"
       >
-        <Button variant="touch"
-          data-sort-key
-          aria-label={`Reorder ${list.title}`}
-          class="relative z-10 cursor-grab touch-none p-1 text-gray-400 active:cursor-grabbing"
-          title="Drag to reorder, or use the up and down arrow keys"><Icon name="grip" /></Button
-        ><a
+        <button type="button" data-sort-key aria-label={`Reorder ${list.title}`}
+          class="sr-only focus:not-sr-only focus:relative focus:z-10"
+          title="Use the up and down arrow keys to reorder">Reorder</button>
+        <a
           href={`/${list.type === ListType.timeline ? 'timeline' : 'tasks'}?listId=${encodeURIComponent(String(list._id))}`}
           data-sveltekit-preload-code="hover"
           class="list-card-link flex min-w-0 flex-1 items-center gap-3 font-medium"
@@ -107,7 +107,10 @@
 
 <header class="sticky top-0 z-20 bg-gray-100">
   <div class="mx-auto flex h-12 max-w-xl items-center justify-between px-5">
-    <h1 class="text-xl font-semibold text-primary">maitu</h1>
+    <div class="flex min-w-0 items-center gap-3">
+      {#if folderId}<LinkButton icon href="/" aria-label="Back to lists" class="text-primary"><Icon name="back" /></LinkButton>{/if}
+      <h1 class="truncate text-xl font-semibold text-primary">{folderId ? openFolder?.title ?? 'Folder' : 'maitu'}</h1>
+    </div>
     <Button icon
       aria-label="user-settings-menu"
       class="text-primary"
@@ -120,7 +123,7 @@
 </header>
 <main class="mx-auto max-w-xl space-y-3 p-5"
   use:sortable={{
-    ids: lists.map((list) => String(list._id)),
+    ids: viewLists.map((list) => String(list._id)),
     orderIds: lists.map((list) => String(list._id)),
     kind: 'lists',
     drop: moveToFolder,
@@ -128,18 +131,21 @@
     error: (message) => (error = message),
   }}
 >
-  <nav aria-label="List folders" class="folder-badges flex gap-2 overflow-x-auto pb-2">
+  {#if !folderId}<nav aria-label="List folders" class="folder-badges flex gap-2 overflow-x-auto pb-2">
     {#each folders as folder (folder._id)}
-      <button type="button" class="folder-badge" aria-haspopup="dialog" data-folder-drop={folder._id}
+      <a href={`/?folderId=${encodeURIComponent(folder._id)}`} class="folder-badge" data-folder-drop={folder._id}
         title={`Show ${folder.title}; drop a list here to move it`}
-        onclick={() => activeFolder = folder._id}>{folder.title}</button>
+        >{folder.title}</a>
     {/each}
-    <button type="button" class="folder-badge folder-add" aria-label="New folder" onclick={() => newFolderOpen = true}>+</button>
-  </nav>
+    <button type="button" class="folder-badge folder-add" aria-label="New folder" onclick={() => newFolderOpen = true}><Icon name="plus" size={16} /></button>
+  </nav>{/if}
   <p class="sr-only" role="status">{announcement}</p>
-  {@render listCards(displayedLists)}
+  {@render listCards(displayedLists.filter((list) => folderId ? list.folderId === folderId : !list.folderId))}
+  {#if folderId && !openFolder && $offline.ready}<p role="alert" class="py-6 text-center text-sm text-danger">Folder not found. Go back to your lists.</p>
+  {:else if folderId && !viewLists.length}<p class="py-6 text-center text-sm text-gray-500">This folder is empty. Move lists here from the main view, or create a list.</p>{/if}
   <Button
     class="mt-4 w-full text-primary"
+    disabled={!!folderId && !openFolder}
     onclick={() => newListOpen = true}>New List</Button
   >
   {#if error}<p role="alert" class="text-sm text-danger">{error}</p>{/if}
@@ -209,13 +215,6 @@
     await engine.add('folders', { _id: '', title });
   }} close={() => newFolderOpen = false}
 />{/await}{/if}
-{#if openFolder}{#await import('#lib/ui/FolderDialog.svelte') then module}{@const FolderDialog = module.default}<FolderDialog
-  onpreview={(ids) => previewIds = ids}
-  title={openFolder.title} close={() => activeFolder = ''} oncreate={() => newListOpen = true}
-  ids={folderLists.map((list) => String(list._id))} orderIds={lists.map((list) => String(list._id))}
->
-  {@render listCards(displayedLists.filter((list) => list.folderId === activeFolder))}
-</FolderDialog>{/await}{/if}
 {#if settingsList}{#await import('#lib/ListDetails.svelte') then module}{@const ListDetails = module.default}<ListDetails
     list={settingsList}
     close={() => (settingsId = null)}
@@ -228,17 +227,18 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    border: 1.5px solid rgb(var(--gray-300));
+    border: 1px solid rgb(var(--gray-300));
     border-radius: 999px;
-    padding: 6px 16px;
-    font-size: 14px;
-    font-weight: 600;
+    padding: 4px 12px;
+    height: 28px;
+    font-size: 12px;
+    font-weight: 500;
     color: rgb(var(--gray-500));
     transition: background 120ms, border-color 120ms;
   }
   .folder-badge:focus-visible { outline: 2px solid rgb(54 100 255); outline-offset: 2px; }
   .folder-badge:global([data-drag-over]) { background: rgb(54 100 255 / 0.2); border-color: rgb(54 100 255); box-shadow: 0 0 0 2px rgb(54 100 255 / 0.2); }
-  .folder-add { width: 34px; height: 34px; padding: 0; border-style: dashed; font-size: 22px; font-weight: 400; line-height: 1; }
+  .folder-add { display: inline-flex; align-items: center; justify-content: center; width: 28px; padding: 0; border-style: dashed; }
   @media (prefers-reduced-motion: reduce) { .folder-badge { transition: none; } }
   dialog::backdrop {
     background: rgb(0 0 0 / 0.5);
