@@ -64,7 +64,7 @@
     let index = 0;
     return lists.map((list) => previewIds!.includes(String(list._id)) ? reordered[index++] : list);
   });
-  const viewLists = $derived(lists.filter((list) => !openFolder || list.folderId === folderId));
+  const viewLists = $derived(lists.filter((list) => openFolder ? list.folderId === folderId : !list.folderId));
   const openFolder = $derived(folders.find((folder) => folder._id === folderId));
   async function moveToFolder(id: string, folderId: string) {
     await engine.update('lists', id, { folderId: folderId || null });
@@ -132,8 +132,8 @@
 >
   <nav aria-label="List folders" class="folder-badges flex gap-2 overflow-x-auto pb-2">
     <button type="button" class="folder-badge" class:active={!openFolder} aria-pressed={!openFolder}
-      data-folder-drop="" title="Show all lists; drop here to remove a list from its folder"
-      onclick={() => goto('/', { replace: true, shallow: true })}>All</button>
+      data-folder-drop="" title="Show lists without a folder; drop here to remove a list from its folder"
+      onclick={() => goto('/', { replace: true, shallow: true })}>No folder</button>
     {#each folders as folder (folder._id)}
       <span class="folder-badge folder-group" class:active={openFolder?._id === folder._id} data-folder-drop={folder._id}>
         <button type="button" class="folder-label" aria-pressed={openFolder?._id === folder._id}
@@ -146,8 +146,8 @@
     <button type="button" class="folder-badge folder-add" aria-label="New folder" onclick={() => { editFolderId = null; folderEditorOpen = true; }}><Icon name="plus" size={16} /></button>
   </nav>
   <p class="sr-only" role="status">{announcement}</p>
-  {@render listCards(displayedLists.filter((list) => !openFolder || list.folderId === folderId))}
-  {#if openFolder && !viewLists.length}<p class="py-6 text-center text-sm text-gray-500">This folder is empty. Drag lists onto its badge from All, or create a list here.</p>{/if}
+  {@render listCards(displayedLists.filter((list) => openFolder ? list.folderId === folderId : !list.folderId))}
+  {#if openFolder && !viewLists.length}<p class="py-6 text-center text-sm text-gray-500">This folder is empty. Drag lists onto its badge from “No folder”, or create a list here.</p>{/if}
   <Button
     class="mt-4 w-full text-primary"
     onclick={() => newListOpen = true}>New List</Button

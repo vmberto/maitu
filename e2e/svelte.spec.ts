@@ -1890,7 +1890,7 @@ test('Smart Place inclusion auto-adds one verified match and shows its source', 
 });
 
 
-test('folder badges filter in place, All includes filed lists, and offline changes persist', async ({ page, context }) => {
+test('folder badges filter in place, No folder excludes filed lists, and offline changes persist', async ({ page, context }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   const server = await transport(context);
   const secondId = '64b2f7a9c1e6f9a1b2c3d4f5';
@@ -1899,7 +1899,7 @@ test('folder badges filter in place, All includes filed lists, and offline chang
   await page.goto('/');
   const home = page.locator('main');
   const order = () => home.locator('[data-sort-id]').evaluateAll((rows) => rows.map((row) => (row as HTMLElement).dataset.sortId));
-  await expect(page.getByRole('button', { name: 'All', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByRole('button', { name: 'No folder', exact: true })).toHaveAttribute('aria-pressed', 'true');
   await expect(page.getByRole('navigation', { name: 'List folders' }).getByRole('button')).toHaveCount(2);
   await expect(page.getByRole('button', { name: 'New folder', exact: true })).toHaveCSS('width', '28px');
   await page.getByRole('button', { name: 'New folder', exact: true }).click();
@@ -1916,7 +1916,7 @@ test('folder badges filter in place, All includes filed lists, and offline chang
   await expect(home).toHaveAttribute('data-filter-view', 'same');
   await expect(page.getByRole('dialog')).not.toBeVisible();
   await expect(home.getByText('This folder is empty.', { exact: false })).toBeVisible();
-  await page.getByRole('button', { name: 'All', exact: true }).click();
+  await page.getByRole('button', { name: 'No folder', exact: true }).click();
   const dragTo = async (title: string, target: ReturnType<Page['locator']>) => {
     const card = home.locator('[data-sort-id]').filter({ has: page.getByRole('link', { name: `📝 ${title}`, exact: true }) });
     await card.hover();
@@ -1933,9 +1933,9 @@ test('folder badges filter in place, All includes filed lists, and offline chang
   await dragTo('Third list', home.locator(`[data-sort-id="${secondId}"]`));
   await expect.poll(async () => (await device(page)).lists.find((list: any) => list._id === thirdId).index).toBe(1);
   await dragTo('Pilot list', badge);
-  await expect(home.locator(`[data-sort-id="${listId}"]`)).toHaveCount(1);
+  await expect(home.locator(`[data-sort-id="${listId}"]`)).toHaveCount(0);
   await dragTo('Third list', badge);
-  await expect(home.locator('[data-sort-id]')).toHaveCount(3);
+  await expect.poll(order).toEqual([secondId]);
   await badge.click();
   await expect.poll(order).toEqual([listId, thirdId]);
   await expect(page.getByRole('link', { name: '📝 Second list' })).toHaveCount(0);
@@ -1964,7 +1964,7 @@ test('folder badges filter in place, All includes filed lists, and offline chang
   await expect.poll(async () => (await device(page)).lists.find((list: any) => list._id === thirdId).folderId).toBeNull();
   await page.getByRole('button', { name: 'Close panel', exact: true }).click();
   await expect(home.getByText('This folder is empty.', { exact: false })).toBeVisible();
-  await page.getByRole('button', { name: 'All', exact: true }).click();
+  await page.getByRole('button', { name: 'No folder', exact: true }).click();
   await expect.poll(order).toEqual([thirdId, listId, secondId]);
   await context.setOffline(false);
   await expect.poll(async () => (await device(page)).queue.length).toBe(0);
@@ -2000,8 +2000,8 @@ test('touch dragging onto a folder badge and creating a list inside a folder', a
   await expect(page.getByRole('link', { name: '📝 Home projects' })).toBeVisible();
   await page.reload();
   await expect(page.getByRole('link', { name: '📝 Home projects' })).toBeVisible();
-  await page.getByRole('button', { name: 'All', exact: true }).click();
-  await expect(page.locator('main [data-sort-id]')).toHaveCount(2);
+  await page.getByRole('button', { name: 'No folder', exact: true }).click();
+  await expect(page.locator('main [data-sort-id]')).toHaveCount(0);
   expect((await device(page)).lists.find((list: any) => list.title === 'Home projects').folderId).toBe(folderId);
   await touch.detach();
 });
@@ -2114,7 +2114,8 @@ test('renames and deletes folder badges offline without deleting active or archi
   server.snapshot.lists.push({ ...server.snapshot.lists[0], _id: archiveId, title: 'Archived list', archived: true });
   server.snapshot.tasks.push({ _id: '64b2f7a9c1e6f9a1b2c3d4ab', title: 'Keep this task', listId, version: 0, complete: false, createdAt: '2026-01-01' });
   await page.goto('/');
-  await expect(page.getByRole('link', { name: '📝 Pilot list' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Work', exact: true })).toBeVisible();
+  await expect(page.getByRole('link', { name: '📝 Pilot list' })).toHaveCount(0);
   await page.getByRole('button', { name: 'Work', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Work', exact: true })).toHaveAttribute('aria-pressed', 'true');
   await page.evaluate(async () => { await navigator.serviceWorker.ready; });
@@ -2132,7 +2133,7 @@ test('renames and deletes folder badges offline without deleting active or archi
   await page.getByRole('button', { name: 'Edit folder Projects', exact: true }).click();
   await page.getByRole('button', { name: 'Delete folder', exact: true }).click();
   await expect(page.getByRole('dialog')).not.toBeVisible();
-  await expect(page.getByRole('button', { name: 'All', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByRole('button', { name: 'No folder', exact: true })).toHaveAttribute('aria-pressed', 'true');
   await expect(page.getByRole('button', { name: 'Projects', exact: true })).toHaveCount(0);
   await expect(page.getByRole('link', { name: '📝 Pilot list' })).toBeVisible();
   const saved = await device(page);

@@ -42,7 +42,7 @@
     <label class="block text-sm">Folder name<input class="drawer-input mt-2" bind:value={title} maxlength="50" required /></label>
     <Button tone="primary" type="submit" disabled={saving || !title.trim()} class="w-full">{ondelete ? 'Save changes' : 'Create folder'}</Button>
     {#if ondelete}
-      <p class="text-sm text-gray-500">Deleting this folder keeps its lists in All.</p>
+      <p class="text-sm text-gray-500">Deleting this folder keeps its lists under “No folder”.</p>
       <Button tone="danger" disabled={saving} class="w-full" onclick={() => run(ondelete!)}>Delete folder</Button>
     {/if}
     {#if error}<p role="alert" class="text-sm text-danger">{error}</p>{/if}
