@@ -1,7 +1,6 @@
 <script lang="ts">
   import Button from '#lib/ui/Button.svelte';
   import ArchivedItems from '#lib/ArchivedItems.svelte';
-  import Icon from '#lib/ui/Icon.svelte';
   import { autosize } from '#lib/autosize';
   import { page } from '$app/state';
   import { engine, offline } from '#lib/offline';
@@ -88,9 +87,9 @@
                     hour: '2-digit',
                     minute: '2-digit',
                   })}</time
-                ><Button icon aria-label={`Note details ${task.title}`} onclick={() => detailsId = String(task._id)}><Icon name="dots" /></Button>
+                >
               </div>
-              <p class="whitespace-pre-wrap leading-relaxed">{task.title}</p>
+              <p class="whitespace-pre-wrap leading-relaxed"><button type="button" class="w-full whitespace-pre-wrap text-left" aria-label={`Note details ${task.title}`} onclick={() => detailsId = String(task._id)}>{task.title}</button></p>
             </article>{/each}
         </div>
       </section>{/each}
@@ -102,4 +101,4 @@
     close={() => (settings = false)}
   />{/await}{/if}
 
-{#if detailsId}{#key detailsId}{#await import('#lib/TaskDetails.svelte') then module}{@const TaskDetails = module.default}<TaskDetails taskId={detailsId} openItem={(id) => detailsId = id} readonly={!!list?.archived} close={() => detailsId = null} />{/await}{/key}{/if}
+{#if detailsId}{#key detailsId}{#await import('#lib/TaskDetails.svelte') then module}{@const TaskDetails = module.default}<TaskDetails taskId={detailsId} readonly={!!list?.archived} close={() => detailsId = null} />{/await}{/key}{/if}

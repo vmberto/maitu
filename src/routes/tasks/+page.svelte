@@ -374,7 +374,6 @@
 </main>
 {#if detailsId}{#key detailsId}{#await import('#lib/TaskDetails.svelte') then module}{@const TaskDetails = module.default}<TaskDetails
     taskId={detailsId}
-    openItem={(id) => detailsId = id}
     readonly={!!list?.archived}
     close={() => (detailsId = null)}
   />{/await}{/key}{/if}

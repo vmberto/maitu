@@ -19,9 +19,8 @@
   let {
     taskId,
     close,
-    openItem,
     readonly = false,
-  }: { taskId: string; close: () => void; openItem: (id: string) => void; readonly?: boolean } = $props();
+  }: { taskId: string; close: () => void; readonly?: boolean } = $props();
   let dialog: HTMLDialogElement;
   let error = $state('');
   let subtask = $state('');
@@ -379,7 +378,6 @@
                   error = 'Could not save this subtask.';
                 }
               }}></textarea>
-            <Button icon aria-label={`Task details ${child.title}`} onclick={() => openItem(String(child._id))}><Icon name="dots" /></Button>
           </div>{/each}
       </div>
       {#if !readonly}<form

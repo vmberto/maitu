@@ -621,6 +621,10 @@ test('timeline groups entries newest first and loads settings offline', async ({
   }));
   await page.goto(`/timeline?listId=${listId}`);
   await expect(page.locator('main article p')).toHaveText(['Latest entry', 'Earlier time', 'Earlier day']);
+  await expect(page.locator('main article svg')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Note details Latest entry', exact: true }).click();
+  await expect(page.getByRole('dialog').getByRole('heading', { name: 'Latest entry', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Close panel', exact: true }).click();
   await expect(page.locator('main section')).toHaveCount(2);
   await expect(page.locator('main section').first().locator('article')).toHaveCount(2);
   await page.evaluate(async () => { await navigator.serviceWorker.ready; });
@@ -1433,7 +1437,9 @@ test('related tasks archive independently and restore to their parent', async ({
   await page.goto(`/tasks?listId=${listId}`);
   await page.getByRole('button', { name: 'Task details Parent', exact: true }).click();
   let sheet = page.getByRole('dialog');
-  await sheet.getByRole('button', { name: 'Task details Child', exact: true }).click();
+  await expect(sheet.getByRole('button', { name: 'Task details Child', exact: true })).toHaveCount(0);
+  await expect(sheet.getByRole('textbox', { name: 'Subtask Child', exact: true })).toBeVisible();
+  await page.goto(`/tasks?listId=${listId}&taskId=${child}`);
   await expect(sheet.getByRole('heading', { name: 'Child', exact: true })).toBeVisible();
   await expect(sheet.locator('.markdown-editor')).toContainText('Child contents');
   await sheet.getByText('Options', { exact: true }).click();
