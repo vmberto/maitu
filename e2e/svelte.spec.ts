@@ -1992,3 +1992,44 @@ test('touch dragging onto a folder badge and creating a list inside a folder', a
   expect((await device(page)).lists.find((list: any) => list.title === 'Home projects').folderId).toBe(folderId);
   await touch.detach();
 });
+
+
+test('list cards slide into a live drag preview, cancel safely, and save only on drop', async ({ page, context }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const server = await transport(context);
+  const secondId = '64b2f7a9c1e6f9a1b2c3d4f5';
+  const thirdId = '64b2f7a9c1e6f9a1b2c3d4f6';
+  server.snapshot.lists.push({ ...server.snapshot.lists[0], _id: secondId, title: 'Second list', index: 1 }, { ...server.snapshot.lists[0], _id: thirdId, title: 'Third list', index: 2 });
+  await page.goto('/');
+  const home = page.locator('main');
+  const order = () => home.locator('[data-sort-id]').evaluateAll((rows) => rows.map((row) => (row as HTMLElement).dataset.sortId));
+  const startDrag = async () => {
+    const handle = home.getByRole('button', { name: 'Reorder Third list', exact: true });
+    await handle.hover();
+    const grip = (await handle.boundingBox())!;
+    const first = (await home.locator(`[data-sort-id="${listId}"]`).boundingBox())!;
+    await page.mouse.move(grip.x + grip.width / 2, grip.y + grip.height / 2);
+    await page.mouse.down();
+    await expect(page.locator('[data-sort-ghost]')).toBeVisible();
+    await page.mouse.move(first.x + first.width / 2, first.y + first.height / 2, { steps: 12 });
+    await expect.poll(order).toEqual([thirdId, listId, secondId]);
+    expect((await device(page)).lists.find((list: any) => list._id === thirdId).index).toBe(2);
+  };
+  await startDrag();
+  await page.keyboard.press('Escape');
+  await page.mouse.up();
+  await expect(page.locator('[data-sort-ghost]')).toHaveCount(0);
+  await expect.poll(order).toEqual([listId, secondId, thirdId]);
+  expect((await device(page)).queue).toHaveLength(0);
+  await startDrag();
+  await page.screenshot({ path: '/tmp/maitu-list-drag-preview.png', animations: 'disabled' });
+  await page.mouse.up();
+  await expect(page.locator('[data-sort-ghost]')).toHaveCount(0);
+  await expect.poll(async () => (await device(page)).lists.find((list: any) => list._id === thirdId).index).toBe(0);
+  await page.reload();
+  await expect.poll(order).toEqual([thirdId, listId, secondId]);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await home.getByRole('button', { name: 'Reorder Third list', exact: true }).focus();
+  await page.keyboard.press('ArrowDown');
+  await expect.poll(order).toEqual([listId, thirdId, secondId]);
+});

@@ -30,6 +30,14 @@
   const folders = $derived(($offline.account?.folders ?? []).filter((folder) => !folder.deleted) as Folder[]);
   let unlock: (() => void) | undefined;
   let dark = $state(false);
+  let reducedMotion = $state(false);
+  onMount(() => {
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const update = () => reducedMotion = media.matches;
+    update();
+    media.addEventListener('change', update);
+    return () => media.removeEventListener('change', update);
+  });
   onDestroy(() => unlock?.());
   onMount(() => {
     const update = () =>
@@ -45,6 +53,13 @@
       ) ?? []
     ).sort((a, b) => (a as List).index - (b as List).index) as List[],
   );
+  let previewIds = $state<string[] | null>(null);
+  const displayedLists = $derived.by(() => {
+    if (!previewIds) return lists;
+    const reordered = previewIds.map((id) => lists.find((list) => String(list._id) === id)).filter((list): list is List => !!list);
+    let index = 0;
+    return lists.map((list) => previewIds!.includes(String(list._id)) ? reordered[index++] : list);
+  });
   const folderLists = $derived(lists.filter((list) => list.folderId === activeFolder));
   const openFolder = $derived(folders.find((folder) => folder._id === activeFolder));
   async function moveToFolder(id: string, folderId: string) {
@@ -63,7 +78,7 @@
 {#snippet listCards(items: List[])}
   <div class="space-y-3">
     {#each items as list (list._id)}<div
-        animate:flip={{ duration: 180 }}
+        animate:flip={{ duration: reducedMotion ? 0 : 220 }}
         data-sort-id={String(list._id)}
         title="Drag to reorder or move to a folder; on touch, hold first"
         class="list-card relative flex items-center gap-3 rounded-md border-2 border-gray-200 bg-surface p-4 shadow-sm"
@@ -109,6 +124,7 @@
     orderIds: lists.map((list) => String(list._id)),
     kind: 'lists',
     drop: moveToFolder,
+    preview: (ids) => previewIds = ids,
     error: (message) => (error = message),
   }}
 >
@@ -121,7 +137,7 @@
     <button type="button" class="folder-badge folder-add" aria-label="New folder" onclick={() => newFolderOpen = true}>+</button>
   </nav>
   <p class="sr-only" role="status">{announcement}</p>
-  {@render listCards(lists)}
+  {@render listCards(displayedLists)}
   <Button
     class="mt-4 w-full text-primary"
     onclick={() => newListOpen = true}>New List</Button
@@ -194,10 +210,11 @@
   }} close={() => newFolderOpen = false}
 />{/await}{/if}
 {#if openFolder}{#await import('#lib/ui/FolderDialog.svelte') then module}{@const FolderDialog = module.default}<FolderDialog
+  onpreview={(ids) => previewIds = ids}
   title={openFolder.title} close={() => activeFolder = ''} oncreate={() => newListOpen = true}
   ids={folderLists.map((list) => String(list._id))} orderIds={lists.map((list) => String(list._id))}
 >
-  {@render listCards(folderLists)}
+  {@render listCards(displayedLists.filter((list) => list.folderId === activeFolder))}
 </FolderDialog>{/await}{/if}
 {#if settingsList}{#await import('#lib/ListDetails.svelte') then module}{@const ListDetails = module.default}<ListDetails
     list={settingsList}

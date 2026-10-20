@@ -16,7 +16,11 @@ body {
 .list-card {
   transition: transform 120ms ease, border-color 160ms ease;
 }
-.list-card:has(.list-card-link:active) {
+.list-card[data-sort-dragging] {
+  border-style: dashed;
+  border-color: #3664ff;
+}
+.list-card:has(.list-card-link:active):not([data-sort-dragging]) {
   transform: scale(0.99);
 }
 .route-enter {

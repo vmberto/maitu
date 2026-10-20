@@ -5,9 +5,9 @@
   import { drawerBehavior, closeDrawer } from '../drawer';
   import { lockBody } from '../scroll-lock';
   import { sortable } from '../reorder';
-  let { title, ids, orderIds, children, close, oncreate }: {
+  let { title, ids, orderIds, children, close, oncreate, onpreview }: {
     title: string; ids: string[]; orderIds: string[]; children: Snippet;
-    close: () => void; oncreate: () => void;
+    close: () => void; oncreate: () => void; onpreview: (ids: string[] | null) => void;
   } = $props();
   let dialog: HTMLDialogElement;
   let error = $state('');
@@ -23,7 +23,7 @@
     <h2>{title}</h2>
     <Button icon aria-label="Close folder" onclick={() => closeDrawer(dialog)}><Icon name="close" size={20} /></Button>
   </header>
-  <div class="drawer-body" use:sortable={{ ids, orderIds, kind: 'lists', error: (message) => error = message }}>
+  <div class="drawer-body" use:sortable={{ ids, orderIds, kind: 'lists', preview: onpreview, error: (message) => error = message }}>
     {@render children()}
     {#if !ids.length}<p class="py-6 text-center text-sm text-gray-500">This folder is empty. Drag lists onto its badge, or create a list here.</p>{/if}
     {#if error}<p role="alert" class="mt-3 text-sm text-danger">{error}</p>{/if}
