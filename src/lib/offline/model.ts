@@ -48,7 +48,9 @@ export function enqueue(
               list._id ===
               String((entity as Task | undefined)?.listId ?? input.data.listId),
           );
-    if ((parent as List | undefined)?.archived)
+    // Folder deletion may detach archived lists without editing their contents.
+    const unfiling = input.kind === 'lists' && input.action === 'patch' && input.data.folderId === null && Object.keys(input.data).length === 1;
+    if ((parent as List | undefined)?.archived && !unfiling)
       throw new Error('Archived lists are read only.');
     if (input.action !== 'create' && (!entity || entity.deleted))
       throw new Error('This item is no longer available.');

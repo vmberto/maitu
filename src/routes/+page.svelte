@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
   import { page } from '$app/state';
   import Button from '#lib/ui/Button.svelte';
   import LinkButton from '#lib/ui/LinkButton.svelte';
@@ -25,10 +26,12 @@
   let error = $state('');
   let menu: HTMLDialogElement;
   let newListOpen = $state(false);
-  let newFolderOpen = $state(false);
-  const folderId = $derived(page.url.searchParams.get('folderId') ?? '');
+  let folderEditorOpen = $state(false);
+  let editFolderId = $state<string | null>(null);
+  const folderId = $derived((page.shallow?.url ?? page.url).searchParams.get('folderId') ?? '');
   let announcement = $state('');
   const folders = $derived(($offline.account?.folders ?? []).filter((folder) => !folder.deleted) as Folder[]);
+  const editingFolder = $derived(folders.find((folder) => folder._id === editFolderId));
   let unlock: (() => void) | undefined;
   let dark = $state(false);
   let reducedMotion = $state(false);
@@ -61,7 +64,7 @@
     let index = 0;
     return lists.map((list) => previewIds!.includes(String(list._id)) ? reordered[index++] : list);
   });
-  const viewLists = $derived(lists.filter((list) => folderId ? list.folderId === folderId : !list.folderId));
+  const viewLists = $derived(lists.filter((list) => !openFolder || list.folderId === folderId));
   const openFolder = $derived(folders.find((folder) => folder._id === folderId));
   async function moveToFolder(id: string, folderId: string) {
     await engine.update('lists', id, { folderId: folderId || null });
@@ -69,7 +72,6 @@
     announcement = `List moved to ${folders.find((folder) => folder._id === folderId)?.title ?? 'no folder'}.`;
   }
   async function addList(data: Pick<List, 'title' | 'emoji' | 'color' | 'type'>) {
-    if (folderId && !openFolder) throw new Error('Folder not found.');
     await engine.add('lists', {
       ...data, folderId: openFolder?._id ?? null, id: '', index: lists.length, createdAt: new Date().toISOString(),
     } as List);
@@ -107,10 +109,7 @@
 
 <header class="sticky top-0 z-20 bg-gray-100">
   <div class="mx-auto flex h-12 max-w-xl items-center justify-between px-5">
-    <div class="flex min-w-0 items-center gap-3">
-      {#if folderId}<LinkButton icon href="/" aria-label="Back to lists" class="text-primary"><Icon name="back" /></LinkButton>{/if}
-      <h1 class="truncate text-xl font-semibold text-primary">{folderId ? openFolder?.title ?? 'Folder' : 'maitu'}</h1>
-    </div>
+    <h1 class="text-xl font-semibold text-primary">maitu</h1>
     <Button icon
       aria-label="user-settings-menu"
       class="text-primary"
@@ -131,21 +130,26 @@
     error: (message) => (error = message),
   }}
 >
-  {#if !folderId}<nav aria-label="List folders" class="folder-badges flex gap-2 overflow-x-auto pb-2">
+  <nav aria-label="List folders" class="folder-badges flex gap-2 overflow-x-auto pb-2">
+    <button type="button" class="folder-badge" class:active={!openFolder} aria-pressed={!openFolder}
+      data-folder-drop="" title="Show all lists; drop here to remove a list from its folder"
+      onclick={() => goto('/', { replace: true, shallow: true })}>All</button>
     {#each folders as folder (folder._id)}
-      <a href={`/?folderId=${encodeURIComponent(folder._id)}`} class="folder-badge" data-folder-drop={folder._id}
-        title={`Show ${folder.title}; drop a list here to move it`}
-        >{folder.title}</a>
+      <span class="folder-badge folder-group" class:active={openFolder?._id === folder._id} data-folder-drop={folder._id}>
+        <button type="button" class="folder-label" aria-pressed={openFolder?._id === folder._id}
+          title={`Show ${folder.title}; drop a list here to move it`}
+          onclick={() => goto(`/?folderId=${encodeURIComponent(folder._id)}`, { replace: true, shallow: true })}>{folder.title}</button>
+        {#if openFolder?._id === folder._id}<button type="button" class="folder-edit" aria-label={`Edit folder ${folder.title}`}
+          onclick={() => { editFolderId = folder._id; folderEditorOpen = true; }}><Icon name="dots" size={14} /></button>{/if}
+      </span>
     {/each}
-    <button type="button" class="folder-badge folder-add" aria-label="New folder" onclick={() => newFolderOpen = true}><Icon name="plus" size={16} /></button>
-  </nav>{/if}
+    <button type="button" class="folder-badge folder-add" aria-label="New folder" onclick={() => { editFolderId = null; folderEditorOpen = true; }}><Icon name="plus" size={16} /></button>
+  </nav>
   <p class="sr-only" role="status">{announcement}</p>
-  {@render listCards(displayedLists.filter((list) => folderId ? list.folderId === folderId : !list.folderId))}
-  {#if folderId && !openFolder && $offline.ready}<p role="alert" class="py-6 text-center text-sm text-danger">Folder not found. Go back to your lists.</p>
-  {:else if folderId && !viewLists.length}<p class="py-6 text-center text-sm text-gray-500">This folder is empty. Move lists here from the main view, or create a list.</p>{/if}
+  {@render listCards(displayedLists.filter((list) => !openFolder || list.folderId === folderId))}
+  {#if openFolder && !viewLists.length}<p class="py-6 text-center text-sm text-gray-500">This folder is empty. Drag lists onto its badge from All, or create a list here.</p>{/if}
   <Button
     class="mt-4 w-full text-primary"
-    disabled={!!folderId && !openFolder}
     onclick={() => newListOpen = true}>New List</Button
   >
   {#if error}<p role="alert" class="text-sm text-danger">{error}</p>{/if}
@@ -210,10 +214,17 @@
 {#if newListOpen}{#await import('#lib/ui/NewListDialog.svelte') then module}{@const NewListDialog = module.default}<NewListDialog
   bind:title bind:type bind:emoji bind:color oncreate={addList} close={() => newListOpen = false}
 />{/await}{/if}
-{#if newFolderOpen}{#await import('#lib/ui/NewFolderDialog.svelte') then module}{@const NewFolderDialog = module.default}<NewFolderDialog
-  oncreate={async (title) => {
-    await engine.add('folders', { _id: '', title });
-  }} close={() => newFolderOpen = false}
+{#if folderEditorOpen}{#await import('#lib/ui/FolderEditor.svelte') then module}{@const FolderEditor = module.default}<FolderEditor
+  folder={editingFolder}
+  onsave={async (title) => {
+    if (editFolderId) await engine.update('folders', editFolderId, { title });
+    else await engine.add('folders', { _id: '', title });
+  }}
+  ondelete={editFolderId ? async () => {
+    await engine.remove('folders', editFolderId!);
+    if (folderId === editFolderId) await goto('/', { replace: true, shallow: true });
+  } : undefined}
+  close={() => folderEditorOpen = false}
 />{/await}{/if}
 {#if settingsList}{#await import('#lib/ListDetails.svelte') then module}{@const ListDetails = module.default}<ListDetails
     list={settingsList}
@@ -236,7 +247,11 @@
     color: rgb(var(--gray-500));
     transition: background 120ms, border-color 120ms;
   }
-  .folder-badge:focus-visible { outline: 2px solid rgb(54 100 255); outline-offset: 2px; }
+  .folder-badge.active { background: rgb(54 100 255 / .12); border-color: rgb(54 100 255 / .3); color: #3664ff; }
+  .folder-group { display: inline-flex; align-items: center; padding: 0; }
+  .folder-label { min-width: 0; padding: 4px 12px; overflow: hidden; text-overflow: ellipsis; }
+  .folder-edit { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 24px; height: 26px; margin-left: -6px; }
+  .folder-badge:focus-visible, .folder-label:focus-visible, .folder-edit:focus-visible { outline: 2px solid rgb(54 100 255); outline-offset: 2px; }
   .folder-badge:global([data-drag-over]) { background: rgb(54 100 255 / 0.2); border-color: rgb(54 100 255); box-shadow: 0 0 0 2px rgb(54 100 255 / 0.2); }
   .folder-add { display: inline-flex; align-items: center; justify-content: center; width: 28px; padding: 0; border-style: dashed; }
   @media (prefers-reduced-motion: reduce) { .folder-badge { transition: none; } }

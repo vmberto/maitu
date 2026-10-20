@@ -287,3 +287,16 @@ it('adds folders to legacy device accounts and preserves pending offline moves d
   expect(enqueue(merged, [{ kind: 'lists', entityId: list._id, action: 'patch', data: { folderId: null } }]).lists[0]).toMatchObject({ folderId: null });
   expect(initial).not.toHaveProperty('folders');
 });
+
+
+it('allows folder deletion to unfile archived lists while preserving their contents', () => {
+  const folderId = '64b2f7a9c1e6f9a1b2c3d4ef';
+  const account = { ...initial, lists: [{ ...list, archived: true, folderId }], folders: [{ _id: folderId, title: 'Work', version: 1 }] };
+  const updated = enqueue(account, [
+    { kind: 'lists', entityId: list._id, action: 'patch', data: { folderId: null } },
+    { kind: 'folders', entityId: folderId, action: 'delete', data: {} },
+  ]);
+  expect(updated.lists[0]).toMatchObject({ archived: true, title: 'List', folderId: null });
+  expect(updated.folders![0]).toMatchObject({ deleted: true });
+  expect(() => enqueue(account, [{ kind: 'lists', entityId: list._id, action: 'patch', data: { folderId: null, title: 'Changed' } }])).toThrow('read only');
+});

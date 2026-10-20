@@ -241,7 +241,9 @@ export async function applyOperation(
     if (existing._appliedOperations?.includes(operation.id))
       return { entity: publicEntity(existing) };
   }
-  if (archived) throw new SyncError('Archived lists are read only.', 403);
+  // Folder deletion may detach archived lists without editing their contents.
+  const unfiling = operation.kind === 'lists' && operation.action === 'patch' && operation.data?.folderId === null && Object.keys(operation.data).length === 1;
+  if (archived && !unfiling) throw new SyncError('Archived lists are read only.', 403);
   const conflict = (message: string) => ({
     conflict: { message, server: existing ? publicEntity(existing) : null },
   });
@@ -259,6 +261,9 @@ export async function applyOperation(
           operation.data,
           operation.action === 'create',
         );
+  if (operation.kind === 'folders' && operation.action === 'delete' &&
+      await db.collection('lists').findOne({ owner, folderId: operation.entityId, deleted: { $ne: true } }))
+    throw new SyncError('Move lists out of this folder before deleting it.');
   if (operation.kind === 'lists' && data.folderId) {
     const folder = await db.collection('folders').findOne({ _id: objectId(data.folderId), owner, deleted: { $ne: true } });
     if (!folder) throw new SyncError('Folder not found.', 404);
@@ -325,7 +330,7 @@ export async function applyOperation(
         {
           _id: id,
           ...(operation.kind !== 'tasks'
-            ? { owner, ...(operation.kind === 'lists' ? { archived: { $ne: true } } : {}) }
+            ? { owner, ...(operation.kind === 'lists' && !unfiling ? { archived: { $ne: true } } : {}) }
             : { listId: existing.listId }),
           deleted: { $ne: true },
           ...(operation.baseVersion === 0

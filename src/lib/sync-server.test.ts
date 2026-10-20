@@ -466,3 +466,24 @@ it('assigns lists only to owned live folders and allows removing assignments', a
   await applyOperation(db, userId, { ...operation, data: { folderId: null } });
   expect(lists.updateOne.mock.calls[1][1].$set.folderId).toBeNull();
 });
+
+
+it('unfiles archived lists without permitting content changes or removing archive protection', async () => {
+  lists.findOne.mockResolvedValue({ ...list, archived: true, folderId: taskId });
+  await applyOperation(db, userId, { ...operation, data: { folderId: null } });
+  expect(lists.updateOne.mock.calls[0][1].$set).toEqual({ folderId: null, deleted: false });
+  expect(lists.updateOne.mock.calls[0][0]).not.toHaveProperty('archived');
+  await expect(applyOperation(db, userId, { ...operation, data: { folderId: null, title: 'Changed' } })).rejects.toThrow('read only');
+  await expect(applyOperation(db, taskId, { ...operation, data: { folderId: null } })).rejects.toThrow('not found');
+});
+
+it('requires member lists to be unfiled before deleting an owned folder', async () => {
+  folders.findOne.mockResolvedValue({ _id: new ObjectId(taskId), owner: new ObjectId(userId), version: 2, title: 'Work' });
+  const remove = { ...operation, kind: 'folders' as const, entityId: taskId, action: 'delete' as const, data: {} };
+  await expect(applyOperation(db, userId, remove)).rejects.toThrow('Move lists out');
+  expect(lists.findOne).toHaveBeenCalledWith({ owner: new ObjectId(userId), folderId: taskId, deleted: { $ne: true } });
+  expect(folders.updateOne).not.toHaveBeenCalled();
+  lists.findOne.mockResolvedValue(null);
+  await applyOperation(db, userId, remove);
+  expect(folders.updateOne.mock.calls[0][1].$set).toEqual({ deleted: true });
+});

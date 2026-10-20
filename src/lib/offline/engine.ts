@@ -435,9 +435,15 @@ export function createOfflineEngine(options: {
     },
     remove: async (kind: EntityKind, id: string) => {
       await commit((saved) => {
+        if (kind === 'folders') return [
+          ...saved.lists.filter((list) => !list.deleted && (list as List).folderId === id).map((list) => ({
+            kind: 'lists' as const, entityId: list._id, action: 'patch' as const, data: { folderId: null },
+          })),
+          { kind, entityId: id, action: 'delete', data: {} },
+        ];
         const children = saved.tasks.filter(
           (task) =>
-            !task.deleted && kind !== 'folders' &&
+            !task.deleted &&
             (kind === 'lists'
               ? String((task as Task).listId) === id
               : String((task as Task).parentTaskId) === id),
