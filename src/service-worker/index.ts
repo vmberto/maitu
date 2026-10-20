@@ -102,7 +102,7 @@ self.addEventListener('push', (event) => {
     if (duplicate) return;
     try {
       await self.registration.showNotification(data.title || 'Maitu', {
-        body: data.message, icon: '/icons/icon-192x192.png?v=4', tag: data.deliveryId,
+        body: data.message, icon: '/icons/apple-touch-icon.png?v=5', tag: data.deliveryId,
         data: { url: data.url },
       });
     } catch (error) {
