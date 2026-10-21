@@ -47,11 +47,16 @@ export interface TaskLocation {
   placeId: string;
 }
 
-export type TaskAddon = 'location' | 'relatedTasks' | 'scheduling';
+export type TaskAddon = 'location' | 'relatedTasks' | 'scheduling' | 'recurrence';
 
 export interface TaskSchedule {
   date: string;
   time?: string;
+  timeZone: string;
+}
+export interface TaskRecurrence {
+  dayOfMonth: number;
+  nextDate: string;
   timeZone: string;
 }
 export interface TaskReminder {
@@ -74,6 +79,7 @@ export interface Task {
   complete: boolean;
   schedule?: TaskSchedule | null;
   wasScheduled?: boolean;
+  recurrence?: TaskRecurrence | null;
   reminder?: TaskReminder | null;
 
   // Keep legacy text locations readable; new selections include coordinates.

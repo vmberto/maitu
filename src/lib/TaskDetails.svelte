@@ -7,6 +7,7 @@
   import Tabs from './ui/Tabs.svelte';
   import Button from './ui/Button.svelte';
   import Disclosure from './ui/Disclosure.svelte';
+  import TaskRecurrence from './ui/TaskRecurrence.svelte';
   import TaskScheduling from './ui/TaskScheduling.svelte';
   import { autosize } from '#lib/autosize';
   import { HexColors } from './colors';
@@ -58,6 +59,7 @@
   );
   const addons = $derived(Array.from(new Set([
     ...(task?.addons ?? (ownerList?.type === 'places' ? ['location' as const] : [])),
+    ...(task?.recurrence ? ['recurrence' as const] : []),
     ...(task?.schedule || task?.reminder ? ['scheduling' as const] : []),
     ...(children.length ? ['relatedTasks' as const] : []),
     ...(normalizeLocation(task?.location) ? ['location' as const] : []),
@@ -65,6 +67,7 @@
   async function setAddon(addon: TaskAddon, enabled: boolean) {
     if (!enabled && addon === 'relatedTasks' && children.length) return;
     await save({ addons: enabled ? [...addons, addon] : addons.filter((item) => item !== addon),
+      ...(!enabled && addon === 'recurrence' ? { recurrence: null } : {}),
       ...(!enabled && addon === 'scheduling' ? { schedule: null, reminder: null } : {}),
     });
   }
@@ -159,6 +162,7 @@
         complete: false,
         completedAt: null,
         reminder: null,
+        recurrence: null,
         createdAt: new Date().toISOString(),
       });
       for (const child of children) {
@@ -169,6 +173,7 @@
           complete: false,
           completedAt: null,
           reminder: null,
+          recurrence: null,
           createdAt: new Date().toISOString(),
         });
       }
@@ -336,6 +341,9 @@
       accountId={String($offline.account?.user._id ?? '')} readonly={readonly || task.complete}
       onremove={readonly ? undefined : () => void setAddon('scheduling', false)}
       onsave={(data) => engine.update('tasks', taskId, data).then(() => {})} />{/if}
+    {#if task && !isNote && addons.includes('recurrence')}<TaskRecurrence recurrence={task.recurrence} {readonly}
+      onremove={readonly ? undefined : () => void setAddon('recurrence', false)}
+      onsave={(recurrence) => engine.update('tasks', taskId, { recurrence }).then(() => {})} />{/if}
     {#if addons.includes('relatedTasks')}<Section title="Related Tasks">
       {#snippet actions()}{#if !readonly}<AddonMenu name="Related Tasks" disabled={children.length > 0} reason={children.length ? 'Remove all related tasks first' : ''} onremove={() => setAddon('relatedTasks', false)} />{/if}{/snippet}
       <div class="related-rows">
@@ -466,6 +474,10 @@
             {#if !isNote}<Button variant="row" disabled={addons.includes('scheduling')} onclick={() => void setAddon('scheduling', true)}>
               <Icon name="calendar" size={18} /><span class="flex-1">Schedule &amp; Reminder</span>
               {#if addons.includes('scheduling')}<span class="text-xs text-gray-500">Added</span>{:else}<Icon name="plus" size={16} />{/if}
+            </Button>{/if}
+            {#if !isNote}<Button variant="row" disabled={addons.includes('recurrence')} onclick={() => void setAddon('recurrence', true)}>
+              <Icon name="calendar" size={18} /><span class="flex-1">Recurrent Tasks</span>
+              {#if addons.includes('recurrence')}<span class="text-xs text-gray-500">Added</span>{:else}<Icon name="plus" size={16} />{/if}
             </Button>{/if}
             <Button variant="row"
               disabled={addons.includes('location')}

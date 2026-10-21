@@ -487,3 +487,16 @@ it('requires member lists to be unfiled before deleting an owned folder', async 
   await applyOperation(db, userId, remove);
   expect(folders.updateOne.mock.calls[0][1].$set).toEqual({ deleted: true });
 });
+
+it('rejects recurring notes and clears recurrence when converting a task to a note', async () => {
+  const recurrence = { dayOfMonth: 31, nextDate: '2026-10-31', timeZone: 'America/Recife' };
+  const existing = { _id: new ObjectId(taskId), listId: new ObjectId(listId), version: 2, recurrence };
+  lists.findOne.mockResolvedValue({ ...list, type: 'mixed' });
+  tasks.findOne.mockResolvedValue({ ...existing, type: 'note' });
+  const edit = { ...operation, kind: 'tasks' as const, entityId: taskId, data: { recurrence } };
+  await expect(applyOperation(db, userId, edit)).rejects.toThrow('Only tasks can recur');
+  tasks.findOne.mockResolvedValue(existing);
+  tasks.updateOne.mockResolvedValue({ matchedCount: 1 });
+  await applyOperation(db, userId, { ...edit, data: { type: 'note' } });
+  expect(tasks.updateOne.mock.calls[0][1].$set.recurrence).toBeNull();
+});

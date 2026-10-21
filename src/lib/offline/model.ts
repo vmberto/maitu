@@ -1,4 +1,5 @@
 import type { Folder, List, Task, UserObject } from '../../../types/main';
+import { validRecurrence } from '../recurrence';
 import { entryType, listTypeError } from '../list-types';
 
 export type EntityKind = 'lists' | 'tasks' | 'folders';
@@ -57,10 +58,13 @@ export function enqueue(
     if (input.kind === 'tasks' && input.action !== 'delete') {
       if ((parent as List | undefined)?.type === 'places' && input.action === 'create' && input.data.addons === undefined)
         input.data = { ...input.data, addons: ['location'] };
+      if (input.data.recurrence != null && !validRecurrence(input.data.recurrence)) throw new Error('Invalid recurrence.');
       const nextTask = { ...entity, ...input.data } as Task;
       if (nextTask.wasScheduled || nextTask.schedule || (entity as Task | undefined)?.wasScheduled || (entity as Task | undefined)?.schedule)
         input.data = { ...input.data, wasScheduled: true };
       if (nextTask.type === 'note' || (!nextTask.parentTaskId && ['notes', 'timeline'].includes((parent as List | undefined)?.type ?? ''))) {
+        if (input.data.recurrence) throw new Error('Only tasks can recur.');
+        if (nextTask.recurrence) input.data = { ...input.data, recurrence: null };
         if (input.data.schedule || input.data.reminder) throw new Error('Only tasks can be scheduled.');
         if (nextTask.schedule || nextTask.reminder) input.data = { ...input.data, schedule: null, reminder: null };
       }

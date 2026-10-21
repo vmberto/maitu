@@ -2,6 +2,12 @@
 
 An offline-first SvelteKit app for task lists, timelines and task locations. Svelte 5, SvelteKit 3, Tailwind CSS, MongoDB and a native service worker. Leaflet loads when opening a list's map.
 
+## Recurrent tasks
+
+In a task’s **Options → Add-ons → Recurrent Tasks**, choose a monthly day from 1–31. New tasks appear at midnight in the timezone saved by the add-on. Short months use their last day, including February 28/29. The original task controls the series even after completion; remove its add-on (or archive/delete it or its list) to stop future copies. Existing unfinished tasks remain, and conflicting names receive suffixes such as `Pay rent 2`. Copies retain the description, tags and location, receive their occurrence’s scheduled date, and do not copy reminders, related tasks or recurrence rules. Normal manual clones also start without an active recurrence rule.
+
+Generation shares the existing authenticated `/api/reminders/run` scheduler described below; push keys are not required for recurrence. It catches up missed months and uses stable occurrence IDs to make retries safe. Each run is bounded to 100 occurrences and 20 seconds; further catch-up continues on the next run. Offline recurrence changes reach the generator after sync.
+
 ## Scheduling and reminders
 
 Create a task first, then enable **Schedule & Reminder** under Options → Add-ons. The scheduling panel appears below Description and tags, alongside other enabled add-ons. A scheduled date is optional, and its time is optional. Undated tasks retain manual ordering; scheduled tasks use chronological ordering. Overdue tasks appear first, followed by undated tasks, Today, and a collapsed Upcoming section. All Tasks includes future tasks. Today, This Week (Monday–Sunday), This Month, and Upcoming filter by calendar date in the device's timezone; Upcoming means dates after today. Completed tasks retain their existing completion section, subject to the selected date filter. Notes are not scheduled.

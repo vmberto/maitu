@@ -3,6 +3,7 @@ import type { Task } from '../../types/main';
 import { listTypeError } from './list-types';
 import { ObjectId } from 'mongodb';
 import { normalizeLocation } from './location';
+import { validRecurrence } from './recurrence';
 import { validSchedule, validReminder } from './scheduling';
 
 import type { Entity, EntityKind, Operation, Snapshot } from './offline/model';
@@ -75,6 +76,7 @@ const taskFields = [
   'parentTaskId',
   'schedule',
   'reminder',
+  'recurrence',
 ];
 export function validateData(
   kind: EntityKind,
@@ -95,6 +97,11 @@ export function validateData(
     }
     if (kind === 'folders' && field === 'title' && (typeof value !== 'string' || !value.trim() || value.length > 50))
       throw new SyncError('Folder names must be 1–50 characters.');
+    if (field === 'recurrence') {
+      if (value !== null && !validRecurrence(value)) throw new SyncError('Invalid recurrence.');
+      result[field] = value;
+      continue;
+    }
     if (field === 'schedule' || field === 'reminder') {
       if (value !== null && !(field === 'schedule' ? validSchedule(value) : validReminder(value)))
         throw new SyncError(`Invalid ${field}.`);
@@ -114,9 +121,9 @@ export function validateData(
     } else if (field === 'addons') {
       if (
         !Array.isArray(value) ||
-        value.length > 3 ||
+        value.length > 4 ||
         new Set(value).size !== value.length ||
-        value.some((addon) => !['location', 'relatedTasks', 'scheduling'].includes(addon))
+        value.some((addon) => !['location', 'relatedTasks', 'scheduling', 'recurrence'].includes(addon))
       )
         throw new SyncError('Invalid add-ons.');
     } else if (field === 'location') {
@@ -293,6 +300,8 @@ export async function applyOperation(
     const entry = { ...existing, ...data };
     if (existing?.wasScheduled || existing?.schedule || data.schedule) data.wasScheduled = true;
     if (entry.type === 'note' || (!entry.parentTaskId && ['notes', 'timeline'].includes(list.type))) {
+      if (data.recurrence) throw new SyncError('Only tasks can recur.');
+      if (entry.recurrence) data.recurrence = null;
       if (data.schedule || data.reminder) throw new SyncError('Only tasks can be scheduled.');
       if (entry.schedule || entry.reminder) { data.schedule = null; data.reminder = null; }
     }

@@ -300,3 +300,15 @@ it('allows folder deletion to unfile archived lists while preserving their conte
   expect(updated.folders![0]).toMatchObject({ deleted: true });
   expect(() => enqueue(account, [{ kind: 'lists', entityId: list._id, action: 'patch', data: { folderId: null, title: 'Changed' } }])).toThrow('read only');
 });
+
+it('keeps recurrence after completion, clears it on notes and rejects invalid local rules', () => {
+  const id = '64b2f7a9c1e6f9a1b2c3d4ef';
+  const recurrence = { dayOfMonth: 31, nextDate: '2026-10-31', timeZone: 'America/Recife' };
+  const account = { ...initial, tasks: [{ _id: id, listId: list._id, title: 'Monthly', version: 0, recurrence } as Entity] };
+  const patch = (data: Record<string, unknown>) => ({ kind: 'tasks' as const, entityId: id, action: 'patch' as const, data });
+  expect(enqueue(account, [patch({ complete: true })]).tasks[0]).toMatchObject({ recurrence, complete: true });
+  expect(enqueue(account, [patch({ type: 'note' })]).tasks[0]).toMatchObject({ recurrence: null });
+  expect(() => enqueue(account, [patch({ recurrence: { ...recurrence, dayOfMonth: 32 } })])).toThrow('Invalid recurrence');
+  const notes = { ...account, lists: [{ ...list, type: 'notes' } as Entity] };
+  expect(() => enqueue(notes, [patch({ recurrence })])).toThrow('Only tasks can recur');
+});

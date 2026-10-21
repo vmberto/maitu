@@ -351,6 +351,7 @@
                 >{/each}
             </div>{/if}
         </div>
+        {#if task.schedule}<Button variant="touch" class="max-w-[40%] shrink-0 truncate px-2 text-xs leading-7 text-gray-500" aria-label={`Schedule ${task.title}`} title={scheduleLabel(task.schedule, now, zone)} onclick={() => detailsId = String(task._id)}>{scheduleLabel(task.schedule, now, zone)}</Button>{/if}
         {#if normalizeLocation(task.location)}<LinkButton variant="touch"
             href={`/tasks/map?listId=${listId}&taskId=${task._id}`}
             aria-label={`See ${task.title} on map`}

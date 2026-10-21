@@ -1100,10 +1100,31 @@ test('todo keyboard creation, clear-on-blur deletion, floating drag and bottom s
     .toBe(true);
 });
 
+test('completing a scheduled task keeps its scheduled day visible after reload', async ({ page, context }) => {
+  await page.clock.setFixedTime(new Date('2026-10-20T15:00:00Z'));
+  const server = await transport(context);
+  server.snapshot.tasks.push({
+    _id: '64b2f7a9c1e6f9a1b2c3d4ef', listId, title: 'Scheduled completion', complete: false,
+    createdAt: '2026-01-01', version: 0, schedule: { date: '2026-10-18', timeZone: 'America/Recife' },
+  });
+  await page.goto(`/tasks?listId=${listId}`);
+  const schedule = page.getByRole('button', { name: 'Schedule Scheduled completion', exact: true });
+  await expect(schedule).toHaveText('Oct 18');
+  await page.locator('[data-sort-id]').filter({ has: schedule }).getByRole('button', { name: 'completeTask', exact: true }).click();
+  const completed = page.locator('.completed-row').filter({ has: schedule });
+  await expect(completed).toBeVisible();
+  await expect(schedule).toHaveText('Oct 18');
+  await expect(completed.getByRole('button', { name: 'completeTask', exact: true })).toBeDisabled();
+  await page.reload();
+  await expect(completed).toBeVisible();
+  await expect(schedule).toHaveText('Oct 18');
+});
+
 test('completed tasks are locked, counted, newest first and reveal every batch on scroll', async ({
   page,
   context,
 }) => {
+  await page.clock.setFixedTime(new Date('2026-10-20T15:00:00Z'));
   const server = await transport(context);
   for (let index = 0; index < 55; index++)
     server.snapshot.tasks.push({
@@ -1113,6 +1134,7 @@ test('completed tasks are locked, counted, newest first and reveal every batch o
       listId,
       complete: true,
       createdAt: '2026-01-01T00:00:00.000Z',
+      ...(index === 54 ? { schedule: { date: '2026-01-04', timeZone: 'America/Recife' } } : {}),
       completedAt: new Date(Date.UTC(2026, 0, index + 1)).toISOString(),
       version: 0,
     });
@@ -1126,9 +1148,11 @@ test('completed tasks are locked, counted, newest first and reveal every batch o
   await expect(
     page.getByRole('button', { name: 'completeTask', exact: true }).first(),
   ).toBeDisabled();
-  await page
-    .getByRole('button', { name: 'Task details Completed 54', exact: true })
-    .click();
+  const schedule = page.getByRole('button', { name: 'Schedule Completed 54', exact: true });
+  await expect(schedule).toHaveText('Jan 4');
+  await expect(schedule).toHaveClass(/text-gray-500/);
+  await expect(page.getByRole('button', { name: 'Schedule Completed 53', exact: true })).toHaveCount(0);
+  await schedule.click();
   await expect(
     page.getByText('Created', { exact: false }).first(),
   ).toBeVisible();
@@ -1759,6 +1783,35 @@ test('dedicated archive groups mixed tasks and notes and supports restore offlin
   await page.reload();
   await expect(page.getByRole('button', { name: 'Open archived note Archived note', exact: true })).toBeVisible();
   await page.screenshot({ path: '/tmp/maitu-archive-page.png' });
+});
+
+test('monthly recurrence saves offline, survives completion and can be stopped', async ({ page, context }) => {
+  await page.clock.setFixedTime(new Date('2026-10-20T15:00:00Z'));
+  const server = await transport(context);
+  const id = '64b2f7a9c1e6f9a1b2c3d4ef';
+  server.snapshot.tasks.push({ _id: id, listId, title: 'Monthly rent', description: '', complete: false, createdAt: '2026-01-01', version: 0 });
+  await page.goto(`/tasks?listId=${listId}&taskId=${id}`);
+  const drawer = page.getByRole('dialog');
+  await drawer.getByText('Options', { exact: true }).click();
+  await drawer.getByRole('button', { name: 'Recurrent Tasks', exact: true }).click();
+  await drawer.getByRole('spinbutton', { name: 'Day of the month', exact: true }).fill('31');
+  await drawer.getByRole('button', { name: 'Save recurrence', exact: true }).click();
+  await expect.poll(async () => (await device(page)).tasks.find((task: any) => task._id === id)?.recurrence).toMatchObject({ dayOfMonth: 31, nextDate: '2026-10-31' });
+  await expect(drawer.getByText(/Next occurrence: 2026-10-31/)).toBeVisible();
+  await drawer.getByRole('button', { name: 'Close panel', exact: true }).click();
+  await page.getByRole('button', { name: 'completeTask', exact: true }).click();
+  await expect(page.locator('.completed-row')).toBeVisible();
+  await page.getByRole('button', { name: 'Task details Monthly rent', exact: true }).click();
+  await expect(drawer.getByRole('spinbutton', { name: 'Day of the month', exact: true })).toHaveValue('31');
+  await page.evaluate(async () => { await navigator.serviceWorker.ready; });
+  await expect.poll(() => page.evaluate(() => !!navigator.serviceWorker.controller)).toBe(true);
+  await context.setOffline(true);
+  await page.reload();
+  await expect(drawer.getByRole('spinbutton', { name: 'Day of the month', exact: true })).toHaveValue('31');
+  await drawer.getByLabel('Recurrent Tasks options', { exact: true }).click();
+  await drawer.getByRole('button', { name: 'Remove Recurrent Tasks', exact: true }).click();
+  await expect(drawer.getByRole('heading', { name: 'Recurrent Tasks', exact: true })).toHaveCount(0);
+  await expect.poll(async () => (await device(page)).tasks.find((task: any) => task._id === id)?.recurrence).toBeNull();
 });
 
 test('all add-ons share a top-right options menu without colliding with the scheduling toggle', async ({ page, context }) => {
