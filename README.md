@@ -58,7 +58,7 @@ Places List (`type: places`) keeps the existing task model and completion behavi
 
 ### Smart Place inclusion
 
-The Smart Place form and automatic URL import are currently hidden pending research-provider reliability fixes. Places Lists remain available, with an “Add place…” field, Location enabled by default, and the map accessible from the header. Pasted URLs currently save as ordinary item titles. See [the handoff report](docs/smart-places-handoff.md) for implementation details, known failures and resumption steps.
+The Smart Place form and automatic URL import are currently hidden pending research-provider reliability fixes. Places Lists remain available, Location enabled by default, and the map accessible from the header. Pasted URLs currently save as ordinary item titles. See [the handoff report](docs/smart-places-handoff.md) for implementation details, known failures and resumption steps.
 
 Places lists keep normal tasks with Location enabled by default. The map opens from the list header; it is not shown above the list.
 

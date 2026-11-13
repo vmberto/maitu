@@ -1187,7 +1187,7 @@ test('mixed lists keep related tasks inside notes through archive, restore and o
   await expect(page.getByRole('tab', { name: 'Tasks', exact: true })).toHaveAttribute('aria-selected', 'true');
   await page.getByRole('tab', { name: 'Notes', exact: true }).click();
   const input = page.getByRole('textbox', { name: 'New note', exact: true });
-  await expect(input).toHaveAttribute('placeholder', 'Add note…');
+  await expect(input).not.toHaveAttribute('placeholder');
   await input.fill('Searching for a Home');
   await input.press('Enter');
   await page.getByRole('button', { name: 'Open note Searching for a Home', exact: true }).click();
@@ -1596,7 +1596,7 @@ test('Notes lists use note rows and details instead of a timeline', async ({ pag
   await expect(page.getByRole('button', { name: 'Open archived note New standalone note', exact: true })).toBeVisible();
   await page.goto(`/tasks?listId=${listId}`);
   await expect(page.getByRole('button', { name: 'Open note Existing legacy note', exact: true })).toBeVisible();
-  await expect(page.getByRole('textbox', { name: 'New note', exact: true })).toHaveAttribute('placeholder', 'Add note…');
+  await expect(page.getByRole('textbox', { name: 'New note', exact: true })).not.toHaveAttribute('placeholder');
 });
 
 test('segmented list types create distinct Notes and Timeline lists', async ({ page, context }) => {
@@ -1879,7 +1879,7 @@ test('Places List hides Smart Place discovery and saves pasted URLs as ordinary 
   });
   await page.goto(`/tasks?listId=${listId}`);
   await expect(page.getByRole('region', { name: 'Smart Place inclusion', exact: true })).toHaveCount(0);
-  const input = page.getByPlaceholder('Add place…', { exact: true });
+  const input = page.getByRole('textbox', { name: 'New task', exact: true });
   const url = 'https://www.instagram.com/claricebistroecafe';
   await input.fill(url);
   await input.press('Enter');

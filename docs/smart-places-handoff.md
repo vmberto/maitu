@@ -8,7 +8,7 @@ Implementation baseline before this handoff: `dc6ea8d`.
 
 Places List remains a distinct list type. Its entries are ordinary tasks, with Location enabled by default. Existing task titles, tags, completion, offline storage and synchronization continue to use the existing task model. The map is available through the list header; the earlier request for an always-visible map was superseded by the request to remove the map above the list.
 
-At the user's request, this handoff change hides the Smart Place input and removes automatic URL interception from the bottom input. The bottom placeholder is **Add place…**. Pasted URLs now save as ordinary item titles; they do not start discovery. Users can still set a location through task details. Existing saved locations and tags are retained.
+At the user's request, this handoff change hides the Smart Place input and removes automatic URL interception from the bottom input. Pasted URLs now save as ordinary item titles; they do not start discovery. Users can still set a location through task details. Existing saved locations and tags are retained.
 
 The Smart Place component, backend, parsers and backend tests remain in the repository for future work. Four browser scenarios for its hidden UI are explicitly skipped, with their assertions retained as restoration references. Active browser coverage verifies normal Places creation, default Location, map navigation, offline operation and pasted URLs without discovery requests.
 

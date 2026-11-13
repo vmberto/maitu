@@ -281,7 +281,6 @@
         <span class:todo-check={!mixed && !notesOnly} class="shrink-0 p-0.5 text-primary opacity-60" aria-hidden="true">{#if mixed || notesOnly}<Icon name="plus" size={24} />{/if}</span>
         <textarea
           aria-label={filter === 'notes' ? "New note" : "New task"}
-          placeholder={list.type === 'places' ? 'Add place…' : mixed || notesOnly ? (filter === 'notes' ? "Add note…" : undefined) : undefined}
           data-task-input
           bind:value={draft}
           use:autosize={draft}
