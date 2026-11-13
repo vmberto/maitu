@@ -1294,7 +1294,7 @@ test('item details scroll together, edit bold and bullet lists live and open arc
   }
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(`/tasks?listId=${listId}`);
-  await expect(page.getByRole('textbox', { name: 'New task', exact: true })).toHaveAttribute('placeholder', 'Add task…');
+  await expect(page.getByRole('textbox', { name: 'New task', exact: true })).not.toHaveAttribute('placeholder');
   await expect(page.locator('summary').filter({ hasText: 'Archived Items' })).toHaveCount(1);
   await page.getByRole('tab', { name: 'Notes', exact: true }).click();
   await expect(page.locator('summary').filter({ hasText: 'Archived Items' })).toHaveCount(0);

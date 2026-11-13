@@ -394,7 +394,6 @@
         >
           <span class:todo-check={!isNote} class="shrink-0 p-0.5 text-primary opacity-50" aria-hidden="true">{#if isNote}<Icon name="plus" size={24} />{/if}</span><textarea
             aria-label="New subtask"
-            placeholder="Add related task"
             bind:value={subtask}
             use:autosize={subtask}
             rows="1"
